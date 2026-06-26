@@ -1,0 +1,9 @@
+node_modules/
+**/build/
+**/.gradle/
+android/local.properties
+*.iml
+.idea/
+.DS_Store
+_dbg*.png
+_verify.png

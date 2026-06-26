@@ -1,0 +1,1470 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+<meta name="format-detection" content="telephone=no" />
+<meta name="msapplication-tap-highlight" content="no" />
+<meta name="theme-color" content="#0A0A0B" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: gap: content:; media-src * blob: filesystem:; img-src * data: blob: content:;" />
+<title>Chisel — Sculpt your best self</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --onyx:#0A0A0B;
+    --graphite:#1A1A1D;
+    --ivory:#F2EDE4;
+    --ivory-dim:#C9C2B4;
+    --gold:#C9A86A;
+    --gold-bright:#E2C58A;
+    --rose:#D4A5A5;
+    --emerald:#3E6B5A;
+    --line:rgba(201,168,106,.18);
+    --ease:cubic-bezier(.22,.61,.36,1);
+    --ease-out:cubic-bezier(.16,1,.3,1);
+    --display:'Cormorant Garamond',serif;
+    --sans:'Inter',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;height:100%;background:var(--onyx);color:var(--ivory);font-family:var(--sans);overflow:hidden;-webkit-font-smoothing:antialiased}
+  body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);background:
+    radial-gradient(1200px 600px at 70% -10%, rgba(201,168,106,.08), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(62,107,90,.10), transparent 60%),
+    var(--onyx)}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.06;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.6'/></svg>")}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9998;background:radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,.55) 100%)}
+
+  /* Boot */
+  #boot{position:fixed;inset:0;z-index:10000;background:var(--onyx);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .8s var(--ease)}
+  #boot.gone{opacity:0;pointer-events:none}
+  #boot .mark{font-family:var(--display);font-size:64px;font-weight:500;letter-spacing:.04em;background:linear-gradient(180deg,var(--ivory) 30%,var(--gold) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  #boot .tag{margin-top:6px;font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--ivory-dim)}
+  #boot .bar{margin-top:40px;width:200px;height:1px;background:rgba(255,255,255,.08);position:relative;overflow:hidden}
+  #boot .bar::after{content:"";position:absolute;left:0;top:0;height:100%;width:0;background:linear-gradient(90deg,transparent,var(--gold),transparent);animation:boot 1.4s var(--ease) forwards}
+  @keyframes boot{to{width:100%}}
+
+  /* Layout */
+  .app{height:100%;display:grid;grid-template-columns:240px 1fr}
+  @media (max-width:760px){.app{grid-template-columns:1fr;grid-template-rows:1fr 64px}main.view{grid-row:1}nav.tabs{grid-row:2}}
+
+  nav.rail{background:linear-gradient(180deg,var(--graphite),#0d0d0f);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:24px 16px;position:relative}
+  nav.rail .logo{font-family:var(--display);font-size:34px;line-height:1;letter-spacing:.03em;background:linear-gradient(180deg,var(--ivory),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;padding:8px 4px 18px;border-bottom:1px solid var(--line)}
+  nav.rail .logo small{display:block;font-family:var(--sans);font-size:9px;letter-spacing:.5em;color:var(--ivory-dim);margin-top:4px;text-transform:uppercase}
+  nav.rail .links{display:flex;flex-direction:column;gap:4px;margin-top:18px;flex:1}
+  nav.rail a{display:flex;align-items:center;gap:12px;padding:12px 14px;min-height:44px;color:var(--ivory-dim);text-decoration:none;font-size:13px;letter-spacing:.06em;text-transform:uppercase;border-radius:8px;position:relative;transition:color .25s var(--ease),background .25s var(--ease)}
+  nav.rail a:hover{color:var(--ivory)}
+  nav.rail a.active{color:var(--onyx);background:linear-gradient(90deg,var(--gold),var(--gold-bright))}
+  nav.rail a .ico{width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;opacity:.9}
+  nav.rail .footer{font-size:10px;color:var(--ivory-dim);letter-spacing:.3em;text-transform:uppercase;padding-top:12px;border-top:1px solid var(--line)}
+  nav.rail .footer b{color:var(--gold)}
+
+  nav.tabs{display:none;background:linear-gradient(180deg,var(--graphite),#0d0d0f);border-top:1px solid var(--line);position:relative}
+  @media (max-width:760px){nav.rail{display:none}nav.tabs{display:grid;grid-template-columns:repeat(6,1fr);align-items:center}}
+  nav.tabs a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:44px;color:var(--ivory-dim);text-decoration:none;font-size:9px;letter-spacing:.2em;text-transform:uppercase;position:relative;z-index:1}
+  nav.tabs a.active{color:var(--onyx)}
+  nav.tabs .pill{position:absolute;top:6px;left:0;height:calc(100% - 12px);width:calc(100%/6);background:linear-gradient(180deg,var(--gold),var(--gold-bright));border-radius:10px;transition:transform .35s var(--ease-out)}
+
+  main.view{overflow-y:auto;overflow-x:hidden;padding:32px 40px 80px;position:relative;scroll-behavior:smooth}
+  @media (max-width:760px){main.view{padding:20px 16px 24px}}
+  .screen{display:none;animation:fadein .5s var(--ease-out)}
+  .screen.active{display:block}
+  @keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  /* Typography */
+  h1.display{font-family:var(--display);font-weight:500;font-size:clamp(40px,6vw,72px);line-height:1.02;letter-spacing:-.01em;margin:0}
+  h1.display em{font-style:italic;color:var(--gold)}
+  h2.section{font-family:var(--display);font-size:28px;font-weight:500;margin:0 0 6px;letter-spacing:.01em}
+  .eyebrow{font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+  .lede{color:var(--ivory-dim);max-width:60ch;line-height:1.6}
+  .gold{color:var(--gold)}
+
+  /* Cards */
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.012));border:1px solid var(--line);border-radius:14px;padding:20px;position:relative;transition:border-color .25s var(--ease),transform .25s var(--ease)}
+  .card:hover{border-color:rgba(201,168,106,.45)}
+  .card.gold{border-color:rgba(201,168,106,.35);box-shadow:0 0 0 1px rgba(201,168,106,.05) inset, 0 20px 60px -20px rgba(201,168,106,.2)}
+  .grid{display:grid;gap:18px}
+  .g-3{grid-template-columns:repeat(3,1fr)}
+  .g-2{grid-template-columns:repeat(2,1fr)}
+  @media (max-width:900px){.g-3{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:600px){.g-3,.g-2{grid-template-columns:1fr}}
+
+  /* Buttons */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:12px 20px;background:transparent;border:1px solid var(--gold);color:var(--gold);border-radius:999px;font:600 11px/1 var(--sans);letter-spacing:.3em;text-transform:uppercase;cursor:pointer;position:relative;overflow:hidden;transition:color .3s var(--ease)}
+  .btn::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--gold),var(--gold-bright));transform:translateX(-101%);transition:transform .4s var(--ease);z-index:-1}
+  .btn:hover{color:var(--onyx)}
+  .btn:hover::before{transform:translateX(0)}
+  .btn.solid{background:linear-gradient(90deg,var(--gold),var(--gold-bright));color:var(--onyx)}
+  .btn.solid::before{display:none}
+  .btn.ghost{border-color:rgba(255,255,255,.18);color:var(--ivory-dim)}
+  .btn-row{display:flex;flex-wrap:wrap;gap:10px}
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;min-height:32px;border:1px solid var(--line);border-radius:999px;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--ivory-dim);cursor:pointer;background:transparent;transition:.25s var(--ease)}
+  .chip.on{background:var(--gold);color:var(--onyx);border-color:var(--gold)}
+  .chip:hover{color:var(--ivory)}
+
+  /* Hero */
+  .hero{position:relative;padding:36px 0 16px;display:grid;grid-template-columns:1.4fr 1fr;gap:36px;align-items:end}
+  @media (max-width:900px){.hero{grid-template-columns:1fr}}
+  .hero .affirm{font-family:var(--display);font-style:italic;font-size:22px;color:var(--ivory);line-height:1.4;padding:18px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);position:relative}
+  .hero .affirm small{display:block;font-family:var(--sans);font-style:normal;font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+
+  /* Score rings */
+  .ring{--p:0;--c:var(--gold);width:74px;height:74px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p)*1%), rgba(255,255,255,.06) 0);display:grid;place-items:center;position:relative}
+  .ring::before{content:"";position:absolute;inset:6px;background:var(--graphite);border-radius:50%}
+  .ring span{position:relative;font-family:var(--display);font-size:20px;color:var(--ivory)}
+  .ring-row{display:flex;align-items:center;gap:14px}
+  .ring-row b{font-size:14px}
+  .ring-row small{color:var(--ivory-dim);font-size:11px;letter-spacing:.05em}
+
+  /* Camera */
+  .camwrap{position:fixed;inset:0;background:#000;z-index:200;display:none}
+  .camwrap.on{display:flex;flex-direction:column}
+  .camwrap video{flex:1;width:100%;height:100%;object-fit:cover;background:#000}
+  .camwrap video.mirror{transform:scaleX(-1)}
+  .camwrap canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+  .camwrap .hud{position:absolute;left:0;right:0;padding:20px;display:flex;justify-content:space-between;align-items:center;color:#fff;z-index:2}
+  .camwrap .hud .back{width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.2);display:grid;place-items:center;cursor:pointer;color:#fff}
+  .camwrap .hud .meta{font-size:10px;letter-spacing:.3em;text-transform:uppercase;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.15);padding:8px 14px;border-radius:999px}
+  .camwrap .sheet{position:absolute;left:0;right:0;bottom:0;max-height:55%;overflow-y:auto;background:linear-gradient(180deg,rgba(10,10,11,.85),rgba(10,10,11,.98));backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--line);padding:20px;border-top-left-radius:24px;border-top-right-radius:24px}
+  .camwrap .sheet h3{margin:0 0 4px;font-family:var(--display);font-size:22px;font-weight:500}
+  .camwrap .sheet p{color:var(--ivory-dim);font-size:13px;line-height:1.5;margin:6px 0 0}
+  .landmark-list{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+  .lm{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;padding:10px}
+  .lm small{display:block;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--ivory-dim)}
+  .lm b{font-family:var(--display);font-size:18px}
+  .lm b.gold{color:var(--gold)}
+  .camwrap .controls{position:absolute;right:16px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;z-index:2}
+  .camctrl{width:48px;height:48px;border-radius:50%;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.2);display:grid;place-items:center;color:#fff;cursor:pointer}
+
+  /* Affirm overlay */
+  .affirm-overlay{position:absolute;left:0;right:0;top:env(safe-area-inset-top);padding:24px;display:flex;flex-direction:column;align-items:center;gap:14px;z-index:3;pointer-events:none}
+  .affirm-overlay .card{background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.7));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(201,168,106,.4);border-radius:16px;padding:22px 24px;max-width:520px;width:100%;text-align:center;pointer-events:auto;box-shadow:0 20px 60px -10px rgba(0,0,0,.6)}
+  .affirm-overlay .cat{font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+  .affirm-overlay .txt{font-family:var(--display);font-style:italic;font-size:clamp(22px,4vw,30px);line-height:1.3;color:var(--ivory)}
+  .affirm-overlay .say{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--rose);margin-top:12px;display:flex;align-items:center;justify-content:center;gap:6px}
+  .affirm-overlay .pager{display:flex;gap:6px;justify-content:center;margin-top:10px}
+  .affirm-overlay .pager i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.25);display:inline-block;transition:.3s var(--ease)}
+  .affirm-overlay .pager i.on{background:var(--gold);width:22px;border-radius:3px}
+  .tap-hint{position:absolute;left:0;right:0;bottom:24px;text-align:center;color:rgba(255,255,255,.5);font-size:10px;letter-spacing:.3em;text-transform:uppercase;z-index:3;pointer-events:none}
+  #scanGuide{position:absolute;left:0;right:0;top:34%;transform:translateY(-50%);display:none;flex-direction:column;align-items:center;gap:10px;z-index:3;pointer-events:none;text-align:center;padding:0 24px}
+  #scanGuide .sg-big{font-family:var(--display);font-size:64px;line-height:1;color:var(--gold-bright);text-shadow:0 2px 24px rgba(0,0,0,.75);min-height:10px}
+  #scanGuide .sg-sub{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.92);text-shadow:0 1px 10px rgba(0,0,0,.85);background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.14);padding:8px 16px;border-radius:999px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+
+  /* Meditate */
+  .orb-stage{position:relative;height:60vh;display:grid;place-items:center;margin-top:24px}
+  .orb{width:220px;height:220px;border-radius:50%;background:radial-gradient(circle at 35% 30%, rgba(201,168,106,.9), rgba(62,107,90,.4) 55%, transparent 70%);box-shadow:0 0 120px 20px rgba(62,107,90,.35), inset 0 0 80px rgba(255,255,255,.15);animation:breathe 16s ease-in-out infinite;position:relative}
+  .orb::after{content:"";position:absolute;inset:-30px;border-radius:50%;border:1px solid rgba(201,168,106,.15);animation:ring-spin 30s linear infinite}
+  @keyframes breathe{0%,100%{transform:scale(.78)}50%{transform:scale(1.06)}}
+  @keyframes ring-spin{to{transform:rotate(360deg)}}
+  .timer{font-family:var(--display);font-size:72px;text-align:center;margin:14px 0 0;color:var(--ivory);letter-spacing:.04em}
+  .phase{text-align:center;color:var(--ivory-dim);font-size:11px;letter-spacing:.4em;text-transform:uppercase;min-height:14px}
+  .voice-line{font-family:var(--display);font-style:italic;font-size:22px;text-align:center;max-width:48ch;margin:30px auto 0;color:var(--ivory);min-height:60px;line-height:1.4;opacity:.95}
+  .arc{width:240px;height:240px;position:absolute}
+  .arc svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .arc circle{fill:none;stroke-width:1.5}
+  .arc .bg{stroke:rgba(255,255,255,.08)}
+  .arc .fg{stroke:url(#goldgrad);stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+
+  /* Groom */
+  .groom-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+  @media (max-width:800px){.groom-grid{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:480px){.groom-grid{grid-template-columns:1fr}}
+  .groom{aspect-ratio:1/1.1;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;background:linear-gradient(180deg,var(--graphite),#0e0e10)}
+  .groom .name{font-family:var(--display);font-size:26px;line-height:1.05}
+  .groom .num{font-size:9px;letter-spacing:.4em;color:var(--gold)}
+  .groom .icon{font-size:38px;opacity:.8;align-self:flex-end}
+  @media (max-width:480px){.groom{aspect-ratio:auto;flex-direction:row;align-items:center;min-height:84px;padding:18px 20px}.groom .icon{align-self:center;font-size:30px}.groom .name{font-size:22px}}
+
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:none;align-items:flex-end;justify-content:center;z-index:500}
+  .modal.on{display:flex}
+  .modal .panel{width:min(720px,100%);max-height:88vh;overflow-y:auto;background:linear-gradient(180deg,#15151a,#0c0c0e);border:1px solid var(--line);border-top-left-radius:24px;border-top-right-radius:24px;padding:28px;animation:slideUp .4s var(--ease-out)}
+  @media (min-width:760px){.modal{align-items:center}.modal .panel{border-radius:24px;max-height:80vh}}
+  @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+  .modal h3{font-family:var(--display);font-size:32px;margin:6px 0 4px;font-weight:500}
+  .modal h4{font-family:var(--display);font-size:18px;margin:20px 0 6px;color:var(--gold);font-weight:500;letter-spacing:.04em}
+  .modal p,.modal li{color:var(--ivory-dim);line-height:1.6;font-size:14px}
+  .modal ol{padding-left:20px}
+  .modal .x{position:absolute;top:18px;right:18px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.05);border:1px solid var(--line);display:grid;place-items:center;cursor:pointer;color:var(--ivory)}
+
+  /* Connect diagnostic */
+  .diag{display:grid;grid-template-columns:1fr auto;gap:8px 14px;padding:14px 16px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;font-size:12px}
+  .diag .k{color:var(--ivory-dim);letter-spacing:.05em}
+  .diag .v{font-family:var(--display);font-size:15px;color:var(--ivory)}
+  .ok{color:#7CC79A !important}
+  .bad{color:#E07A7A !important}
+
+  /* Switch */
+  .switch{position:relative;width:42px;height:24px;background:rgba(255,255,255,.08);border-radius:999px;cursor:pointer;transition:.3s var(--ease)}
+  .switch::after{content:"";position:absolute;left:2px;top:2px;width:20px;height:20px;background:var(--ivory);border-radius:50%;transition:.3s var(--ease)}
+  .switch.on{background:linear-gradient(90deg,var(--gold),var(--gold-bright))}
+  .switch.on::after{left:20px;background:var(--onyx)}
+  .row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line)}
+  .row:last-child{border-bottom:0}
+  .row label{font-size:13px;color:var(--ivory)}
+
+  /* Streak */
+  .streak{display:flex;align-items:baseline;gap:10px;margin-top:6px}
+  .streak b{font-family:var(--display);font-size:48px;line-height:1;color:var(--gold)}
+  .streak small{color:var(--ivory-dim);letter-spacing:.2em;text-transform:uppercase;font-size:10px}
+
+  /* Toast */
+  #toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:rgba(20,20,22,.95);border:1px solid var(--line);color:var(--ivory);padding:10px 16px;border-radius:999px;font-size:12px;letter-spacing:.05em;z-index:2000;opacity:0;transition:.3s var(--ease);pointer-events:none}
+  #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  @media (max-width:760px){#toast{bottom:80px}}
+
+  @media (prefers-reduced-motion:reduce){*{animation-duration:.001s !important;transition-duration:.001s !important}}
+</style>
+</head>
+<body>
+
+<div id="boot">
+  <div class="mark">Chisel</div>
+  <div class="tag">Sculpt your best self</div>
+  <div class="bar"></div>
+</div>
+
+<div id="toast"></div>
+
+<div class="app">
+  <nav class="rail" aria-label="primary">
+    <div class="logo">Chisel<small>Lookmax · AI</small></div>
+    <div class="links" id="navLinks">
+      <a href="#home" data-route="home" class="active"><span class="ico">◇</span> Home</a>
+      <a href="#analyze" data-route="analyze"><span class="ico">◉</span> Analyze</a>
+      <a href="#affirm" data-route="affirm"><span class="ico">✦</span> Affirm</a>
+      <a href="#meditate" data-route="meditate"><span class="ico">◯</span> Meditate</a>
+      <a href="#groom" data-route="groom"><span class="ico">▣</span> Groom</a>
+      <a href="#connect" data-route="connect"><span class="ico">⤓</span> Connect</a>
+    </div>
+    <div class="footer">Build <b id="buildTag">1.0.0</b></div>
+  </nav>
+
+  <nav class="tabs" id="bottomTabs">
+    <span class="pill" id="tabPill"></span>
+    <a href="#home" data-route="home">Home</a>
+    <a href="#analyze" data-route="analyze">Analyze</a>
+    <a href="#affirm" data-route="affirm">Affirm</a>
+    <a href="#meditate" data-route="meditate">Meditate</a>
+    <a href="#groom" data-route="groom">Groom</a>
+    <a href="#connect" data-route="connect">Connect</a>
+  </nav>
+
+  <main class="view" id="view">
+
+    <!-- HOME -->
+    <section class="screen active" data-screen="home">
+      <div class="hero">
+        <div>
+          <div class="eyebrow">Today · <span id="todayDate"></span></div>
+          <h1 class="display">Sculpt <em>your best</em><br/>self, in plain sight.</h1>
+          <p class="lede" style="margin-top:18px">A precision lookmax studio. Real-time facial analysis, science-grounded grooming, and the affirmations to match. Open the camera, look at yourself, and become it.</p>
+          <div class="btn-row" style="margin-top:24px">
+            <button class="btn solid" data-go="analyze">Start Analysis</button>
+            <button class="btn" data-go="affirm">Affirm Out Loud</button>
+            <button class="btn ghost" data-go="meditate">Visualize</button>
+          </div>
+        </div>
+        <div>
+          <div class="card gold" style="padding:24px">
+            <div class="eyebrow" style="margin-bottom:8px">Daily Affirmation</div>
+            <div id="homeAffirm" style="font-family:var(--display);font-style:italic;font-size:24px;line-height:1.35">—</div>
+            <div class="btn-row" style="margin-top:18px">
+              <button class="btn" id="newAffirm">Next</button>
+              <button class="btn ghost" id="speakAffirm">Speak</button>
+            </div>
+          </div>
+          <div class="card" style="padding:24px;margin-top:14px">
+            <div class="eyebrow" style="margin-bottom:8px">Streak</div>
+            <div class="streak"><b id="streakNum">0</b><small>days</small></div>
+            <div style="font-size:12px;color:var(--ivory-dim);margin-top:6px" id="streakSub">Begin a session to start your streak.</div>
+          </div>
+          <div class="card" style="padding:24px;margin-top:14px">
+            <div class="eyebrow" style="margin-bottom:8px">Lookmax Score</div>
+            <div style="display:flex;align-items:baseline;gap:10px"><b id="scoreNum" style="font-family:var(--display);font-size:48px;color:var(--gold)">—</b><small style="color:var(--ivory-dim);font-size:11px;letter-spacing:.2em;text-transform:uppercase">Last analysis</small></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:36px">
+        <div class="eyebrow">Quick Actions</div>
+        <div class="grid g-3" style="margin-top:10px">
+          <div class="card" data-go="analyze" style="cursor:pointer">
+            <div style="font-size:32px">◉</div>
+            <h3 style="font-family:var(--display);font-size:24px;margin:8px 0 0;font-weight:500">Analyze</h3>
+            <p class="lede" style="font-size:13px;margin:4px 0 0">Map your jawline, nose, lips, brows, cheekbones and hairline against the golden ratio.</p>
+          </div>
+          <div class="card" data-go="affirm" style="cursor:pointer">
+            <div style="font-size:32px">✦</div>
+            <h3 style="font-family:var(--display);font-size:24px;margin:8px 0 0;font-weight:500">Affirm</h3>
+            <p class="lede" style="font-size:13px;margin:4px 0 0">Read affirmations on top of your live reflection. Lock eyes with the man you're becoming.</p>
+          </div>
+          <div class="card" data-go="meditate" style="cursor:pointer">
+            <div style="font-size:32px">◯</div>
+            <h3 style="font-family:var(--display);font-size:24px;margin:8px 0 0;font-weight:500">Meditate</h3>
+            <p class="lede" style="font-size:13px;margin:4px 0 0">Guided visualization with a calm voice. See the chiseled, confident version of you.</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:36px" class="card">
+        <div class="eyebrow">Tonight's intention</div>
+        <input id="intention" placeholder="I am becoming…" style="width:100%;background:transparent;border:0;border-bottom:1px solid var(--line);color:var(--ivory);font-family:var(--display);font-size:22px;padding:10px 0;outline:none" />
+      </div>
+    </section>
+
+    <!-- ANALYZE -->
+    <section class="screen" data-screen="analyze">
+      <div class="eyebrow">Facial Analysis</div>
+      <h2 class="section">Look at yourself. <span class="gold">Measure what matters.</span></h2>
+      <p class="lede" style="margin-bottom:18px">A real <b>468-point face mesh</b> runs on-device (Google MediaPipe). It reads symmetry, jaw, nose, lips and eyes, plus a <b>dermatology-grade skin scan</b> (Fitzpatrick tone via ITA°, CIELAB undertone, white-balanced off the sclera, glare-rejected median sampling, redness, T-zone shine, evenness, under-eye), a <b>hair</b> check and a <b>teeth shade</b> read — each paired with a science-backed remedy and its evidence strength, then tracked over time.</p>
+      <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center;min-height:240px">
+        <div style="font-size:54px;color:var(--gold)">◉</div>
+        <h3 class="display" style="font-size:28px;margin:8px 0 0">Ready when you are.</h3>
+        <p class="lede" style="margin:8px auto 0">Center your face in good light. Hold still for one second.</p>
+        <div class="btn-row" style="margin-top:18px">
+          <button class="btn solid" id="openAnalyze">Open Camera</button>
+          <button class="btn" id="openTrain">Jawline training</button>
+          <button class="btn ghost" id="hintAnalyze">How scoring works</button>
+        </div>
+      </div>
+      <div id="scanHistory"></div>
+    </section>
+
+    <!-- AFFIRM -->
+    <section class="screen" data-screen="affirm">
+      <div class="eyebrow">Affirmations</div>
+      <h2 class="section">Say it. <span class="gold">See it. Become it.</span></h2>
+      <p class="lede" style="margin-bottom:18px">Affirmations work best when spoken. Open the camera, look at yourself, and read each one out loud.</p>
+      <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px;text-align:center;min-height:200px">
+        <div style="font-size:54px;color:var(--gold)">✦</div>
+        <h3 class="display" style="font-size:28px;margin:8px 0 0">Mirror mode</h3>
+        <p class="lede" style="margin:8px auto 0">Affirmations and manifestation lines appear on top of your reflection.</p>
+        <div class="btn-row" style="margin-top:18px">
+          <button class="btn solid" id="openAffirm">Open Camera</button>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:18px" id="catChips">
+          <button class="chip on" data-cat="all">All</button>
+          <button class="chip" data-cat="confidence">Confidence</button>
+          <button class="chip" data-cat="jawline">Jawline</button>
+          <button class="chip" data-cat="skin">Skin</button>
+          <button class="chip" data-cat="discipline">Discipline</button>
+          <button class="chip" data-cat="wealth">Wealth</button>
+          <button class="chip" data-cat="presence">Presence</button>
+        </div>
+        <div class="row" style="width:100%;max-width:360px;margin-top:14px">
+          <label>Auto-advance (8s)</label>
+          <div class="switch" id="autoSwitch"></div>
+        </div>
+        <div class="row" style="width:100%;max-width:360px">
+          <label>Manifestation mode</label>
+          <div class="switch" id="manifestSwitch"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MEDITATE -->
+    <section class="screen" data-screen="meditate">
+      <div class="eyebrow">Visualization</div>
+      <h2 class="section">See the man <span class="gold">you're becoming.</span></h2>
+      <p class="lede" style="margin-bottom:18px">Guided audio + breathing orb. Pick a duration, close your eyes, and let the voice do the work.</p>
+      <div class="card" style="padding:24px">
+        <div class="btn-row" id="durChips" style="justify-content:center">
+          <button class="chip" data-dur="180">3 min</button>
+          <button class="chip on" data-dur="600">10 min · Lookmax</button>
+          <button class="chip" data-dur="1200">20 min</button>
+        </div>
+        <div class="orb-stage">
+          <div class="arc"><svg viewBox="0 0 240 240"><defs><linearGradient id="goldgrad" x1="0" x2="1"><stop offset="0" stop-color="#C9A86A"/><stop offset="1" stop-color="#E2C58A"/></linearGradient></defs><circle class="bg" cx="120" cy="120" r="116"/><circle class="fg" id="arcFg" cx="120" cy="120" r="116" stroke-dasharray="729" stroke-dashoffset="0"/></svg></div>
+          <div class="orb"></div>
+        </div>
+        <div class="timer" id="timer">10:00</div>
+        <div class="phase" id="phase">Inhale</div>
+        <div class="voice-line" id="voiceLine">"Close your eyes. Begin to visualize the chiseled, confident version of yourself."</div>
+        <div class="btn-row" style="justify-content:center;margin-top:18px">
+          <button class="btn solid" id="medStart">Begin</button>
+          <button class="btn ghost" id="medStop">Stop</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px">
+          <div class="row" style="border:0;padding:0"><label>Voice</label></div>
+          <div></div>
+        </div>
+        <select id="voiceSel" style="width:100%;padding:12px;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:10px;color:var(--ivory);font-family:var(--sans)"></select>
+        <div class="row" style="margin-top:10px"><label>Ambient hum</label><div class="switch on" id="humSwitch"></div></div>
+      </div>
+    </section>
+
+    <!-- GROOM -->
+    <section class="screen" data-screen="groom">
+      <div class="eyebrow">Science of Grooming</div>
+      <h2 class="section">Routines that actually <span class="gold">move the needle.</span></h2>
+      <p class="lede" style="margin-bottom:18px">Tap a region. Each card opens an anatomy overview, the science behind it, the routine, and the products that work.</p>
+      <div class="groom-grid" id="groomGrid"></div>
+
+      <div class="card" style="margin-top:24px">
+        <div class="eyebrow">Today's Plan</div>
+        <div id="planList" style="margin-top:10px"></div>
+      </div>
+    </section>
+
+    <!-- CONNECT -->
+    <section class="screen" data-screen="connect">
+      <div class="eyebrow">Connect your phone</div>
+      <h2 class="section">From your PC to <span class="gold">your pocket.</span></h2>
+      <p class="lede" style="margin-bottom:18px">USB debugging is on, so we're almost there. Follow the three steps below and Chisel will live on your phone in under a minute.</p>
+
+      <div class="card" style="margin-bottom:14px">
+        <div class="diag">
+          <div class="k">Capacitor native shell</div><div class="v" id="dCap">—</div>
+          <div class="k">Platform</div><div class="v" id="dPlat">—</div>
+          <div class="k">Secure context (HTTPS/local)</div><div class="v" id="dSecure">—</div>
+          <div class="k">getUserMedia supported</div><div class="v" id="dMedia">—</div>
+          <div class="k">Camera permission</div><div class="v" id="dPerm">—</div>
+          <div class="k">Front camera found</div><div class="v" id="dCam">—</div>
+        </div>
+        <div class="btn-row" style="margin-top:14px">
+          <button class="btn" id="testCam">Test Camera</button>
+          <button class="btn ghost" id="refreshDiag">Refresh</button>
+        </div>
+      </div>
+
+      <div class="grid g-2">
+        <div class="card">
+          <div class="eyebrow">Step 1</div>
+          <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:500">Plug in & set USB mode</h3>
+          <p>Connect the phone to this PC. On the phone, pull down the notification shade and tap the USB notification. Choose <b>PTP (Camera)</b> or <b>File transfer / MTP</b>. Charging-only mode will not be detected by Android Studio.</p>
+        </div>
+        <div class="card">
+          <div class="eyebrow">Step 2</div>
+          <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:500">Verify USB debugging</h3>
+          <p>Settings → Developer options → confirm <b>USB debugging</b> is on. The first time you plug in, the phone will pop a "Allow USB debugging" prompt — tap <b>Allow</b>. You can also check the box to always allow from this computer.</p>
+        </div>
+        <div class="card">
+          <div class="eyebrow">Step 3</div>
+          <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:500">Sideload the APK</h3>
+          <p>From the <b>chisel-android</b> folder on this PC, run the included <code style="color:var(--gold)">deploy.bat</code> (Windows) or <code style="color:var(--gold)">deploy.sh</code> (Mac/Linux). It will build the APK and push it to your phone over USB. The icon appears in your launcher as <b>Chisel</b>.</p>
+        </div>
+        <div class="card">
+          <div class="eyebrow">Alternative</div>
+          <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:500">Just use it in the browser</h3>
+          <p>If you'd rather skip the install, run <code style="color:var(--gold)">npx serve</code> in <b>chisel-android/www</b> and open the URL on your phone. Tap Chrome menu → <b>Add to Home screen</b> for a fullscreen, installable PWA.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- CAMERA OVERLAY -->
+<div class="camwrap" id="camwrap">
+  <video id="cam" autoplay playsinline muted></video>
+  <canvas id="overlay"></canvas>
+  <div class="hud">
+    <div class="back" id="camBack" aria-label="close">✕</div>
+    <div class="meta" id="camMeta">Live</div>
+    <div style="width:44px"></div>
+  </div>
+  <div class="controls">
+    <div class="camctrl" id="camFlip" title="flip">⟲</div>
+    <div class="camctrl" id="camShot" title="snapshot">◉</div>
+  </div>
+  <div class="affirm-overlay" id="affirmOverlay" style="display:none">
+    <div class="card">
+      <div class="cat" id="affCat">Confidence</div>
+      <div class="txt" id="affTxt">—</div>
+      <div class="pager" id="affPager"></div>
+      <div class="say">🎙️ Say it out loud</div>
+    </div>
+  </div>
+  <div id="scanGuide"><div class="sg-big" id="sgBig"></div><div class="sg-sub" id="sgSub"></div></div>
+  <div class="tap-hint">Tap anywhere to advance</div>
+  <div class="sheet" id="camSheet" style="display:none"></div>
+</div>
+
+<!-- GROOM MODAL -->
+<div class="modal" id="modal">
+  <div class="panel">
+    <div class="x" id="modalX">✕</div>
+    <div class="eyebrow" id="mNum">01</div>
+    <h3 id="mName">—</h3>
+    <p id="mAnat" class="lede">—</p>
+    <h4>Science</h4>
+    <p id="mSci">—</p>
+    <h4>Routine</h4>
+    <ol id="mRoutine"></ol>
+    <h4>Products</h4>
+    <p id="mProd">—</p>
+    <div class="btn-row" style="margin-top:18px">
+      <button class="btn" id="addPlan">Add to today's plan</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* MediaPipe FaceLandmarker loader (468-point mesh + blendshapes).
+     Dynamic import in try/catch so any CDN/parse error is captured, not silent. */
+  (function(){
+    var BASE  = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.20";
+    var MODEL = "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task";
+    var _lm=null, _err=null, _p=null;
+    async function load(){
+      var m = await import(BASE + "/vision_bundle.mjs");
+      var FaceLandmarker = m.FaceLandmarker, FilesetResolver = m.FilesetResolver;
+      var fileset = await FilesetResolver.forVisionTasks(BASE + "/wasm");
+      var opts = function(d){ return { baseOptions:{ modelAssetPath:MODEL, delegate:d }, runningMode:"VIDEO", numFaces:1, outputFaceBlendshapes:true, outputFacialTransformationMatrixes:true }; };
+      try { _lm = await FaceLandmarker.createFromOptions(fileset, opts("GPU")); }
+      catch(e){ _lm = await FaceLandmarker.createFromOptions(fileset, opts("CPU")); }
+      var k = window.faceKit;
+      k.TESS=FaceLandmarker.FACE_LANDMARKS_TESSELATION; k.OVAL=FaceLandmarker.FACE_LANDMARKS_FACE_OVAL;
+      k.LIPS=FaceLandmarker.FACE_LANDMARKS_LIPS; k.LEYE=FaceLandmarker.FACE_LANDMARKS_LEFT_EYE;
+      k.REYE=FaceLandmarker.FACE_LANDMARKS_RIGHT_EYE; k.LBROW=FaceLandmarker.FACE_LANDMARKS_LEFT_EYEBROW;
+      k.RBROW=FaceLandmarker.FACE_LANDMARKS_RIGHT_EYEBROW; k.LIRIS=FaceLandmarker.FACE_LANDMARKS_LEFT_IRIS;
+      k.RIRIS=FaceLandmarker.FACE_LANDMARKS_RIGHT_IRIS;
+      return true;
+    }
+    window.faceKit = {
+      ready: function(){ if(!_p) _p = load().then(function(){ return true; }).catch(function(e){ _err=e; console.warn("faceKit load failed", e); return false; }); return _p; },
+      get landmarker(){ return _lm; },
+      get error(){ return _err; }
+    };
+    window.faceKit.ready();
+  })();
+</script>
+
+<script>
+/* ---------- Utilities ---------- */
+const $ = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+const toast = (m,t=1800)=>{ const el=$('#toast'); el.textContent=m; el.classList.add('on'); clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove('on'),t) };
+const store = { get:(k,d)=>{ try{return JSON.parse(localStorage.getItem('chisel:'+k))??d}catch{return d} }, set:(k,v)=>localStorage.setItem('chisel:'+k, JSON.stringify(v)) };
+
+/* ---------- Native / Capacitor detection ---------- */
+const isCap = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
+const platform = (window.Capacitor && window.Capacitor.getPlatform) ? window.Capacitor.getPlatform() : 'web';
+$('#buildTag').textContent = '1.0.0 · ' + (isCap?('native · '+platform):'web');
+
+/* ---------- Routing ---------- */
+const routes = ['home','analyze','affirm','meditate','groom','connect'];
+function go(route){
+  if(!routes.includes(route)) route='home';
+  $$('.screen').forEach(s=>s.classList.toggle('active', s.dataset.screen===route));
+  $$('[data-route]').forEach(a=>a.classList.toggle('active', a.dataset.route===route));
+  if(route==='home') renderHome();
+  if(route==='connect') runDiag();
+  // move mobile pill
+  const idx = routes.indexOf(route);
+  const pill = $('#tabPill'); if(pill) pill.style.transform = `translateX(${idx*100}%)`;
+  location.hash = '#'+route;
+}
+window.addEventListener('hashchange', ()=>go(location.hash.slice(1)));
+document.addEventListener('click', e=>{
+  const a = e.target.closest('[data-go]'); if(a){ go(a.dataset.go); return }
+  const r = e.target.closest('[data-route]'); if(r){ go(r.dataset.route); e.preventDefault(); return }
+});
+
+/* ---------- Home / Date / Affirmation ---------- */
+const AFFIRM = {
+  confidence:["I am the architect of my confidence. I walk into rooms like I own them — because I do.","My presence is calm, my posture is regal, my eye contact is unshakable.","Every day, in every way, I become more magnetic.","I do not shrink. I do not apologize for taking up space.","I trust the man I am becoming."],
+  jawline:["My jawline is sharp because I am disciplined. I chew the hard things in life first.","I carry myself with the structure of a man who trains his body and his mind.","My neck is strong, my posture is straight, my frame commands attention.","I sculpt my face with my habits — sleep, water, training, restraint.","The bone is the gift. The discipline is the work. I do the work."],
+  skin:["My skin is clear because I treat it like the canvas it is.","I feed my face from the inside: water, protein, sleep, sunlight.","My glow comes from consistency, not products.","I am patient with my skin the way I am patient with my growth.","I touch my face less. I drink more water. I sleep deeper."],
+  discipline:["I am not motivated. I am disciplined. Motivation is a guest — discipline is the host.","I do the boring thing twice a day: morning and night. That is the entire game.","I keep the promises I make to myself. That is the foundation.","I would rather be hated for who I am than loved for who I am not.","Hard things first. Easy things later. That is the order."],
+  wealth:["Money flows toward me because I provide value, solve problems, and ship work.","I am paid in proportion to the problems I solve. I solve bigger ones.","I am a magnet for opportunity. I move with speed and decisiveness.","I do not trade my time for comfort. I trade it for leverage.","I am building something that outlasts me."],
+  presence:["I speak slowly because I have nothing to prove.","I listen more than I talk. I observe more than I react.","I am fully here. The past is closed. The future is unwritten. This moment is mine.","My attention is the most valuable thing I own. I spend it on purpose.","I am not in a hurry. The world can wait."],
+  manifest:["I see the chiseled jawline. I feel the discipline that carved it. I am grateful it is mine.","I see the strong posture. I see the calm eyes. I see the steady hands. This is me, in 12 months.","I see the bank account that reflects the man I became. I see the respect I earned by earning it.","I see the woman who looks at me differently. I see the man in the mirror looking back with pride.","I see the life I built from small, boring, daily choices. I see it clearly. I am grateful."]
+};
+function pickAffirm(cat){
+  const pool = cat==='all' ? [...Object.values(AFFIRM)].flat() : AFFIRM[cat] || AFFIRM.confidence;
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+function renderHome(){
+  $('#todayDate').textContent = new Date().toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'});
+  const cat = store.get('homeCat','confidence');
+  $('#homeAffirm').textContent = pickAffirm(cat);
+  const s = store.get('streak',{count:0,last:null});
+  $('#streakNum').textContent = s.count;
+  $('#streakSub').textContent = s.last ? ('Last session: '+s.last) : 'Begin a session to start your streak.';
+  const sc = store.get('lastScore', null);
+  $('#scoreNum').textContent = sc==null ? '—' : sc;
+  const intent = store.get('intention',''); $('#intention').value = intent;
+}
+$('#newAffirm').addEventListener('click',()=>{ $('#homeAffirm').textContent = pickAffirm(store.get('homeCat','confidence')); bumpStreak() });
+$('#speakAffirm').addEventListener('click',()=>{ speak($('#homeAffirm').textContent) });
+$('#intention').addEventListener('change',e=>{ store.set('intention', e.target.value); toast('Intention saved') });
+function bumpStreak(){
+  const s = store.get('streak',{count:0,last:null});
+  const today = new Date().toDateString();
+  if(s.last===today) return;
+  const yest = new Date(Date.now()-86400000).toDateString();
+  s.count = (s.last===yest)?s.count+1:1;
+  s.last = today;
+  store.set('streak',s); renderHome();
+}
+
+/* ---------- Camera / FaceDetector ---------- */
+const cam = $('#cam'), cv = $('#overlay'), ctx = cv.getContext('2d');
+let stream=null, facing='user', detLoop=null, manualSnap=null;
+let scanMode=false, _lockAt=0, _miss=0;        // auto-capture state
+let trainMode=false, _tr=null;                  // jawline-training state
+let _burst=[], _lastSample=0;                   // rolling buffer of measured frames (median → stable scores)
+const COUNT_MS=2600;                            // hold-still countdown before auto-capture
+
+async function openCam(){
+  $('#camwrap').classList.add('on');
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:facing, width:{ideal:1280}, height:{ideal:720} }, audio:false });
+    cam.srcObject = stream; cam.classList.toggle('mirror', facing==='user'); await cam.play();
+  }catch(err){
+    toast('Camera blocked: '+err.message, 3000); console.warn(err);
+  }
+  sizeCanvas();
+  $('#camMeta').textContent = 'Loading face engine…';
+  faceKitReady = window.faceKit ? await window.faceKit.ready() : false;
+  _lockAt=0; _miss=0;
+  if(faceKitReady){
+    $('#camMeta').textContent = trainMode ? JAW_TRAIN[0].name : (scanMode ? 'Auto-scan' : 'Live');
+    if(scanMode) setGuideMsg('', 'CENTER YOUR FACE IN THE OVAL');
+    if(trainMode) setGuideMsg('', 'CENTER YOUR FACE — JAW TRAINING');
+  }
+  else { const e=window.faceKit&&window.faceKit.error; const msg='Engine: '+(e?String(e.message||e):'no module'); $('#camMeta').textContent='Face engine offline'; toast(msg, 12000); }
+  if(detLoop) cancelAnimationFrame(detLoop);
+  detLoop = requestAnimationFrame(meshLoop);
+  runDiag();
+}
+function closeCam(){
+  $('#camwrap').classList.remove('on');
+  $('#affirmOverlay').style.display='none';
+  $('#camSheet').style.display='none';
+  $('#scanGuide').style.display='none';
+  scanMode=false; trainMode=false; _tr=null; _lockAt=0; _miss=0;
+  if(detLoop) cancelAnimationFrame(detLoop); detLoop=null;
+  if(stream) stream.getTracks().forEach(t=>t.stop()); stream=null;
+  ctx && ctx.clearRect(0,0,cv.width,cv.height);
+}
+function sizeCanvas(){ cv.width = cam.videoWidth || cv.clientWidth; cv.height = cam.videoHeight || cv.clientHeight; }
+cam.addEventListener('loadedmetadata', sizeCanvas);
+window.addEventListener('resize', sizeCanvas);
+$('#camBack').addEventListener('click', closeCam);
+$('#camFlip').addEventListener('click', async ()=>{ facing = facing==='user'?'environment':'user'; closeCam(); await openCam() });
+let _snapTO=null;
+$('#camShot').addEventListener('click', ()=>{
+  if(trainMode) return;
+  if(!faceKitReady){ toast('Face engine still loading…'); return; }
+  manualSnap = true; $('#camMeta').textContent='Hold still — capturing…';
+  clearTimeout(_snapTO);
+  _snapTO=setTimeout(()=>{ if(manualSnap){ manualSnap=false; $('#camMeta').textContent='Center your face · tap ◉ to scan'; toast('No face detected — center your face in good light'); } }, 6000);
+});
+
+/* ---------- Real face mesh (MediaPipe FaceLandmarker) ---------- */
+let faceKitReady=false, _lastTs=0, _scan=0;
+const _off=document.createElement('canvas'); const _octx=_off.getContext('2d',{willReadFrequently:true});
+const FACE = {
+  CHIN:152, TOP:10, MIDBROW:9, NASION:168, NTIP:4, SUBN:2,
+  ALA_R:129, ALA_L:358,
+  EO_R:33, EI_R:133, EO_L:263, EI_L:362,
+  M_R:61, M_L:291, LIP_UT:0, LIP_UI:13, LIP_LI:14, LIP_LB:17,
+  ZYG_R:234, ZYG_L:454, GON_R:172, GON_L:397,
+  CHEEK_R:50, CHEEK_L:280, FORE:151, BROW_R:105, BROW_L:334,
+  UNDEYE_R:230, UNDEYE_L:450
+};
+function readLandmarks(){
+  if(!faceKitReady || !window.faceKit || !window.faceKit.landmarker) return null;
+  if(cam.readyState < 2 || !cam.videoWidth) return null;
+  let t=performance.now(); if(t<=_lastTs) t=_lastTs+1; _lastTs=t;
+  let res; try{ res=window.faceKit.landmarker.detectForVideo(cam,t); }catch(e){ return null; }
+  if(!res || !res.faceLandmarks || !res.faceLandmarks.length) return null;
+  const m=res.facialTransformationMatrixes;
+  return { pts:res.faceLandmarks[0], blend:(res.faceBlendshapes && res.faceBlendshapes[0]) || null,
+           mat:(m && m[0] && m[0].data) || null };
+}
+function setGuideMsg(big, sub){ const b=$('#sgBig'), s=$('#sgSub'); if(b) b.textContent=big||''; if(s) s.textContent=sub||''; }
+/* Real head pose from MediaPipe's 4x4 facial-transform matrix (column-major).
+   Forward axis = 3rd column; deviation of its x/y from the optical axis gives
+   accurate yaw & pitch in degrees — far better than a 2D nose-offset proxy and
+   the only reliable source of pitch (chin up/down). null if matrix absent. */
+function headPose(mat){
+  if(!mat || mat.length<11) return null;
+  const fx=mat[8], fy=mat[9], fz=Math.abs(mat[10])||1e-6;
+  return { yaw:Math.atan2(fx,fz)*180/Math.PI, pitch:Math.atan2(fy,fz)*180/Math.PI };
+}
+/* Single source of truth for "is this a clean frontal frame to measure":
+   roll (eye line) + yaw + pitch (pose matrix when present, else nose proxy) +
+   framing distance. Used for both live countdown gating and burst filtering. */
+function poseGate(pts, mat){
+  const vw=cam.videoWidth||1280;
+  const R=i=>({x:pts[i].x*vw, y:pts[i].y*(cam.videoHeight||720)});
+  const eR=R(33), eL=R(263), zR=R(234), zL=R(454), nt=R(4);
+  const rollDeg=Math.atan2(eL.y-eR.y, eL.x-eR.x)*180/Math.PI;
+  const faceW=Math.hypot(zR.x-zL.x, zR.y-zL.y)||1, faceFill=faceW/vw;
+  const yawProxy=(nt.x-(zR.x+zL.x)/2)/faceW;
+  const p=headPose(mat);
+  const rollOK=Math.abs(rollDeg)<=10;
+  const yawOK = p? Math.abs(p.yaw)<=12 : Math.abs(yawProxy)<=0.10;
+  const pitchOK = p? Math.abs(p.pitch)<=12 : true;          // pitch only when matrix available
+  const distOK = faceFill>=0.22 && faceFill<=0.62;
+  let msg='HOLD STILL — KEEP LOOKING';
+  if(faceFill<0.22) msg='MOVE CLOSER';
+  else if(faceFill>0.62) msg='MOVE BACK A LITTLE';
+  else if(!rollOK) msg='STRAIGHTEN YOUR HEAD';
+  else if(!yawOK) msg='FACE THE CAMERA STRAIGHT ON';
+  else if(!pitchOK) msg='LEVEL YOUR CHIN — LOOK STRAIGHT';
+  return { frontal: rollOK&&yawOK&&pitchOK&&distOK, msg, faceFill };
+}
+function quickPose(d){ return poseGate(d.pts, d.mat); }
+function collectFrame(d){     // sample ~7–8 frames/sec into the rolling burst
+  const now=performance.now();
+  if(now-_lastSample<130) return;
+  _lastSample=now;
+  try{ _burst.push(measureFrame(d)); }catch(e){ console.warn('measure',e); }
+  while(_burst.length>14) _burst.shift();
+}
+function autoCapture(d){
+  const q=quickPose(d);
+  if(!q.frontal){ _lockAt=0; setGuideMsg('', q.msg); return; }
+  if(_lockAt===0) _lockAt=performance.now();
+  const held=performance.now()-_lockAt;
+  if(held<COUNT_MS){
+    const remain=Math.min(3,Math.max(1,Math.ceil((COUNT_MS-held)/1000)));
+    setGuideMsg(String(remain),'HOLD STILL — KEEP LOOKING');
+  } else {
+    _lockAt=0; setGuideMsg('✓','CAPTURED'); finalizeScan();
+  }
+}
+/* ---------- Jawline training: guided reps with live form-checking ---------- */
+/* Posture/clench moves gate on a real frontal-pose lock; the jaw-opener gates on
+   a measured mouth-open ratio. The hold timer only counts down while your form
+   holds, so the camera actually coaches the rep instead of just running a clock. */
+const JAW_TRAIN=[
+  {name:'Chin tucks',   reps:5, hold:5, check:'frontal', cue:'Pull your chin straight back — make a double chin. Hold.'},
+  {name:'Jaw jut',      reps:5, hold:6, check:'frontal', cue:'Push your lower jaw forward, feel the stretch under the chin. Hold.'},
+  {name:'Jaw opener',   reps:5, hold:5, check:'open',    cue:'Open wide, tongue on the roof of your mouth, slow. Hold at the top.'},
+  {name:'Clench & hold',reps:6, hold:5, check:'frontal', cue:'Bite down firm — feel the masseter at the jaw angle. Hold.'},
+];
+const JAW_TIPS=['Shoulders down, spine tall.','Breathe through your nose.','Slow and controlled beats fast and sloppy.','Lower body-fat is the #1 lever on a visible jawline.'];
+function jawGeom(d){
+  const pts=d.pts, vw=cam.videoWidth||1280, vh=cam.videoHeight||720;
+  const P=i=>({x:pts[i].x*vw, y:pts[i].y*vh});
+  const q=quickPose(d);                                  // {frontal,msg} — roll+yaw check
+  const mw=Math.hypot(P(61).x-P(291).x, P(61).y-P(291).y)||1;
+  const open=Math.hypot(P(13).x-P(14).x, P(13).y-P(14).y)/mw;   // lip gap / mouth width
+  return { frontal:q.frontal, msg:q.msg, open };
+}
+function trainStep(d){
+  if(!_tr) return;
+  const now=performance.now(), ex=JAW_TRAIN[_tr.ex];
+  $('#camMeta').textContent = `${ex.name} · ex ${_tr.ex+1}/${JAW_TRAIN.length}`;
+  if(_tr.rest){                                          // brief relax between reps
+    const left=_tr.rest-now;
+    if(left>0){ setGuideMsg('•','Relax — next rep in '+Math.ceil(left/1000)); return; }
+    _tr.rest=0;
+  }
+  const g=jawGeom(d);
+  const meets = ex.check==='open' ? (g.frontal && g.open>0.16) : g.frontal;
+  if(!meets){
+    _tr.t0=0;                                            // form broke → pause the hold
+    const corr = ex.check==='open' && g.frontal ? 'OPEN WIDER' : g.msg;
+    setGuideMsg('', `${ex.name} ${_tr.rep+1}/${ex.reps} — ${corr}`);
+    return;
+  }
+  if(_tr.t0===0) _tr.t0=now;
+  const held=(now-_tr.t0)/1000;
+  if(held<ex.hold){
+    setGuideMsg(String(Math.ceil(ex.hold-held)), `${ex.name} ${_tr.rep+1}/${ex.reps} · ${ex.cue}`);
+  } else {                                               // rep complete
+    _tr.rep++; _tr.t0=0;
+    if(_tr.rep>=ex.reps){
+      _tr.ex++; _tr.rep=0;
+      if(_tr.ex>=JAW_TRAIN.length){ finishTrain(); return; }
+    }
+    _tr.rest=now+1300;
+    setGuideMsg('✓', JAW_TIPS[Math.floor(Math.random()*JAW_TIPS.length)]);
+  }
+}
+function finishTrain(){
+  trainMode=false; _tr=null;
+  const n=(store.get('jawTrain',0))+1; store.set('jawTrain',n);
+  setGuideMsg('✓','Jaw session complete · '+n+' done');
+  bumpStreak(); toast('Jawline session complete 💪', 2600);
+  setTimeout(closeCam, 1700);
+}
+function openTrain(){ scanMode=false; trainMode=true; _tr={ex:0,rep:0,t0:0,rest:0}; const h=$('.tap-hint'); if(h) h.textContent='Follow the on-screen cues'; openCam(); }
+
+function meshLoop(){
+  if(!stream){ detLoop=null; return; }
+  const d = readLandmarks();
+  const inAffirm = $('#affirmOverlay').style.display==='flex';
+  const sheetUp = $('#camSheet').style.display==='block';
+  const active = (scanMode||trainMode) && !inAffirm && !sheetUp;
+  $('#scanGuide').style.display = active ? 'flex' : 'none';
+  if(manualSnap) $('#camMeta').textContent = 'Capturing… face '+(d?'LOCKED':'NOT FOUND');
+  if(d){
+    _miss=0;
+    if(inAffirm) ctx.clearRect(0,0,cv.width,cv.height); else drawMesh(d);
+    if(active){
+      if(trainMode){ trainStep(d); }
+      else {
+        collectFrame(d);
+        if(manualSnap){ manualSnap=false; clearTimeout(_snapTO); _lockAt=0; finalizeScan(); }
+        else autoCapture(d);
+      }
+    }
+  } else {
+    if(active){
+      _miss++;
+      if(_miss>10){ _lockAt=0; setGuideMsg('', trainMode?'CENTER YOUR FACE — JAW TRAINING':'CENTER YOUR FACE IN THE OVAL'); }
+    }
+    if(!inAffirm) drawGuide();
+  }
+  detLoop = requestAnimationFrame(meshLoop);
+}
+function rescan(){
+  $('#camSheet').style.display='none';
+  _lockAt=0; _miss=0; _burst=[];
+  setGuideMsg('','CENTER YOUR FACE IN THE OVAL');
+}
+function drawConn(list,pts,w,h,color,width){
+  if(!list) return; ctx.strokeStyle=color; ctx.lineWidth=width; ctx.beginPath();
+  for(const c of list){ const a=pts[c.start], b=pts[c.end]; if(!a||!b) continue; ctx.moveTo(a.x*w,a.y*h); ctx.lineTo(b.x*w,b.y*h); }
+  ctx.stroke();
+}
+function drawMesh(d){
+  const w=cv.width,h=cv.height,pts=d.pts; ctx.save(); ctx.clearRect(0,0,w,h);
+  if(facing==='user'){ ctx.translate(w,0); ctx.scale(-1,1); }
+  const k=window.faceKit;
+  drawConn(k.TESS,pts,w,h,'rgba(201,168,106,0.16)',0.6);
+  drawConn(k.OVAL,pts,w,h,'rgba(226,197,138,0.85)',1.6);
+  drawConn(k.LBROW,pts,w,h,'rgba(154,182,201,0.8)',1.2);
+  drawConn(k.RBROW,pts,w,h,'rgba(154,182,201,0.8)',1.2);
+  drawConn(k.LEYE,pts,w,h,'rgba(124,199,154,0.85)',1.2);
+  drawConn(k.REYE,pts,w,h,'rgba(124,199,154,0.85)',1.2);
+  drawConn(k.LIRIS,pts,w,h,'rgba(124,199,154,0.95)',1.2);
+  drawConn(k.RIRIS,pts,w,h,'rgba(124,199,154,0.95)',1.2);
+  drawConn(k.LIPS,pts,w,h,'rgba(212,165,165,0.9)',1.4);
+  ctx.fillStyle='rgba(226,197,138,0.9)';
+  [FACE.CHIN,FACE.NTIP,FACE.ZYG_R,FACE.ZYG_L,FACE.GON_R,FACE.GON_L].forEach(i=>{const p=pts[i];if(p){ctx.beginPath();ctx.arc(p.x*w,p.y*h,2.2,0,7);ctx.fill();}});
+  ctx.restore();
+  _scan=(_scan+0.01)%1; const sy=_scan*h;
+  const g=ctx.createLinearGradient(0,sy-36,0,sy+36);
+  g.addColorStop(0,'rgba(201,168,106,0)'); g.addColorStop(.5,'rgba(226,197,138,0.22)'); g.addColorStop(1,'rgba(201,168,106,0)');
+  ctx.fillStyle=g; ctx.fillRect(0,sy-36,w,72);
+}
+function drawGuide(){
+  const w=cv.width,h=cv.height; ctx.clearRect(0,0,w,h);
+  const cx=w/2,cy=h/2.05,rx=w*.20,ry=h*.30;
+  ctx.strokeStyle='rgba(201,168,106,.5)'; ctx.lineWidth=2; ctx.setLineDash([6,8]);
+  ctx.beginPath(); ctx.ellipse(cx,cy,rx,ry,0,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle='rgba(242,237,228,.7)'; ctx.font='11px Inter'; ctx.textAlign='center';
+  ctx.fillText(faceKitReady?'CENTER YOUR FACE':'LOADING FACE ENGINE…', cx, cy-ry-12);
+}
+/* ---------- Pixel + geometry helpers ---------- */
+function mid(a,b){ return {x:(a.x+b.x)/2, y:(a.y+b.y)/2}; }
+function hex(c){ return '#'+c.map(v=>('0'+Math.max(0,Math.min(255,Math.round(v))).toString(16)).slice(-2)).join(''); }
+function lum(c){ return 0.2126*c[0]+0.7152*c[1]+0.0722*c[2]; }
+function patch(xc,yc,r=3){
+  const x=Math.max(0,(xc-r)|0), y=Math.max(0,(yc-r)|0);
+  const w=Math.min(_off.width-x,2*r+1), h=Math.min(_off.height-y,2*r+1);
+  if(w<=0||h<=0) return [0,0,0];
+  const d=_octx.getImageData(x,y,w,h).data; let R=0,G=0,B=0,n=0;
+  for(let i=0;i<d.length;i+=4){ R+=d[i]; G+=d[i+1]; B+=d[i+2]; n++; }
+  return n?[R/n,G/n,B/n]:[0,0,0];
+}
+function avgColorPts(list){ let R=0,G=0,B=0; list.forEach(p=>{const c=patch(p.x,p.y);R+=c[0];G+=c[1];B+=c[2];}); const n=list.length||1; return [R/n,G/n,B/n]; }
+function evenness(list){ const ls=list.map(p=>lum(patchMed(p.x,p.y,3))); const m=ls.reduce((a,b)=>a+b,0)/ls.length; const sd=Math.sqrt(ls.reduce((a,b)=>a+(b-m)*(b-m),0)/ls.length); return Math.max(0,Math.min(100,100-sd*1.5)); }   // glare-rejected luminance dispersion
+function blendVal(blend,name){ if(!blend||!blend.categories) return 0; const c=blend.categories.find(x=>x.categoryName===name); return c?c.score:0; }
+
+/* ---------- Color science: dermatology-grade tone, redness, shine ---------- */
+function srgb2lin(c){ c/=255; return c<=0.04045?c/12.92:Math.pow((c+0.055)/1.055,2.4); }
+function rgb2lab(rgb){
+  const r=srgb2lin(rgb[0]),g=srgb2lin(rgb[1]),b=srgb2lin(rgb[2]);
+  let X=(r*0.4124+g*0.3576+b*0.1805)/0.95047;
+  let Y=(r*0.2126+g*0.7152+b*0.0722);
+  let Z=(r*0.0193+g*0.1192+b*0.9505)/1.08883;
+  const f=t=>t>0.008856?Math.cbrt(t):7.787*t+16/116;
+  const fx=f(X),fy=f(Y),fz=f(Z);
+  return [116*fy-16, 500*(fx-fy), 200*(fy-fz)];   // L*, a*, b*
+}
+function itaAngle(lab){ return Math.atan2(lab[0]-50, lab[2])*180/Math.PI; }   // Individual Typology Angle
+function toneLabel(ita){
+  /* Canonical ITA° class boundaries — Chardon, Cler & Charveron (1991)
+     Int J Cosmet Sci 13:191; six groups per Del Bino & Bernerd (2013)
+     Br J Dermatol 169(s3):33. Fitzpatrick romans are an APPROXIMATE map
+     (ITA↔Fitzpatrick is imperfectly correlated — Osto et al. 2022). */
+  if(ita>55) return ['Very light','I'];
+  if(ita>41) return ['Light','II'];
+  if(ita>28) return ['Intermediate','III'];
+  if(ita>10) return ['Tan','IV'];          // tan spans 10–28°
+  if(ita>-30) return ['Brown','V'];        // brown spans −30–10°
+  return ['Deep','VI'];                     // dark < −30°
+}
+function labOfPts(list){ return rgb2lab(avgColorPts(list)); }
+function chroma(c){ return Math.max(c[0],c[1],c[2])-Math.min(c[0],c[1],c[2]); }
+function specularFraction(list){               // fraction of patches that read as oily/specular highlight
+  let hit=0,n=0;
+  list.forEach(p=>{ const c=patch(p.x,p.y,2); if(lum(c)>196 && chroma(c)<18) hit++; n++; });
+  return n? hit/n : 0;
+}
+
+/* ---------- Robust colour sampling -----------------------------------------
+   Refs: Shafer (1985) "Using colour to separate reflection components",
+   Color Res Appl 10:210 (dichromatic model → specular highlights carry the
+   illuminant colour); Buchsbaum (1980) J Franklin Inst 310:1 (grey-world);
+   von Kries chromatic adaptation; per-channel median = standard robust stat. */
+function pixels(xc,yc,r=3){
+  const x=Math.max(0,(xc-r)|0), y=Math.max(0,(yc-r)|0);
+  const w=Math.min(_off.width-x,2*r+1), h=Math.min(_off.height-y,2*r+1);
+  const out=[]; if(w<=0||h<=0) return out;
+  const d=_octx.getImageData(x,y,w,h).data;
+  for(let i=0;i<d.length;i+=4) out.push([d[i],d[i+1],d[i+2]]);
+  return out;
+}
+function med1(a){ if(!a.length) return 0; a.sort((x,y)=>x-y); const i=a.length>>1; return a.length%2?a[i]:(a[i-1]+a[i])/2; }
+function satOf(c){ const mx=Math.max(c[0],c[1],c[2]); return mx? (mx-Math.min(c[0],c[1],c[2]))/mx : 0; }
+/* A specular highlight reads bright + near-neutral (dichromatic model). Drop
+   those pixels so glare/oil sheen doesn't bias the skin colour & tone read. */
+function isSpecular(c){ return lum(c)>205 && satOf(c)<0.12; }
+/* per-channel median of one patch, specular pixels removed. */
+function patchMed(xc,yc,r=3,reject=true){
+  const px=pixels(xc,yc,r).filter(c=>!(reject&&isSpecular(c)));
+  if(!px.length) return patch(xc,yc,r);
+  return [med1(px.map(c=>c[0])),med1(px.map(c=>c[1])),med1(px.map(c=>c[2]))];
+}
+/* pool every non-specular pixel across many face patches → per-channel median.
+   "More samples + median" is the robust defence against pores, stray hair,
+   shadow edges and glare that wreck a plain mean. */
+function medColorPts(list,r=3,reject=true){
+  const R=[],G=[],B=[];
+  list.forEach(p=>{ pixels(p.x,p.y,r).forEach(c=>{ if(reject&&isSpecular(c))return; R.push(c[0]);G.push(c[1]);B.push(c[2]); }); });
+  if(!R.length) return avgColorPts(list);
+  return [med1(R),med1(G),med1(B)];
+}
+/* In-frame white balance. Room light tints the photo (warm bulb → skin reads
+   more orange → ITA° & undertone drift). The sclera (eye white) and bright
+   teeth are near-neutral surfaces, so we use them as an in-image grey
+   reference (grey-world) and apply a von Kries channel gain. If no clean
+   neutral pixel is visible we skip correction rather than guess. */
+function neutralRef(PR){
+  const cand=[33,133,159,145,153,263,362,386,374,380,13,14].map(PR); // eye region + teeth gap
+  const R=[],G=[],B=[];
+  cand.forEach(p=>{ pixels(p.x,p.y,2).forEach(c=>{
+    const mx=Math.max(c[0],c[1],c[2]);
+    if(mx>150 && mx<252 && satOf(c)<0.16){ R.push(c[0]);G.push(c[1]);B.push(c[2]); } // skin is too saturated, lashes too dark → only true neutrals survive
+  }); });
+  if(R.length<10) return null;
+  return [med1(R),med1(G),med1(B)];
+}
+function wbGains(neutral){
+  if(!neutral) return null;
+  const g=(neutral[0]+neutral[1]+neutral[2])/3 || 1;
+  const cl=v=>Math.max(0.7,Math.min(1.4, g/(v||1)));      // clamp to avoid over-correction
+  return [cl(neutral[0]),cl(neutral[1]),cl(neutral[2])];
+}
+function applyGain(c,gains){ return gains? [c[0]*gains[0],c[1]*gains[1],c[2]*gains[2]] : c; }
+/* CIELAB hue angle h°ab = atan2(b*,a*) — the perceptual axis from which skin
+   "undertone" is read. Indicative only (undertone has cosmetic, not clinical,
+   consensus); ITA° is the peer-reviewed depth metric (Chardon 1991). */
+function hueAngle(lab){ return Math.atan2(lab[2],lab[1])*180/Math.PI; }
+function undertone(lab){
+  /* All skin is yellow-red (b*>a*); undertone is the RELATIVE balance within
+     the realistic skin band (h°ab ~45–75°). Thresholds calibrated so the
+     warm/cool split lands inside that band instead of calling everyone warm. */
+  const h=hueAngle(lab), ratio=lab[2]/(lab[1]||0.0001);   // b*:a*  (yellow vs red)
+  let label;
+  if(lab[1]<7 && lab[2]>12) label='Olive';                // low red + green-grey cast
+  else if(ratio>2.3 || h>67) label='Warm';                // golden/yellow dominant
+  else if(ratio<1.55 || h<50) label='Cool';               // pink/red dominant
+  else label='Neutral';
+  return {label, hue:h, ratio};
+}
+
+/* ---------- Per-frame measurement (roll-normalised) + burst aggregation ---------- */
+function measureFrame(d){
+  const pts=d.pts, blend=d.blend;
+  const vw=cam.videoWidth||1280, vh=cam.videoHeight||720;
+  const D=(a,b)=>Math.hypot(a.x-b.x, a.y-b.y);
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const bell=(v,ideal,tol)=>Math.round(clamp(100*Math.exp(-Math.pow((v-ideal)/tol,2)),1,100));
+  const RAW=i=>({x:pts[i].x*vw, y:pts[i].y*vh}), PR=RAW;   // raw pixels (for colour sampling)
+  /* head pose: roll from the outer-eye line, yaw from nose-vs-cheek offset */
+  const _eR=RAW(33), _eL=RAW(263), _zR=RAW(234), _zL=RAW(454), _nt=RAW(4);
+  const _roll=Math.atan2(_eL.y-_eR.y, _eL.x-_eR.x), rollDeg=_roll*180/Math.PI;
+  const _fw=D(_zR,_zL)||1, yaw=(_nt.x-(_zR.x+_zL.x)/2)/_fw;
+  const _pg=poseGate(pts, d.mat), frontal=_pg.frontal, faceFill=_pg.faceFill;
+  /* geometry uses landmarks rotated to level the eyes — kills head-tilt artefacts */
+  const _cz=Math.cos(-_roll), _sz=Math.sin(-_roll);
+  const P=i=>{ const p=RAW(i), dx=p.x-_nt.x, dy=p.y-_nt.y; return {x:_nt.x+dx*_cz-dy*_sz, y:_nt.y+dx*_sz+dy*_cz}; };
+
+  const chin=P(FACE.CHIN), top=P(FACE.TOP), nasion=P(FACE.NASION), subn=P(FACE.SUBN), brow=P(FACE.MIDBROW);
+  const zR=P(FACE.ZYG_R), zL=P(FACE.ZYG_L), gR=P(FACE.GON_R), gL=P(FACE.GON_L);
+  const faceH=Math.abs(chin.y-top.y)||1, faceW=D(zR,zL)||1, jawW=D(gR,gL);
+
+  /* Symmetry */
+  const central=[FACE.TOP,FACE.NASION,FACE.NTIP,FACE.SUBN,FACE.CHIN].map(P);
+  const midX=central.reduce((s,p)=>s+p.x,0)/central.length;
+  const pairs=[[33,263],[133,362],[129,358],[61,291],[234,454],[172,397],[105,334]];
+  let symErr=0; pairs.forEach(([r,l])=>{ symErr+=Math.abs(Math.abs(P(r).x-midX)-Math.abs(P(l).x-midX))/faceW; });
+  const asym=symErr/pairs.length, symScore=bell(asym,0,0.05);
+
+  /* Facial thirds */
+  const t1=Math.abs(brow.y-top.y), t2=Math.abs(subn.y-brow.y), t3=Math.abs(chin.y-subn.y);
+  const ts=(t1+t2+t3)||1, thirds=[t1/ts,t2/ts,t3/ts];
+  const thirdsDev=Math.abs(thirds[0]-1/3)+Math.abs(thirds[1]-1/3)+Math.abs(thirds[2]-1/3);
+  const thirdsScore=bell(thirdsDev,0,0.10);
+
+  /* Jaw, fWHR */
+  const jawTaper=jawW/faceW, jawScore=bell(jawTaper,0.78,0.12);
+  const browTop=Math.min(P(FACE.BROW_R).y,P(FACE.BROW_L).y);
+  const fWHR=faceW/(Math.abs(P(FACE.LIP_UT).y-browTop)||1);
+
+  /* Nose */
+  const noseW=D(P(FACE.ALA_R),P(FACE.ALA_L)), noseL=Math.abs(subn.y-nasion.y)||1, nasalIdx=noseW/noseL;
+  const noseScore=bell(nasalIdx,0.72,0.18);
+
+  /* Lips */
+  const mouthW=D(P(FACE.M_R),P(FACE.M_L))||1;
+  const upLip=D(P(FACE.LIP_UT),P(FACE.LIP_UI)), loLip=D(P(FACE.LIP_LI),P(FACE.LIP_LB));
+  const lipFull=(upLip+loLip)/mouthW, lipRatio=loLip/(upLip||1), lipScore=bell(lipFull,0.42,0.16);
+
+  /* Eyes */
+  const eyeWR=D(P(FACE.EO_R),P(FACE.EI_R))||1, interoc=D(P(FACE.EI_R),P(FACE.EI_L)), spacing=interoc/eyeWR;
+  const tiltR=Math.atan2(P(FACE.EI_R).y-P(FACE.EO_R).y, Math.abs(P(FACE.EO_R).x-P(FACE.EI_R).x))*180/Math.PI;
+  const tiltL=Math.atan2(P(FACE.EI_L).y-P(FACE.EO_L).y, Math.abs(P(FACE.EO_L).x-P(FACE.EI_L).x))*180/Math.PI;
+  const canthal=(tiltR+tiltL)/2, eyeScore=Math.round((bell(spacing,1.0,0.18)+bell(canthal,5,7))/2);
+
+  /* Bloat / fullness */
+  const fullness=faceW/faceH, cheekPuff=blendVal(blend,'cheekPuff');
+
+  /* ---- colour read on the RAW (unrotated) frame ---- */
+  _off.width=vw; _off.height=vh; _octx.drawImage(cam,0,0,vw,vh);
+  const cheekPts=[FACE.CHEEK_R,FACE.CHEEK_L,205,425,116,345,117,346,118,347,101,330].map(PR);
+  const forePts=[FACE.FORE,9,10,107,336,67,297,108,337,69,299].map(PR);
+  const nosePts=[FACE.NTIP,1,19,168,5,275,45].map(PR);
+  const tzonePts=[FACE.FORE,9,10,8,107,336,168,6,197,195,FACE.NTIP,1,19].map(PR);
+  /* (1) in-frame white balance from a near-neutral reference (sclera/teeth) */
+  const gains=wbGains(neutralRef(PR));
+  const wbOn = gains? 1:0;
+  /* (2)+(3) robust skin colour: pooled-pixel median, specular pixels rejected, then WB-corrected */
+  const skinCol=applyGain(medColorPts(cheekPts.concat(forePts)),gains);
+  const skinLab=rgb2lab(skinCol);
+  const skinEven=evenness([FACE.CHEEK_R,FACE.CHEEK_L,FACE.FORE,205,425,50,280,116,345,101,330,108,337].map(PR));
+  const aRed=rgb2lab(applyGain(medColorPts(cheekPts.concat(nosePts)),gains))[1];   // a* — green↔red erythema axis, glare-rejected + WB
+  const redLevel=Math.round(clamp((aRed-9)/13*100,0,100));
+  const oilPct=Math.round(specularFraction(tzonePts)*100);
+  const cheekLum=lum(avgColorPts([PR(FACE.CHEEK_R),PR(FACE.CHEEK_L)]));
+  const undLum=lum(avgColorPts([PR(FACE.UNDEYE_R),PR(FACE.UNDEYE_L),PR(231),PR(451)]));
+  const undEyeDark=Math.round(clamp((cheekLum-undLum)/(cheekLum||1)*220,0,100));
+  const skinScore=Math.round(clamp(0.45*skinEven + 0.25*(100-redLevel) + 0.15*(100-Math.max(0,oilPct-50)*2) + 0.15*(100-undEyeDark),1,100));
+
+  /* hair (raw space) */
+  const chinR=PR(FACE.CHIN), topR=PR(FACE.TOP), browR=PR(FACE.MIDBROW);
+  const rawFaceH=Math.abs(chinR.y-topR.y)||1;
+  const up={x:topR.x-chinR.x,y:topR.y-chinR.y}; const uL=Math.hypot(up.x,up.y)||1; up.x/=uL; up.y/=uL;
+  const hairPts=[10,67,297,103,332,109,338].map(PR).map(p=>({x:p.x+up.x*rawFaceH*0.17, y:p.y+up.y*rawFaceH*0.17}));
+  const foreLab=labOfPts([FACE.FORE,9,10].map(PR));
+  let hairCols=[],hairHits=0;
+  hairPts.forEach(p=>{ const c=patch(p.x,p.y,3); const l=rgb2lab(c);
+    const dist=Math.hypot(l[0]-foreLab[0],l[1]-foreLab[1],l[2]-foreLab[2]);
+    if(dist>16 || l[0]<foreLab[0]-20){ hairHits++; hairCols.push(c); } });
+  const hairCover=hairHits/hairPts.length;
+  const hairCol=hairCols.length? hairCols.reduce((a,c)=>[a[0]+c[0],a[1]+c[1],a[2]+c[2]],[0,0,0]).map(v=>v/hairCols.length):[60,50,45];
+  const hairGloss=Math.round(specularFraction(hairPts)*100);
+  const foreRatio=Math.abs(PR(10).y-browR.y)/rawFaceH;
+
+  /* teeth */
+  const mouthOpen=D(PR(FACE.LIP_UI),PR(FACE.LIP_LI))/(D(PR(FACE.M_R),PR(FACE.M_L))||1);
+  let teethScore=null, teethYellow=0;
+  if(mouthOpen>0.08){
+    const cand=[13,14,82,312,87,317,11,16,15].map(i=>patch(PR(i).x,PR(i).y)).map(c=>({c,L:lum(c)})).sort((a,b)=>b.L-a.L).slice(0,4);
+    const mm=cand.reduce((a,o)=>[a[0]+o.c[0],a[1]+o.c[1],a[2]+o.c[2]],[0,0,0]).map(v=>v/cand.length);
+    const tl=rgb2lab(mm); teethYellow=Math.max(0,tl[2]);
+    teethScore=Math.round(clamp((tl[0]-62)*1.6 - teethYellow*1.4 + 30,1,100));
+  }
+  const lipCol=avgColorPts([mid(PR(FACE.LIP_UT),PR(FACE.LIP_UI)), mid(PR(FACE.LIP_LI),PR(FACE.LIP_LB))]);
+  const lipLab=rgb2lab(lipCol);
+
+  return { frontal, yaw, rollDeg, qLum:cheekLum, faceFill,
+    symScore, asym, thirdsScore, t0:thirds[0], t1:thirds[1], t2:thirds[2],
+    jawScore, jawTaper, fWHR, noseScore, nasalIdx,
+    lipScore, lipFull, lipRatio, eyeScore, spacing, canthal, fullness,
+    skinEven, aRed, redLevel, oilPct, undEyeDark, skinScore, wbOn,
+    skinL:skinLab[0], skinA:skinLab[1], skinB:skinLab[2], skinCol,
+    hairCover, hairGloss, foreRatio, hairCol,
+    teethScore, teethYellow, mouthOpen, lipCol, lipL:lipLab[0] };
+}
+
+/* ---------- Aggregate the burst → stable, repeatable scores ---------- */
+function finalizeScan(){
+  let frames=_burst.slice();
+  if(!frames.length){ toast('Hold still and face the camera, then try again', 2600); return; }
+  const fr=frames.filter(f=>f.frontal);
+  const usedFrontal = fr.length>=3;
+  if(usedFrontal) frames=fr;
+  /* drop under-/over-exposed frames so colour science isn't garbage-in — but
+     only if enough well-lit frames remain, else keep what we have. */
+  const exp=frames.filter(f=>f.qLum>=50 && f.qLum<=240);
+  const usedExp = exp.length>=3;
+  if(usedExp) frames=exp;
+  const M=k=>{ const a=frames.map(f=>f[k]).filter(v=>typeof v==='number'&&!isNaN(v)).sort((x,y)=>x-y); if(!a.length) return 0; const i=a.length>>1; return a.length%2?a[i]:(a[i-1]+a[i])/2; };
+  const Marr=(k,n)=>{ const o=[]; for(let j=0;j<n;j++){ const a=frames.map(f=>f[k][j]).sort((x,y)=>x-y); const i=a.length>>1; o.push(a.length%2?a[i]:(a[i-1]+a[i])/2);} return o; };
+  const rnd=Math.round;
+
+  const symScore=rnd(M('symScore')), asym=M('asym'), thirdsScore=rnd(M('thirdsScore'));
+  const thirds=[M('t0'),M('t1'),M('t2')];
+  const jawScore=rnd(M('jawScore')), jawTaper=M('jawTaper'), fWHR=M('fWHR');
+  const noseScore=rnd(M('noseScore')), nasalIdx=M('nasalIdx');
+  const lipScore=rnd(M('lipScore')), lipFull=M('lipFull'), lipRatio=M('lipRatio');
+  const eyeScore=rnd(M('eyeScore')), spacing=M('spacing'), canthal=M('canthal');
+  const fullness=M('fullness');
+  const skinEven=M('skinEven'), aRed=M('aRed'), redLevel=rnd(M('redLevel')), oilPct=rnd(M('oilPct')), undEyeDark=rnd(M('undEyeDark')), skinScore=rnd(M('skinScore'));
+  const skinLab=[M('skinL'),M('skinA'),M('skinB')], skinCol=Marr('skinCol',3);
+  const ita=itaAngle(skinLab), tone=toneLabel(ita);
+  const und=undertone(skinLab), wbOn=M('wbOn')>=0.5;
+  const hairCover=M('hairCover'), hairGloss=rnd(M('hairGloss')), foreRatio=M('foreRatio'), hairCol=Marr('hairCol',3);
+  const hairDetected=hairCover>=0.34;
+  const lipCol=Marr('lipCol',3), lipLab=[M('lipL'),0,0];
+
+  const teethF=frames.filter(f=>typeof f.teethScore==='number');
+  let teethScore=null, teethYellow=0, teethShade=null;
+  if(teethF.length){
+    const ts=teethF.map(f=>f.teethScore).sort((a,b)=>a-b); teethScore=rnd(ts[ts.length>>1]);
+    const ty=teethF.map(f=>f.teethYellow).sort((a,b)=>a-b); teethYellow=ty[ty.length>>1];
+    teethShade = teethScore>=80?'A1 · bright':teethScore>=62?'A2 · natural':teethScore>=44?'A3 · warm':teethScore>=28?'B3 · yellowed':'C/D · stained';
+  }
+  const _qual=`${frames.length} frame${frames.length>1?'s':''}${usedFrontal?' · frontal-locked':''}${usedExp?' · exposure-checked':''}`;
+
+  /* ---------- Per-area report with science-backed remedies ---------- */
+  const R=(t,txt)=>({t,txt});
+
+  const skinRem=[ R('Strong','Daily broad-spectrum SPF 30+ every morning — the best-proven step for even tone and slowing visible aging. [Hughes 2013]') ];
+  if(redLevel>55) skinRem.push(R('Moderate','Redness elevated — fragrance-free gentle cleanser, lukewarm water only, and a niacinamide 4–5% serum to calm the barrier. Persistent flushing across cheeks/nose → see a dermatologist (rosacea).'));
+  if(oilPct>55) skinRem.push(R('Moderate','Shiny T-zone — gel cleanser AM/PM, salicylic acid (BHA) 2% 2–3×/week, oil-free moisturiser. Don\'t over-strip; it rebounds into more oil.'));
+  if(oilPct<12) skinRem.push(R('Moderate','Reads dry/matte — add a ceramide moisturiser and a hyaluronic-acid serum on damp skin.'));
+  if(skinEven<60) skinRem.push(R('Strong','Uneven tone/texture — a nightly topical retinoid (start 2×/week, build up) is the best-evidenced fix. [Mukherjee 2006]'));
+  if(undEyeDark>55) skinRem.push(R('Moderate','Dark under-eyes — prioritise 7–9h sleep, treat allergies, caffeine + vitamin-C eye serum. Much is genetic/structural — manage expectations.'));
+  skinRem.push(R('Strong','Don\'t smoke and protect your sleep — both strongly drive skin aging. [Morita 2007; Oyetakin-White 2015]'));
+  skinRem.push(R('Limited',`Undertone reads ${und.label.toLowerCase()} (CIELAB hue ${und.hue.toFixed(0)}°)${wbOn?', white-balanced off your sclera':' — uncorrected lighting, retake in even light for a truer read'}. This is a styling cue, not a health metric: ${und.label==='Warm'?'gold jewellery and warm/earthy clothing tones tend to flatter.':und.label==='Cool'?'silver jewellery and cool/jewel tones tend to flatter.':und.label==='Olive'?'muted, earthy and teal/olive tones tend to flatter.':'you have flexible range — both metals and most tones work.'}`));
+
+  const hairRem=[];
+  if(!hairDetected) hairRem.push(R('Limited','Couldn\'t read hair reliably (lighting, angle, or a cap). Retake in even light with the hairline visible.'));
+  hairRem.push(R('Strong','Wash to scalp type (oily → daily/alternate, dry → 2–3×/week); treat dandruff/seborrhoea with ketoconazole 2% or zinc-pyrithione — flaking harms the growth environment.'));
+  if(foreRatio>0.42) hairRem.push(R('Moderate','Hairline reads high/receded. If it\'s changing, topical minoxidil 5% is the best-evidenced OTC option; ask a derm about finasteride. [minoxidil RCTs]'));
+  if(hairGloss<12) hairRem.push(R('Limited','Hair looks dull — light argan/jojoba oil on mid-lengths to ends, and ease off daily high-heat styling.'));
+  hairRem.push(R('Moderate','Feed the follicle: enough protein, iron, vitamin D and zinc; correct deficiencies before buying "hair gummies".'));
+  hairRem.push(R('Strong','SPF or a hat on the part-line — the scalp is a high sun-damage site.'));
+
+  const teethRem=[];
+  if(teethScore==null){ teethRem.push(R('Limited','Smile with teeth showing and re-scan to read shade.')); }
+  else {
+    teethRem.push(R('Strong','Peroxide-based whitening (strips or a dentist gel) genuinely lightens shade. [Cochrane review]'));
+    if(teethYellow>12) teethRem.push(R('Moderate','Yellowing detected — cut staining inputs (coffee, tea, red wine, tobacco), rinse with water after, use a whitening paste with the ADA seal.'));
+    teethRem.push(R('Strong','Twice-daily fluoride brushing + daily floss is the foundation; alignment needs a dentist, not an app.'));
+  }
+
+  const lipRem=[ R('Strong','Daily SPF lip balm prevents photoaging and actinic cheilitis — lips have almost no melanin protection. [UV/lip guidance]') ];
+  if(lipLab[0]<45) lipRem.push(R('Moderate','Lips read pale/dark — hydrate (lip skin mirrors whole-body water), exfoliate weekly, stop licking/biting (thins the vermilion border).'));
+  lipRem.push(R('Myth','Lip "exercises" don\'t change lip size — that isn\'t muscle you can grow.'));
+
+  const areas=[
+    {k:'Skin', ctrl:true, score:skinScore, swatch:hex(skinCol),
+     status:`${tone[0]} tone · Fitzpatrick ${tone[1]} (approx) · ITA ${ita.toFixed(0)}° · ${und.label} undertone`,
+     metrics:[['Undertone',`${und.label} · h°ab ${und.hue.toFixed(0)}°`],['Evenness',`${Math.round(skinEven)}/100`],['Redness (a*)',`${aRed.toFixed(1)} · ${redLevel}/100`],['T-zone shine',`${oilPct}/100`],['Brightness (L*)',skinLab[0].toFixed(0)],['White balance',wbOn?'sclera-corrected':'as-shot'],['Under-eye shadow',`${undEyeDark}/100`]],
+     rem:skinRem},
+    {k:'Hair', ctrl:true, score:null, swatch: hairDetected?hex(hairCol):null,
+     status: hairDetected? `Detected · gloss ${hairGloss}/100 · hairline ${foreRatio.toFixed(2)}` : 'Not clearly read — retake in even light',
+     metrics:[['Coverage read',`${Math.round(hairCover*100)}%`],['Shine',`${hairGloss}/100`],['Forehead height',foreRatio.toFixed(2)]],
+     rem:hairRem},
+    {k:'Teeth', ctrl:true, score:teethScore,
+     status: teethShade? `Shade ${teethShade}` : 'Smile to measure',
+     metrics:[['Shade',teethShade||'—'],['Yellowness (b*)',teethScore!=null?teethYellow.toFixed(1):'—']],
+     rem:teethRem},
+    {k:'Lips', ctrl:true, score:lipScore, swatch:hex(lipCol),
+     status:`Fullness ${lipFull.toFixed(2)} · lower:upper ${lipRatio.toFixed(2)}`,
+     metrics:[['Fullness',lipFull.toFixed(2)],['L:U ratio',lipRatio.toFixed(2)]],
+     rem:lipRem},
+    {k:'Jaw', ctrl:true, score:jawScore,
+     status:`Taper ${jawTaper.toFixed(2)} (jaw/cheek width)`,
+     metrics:[['Taper',jawTaper.toFixed(2)],['fWHR',fWHR.toFixed(2)]],
+     rem:[R('Strong','Lower body-fat is the biggest lever on a visible jawline. [facial-adiposity research]'),R('Moderate','Firm gum/chewing loads the masseter. [mastication studies]'),R('Myth','"Mewing" has no controlled evidence of changing bone.')]},
+    {k:'Nose', ctrl:false, score:noseScore,
+     status:`Nasal index ${nasalIdx.toFixed(2)} (width/length)`,
+     metrics:[['Nasal index',nasalIdx.toFixed(2)]],
+     rem:[R('Strong','Trim — never pluck — nasal hair; plucking risks infection in the facial "danger triangle". [ENT guidance]'),R('Myth','"Nose-shaping exercises" can\'t move cartilage or bone.')]},
+    {k:'Eyes', ctrl:false, score:eyeScore,
+     status:`Spacing ${spacing.toFixed(2)} · canthal tilt ${canthal.toFixed(1)}°`,
+     metrics:[['Spacing',spacing.toFixed(2)],['Canthal tilt',canthal.toFixed(1)+'°']],
+     rem:[R('Moderate','Sleep + lower salt reduce eye puffiness; the bone-set tilt itself isn\'t trainable.')]},
+    {k:'Symmetry', ctrl:false, score:symScore,
+     status:`Deviation ${(asym*100).toFixed(1)}% · thirds ${(thirds[0]*100).toFixed(0)}/${(thirds[1]*100).toFixed(0)}/${(thirds[2]*100).toFixed(0)}`,
+     metrics:[['Asymmetry',(asym*100).toFixed(1)+'%'],['Thirds balance',`${thirdsScore}/100`]],
+     rem:[R('Limited','Mild asymmetry is universal and largely structural; even posture and balanced chewing help only marginally.')]}
+  ];
+
+  /* Overall harmony */
+  const core=[symScore,thirdsScore,jawScore,noseScore,lipScore,eyeScore,skinScore];
+  const overall=Math.round(core.reduce((a,b)=>a+b,0)/core.length);
+
+  const prev=store.get('scans',[]).slice(-1)[0];
+  const bloatTrend = prev && prev.fullness ? (fullness>prev.fullness*1.02?'▲ up':(fullness<prev.fullness*0.98?'▼ down':'– steady')) : 'baseline';
+
+  renderResults(overall, areas, {bloat:`${fullness.toFixed(2)} ${bloatTrend}`, quality:_qual});
+  saveScan({ t:Date.now(), overall, sym:symScore, jaw:jawScore, nose:noseScore, lips:lipScore, eyes:eyeScore,
+    skin:skinScore, teeth:teethScore, hairGloss, redLevel, oilPct, ita:+ita.toFixed(1),
+    undertone:und.label, hue:+und.hue.toFixed(1), wb:wbOn?1:0,
+    fullness:+fullness.toFixed(3), under:undEyeDark, skinHex:hex(skinCol), lipHex:hex(lipCol) });
+  store.set('lastScore', overall); renderHome(); bumpStreak(); renderTimeline();
+  _burst=[];
+  $('#camSheet').style.display='block'; $('#camSheet').scrollTop=0;
+  $('#camMeta').textContent='Scanned · '+new Date().toLocaleTimeString();
+}
+function renderResults(overall, areas, extra){
+  const evCss=`<style>
+    #camSheet .ev{font-style:normal;font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:5px;margin-right:6px;white-space:nowrap;align-self:flex-start}
+    #camSheet .ev-strong{background:rgba(62,107,90,.25);color:#7CC79A;border:1px solid rgba(124,199,154,.4)}
+    #camSheet .ev-moderate{background:rgba(201,168,106,.18);color:var(--gold-bright);border:1px solid rgba(201,168,106,.4)}
+    #camSheet .ev-limited{background:rgba(255,255,255,.06);color:var(--ivory-dim);border:1px solid var(--line)}
+    #camSheet .ev-myth{background:rgba(224,122,122,.16);color:#E59A9A;border:1px solid rgba(224,122,122,.4)}
+    #camSheet .area{border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:10px;background:rgba(255,255,255,.02)}
+    #camSheet .area>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px}
+    #camSheet .area>summary::-webkit-details-marker{display:none}
+    #camSheet .area .nm{font-family:var(--display);font-size:18px}
+    #camSheet .area .sc{margin-left:auto;font-family:var(--display);font-size:20px;color:var(--gold)}
+    #camSheet .area .st{font-size:11px;color:var(--ivory-dim);margin:8px 0 0;letter-spacing:.02em}
+    #camSheet .cdot{display:inline-block;width:14px;height:14px;border-radius:4px;border:1px solid var(--line);vertical-align:-2px}
+    #camSheet .mrow{display:flex;justify-content:space-between;font-size:11px;color:var(--ivory-dim);padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+    #camSheet .mrow b{color:var(--ivory);font-weight:500}
+    #camSheet .rem{font-size:12px;color:var(--ivory);line-height:1.55;margin:8px 0 0;display:flex;flex-wrap:wrap}
+    #camSheet .rem span{flex:1;min-width:62%}
+  </style>`;
+  const blocks=areas.map(a=>{
+    const sc = a.score!=null? `<span class="sc">${a.score}</span>` : (a.ctrl?`<span class="sc" style="font-size:11px;color:var(--ivory-dim)">guided</span>`:'');
+    const dot = a.swatch? `<span class="cdot" style="background:${a.swatch}"></span>`:'';
+    const mets=(a.metrics||[]).map(m=>`<div class="mrow"><span>${m[0]}</span><b>${m[1]}</b></div>`).join('');
+    const rems=(a.rem||[]).map(r=>`<div class="rem"><i class="ev ev-${r.t.toLowerCase().split(' ')[0]}">${r.t}</i><span>${r.txt}</span></div>`).join('');
+    return `<details class="area"${a.ctrl?' open':''}><summary>${dot}<span class="nm">${a.k}${a.ctrl?' ▲':''}</span>${sc}</summary>
+      <div class="st">${a.status}</div>
+      <div style="margin-top:8px">${mets}</div>
+      <div style="margin-top:6px">${rems}</div></details>`;
+  }).join('');
+  $('#camSheet').innerHTML = evCss + `
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:8px">
+      <button class="btn ghost" style="min-height:36px;padding:8px 14px" onclick="rescan()">Scan again</button>
+      <button class="btn solid" style="min-height:36px;padding:8px 14px" onclick="closeCam()">Done</button>
+    </div>
+    <h3>Analysis · <span class="gold">${overall}</span><span style="font-size:13px;color:var(--ivory-dim)">/100 harmony</span></h3>
+    <p>On-device 468-point mesh + pixel skin/teeth/hair reads. These are <b>measurements &amp; cosmetic guidance — not a beauty rank or medical diagnosis</b>. ▲ marks what you can change; tap a card for the science.</p>
+    <div class="mrow" style="margin-top:8px"><span>Bloat / fullness</span><b>${extra.bloat}</b></div>
+    <div class="mrow"><span>Scan quality</span><b>${extra.quality||'—'}</b></div>
+    ${blocks}
+    <p style="font-size:11px;margin-top:12px;color:var(--ivory-dim)">Estimates from facial-proportion &amp; colour science. For persistent skin, hair or dental concerns, see a dermatologist or dentist. Saved to your timeline.</p>`;
+}
+function saveScan(rec){ const arr=store.get('scans',[]); arr.push(rec); while(arr.length>60) arr.shift(); store.set('scans',arr); }
+function renderTimeline(){
+  const el=$('#scanHistory'); if(!el) return;
+  const arr=store.get('scans',[]);
+  if(!arr.length){ el.innerHTML='<p class="lede" style="font-size:13px;margin-top:14px">No scans yet. Open the camera and tap ◉ to log your first reading — Chisel tracks the trend over time.</p>'; return; }
+  const bars=arr.slice(-14).map(s=>`<div title="${new Date(s.t).toLocaleDateString()}" style="flex:1;min-width:5px;background:linear-gradient(180deg,var(--gold-bright),var(--gold));height:${Math.max(8,s.overall)}%;border-radius:3px 3px 0 0"></div>`).join('');
+  const rows=arr.slice(-8).reverse().map(s=>{
+    const dd=new Date(s.t), when=dd.toLocaleDateString([], {month:'short',day:'numeric'})+' · '+dd.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    return `<div class="row"><label>${when}</label><span>bloat ${s.fullness} · <span class="gold">${s.overall}</span></span></div>`;
+  }).join('');
+  el.innerHTML=`<div class="card" style="margin-top:18px">
+    <div class="eyebrow">Your timeline · ${arr.length} scan${arr.length>1?'s':''}</div>
+    <div style="display:flex;align-items:flex-end;gap:4px;height:74px;margin:14px 0 8px">${bars}</div>
+    <div>${rows}</div></div>`;
+}
+
+$('#openAnalyze').addEventListener('click', async ()=>{ scanMode=true; const h=$('.tap-hint'); if(h) h.textContent='Auto-scanning · or tap to capture now'; await openCam(); });
+$('#openTrain').addEventListener('click', openTrain);
+$('#hintAnalyze').addEventListener('click', ()=>{ openGroom('jawline') });
+$('#camSheet') && $('#camSheet').addEventListener('click', e=>e.stopPropagation());
+
+/* ---------- Affirm overlay ---------- */
+let curCat='confidence', auto=false, manifest=false, idx=0, pool=[];
+function buildPool(){
+  pool = curCat==='all' ? [...Object.values(AFFIRM)].flat() : (AFFIRM[curCat]||AFFIRM.confidence);
+  if(manifest) pool = AFFIRM.manifest;
+  idx=0; renderAffirmPager();
+}
+function renderAffirmPager(){
+  const p = $('#affPager'); p.innerHTML='';
+  pool.forEach((_,i)=>{ const d=document.createElement('i'); if(i===idx)d.classList.add('on'); p.appendChild(d) });
+}
+function showAffirm(){
+  if(!pool.length) buildPool();
+  $('#affCat').textContent = manifest ? 'Manifest' : (curCat==='all'?'All':curCat.charAt(0).toUpperCase()+curCat.slice(1));
+  $('#affTxt').textContent = pool[idx % pool.length];
+  renderAffirmPager();
+}
+function nextAffirm(){ idx=(idx+1)%pool.length; showAffirm() }
+$('#openAffirm').addEventListener('click', async ()=>{ scanMode=false; const h=$('.tap-hint'); if(h) h.textContent='Tap anywhere to advance'; await openCam(); $('#affirmOverlay').style.display='flex'; buildPool(); showAffirm() });
+$('#camwrap').addEventListener('click', e=>{
+  if(trainMode) return;
+  if(e.target.closest('.affirm-overlay')||e.target.closest('.camctrl')||e.target.closest('.hud')||e.target.closest('.sheet')) return;
+  if($('#affirmOverlay').style.display==='flex'){ nextAffirm(); }
+  else { $('#camShot').click(); }   /* analyze mode: tap anywhere to scan */
+});
+$$('#catChips .chip').forEach(c=>c.addEventListener('click',()=>{ $$('#catChips .chip').forEach(x=>x.classList.remove('on')); c.classList.add('on'); curCat=c.dataset.cat; buildPool(); showAffirm() }));
+$('#autoSwitch').addEventListener('click', e=>{ auto=!auto; e.currentTarget.classList.toggle('on',auto) });
+$('#manifestSwitch').addEventListener('click', e=>{ manifest=!manifest; e.currentTarget.classList.toggle('on',manifest); buildPool(); showAffirm() });
+setInterval(()=>{ if(auto && !$('#camwrap').classList.contains('on')) return; if(auto && $('#affirmOverlay').style.display==='flex') nextAffirm() }, 8000);
+
+/* ---------- Speech ---------- */
+let voices=[];
+function loadVoices(){ voices = speechSynthesis.getVoices() || []; const sel=$('#voiceSel'); if(!sel) return; sel.innerHTML=''; voices.forEach((v,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=`${v.name} · ${v.lang}`; sel.appendChild(o) }) }
+if('speechSynthesis' in window){ loadVoices(); speechSynthesis.onvoiceschanged = loadVoices }
+function speak(text, opts={}){
+  if(!('speechSynthesis' in window)){ toast('Speech not supported'); return }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = opts.rate ?? 0.85; u.pitch = opts.pitch ?? 1.0;
+  const sel = $('#voiceSel'); const v = voices[sel && sel.value];
+  if(v) u.voice = v;
+  speechSynthesis.speak(u);
+}
+
+/* ---------- Meditation ---------- */
+let medTimer=null, medT=0, medDur=600, medPhase='idle', humOn=true, humCtx=null, humOsc=null, humGain=null;
+const SCRIPTS = {
+  intro:"Close your eyes. Take a deep breath. Begin to visualize the chiseled, confident version of yourself.",
+  mid:[
+    "See the sharp jawline. Feel the discipline that carved it.",
+    "Notice the calm, steady eyes. Nothing rattles this man.",
+    "Feel the strong, upright posture. You stand like you belong.",
+    "Picture the skin — clear, rested, well-fed. You earned it.",
+    "See the room responding to you. People lean in. They listen.",
+    "Feel the discipline: morning routine, training, restraint, sleep.",
+    "See the bank account that reflects the work. You are paid what you are worth.",
+    "Hear your own voice — slow, low, certain. You speak because you have something to say.",
+    "Notice how easy it is. The boring work became the foundation. The foundation became the man.",
+    "You are not becoming him. He is already you — you are just catching up."
+  ],
+  outro:"Slowly open your eyes. You are the sculptor of your own face. Begin."
+};
+function fmt(s){ const m=Math.floor(s/60), ss=String(s%60).padStart(2,'0'); return `${m}:${ss}` }
+function setArc(p){ const c=$('#arcFg'), L=729; c.style.strokeDashoffset = L*(1-p) }
+function setPhase(t,d){ const q=d/4; if(t% d < q) return 'Inhale'; if(t%d<q*2) return 'Hold'; if(t%d<q*3) return 'Exhale'; return 'Hold' }
+function startHum(){ if(humCtx) return; try{ humCtx = new (window.AudioContext||window.webkitAudioContext)(); humOsc = humCtx.createOscillator(); humGain = humCtx.createGain(); humOsc.type='sine'; humOsc.frequency.value=110; humGain.gain.value=0.012; humOsc.connect(humGain).connect(humCtx.destination); humOsc.start() }catch{} }
+function stopHum(){ try{ humOsc && humOsc.stop(); humCtx && humCtx.close() }catch{} humOsc=null; humCtx=null }
+$('#humSwitch').addEventListener('click', e=>{ humOn=!humOn; e.currentTarget.classList.toggle('on',humOn); humOn?startHum():stopHum() });
+$$('#durChips .chip').forEach(c=>c.addEventListener('click',()=>{ $$('#durChips .chip').forEach(x=>x.classList.remove('on')); c.classList.add('on'); medDur=+c.dataset.dur; $('#timer').textContent=fmt(medDur); setArc(0) }));
+function startMed(){
+  medT = medDur; $('#medStart').textContent='Pause';
+  $('#voiceLine').textContent = SCRIPTS.intro; speak(SCRIPTS.intro);
+  bumpStreak();
+  if(humOn) startHum();
+  if(medTimer) clearInterval(medTimer);
+  medTimer = setInterval(()=>{
+    medT--; $('#timer').textContent = fmt(medT); setArc(1 - medT/medDur); $('#phase').textContent = setPhase(medT,16);
+    if(medT===medDur-30 || medT===medDur-90 || medT===medDur-150 || medT===medDur-210 || medT===medDur-270 || medT===medDur-330){
+      const line = SCRIPTS.mid[Math.floor(Math.random()*SCRIPTS.mid.length)];
+      $('#voiceLine').textContent = '"'+line+'"'; speak(line);
+    }
+    if(medT<=0){ clearInterval(medTimer); medTimer=null; $('#medStart').textContent='Begin'; $('#voiceLine').textContent=SCRIPTS.outro; speak(SCRIPTS.outro); stopHum(); toast('Session complete') }
+  }, 1000);
+}
+function stopMed(){ if(medTimer) clearInterval(medTimer); medTimer=null; $('#medStart').textContent='Begin'; $('#timer').textContent=fmt(medDur); setArc(0); stopHum() }
+$('#medStart').addEventListener('click', ()=> medTimer ? (clearInterval(medTimer), medTimer=null, $('#medStart').textContent='Resume', stopHum()) : startMed() );
+$('#medStop').addEventListener('click', stopMed);
+
+/* ---------- Grooming cards ---------- */
+const GROOM = [
+  {id:'jawline', icon:'◢', num:'01', name:'Jawline',
+   anat:'The jaw is the frame of the face. A well-defined gonial angle (between jaw and neck) reads as masculine, healthy, and structured.',
+   sci:'Studies on facial attractiveness (Lerner 2014, Rhodes 2006) consistently rate a strong, well-defined jawline as a high-impact masculine cue. A gonial angle near 90° is most often preferred. You can\'t change bone, but you can reduce submental fat, correct posture, and train the masseter.',
+   routine:['Mewing: tongue on the roof of your mouth, lips closed, breathe through nose — posture cue that subtly affects lower-face definition.','Train your neck: chin tucks (3×15), jawline flexes (3×20), and farmer carries to build the upper traps.','Cut body fat: most men see a clear jawline emerge around 12–14% body fat.','Sleep on your back to avoid fluid pooling under the chin.','Stay hydrated and reduce sodium bloat.'],
+   prod:'A foam roller for the upper traps. A double-strap weighted vest for walks. A standing desk converter. Tongue posture is free.'},
+  {id:'nose', icon:'◣', num:'02', name:'Nose',
+   anat:'The nose is the visual anchor of the midface. Ideal proportions: ~1/3 of the face length, with a straight dorsum and a tip-to-lip angle around 90–105° in men.',
+   sci:'Pallanch & Larson (2015) found that the "ideal" male nose follows the 1/3 rule — equal thirds from hairline to brow, brow to base of nose, base of nose to chin. Deviation from this reads as off-balance to most viewers.',
+   routine:['Stop touching it. Hands off, forever.','Breathe through it. Nasal breathing warms, humidifies, and filters air — better sleep, better face.','Consider contour: a matte contour stick one shade darker, blended along the bridge, slims and straightens the appearance.','If it deviates, a consultation with a facial plastic surgeon is the only permanent fix.','Use SPF daily — sun thickens the skin and rounds the bridge.'],
+   prod:'A silicone-free SPF 50. A cool-mist humidifier for bedroom. A saline nasal rinse (Neti pot or Naväge).'},
+  {id:'lips', icon:'◤', num:'03', name:'Lips',
+   anat:'Lips frame the mouth. Hydration, color, and proportion all matter. The lower lip should be ~1.6× the upper lip (golden ratio).',
+   sci:'A 2009 study in the Journal of Cosmetic Dermatology found that slightly fuller, well-hydrated lips are consistently rated as more attractive across cultures. Cracked or pale lips are read as unhealthy.',
+   routine:['Exfoliate weekly with a damp toothbrush or sugar scrub.','Hydrate with a beeswax-based balm morning and night.','SPF lip balm during the day.','Stay hydrated internally — lip skin reflects total body water.','Stop biting or licking them. Both behaviors thin the vermilion border over time.'],
+   prod:'Beeswax + lanolin balm (Burt\'s Bees, Jack Black, or homemade). Sugar + honey scrub. SPF 30 lip balm.'},
+  {id:'neck', icon:'▤', num:'04', name:'Neck',
+   anat:'The neck connects the jaw to the torso. A thick, defined neck reads as athletic and balances the head visually.',
+   sci:'A 2017 study in the Journal of Strength and Conditioning Research found that neck circumference correlates strongly with overall strength and lower all-cause mortality risk. Visible neck development is a major frame-builder.',
+   routine:['Neck curls: lie on your back, lift your head to your chest, 3×15.','Neck extensions: lie face down, lift against light resistance, 3×15.','Farmer carries: walk with heavy weights for 40m, 4 rounds.','Posture: chin tucks throughout the day, 10 reps hourly.','Roll the upper traps with a lacrosse ball against a wall.'],
+   prod:'A lacrosse ball. A weighted vest. A doorway pull-up bar.'},
+  {id:'facial', icon:'✦', num:'05', name:'Facial Hair',
+   anat:'Facial hair adds perceived jaw width and maturity. The optimal style depends on your face shape and growth pattern.',
+   sci:'A 2013 study in Behavioral Ecology found that heavy stubble is rated as the most attractive facial hair style, followed by full beards, then clean shaven — light stubble reads as "healthy and dominant" without the maturity penalty of a full beard.',
+   routine:['Let it grow for 7–10 days to find your natural line.','Map your neckline: two fingers above the Adam\'s apple, then a clean line to the back of the jaw.','Map your cheekline: leave it natural unless growth is patchy, then a single-pass cleanup.','Use a 3mm guard for stubble, 6–8mm for short beard, 10–12mm for full.','Oil daily: a few drops of jojoba + argan, worked into the skin underneath.'],
+   prod:'A quality trimmer (Braun, Bevel, or OneBlade). A boar\'s-hair brush to distribute oil. Jojoba + argan beard oil. A badger-hair brush for clean-shaven areas.'},
+  {id:'haircut', icon:'▥', num:'06', name:'Haircut',
+   anat:'The right haircut frames your face, balances your proportions, and changes how people read your bone structure.',
+   sci:'Barbering manuals and image-consulting studies (Swift 2012) consistently find that haircuts that create a "shadow" on the sides and slightly more length on top produce a stronger jaw and cheekbone appearance in 70%+ of male face shapes.',
+   routine:['Find a barber who knows your hair type — book the same person every time.','For most face shapes: short sides (1–3 on the clippers), 3–5 inches on top.','Use a matte clay or paste for texture — never gel, never wet-look.','Get cut every 3–4 weeks. Anything past 6 weeks loses shape.','Blow-dry upward at the front for volume, not down.'],
+   prod:'A matte clay (Hanz de Fuko, Blind Barber, or Lockhart\'s). A ceramic round brush. A travel-size sea salt spray for days you skip product.'}
+];
+function buildGroom(){
+  const g = $('#groomGrid'); g.innerHTML='';
+  GROOM.forEach(it=>{
+    const el = document.createElement('div'); el.className='card groom'; el.dataset.id=it.id;
+    el.innerHTML = `<div><div class="num">${it.num}</div><div class="name">${it.name}</div></div><div class="icon">${it.icon}</div>`;
+    el.addEventListener('click',()=>openGroom(it.id));
+    g.appendChild(el);
+  });
+  renderPlan();
+}
+function openGroom(id){
+  const it = GROOM.find(x=>x.id===id); if(!it) return;
+  $('#mNum').textContent = it.num;
+  $('#mName').textContent = it.name;
+  $('#mAnat').textContent = it.anat;
+  $('#mSci').textContent = it.sci;
+  const ol = $('#mRoutine'); ol.innerHTML=''; it.routine.forEach(s=>{ const li=document.createElement('li'); li.textContent=s; ol.appendChild(li) });
+  $('#mProd').textContent = it.prod;
+  $('#addPlan').onclick = ()=>{ const p = store.get('plan',[]); if(!p.includes(id)) p.push(id); store.set('plan',p); toast('Added to today\'s plan'); renderPlan() };
+  $('#modal').classList.add('on');
+}
+$('#modalX').addEventListener('click', ()=>$('#modal').classList.remove('on'));
+$('#modal').addEventListener('click', e=>{ if(e.target.id==='modal') $('#modal').classList.remove('on') });
+function renderPlan(){
+  const wrap = $('#planList'); const plan = store.get('plan',[]);
+  if(!plan.length){ wrap.innerHTML = '<p class="lede" style="font-size:13px;margin:6px 0 0">Open a grooming card above and tap "Add to today\'s plan" to build a routine.</p>'; return }
+  wrap.innerHTML='';
+  plan.forEach(id=>{
+    const it = GROOM.find(x=>x.id===id); if(!it) return;
+    const row = document.createElement('div'); row.className='row';
+    row.innerHTML = `<label>${it.num} · ${it.name}</label><span class="gold" style="cursor:pointer" data-rm="${id}">✕</span>`;
+    wrap.appendChild(row);
+  });
+  $$('#planList [data-rm]').forEach(b=>b.addEventListener('click',()=>{ const p=store.get('plan',[]).filter(x=>x!==b.dataset.rm); store.set('plan',p); renderPlan() }));
+}
+
+/* ---------- Diagnostics ---------- */
+async function runDiag(){
+  $('#dCap').textContent = isCap ? ('Yes · '+platform) : 'No (web)';
+  $('#dCap').className = isCap ? 'v ok' : 'v';
+  $('#dPlat').textContent = navigator.platform || 'unknown';
+  const secure = location.protocol==='https:' || location.hostname==='localhost' || location.protocol==='file:' || isCap;
+  $('#dSecure').textContent = secure ? 'OK' : 'Insecure'; $('#dSecure').className = 'v '+(secure?'ok':'bad');
+  const has = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  $('#dMedia').textContent = has ? 'Supported' : 'Not supported'; $('#dMedia').className = 'v '+(has?'ok':'bad');
+  try{
+    if(navigator.permissions && navigator.permissions.query){
+      const p = await navigator.permissions.query({name:'camera'});
+      $('#dPerm').textContent = p.state; $('#dPerm').className = 'v '+(p.state==='granted'?'ok':(p.state==='denied'?'bad':''));
+    } else { $('#dPerm').textContent='Unknown' }
+  }catch{ $('#dPerm').textContent='Unknown' }
+  if(has){
+    try{
+      const devs = await navigator.mediaDevices.enumerateDevices();
+      const cams = devs.filter(d=>d.kind==='videoinput');
+      $('#dCam').textContent = cams.length? (cams.length+' found') : 'None'; $('#dCam').className = 'v '+(cams.length?'ok':'bad');
+    }catch{ $('#dCam').textContent='Error' }
+  }
+}
+$('#testCam').addEventListener('click', async ()=>{ scanMode=false; await openCam(); $('#camMeta').textContent='Test mode' });
+$('#refreshDiag').addEventListener('click', runDiag);
+
+/* ---------- Boot ---------- */
+buildGroom();
+renderTimeline();
+go(location.hash.slice(1) || 'home');
+setTimeout(()=>{ $('#boot').classList.add('gone'); setTimeout(()=>$('#boot').remove(),900) }, 1300);
+</script>
+</body>
+</html>

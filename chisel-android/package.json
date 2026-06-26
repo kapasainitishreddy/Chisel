@@ -1,0 +1,26 @@
+{
+  "name": "chisel",
+  "version": "1.0.0",
+  "description": "Chisel — Lookmax AI Facial Assistant",
+  "main": "www/index.html",
+  "scripts": {
+    "build": "echo Chisel is a static HTML app - www is the build output. && exit 0",
+    "sync": "cap sync android",
+    "open": "cap open android",
+    "android": "cap run android",
+    "serve": "npx http-server www -p 8080 -c-1"
+  },
+  "keywords": ["lookmax", "facial", "ai", "capacitor", "android", "affirmations"],
+  "author": "Chisel",
+  "license": "MIT",
+  "dependencies": {
+    "@capacitor/android": "6.1.2",
+    "@capacitor/camera": "6.0.2",
+    "@capacitor/core": "6.1.2",
+    "@capacitor/splash-screen": "6.0.2",
+    "@capacitor/status-bar": "6.0.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "6.1.2"
+  }
+}
