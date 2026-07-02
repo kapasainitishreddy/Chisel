@@ -228,6 +228,22 @@
 
 <div id="toast"></div>
 
+<!-- WELLBEING GATE (17+, measurements-not-ratings) -->
+<div id="gate" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(10,10,11,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:20px">
+  <div class="card gold" style="max-width:520px;width:100%;padding:28px;max-height:88vh;overflow-y:auto">
+    <div class="eyebrow">Before you begin</div>
+    <h3 style="font-family:var(--display);font-size:30px;margin:4px 0 10px;font-weight:500">Chisel measures. <span class="gold">It never rates you.</span></h3>
+    <p class="lede" style="font-size:14px">Everything here is a <b>neutral measurement</b> or a piece of evidence-graded guidance — never a beauty score, never a rank. We show what's in your control (skin, grooming, posture, habits) and we're honest about what isn't (bone structure).</p>
+    <p class="lede" style="font-size:14px;margin-top:10px">Chisel is <b>cosmetic &amp; educational — not medical advice</b>. For persistent skin, hair or dental concerns, see a dermatologist or dentist.</p>
+    <p class="lede" style="font-size:14px;margin-top:10px">Chisel is designed for ages <b>17 and up</b>.</p>
+    <div class="btn-row" style="margin-top:20px">
+      <button class="btn solid" id="gateEnter">I'm 17 or older — Enter</button>
+      <button class="btn ghost" id="gateUnder">I'm under 17</button>
+    </div>
+    <p id="gateNote" style="display:none;margin-top:14px;color:var(--rose);font-size:13px;line-height:1.6">Chisel isn't built for you yet — and that's a good thing. Your face is still changing, and no app should measure it. Come back at 17. You're doing fine.</p>
+  </div>
+</div>
+
 <div class="app">
   <nav class="rail" aria-label="primary">
     <div class="logo">Chisel<small>Lookmax · AI</small></div>
@@ -282,8 +298,10 @@
             <div style="font-size:12px;color:var(--ivory-dim);margin-top:6px" id="streakSub">Begin a session to start your streak.</div>
           </div>
           <div class="card" style="padding:24px;margin-top:14px">
-            <div class="eyebrow" style="margin-bottom:8px">Lookmax Score</div>
-            <div style="display:flex;align-items:baseline;gap:10px"><b id="scoreNum" style="font-family:var(--display);font-size:48px;color:var(--gold)">—</b><small style="color:var(--ivory-dim);font-size:11px;letter-spacing:.2em;text-transform:uppercase">Last analysis</small></div>
+            <div class="eyebrow" style="margin-bottom:8px">Harmony Index</div>
+            <div style="display:flex;align-items:baseline;gap:10px"><b id="scoreNum" style="font-family:var(--display);font-size:48px;color:var(--gold)">—</b><small style="color:var(--ivory-dim);font-size:11px;letter-spacing:.2em;text-transform:uppercase">Last measurement</small></div>
+            <div style="font-size:11px;color:var(--ivory-dim);margin-top:6px">A geometry measurement — not a rating of you.</div>
+            <div class="btn-row" style="margin-top:14px"><button class="btn" id="shareProgress">Share progress card</button></div>
           </div>
         </div>
       </div>
@@ -310,6 +328,12 @@
       </div>
 
       <div style="margin-top:36px" class="card">
+        <div class="eyebrow">Daily routine · <span id="habitCount">0/0</span></div>
+        <p class="lede" style="font-size:13px;margin:8px 0 0">Evidence-backed habits. Small, boring, daily — that's the entire game. Each one shows the strength of the science behind it.</p>
+        <div id="habitList" style="margin-top:10px"></div>
+      </div>
+
+      <div style="margin-top:18px" class="card">
         <div class="eyebrow">Tonight's intention</div>
         <input id="intention" placeholder="I am becoming…" style="width:100%;background:transparent;border:0;border-bottom:1px solid var(--line);color:var(--ivory);font-family:var(--display);font-size:22px;padding:10px 0;outline:none" />
       </div>
@@ -329,6 +353,11 @@
           <button class="btn" id="openTrain">Jawline training</button>
           <button class="btn ghost" id="hintAnalyze">How scoring works</button>
         </div>
+      </div>
+      <div style="margin-top:24px">
+        <div class="eyebrow">Guided self-checks</div>
+        <p class="lede" style="font-size:13px;margin:6px 0 12px">Where a selfie can't measure something honestly — beard density, nose grooming, posture — Chisel gives you an evidence-based checklist instead of faking an AI score.</p>
+        <div class="grid g-3" id="checkGrid"></div>
       </div>
       <div id="scanHistory"></div>
     </section>
@@ -482,6 +511,26 @@
   <div class="sheet" id="camSheet" style="display:none"></div>
 </div>
 
+<!-- GUIDED SELF-CHECK MODAL -->
+<div class="modal" id="checkModal">
+  <div class="panel">
+    <div class="x" id="checkX">✕</div>
+    <div class="eyebrow" id="ckTag">Guided self-check</div>
+    <h3 id="ckName">—</h3>
+    <p id="ckWhy" class="lede" style="font-size:13px">—</p>
+    <div id="ckRate" style="display:none;margin-top:14px">
+      <div class="eyebrow" style="margin-bottom:8px">Your self-rating</div>
+      <div class="btn-row" id="ckRateChips"></div>
+    </div>
+    <h4 style="font-family:var(--display);font-size:18px;margin:20px 0 6px;color:var(--gold);font-weight:500;letter-spacing:.04em">Checklist</h4>
+    <div id="ckItems"></div>
+    <div class="btn-row" style="margin-top:18px">
+      <button class="btn solid" id="ckSave">Save check</button>
+      <button class="btn ghost" id="ckTrain" style="display:none">Start guided camera training</button>
+    </div>
+  </div>
+</div>
+
 <!-- GROOM MODAL -->
 <div class="modal" id="modal">
   <div class="panel">
@@ -542,7 +591,7 @@ const store = { get:(k,d)=>{ try{return JSON.parse(localStorage.getItem('chisel:
 /* ---------- Native / Capacitor detection ---------- */
 const isCap = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 const platform = (window.Capacitor && window.Capacitor.getPlatform) ? window.Capacitor.getPlatform() : 'web';
-$('#buildTag').textContent = '1.0.0 · ' + (isCap?('native · '+platform):'web');
+$('#buildTag').textContent = '1.1.0 · ' + (isCap?('native · '+platform):'web');
 
 /* ---------- Routing ---------- */
 const routes = ['home','analyze','affirm','meditate','groom','connect'];
@@ -587,6 +636,7 @@ function renderHome(){
   const sc = store.get('lastScore', null);
   $('#scoreNum').textContent = sc==null ? '—' : sc;
   const intent = store.get('intention',''); $('#intention').value = intent;
+  if(typeof renderHabits==='function') renderHabits();
 }
 $('#newAffirm').addEventListener('click',()=>{ $('#homeAffirm').textContent = pickAffirm(store.get('homeCat','confidence')); bumpStreak() });
 $('#speakAffirm').addEventListener('click',()=>{ speak($('#homeAffirm').textContent) });
@@ -1205,7 +1255,24 @@ function finalizeScan(){
   const prev=store.get('scans',[]).slice(-1)[0];
   const bloatTrend = prev && prev.fullness ? (fullness>prev.fullness*1.02?'▲ up':(fullness<prev.fullness*0.98?'▼ down':'– steady')) : 'baseline';
 
-  renderResults(overall, areas, {bloat:`${fullness.toFixed(2)} ${bloatTrend}`, quality:_qual});
+  /* Biggest controllable wins — rank ▲ areas by improvement headroom so effort
+     goes where it pays off (the PLAN.md differentiator: agency, not a rank). */
+  const wins = areas.filter(a=>a.ctrl && a.score!=null)
+    .map(a=>({k:a.k, head:100-a.score, rem:(a.rem||[]).find(r=>r.t==='Strong')||a.rem[0]}))
+    .sort((a,b)=>b.head-a.head).slice(0,3).filter(w=>w.head>=8 && w.rem);
+
+  /* Progress deltas vs previous scan — progress, not ranking, is the dopamine. */
+  const DELTA_DEFS=[['Skin','skin',skinScore,1],['Jaw','jaw',jawScore,1],['Lips','lips',lipScore,1],['Eyes','eyes',eyeScore,1],['Symmetry','sym',symScore,1],['Teeth','teeth',teethScore,1],['Redness','redLevel',redLevel,-1],['T-zone shine','oilPct',oilPct,-1],['Under-eye shadow','under',undEyeDark,-1]];
+  let deltas=null;
+  if(prev){
+    deltas = DELTA_DEFS.map(([label,key,val,dir])=>{
+      if(typeof val!=='number' || typeof prev[key]!=='number') return null;
+      const d=val-prev[key]; if(Math.abs(d)<2) return null;
+      return {label, d, good:d*dir>0, dir};
+    }).filter(Boolean).sort((a,b)=>(b.good-a.good)||(Math.abs(b.d)-Math.abs(a.d))).slice(0,6);
+  }
+
+  renderResults(overall, areas, {bloat:`${fullness.toFixed(2)} ${bloatTrend}`, quality:_qual, wins, deltas});
   saveScan({ t:Date.now(), overall, sym:symScore, jaw:jawScore, nose:noseScore, lips:lipScore, eyes:eyeScore,
     skin:skinScore, teeth:teethScore, hairGloss, redLevel, oilPct, ita:+ita.toFixed(1),
     undertone:und.label, hue:+und.hue.toFixed(1), wb:wbOn?1:0,
@@ -1244,13 +1311,31 @@ function renderResults(overall, areas, extra){
       <div style="margin-top:8px">${mets}</div>
       <div style="margin-top:6px">${rems}</div></details>`;
   }).join('');
+  const winsBlock = (extra.wins && extra.wins.length) ? `
+    <div class="area" style="border-color:rgba(201,168,106,.45);background:rgba(201,168,106,.05)">
+      <div class="nm" style="font-family:var(--display);font-size:18px">Your biggest controllable wins</div>
+      <div class="st">Effort → impact. These are the areas with the most headroom that you can actually change.</div>
+      ${extra.wins.map((w,i)=>`<div class="rem" style="margin-top:10px"><i class="ev ev-${w.rem.t.toLowerCase().split(' ')[0]}">${w.rem.t}</i><span><b style="color:var(--gold)">${i+1}. ${w.k}</b> — ${w.rem.txt}</span></div>`).join('')}
+    </div>` : '';
+  const deltaBlock = extra.deltas===null ? `
+    <div class="mrow" style="margin-top:8px"><span>Progress</span><b>Baseline logged — re-scan in a week to see your trend</b></div>`
+    : (extra.deltas && extra.deltas.length) ? `
+    <div class="area">
+      <div class="nm" style="font-family:var(--display);font-size:18px">Since your last scan</div>
+      <div class="st">Progress isn't linear — lighting, sleep and salt swing day to day. Watch the trend, not one reading.</div>
+      ${extra.deltas.map(d=>`<div class="mrow"><span>${d.label}</span><b style="color:${d.good?'#7CC79A':'var(--ivory-dim)'}">${d.good?'▲ improved':'▼'} ${d.d>0?'+':''}${Math.round(d.d)}</b></div>`).join('')}
+    </div>` : `
+    <div class="mrow" style="margin-top:8px"><span>Progress</span><b>Steady since last scan — consistency is the win</b></div>`;
   $('#camSheet').innerHTML = evCss + `
     <div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:8px">
       <button class="btn ghost" style="min-height:36px;padding:8px 14px" onclick="rescan()">Scan again</button>
+      <button class="btn ghost" style="min-height:36px;padding:8px 14px" onclick="shareCard()">Share</button>
       <button class="btn solid" style="min-height:36px;padding:8px 14px" onclick="closeCam()">Done</button>
     </div>
     <h3>Analysis · <span class="gold">${overall}</span><span style="font-size:13px;color:var(--ivory-dim)">/100 harmony</span></h3>
     <p>On-device 468-point mesh + pixel skin/teeth/hair reads. These are <b>measurements &amp; cosmetic guidance — not a beauty rank or medical diagnosis</b>. ▲ marks what you can change; tap a card for the science.</p>
+    ${winsBlock}
+    ${deltaBlock}
     <div class="mrow" style="margin-top:8px"><span>Bloat / fullness</span><b>${extra.bloat}</b></div>
     <div class="mrow"><span>Scan quality</span><b>${extra.quality||'—'}</b></div>
     ${blocks}
@@ -1262,10 +1347,12 @@ function renderTimeline(){
   const arr=store.get('scans',[]);
   if(!arr.length){ el.innerHTML='<p class="lede" style="font-size:13px;margin-top:14px">No scans yet. Open the camera and tap ◉ to log your first reading — Chisel tracks the trend over time.</p>'; return; }
   const bars=arr.slice(-14).map(s=>`<div title="${new Date(s.t).toLocaleDateString()}" style="flex:1;min-width:5px;background:linear-gradient(180deg,var(--gold-bright),var(--gold));height:${Math.max(8,s.overall)}%;border-radius:3px 3px 0 0"></div>`).join('');
-  const rows=arr.slice(-8).reverse().map(s=>{
+  const rows=arr.slice(-8).map((s,i,sl)=>{
     const dd=new Date(s.t), when=dd.toLocaleDateString([], {month:'short',day:'numeric'})+' · '+dd.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-    return `<div class="row"><label>${when}</label><span>bloat ${s.fullness} · <span class="gold">${s.overall}</span></span></div>`;
-  }).join('');
+    const p=i>0?sl[i-1]:null, d=p?s.overall-p.overall:0;
+    const trend=p? (d>=2?`<span style="color:#7CC79A">▲ +${d}</span> · `:(d<=-2?`<span style="color:var(--ivory-dim)">▼ ${d}</span> · `:'')) : '';
+    return `<div class="row"><label>${when}</label><span>${trend}bloat ${s.fullness} · <span class="gold">${s.overall}</span></span></div>`;
+  }).reverse().join('');
   el.innerHTML=`<div class="card" style="margin-top:18px">
     <div class="eyebrow">Your timeline · ${arr.length} scan${arr.length>1?'s':''}</div>
     <div style="display:flex;align-items:flex-end;gap:4px;height:74px;margin:14px 0 8px">${bars}</div>
@@ -1460,7 +1547,188 @@ async function runDiag(){
 $('#testCam').addEventListener('click', async ()=>{ scanMode=false; await openCam(); $('#camMeta').textContent='Test mode' });
 $('#refreshDiag').addEventListener('click', runDiag);
 
+/* ---------- Wellbeing gate (17+, measurements-not-ratings) ---------- */
+function initGate(){
+  if(store.get('gate17', false)) return;
+  const g=$('#gate'); g.style.display='flex';
+  $('#gateEnter').addEventListener('click', ()=>{ store.set('gate17', true); g.style.display='none'; });
+  $('#gateUnder').addEventListener('click', ()=>{ $('#gateNote').style.display='block'; $('#gateEnter').style.display='none'; $('#gateUnder').style.display='none'; });
+}
+
+/* ---------- Daily routine: evidence-backed habits ---------- */
+const HABITS=[
+  {id:'spf',    t:'Strong',   txt:'Broad-spectrum SPF 30+ this morning', why:'Slows visible skin aging — RCT evidence. [Hughes 2013]'},
+  {id:'retinoid',t:'Strong',  txt:'Retinoid tonight (build up slowly)',  why:'Best-evidenced topical for tone & texture. [Mukherjee 2006]'},
+  {id:'lipspf', t:'Strong',   txt:'SPF lip balm',                        why:'Lips have almost no melanin protection — prevents photoaging.'},
+  {id:'floss',  t:'Strong',   txt:'Floss + fluoride brush ×2',           why:'The foundation of tooth shade & gum health.'},
+  {id:'sleep',  t:'Moderate', txt:'7–9h sleep last night',               why:'Poor sleep measurably accelerates skin aging. [Oyetakin-White 2015]'},
+  {id:'chin',   t:'Moderate', txt:'Chin tucks 3×10',                     why:'Cervical-retraction exercise improves forward-head posture. [posture RCTs]'},
+  {id:'gum',    t:'Moderate', txt:'10 min firm gum chew',                why:'Mastication load works the masseter — muscle, not bone.'},
+  {id:'water',  t:'Limited',  txt:'2L+ water',                           why:'Hydration supports skin & lip appearance; evidence is modest.'},
+];
+const habitKey=()=>'habits:'+new Date().toDateString();
+function renderHabits(){
+  const wrap=$('#habitList'); if(!wrap) return;
+  const done=store.get(habitKey(),[]);
+  $('#habitCount').textContent=done.length+'/'+HABITS.length;
+  wrap.innerHTML=HABITS.map(h=>`
+    <div class="row" data-habit="${h.id}" style="cursor:pointer">
+      <label style="cursor:pointer;display:flex;align-items:center;gap:10px">
+        <span style="width:20px;height:20px;border-radius:6px;border:1px solid ${done.includes(h.id)?'var(--gold)':'var(--line)'};display:inline-grid;place-items:center;background:${done.includes(h.id)?'linear-gradient(90deg,var(--gold),var(--gold-bright))':'transparent'};color:var(--onyx);font-size:12px;flex:none">${done.includes(h.id)?'✓':''}</span>
+        <span>
+          <span style="${done.includes(h.id)?'opacity:.55':''}">${h.txt}</span>
+          <small style="display:block;font-size:10px;color:var(--ivory-dim);margin-top:2px">${h.why}</small>
+        </span>
+      </label>
+      <span class="ev-inline ev-${h.t.toLowerCase()}" style="font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:5px;white-space:nowrap;flex:none;${h.t==='Strong'?'background:rgba(62,107,90,.25);color:#7CC79A;border:1px solid rgba(124,199,154,.4)':h.t==='Moderate'?'background:rgba(201,168,106,.18);color:var(--gold-bright);border:1px solid rgba(201,168,106,.4)':'background:rgba(255,255,255,.06);color:var(--ivory-dim);border:1px solid var(--line)'}">${h.t}</span>
+    </div>`).join('');
+  $$('#habitList [data-habit]').forEach(row=>row.addEventListener('click',()=>{
+    const id=row.dataset.habit, arr=store.get(habitKey(),[]);
+    const i=arr.indexOf(id);
+    if(i>=0) arr.splice(i,1); else { arr.push(id); bumpStreak(); }
+    store.set(habitKey(),arr); renderHabits();
+    if(i<0 && arr.length===HABITS.length) toast('Full routine done — that\'s how it compounds 🔥', 2600);
+  }));
+}
+
+/* ---------- Guided self-checks (honest where AI can't measure) ---------- */
+const CHECKS=[
+  {id:'beard', icon:'✦', name:'Beard coverage',
+   why:'Beard density isn\'t honestly measurable from one selfie — lighting and angle swamp the signal. So rate it yourself and use what\'s proven.',
+   rate:['Full','Some patchiness','Sparse'],
+   items:[
+     {t:'Moderate', txt:'If you want more density: topical minoxidil 5% has emerging RCT support for facial hair. Ask a pharmacist/derm first.'},
+     {t:'Strong',   txt:'Give any style 7–10 days of growth before judging it — patchiness often fills visually at 6–10mm.'},
+     {t:'Limited',  txt:'Match the style to the face: patchy cheeks → clean low style or heavy stubble; strong growth → shape to your jaw.'},
+     {t:'Strong',   txt:'Neckline two fingers above the Adam\'s apple; never up at the jawline.'},
+     {t:'Myth',     txt:'"Beard rollers grow new follicles" — no good evidence. Follicle count is genetic/DHT-driven, and we say so plainly.'},
+   ]},
+  {id:'nosecare', icon:'◣', name:'Nose grooming',
+   why:'Nose-hair and grooming state can\'t be read reliably from a selfie — here\'s the clinically-grounded checklist instead.',
+   items:[
+     {t:'Strong',   txt:'TRIM nose hair — never pluck. Plucking risks infection in the facial "danger triangle" (clinical/ENT guidance).'},
+     {t:'Strong',   txt:'Daily SPF on the nose — it\'s the highest sun-exposure point on your face.'},
+     {t:'Moderate', txt:'Blackheads on the nose: salicylic acid (BHA) 2%, 2–3×/week — not squeezing.'},
+     {t:'Myth',     txt:'"Nose-shaping exercises" can\'t move cartilage or bone. Shape is structural; only a surgeon changes it.'},
+   ]},
+  {id:'posture', icon:'▤', name:'Posture / neck',
+   why:'Forward-head posture flattens the jawline from the side. The wall test tells you where you stand — the fix is well-evidenced.',
+   rate:['Head touches wall easily','Have to strain','Can\'t touch without arching'],
+   train:true,
+   items:[
+     {t:'Strong',   txt:'Wall test: heels, glutes, upper back against a wall — can the back of your head touch without arching? That\'s the target.'},
+     {t:'Moderate', txt:'Chin tucks (cervical retraction) 3×10 daily — RCT/systematic-review support for improving forward-head posture.'},
+     {t:'Moderate', txt:'Deep-neck-flexor holds: chin gently tucked, press head back into a pillow 10×10s.'},
+     {t:'Strong',   txt:'Raise your screen to eye level; every hour of looking down is training the posture you don\'t want.'},
+     {t:'Strong',   txt:'Submental fullness under the chin tracks body-fat — the biggest lever is the same as the jawline\'s.'},
+   ]},
+];
+let _ck=null;
+function renderChecks(){
+  const g=$('#checkGrid'); if(!g) return;
+  g.innerHTML='';
+  CHECKS.forEach(c=>{
+    const saved=store.get('check:'+c.id,null);
+    const el=document.createElement('div'); el.className='card'; el.style.cursor='pointer';
+    el.innerHTML=`<div style="font-size:28px;color:var(--gold)">${c.icon}</div>
+      <h3 style="font-family:var(--display);font-size:22px;margin:8px 0 0;font-weight:500">${c.name}</h3>
+      <p class="lede" style="font-size:12px;margin:4px 0 0">${saved? ('Last check: '+new Date(saved.ts).toLocaleDateString()+(saved.rating?' · '+saved.rating:'')) : 'Guided check — no fake AI score'}</p>`;
+    el.addEventListener('click',()=>openCheck(c.id));
+    g.appendChild(el);
+  });
+}
+function openCheck(id){
+  const c=CHECKS.find(x=>x.id===id); if(!c) return;
+  _ck={id, rating:(store.get('check:'+id,{})||{}).rating||null, done:(store.get('check:'+id,{})||{}).done||[]};
+  $('#ckName').textContent=c.name;
+  $('#ckWhy').textContent=c.why;
+  const rateWrap=$('#ckRate');
+  if(c.rate){
+    rateWrap.style.display='block';
+    $('#ckRateChips').innerHTML=c.rate.map(r=>`<button class="chip${_ck.rating===r?' on':''}" data-rate="${r}">${r}</button>`).join('');
+    $$('#ckRateChips .chip').forEach(ch=>ch.addEventListener('click',()=>{ _ck.rating=ch.dataset.rate; $$('#ckRateChips .chip').forEach(x=>x.classList.toggle('on',x===ch)); }));
+  } else rateWrap.style.display='none';
+  $('#ckItems').innerHTML=c.items.map((it,i)=>`
+    <div class="row" data-ck="${i}" style="cursor:pointer;align-items:flex-start;gap:10px">
+      <label style="cursor:pointer;display:flex;gap:10px;align-items:flex-start">
+        <span style="width:18px;height:18px;margin-top:2px;border-radius:5px;border:1px solid ${_ck.done.includes(i)?'var(--gold)':'var(--line)'};display:inline-grid;place-items:center;background:${_ck.done.includes(i)?'var(--gold)':'transparent'};color:var(--onyx);font-size:11px;flex:none">${_ck.done.includes(i)?'✓':''}</span>
+        <span style="font-size:13px;line-height:1.5;color:var(--ivory)">${it.txt}</span>
+      </label>
+      <span style="font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:5px;white-space:nowrap;flex:none;${it.t==='Strong'?'background:rgba(62,107,90,.25);color:#7CC79A;border:1px solid rgba(124,199,154,.4)':it.t==='Moderate'?'background:rgba(201,168,106,.18);color:var(--gold-bright);border:1px solid rgba(201,168,106,.4)':it.t==='Myth'?'background:rgba(224,122,122,.16);color:#E59A9A;border:1px solid rgba(224,122,122,.4)':'background:rgba(255,255,255,.06);color:var(--ivory-dim);border:1px solid var(--line)'}">${it.t}</span>
+    </div>`).join('');
+  $$('#ckItems [data-ck]').forEach(row=>row.addEventListener('click',()=>{
+    const i=+row.dataset.ck, at=_ck.done.indexOf(i);
+    if(at>=0) _ck.done.splice(at,1); else _ck.done.push(i);
+    store.set('check:'+id, {..._ck, ts:Date.now()});   // persist BEFORE re-render (openCheck re-reads store)
+    openCheck(id);
+  }));
+  $('#ckTrain').style.display=c.train?'inline-flex':'none';
+  $('#ckTrain').onclick=()=>{ $('#checkModal').classList.remove('on'); openTrain(); };
+  $('#ckSave').onclick=()=>{ store.set('check:'+id, {..._ck, ts:Date.now()}); $('#checkModal').classList.remove('on'); bumpStreak(); toast('Check saved — honest beats fake'); renderChecks(); };
+  $('#checkModal').classList.add('on');
+}
+$('#checkX').addEventListener('click', ()=>$('#checkModal').classList.remove('on'));
+$('#checkModal').addEventListener('click', e=>{ if(e.target.id==='checkModal') $('#checkModal').classList.remove('on') });
+
+/* ---------- Shareable progress card (uplift, never a rate-me card) ---------- */
+async function shareCard(){
+  const scans=store.get('scans',[]);
+  const streak=store.get('streak',{count:0}).count;
+  const habitsDone=store.get(habitKey(),[]).length;
+  const last=scans[scans.length-1]||null, prev=scans[scans.length-2]||null;
+  let lines=[];
+  if(last && prev){
+    const defs=[['Skin','skin',1],['Jaw','jaw',1],['Lips','lips',1],['Eyes','eyes',1],['Redness','redLevel',-1],['T-zone shine','oilPct',-1],['Under-eye shadow','under',-1]];
+    lines=defs.map(([label,key,dir])=>{
+      if(typeof last[key]!=='number'||typeof prev[key]!=='number') return null;
+      const d=last[key]-prev[key]; if(d*dir<2) return null;
+      return label+' ▲ '+(d>0?'+':'')+Math.round(d);
+    }).filter(Boolean).slice(0,3);
+  }
+  if(!lines.length) lines = last? ['Baseline logged — the trend starts now'] : ['Day 1 — showing up is the win'];
+
+  const W=1080,H=1350, c=document.createElement('canvas'); c.width=W; c.height=H;
+  const x=c.getContext('2d');
+  try{ await (document.fonts && document.fonts.load('500 120px "Cormorant Garamond"')); }catch{}
+  const grad=x.createLinearGradient(0,0,0,H); grad.addColorStop(0,'#0A0A0B'); grad.addColorStop(1,'#141210');
+  x.fillStyle=grad; x.fillRect(0,0,W,H);
+  const rg=x.createRadialGradient(W*.7,-100,50, W*.7,-100,900); rg.addColorStop(0,'rgba(201,168,106,.16)'); rg.addColorStop(1,'rgba(201,168,106,0)');
+  x.fillStyle=rg; x.fillRect(0,0,W,H);
+  x.strokeStyle='rgba(201,168,106,.5)'; x.lineWidth=2; x.strokeRect(48,48,W-96,H-96);
+  x.textAlign='center';
+  x.fillStyle='#C9A86A'; x.font='600 26px Inter, sans-serif';
+  x.fillText('C H I S E L', W/2, 170);
+  x.fillStyle='#F2EDE4'; x.font='500 96px "Cormorant Garamond", Georgia, serif';
+  x.fillText('Progress,', W/2, 330);
+  x.fillStyle='#C9A86A';
+  x.fillText('not perfection.', W/2, 430);
+  x.fillStyle='#C9A86A'; x.font='600 22px Inter, sans-serif';
+  x.fillText('S T R E A K', W/2, 580);
+  x.fillStyle='#E2C58A'; x.font='500 200px "Cormorant Garamond", Georgia, serif';
+  x.fillText(String(streak), W/2, 780);
+  x.fillStyle='#C9C2B4'; x.font='500 26px Inter, sans-serif';
+  x.fillText(streak===1?'day of showing up':'days of showing up', W/2, 830);
+  x.strokeStyle='rgba(201,168,106,.35)'; x.beginPath(); x.moveTo(160,900); x.lineTo(W-160,900); x.stroke();
+  x.fillStyle='#F2EDE4'; x.font='italic 500 40px "Cormorant Garamond", Georgia, serif';
+  lines.forEach((l,i)=>x.fillText(l, W/2, 985+i*66));
+  if(habitsDone) { x.fillStyle='#C9C2B4'; x.font='500 24px Inter, sans-serif'; x.fillText(habitsDone+'/'+HABITS.length+' evidence-backed habits today', W/2, 1180); }
+  x.fillStyle='#C9A86A'; x.font='600 20px Inter, sans-serif';
+  x.fillText('CONFIDENCE, BACKED BY EVIDENCE', W/2, 1252);
+  const blob=await new Promise(r=>c.toBlob(r,'image/png'));
+  const file=new File([blob],'chisel-progress.png',{type:'image/png'});
+  if(navigator.canShare && navigator.canShare({files:[file]})){
+    try{ await navigator.share({files:[file], title:'Chisel progress', text:'Improving with evidence — not chasing a score.'}); return; }catch(e){ if(e.name==='AbortError') return; }
+  }
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='chisel-progress.png'; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 5000);
+  toast('Progress card saved');
+}
+$('#shareProgress').addEventListener('click', shareCard);
+
 /* ---------- Boot ---------- */
+initGate();
+renderHabits();
+renderChecks();
 buildGroom();
 renderTimeline();
 go(location.hash.slice(1) || 'home');

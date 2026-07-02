@@ -4,11 +4,18 @@ A native Android app, wrapped with Capacitor around a single self-contained HTML
 
 ## What you get
 - **6 screens**: Home, Analyze, Affirm, Meditate, Groom, Connect
-- **Live front camera** with face-landmark overlay (uses browser `FaceDetector`, falls back gracefully)
+- **Live front camera** with 468-point MediaPipe face mesh + auto-capture scanning
+- **Wellbeing gate**: 17+, measurements-never-ratings framing, not-medical-advice disclosure
+- **Biggest controllable wins**: each scan ranks where effort actually pays off
+- **Progress deltas**: every re-scan shows what improved since last time (progress, not ranking)
+- **Shareable progress card**: streak + improvements rendered to a 1080×1350 image (Web Share / download)
+- **Guided self-checks** (beard, nose grooming, posture): honest checklists where a selfie can't measure
+- **Daily evidence-backed routine**: SPF, retinoid, floss, sleep, chin tucks… each tagged Strong/Moderate/Limited
 - **Affirmations & manifestation lines** displayed on top of your live reflection
 - **Guided meditation** with breathing orb, gold progress arc, ambient hum, and voice guidance
 - **Science-based grooming guide** (jawline, nose, lips, neck, facial hair, haircut) with daily checklist
 - **One-tap "Today's plan"** that persists across sessions
+- Every claim has a receipt — see the repo-root **SCIENCE.md**
 
 ## Install on your phone (USB cable, USB debugging already on)
 
