@@ -189,6 +189,22 @@
   .modal ol{padding-left:20px}
   .modal .x{position:absolute;top:18px;right:18px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.05);border:1px solid var(--line);display:grid;place-items:center;cursor:pointer;color:var(--ivory)}
 
+  /* Age gate / wellbeing guardrail */
+  .agegate{position:fixed;inset:0;z-index:9500;background:var(--onyx);display:flex;align-items:center;justify-content:center;padding:24px}
+  .agegate .ag-card{max-width:440px;width:100%;text-align:center;background:linear-gradient(180deg,var(--graphite),#0d0d0f);border:1px solid var(--line);border-radius:20px;padding:40px 30px}
+  .agegate .ag-logo{font-family:var(--display);font-size:42px;letter-spacing:.03em;background:linear-gradient(180deg,var(--ivory),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:6px}
+  .agegate h2{font-family:var(--display);font-weight:500;font-size:26px;margin:10px 0 8px}
+  .agegate p{color:var(--ivory-dim);font-size:13px;line-height:1.65;text-align:left}
+  .agegate .ag-fine{font-size:10px;letter-spacing:.05em;margin-top:20px;opacity:.65;text-align:center}
+
+  /* Guided self-check controls (beard / nose-hair) inside scan sheet */
+  .selfchk{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+  .selfchk .lbl{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+
+  /* Share card */
+  #shareModal .panel{max-width:440px;text-align:center}
+  #shareCanvas{width:100%;height:auto;border-radius:16px;border:1px solid var(--line);background:#0A0A0B}
+
   /* Connect diagnostic */
   .diag{display:grid;grid-template-columns:1fr auto;gap:8px 14px;padding:14px 16px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;font-size:12px}
   .diag .k{color:var(--ivory-dim);letter-spacing:.05em}
@@ -227,6 +243,59 @@
 </div>
 
 <div id="toast"></div>
+
+<!-- WELLBEING GUARDRAIL: 17+ AGE GATE -->
+<div id="ageGate" class="agegate" style="display:none">
+  <div class="ag-card">
+    <div class="ag-logo">Chisel</div>
+    <h2 style="text-align:center">Before we begin</h2>
+    <p>Chisel analyzes your face on-device and shares evidence-graded grooming science. It's built for adults, and we never use "attractive/unattractive" language. Please confirm you're 17 or older to continue.</p>
+    <div class="btn-row" style="justify-content:center;margin-top:18px">
+      <button class="btn solid" id="ageYes">I'm 17 or older</button>
+      <button class="btn ghost" id="ageNo">I'm under 17</button>
+    </div>
+    <p class="ag-fine">Cosmetic &amp; educational — not medical advice.</p>
+  </div>
+</div>
+<div id="ageBlock" class="agegate" style="display:none">
+  <div class="ag-card">
+    <div class="ag-logo">Chisel</div>
+    <h2>Come back soon</h2>
+    <p style="text-align:center">Chisel is designed for users 17 and older. Please check back when you're ready — self-improvement isn't a race.</p>
+  </div>
+</div>
+
+<!-- WELLBEING GUARDRAIL: DISTRESS / OVER-USE CHECK-IN -->
+<div class="modal" id="wellModal">
+  <div class="panel" style="max-width:480px">
+    <div class="x" id="wellX">✕</div>
+    <div class="eyebrow">A gentle check-in</div>
+    <h3>You've checked in a lot today</h3>
+    <p>Chisel measures what's controllable — it's not a verdict on you, and progress happens between showing up, not between scans. If how you see yourself has been weighing on you, you don't have to carry that alone.</p>
+    <h4>Support, if you want it</h4>
+    <p>• US — 988 Suicide &amp; Crisis Lifeline: call or text <b>988</b><br/>
+       • US — Crisis Text Line: text <b>HOME</b> to <b>741741</b><br/>
+       • Body-image &amp; eating concerns: NEDA (nationaleatingdisorders.org)<br/>
+       • Outside the US: search "crisis line" + your country</p>
+    <div class="btn-row" style="margin-top:18px">
+      <button class="btn solid" id="wellOk">I'm okay, continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHAREABLE PROGRESS CARD -->
+<div class="modal" id="shareModal">
+  <div class="panel">
+    <div class="x" id="shareX">✕</div>
+    <div class="eyebrow">Progress card</div>
+    <h3 style="margin-bottom:14px">Share your streak — not a rate-me score</h3>
+    <canvas id="shareCanvas" width="1080" height="1350"></canvas>
+    <div class="btn-row" style="margin-top:18px;justify-content:center">
+      <button class="btn solid" id="shareSend">Share</button>
+      <button class="btn ghost" id="shareDL">Download</button>
+    </div>
+  </div>
+</div>
 
 <div class="app">
   <nav class="rail" aria-label="primary">
@@ -285,6 +354,20 @@
             <div class="eyebrow" style="margin-bottom:8px">Lookmax Score</div>
             <div style="display:flex;align-items:baseline;gap:10px"><b id="scoreNum" style="font-family:var(--display);font-size:48px;color:var(--gold)">—</b><small style="color:var(--ivory-dim);font-size:11px;letter-spacing:.2em;text-transform:uppercase">Last analysis</small></div>
           </div>
+          <div class="card" style="padding:24px;margin-top:14px">
+            <div class="eyebrow" style="margin-bottom:8px">Share Progress</div>
+            <div style="font-size:12px;color:var(--ivory-dim);line-height:1.5">A streak card for TikTok/IG/Snap — not a rate-me score.</div>
+            <div class="btn-row" style="margin-top:12px">
+              <button class="btn solid" id="openShare">Create Card</button>
+            </div>
+          </div>
+          <div class="card" style="padding:24px;margin-top:14px">
+            <div class="eyebrow" style="margin-bottom:8px">Wellbeing</div>
+            <div style="font-size:12px;color:var(--ivory-dim);line-height:1.5">Chisel checks in on usage patterns and always has support resources on hand.</div>
+            <div class="btn-row" style="margin-top:12px">
+              <button class="btn ghost" id="openWellbeing">View support resources</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -319,7 +402,7 @@
     <section class="screen" data-screen="analyze">
       <div class="eyebrow">Facial Analysis</div>
       <h2 class="section">Look at yourself. <span class="gold">Measure what matters.</span></h2>
-      <p class="lede" style="margin-bottom:18px">A real <b>468-point face mesh</b> runs on-device (Google MediaPipe). It reads symmetry, jaw, nose, lips and eyes, plus a <b>dermatology-grade skin scan</b> (Fitzpatrick tone via ITA°, CIELAB undertone, white-balanced off the sclera, glare-rejected median sampling, redness, T-zone shine, evenness, under-eye), a <b>hair</b> check and a <b>teeth shade</b> read — each paired with a science-backed remedy and its evidence strength, then tracked over time.</p>
+      <p class="lede" style="margin-bottom:18px">A real <b>468-point face mesh</b> runs on-device (Google MediaPipe). It reads symmetry, jaw, <b>cheekbones</b>, nose, lips and eyes, plus a <b>dermatology-grade skin scan</b> (Fitzpatrick tone via ITA°, CIELAB undertone, white-balanced off the sclera, glare-rejected median sampling, redness, T-zone shine, evenness, under-eye), a <b>hair</b> check and a <b>teeth shade</b> read — each paired with a science-backed remedy and its evidence strength, then tracked over time. Nose-hair and <b>beard</b> density aren't honestly readable from a selfie, so those ship as guided self-checks instead of a faked score.</p>
       <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center;min-height:240px">
         <div style="font-size:54px;color:var(--gold)">◉</div>
         <h3 class="display" style="font-size:28px;margin:8px 0 0">Ready when you are.</h3>
@@ -1015,6 +1098,13 @@ function measureFrame(d){
   const browTop=Math.min(P(FACE.BROW_R).y,P(FACE.BROW_L).y);
   const fWHR=faceW/(Math.abs(P(FACE.LIP_UT).y-browTop)||1);
 
+  /* Cheekbones — bizygomatic width (faceW) vs mid-face height, plus soft-tissue
+     fullness over the cheekbone (landmarks 50/280) relative to the bone width. */
+  const midFaceRatio=faceW/faceH;
+  const cheekSoft=D(P(FACE.CHEEK_R),P(FACE.CHEEK_L));
+  const cheekFullness=cheekSoft/faceW;
+  const cheekScore=bell(midFaceRatio,0.78,0.13);
+
   /* Nose */
   const noseW=D(P(FACE.ALA_R),P(FACE.ALA_L)), noseL=Math.abs(subn.y-nasion.y)||1, nasalIdx=noseW/noseL;
   const noseScore=bell(nasalIdx,0.72,0.18);
@@ -1083,7 +1173,7 @@ function measureFrame(d){
 
   return { frontal, yaw, rollDeg, qLum:cheekLum, faceFill,
     symScore, asym, thirdsScore, t0:thirds[0], t1:thirds[1], t2:thirds[2],
-    jawScore, jawTaper, fWHR, noseScore, nasalIdx,
+    jawScore, jawTaper, fWHR, cheekScore, midFaceRatio, cheekFullness, noseScore, nasalIdx,
     lipScore, lipFull, lipRatio, eyeScore, spacing, canthal, fullness,
     skinEven, aRed, redLevel, oilPct, undEyeDark, skinScore, wbOn,
     skinL:skinLab[0], skinA:skinLab[1], skinB:skinLab[2], skinCol,
@@ -1110,6 +1200,7 @@ function finalizeScan(){
   const symScore=rnd(M('symScore')), asym=M('asym'), thirdsScore=rnd(M('thirdsScore'));
   const thirds=[M('t0'),M('t1'),M('t2')];
   const jawScore=rnd(M('jawScore')), jawTaper=M('jawTaper'), fWHR=M('fWHR');
+  const cheekScore=rnd(M('cheekScore')), midFaceRatio=M('midFaceRatio'), cheekFullness=M('cheekFullness');
   const noseScore=rnd(M('noseScore')), nasalIdx=M('nasalIdx');
   const lipScore=rnd(M('lipScore')), lipFull=M('lipFull'), lipRatio=M('lipRatio');
   const eyeScore=rnd(M('eyeScore')), spacing=M('spacing'), canthal=M('canthal');
@@ -1184,10 +1275,24 @@ function finalizeScan(){
      status:`Taper ${jawTaper.toFixed(2)} (jaw/cheek width)`,
      metrics:[['Taper',jawTaper.toFixed(2)],['fWHR',fWHR.toFixed(2)]],
      rem:[R('Strong','Lower body-fat is the biggest lever on a visible jawline. [facial-adiposity research]'),R('Moderate','Firm gum/chewing loads the masseter. [mastication studies]'),R('Myth','"Mewing" has no controlled evidence of changing bone.')]},
+    {k:'Cheekbones', ctrl:true, score:cheekScore,
+     status:`Mid-face ratio ${midFaceRatio.toFixed(2)} (bizygomatic width/height) · cheek fullness ${cheekFullness.toFixed(2)}`,
+     metrics:[['Bizygomatic/height',midFaceRatio.toFixed(2)],['Cheek fullness',cheekFullness.toFixed(2)]],
+     rem:[R('Moderate','A facial-exercise program showed improved cheek fullness/appearance over 20 weeks in a small controlled trial. [Alam 2018, JAMA Dermatology]'),
+          R('Moderate','Body-fat percentage and hydration both visibly affect cheek fullness — very low body fat can hollow the mid-face.'),
+          R('Limited','The zygomatic (cheek) bone itself is fixed by skeletal structure and isn\'t changed by exercise or diet.')]},
     {k:'Nose', ctrl:false, score:noseScore,
      status:`Nasal index ${nasalIdx.toFixed(2)} (width/length)`,
      metrics:[['Nasal index',nasalIdx.toFixed(2)]],
-     rem:[R('Strong','Trim — never pluck — nasal hair; plucking risks infection in the facial "danger triangle". [ENT guidance]'),R('Myth','"Nose-shaping exercises" can\'t move cartilage or bone.')]},
+     rem:[R('Strong','Trim — never pluck — nasal hair; plucking risks infection in the facial "danger triangle". [ENT guidance]'),R('Myth','"Nose-shaping exercises" can\'t move cartilage or bone.')],
+     custom:noseChecklistHtml()},
+    {k:'Beard', ctrl:true, score:null,
+     status:'Guided self-check — density isn\'t reliably measurable from a single selfie',
+     metrics:[],
+     rem:[R('Moderate','Topical minoxidil can increase facial-hair density for some men — emerging RCT evidence. [minoxidil-for-beard trials]'),
+          R('Limited','Grooming and shaping for your face shape improves the look far more reliably than trying to grow more hair.'),
+          R('Limited','Beard density is largely genetic and DHT-driven — patchiness isn\'t a personal failing.')],
+     custom:beardChecklistHtml()},
     {k:'Eyes', ctrl:false, score:eyeScore,
      status:`Spacing ${spacing.toFixed(2)} · canthal tilt ${canthal.toFixed(1)}°`,
      metrics:[['Spacing',spacing.toFixed(2)],['Canthal tilt',canthal.toFixed(1)+'°']],
@@ -1210,7 +1315,7 @@ function finalizeScan(){
     skin:skinScore, teeth:teethScore, hairGloss, redLevel, oilPct, ita:+ita.toFixed(1),
     undertone:und.label, hue:+und.hue.toFixed(1), wb:wbOn?1:0,
     fullness:+fullness.toFixed(3), under:undEyeDark, skinHex:hex(skinCol), lipHex:hex(lipCol) });
-  store.set('lastScore', overall); renderHome(); bumpStreak(); renderTimeline();
+  store.set('lastScore', overall); renderHome(); bumpStreak(); renderTimeline(); checkWellbeing();
   _burst=[];
   $('#camSheet').style.display='block'; $('#camSheet').scrollTop=0;
   $('#camMeta').textContent='Scanned · '+new Date().toLocaleTimeString();
@@ -1242,7 +1347,8 @@ function renderResults(overall, areas, extra){
     return `<details class="area"${a.ctrl?' open':''}><summary>${dot}<span class="nm">${a.k}${a.ctrl?' ▲':''}</span>${sc}</summary>
       <div class="st">${a.status}</div>
       <div style="margin-top:8px">${mets}</div>
-      <div style="margin-top:6px">${rems}</div></details>`;
+      <div style="margin-top:6px">${rems}</div>
+      ${a.custom||''}</details>`;
   }).join('');
   $('#camSheet').innerHTML = evCss + `
     <div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:8px">
@@ -1365,6 +1471,120 @@ function stopMed(){ if(medTimer) clearInterval(medTimer); medTimer=null; $('#med
 $('#medStart').addEventListener('click', ()=> medTimer ? (clearInterval(medTimer), medTimer=null, $('#medStart').textContent='Resume', stopHum()) : startMed() );
 $('#medStop').addEventListener('click', stopMed);
 
+/* ---------- Guided self-checks (Beard / Nose-hair) ---------- */
+/* Density/patchiness isn't honestly measurable from a selfie, so these are
+   self-reported checklists rather than a faked AI score (see PLAN.md). */
+function beardChecklistHtml(){
+  const cur = store.get('beardLevel', null);
+  const levels=['Clean-shaven','Patchy','Moderate','Full'];
+  const chips = levels.map(l=>`<button type="button" class="chip${cur===l?' on':''}" data-lvl="${l}" onclick="setBeardLevel(this,'${l}')">${l}</button>`).join('');
+  return `<div class="selfchk beardchk"><div class="lbl">Self-rate your coverage</div><div class="btn-row">${chips}</div></div>`;
+}
+function setBeardLevel(el, level){
+  store.set('beardLevel', level);
+  const wrap = el.closest('.beardchk');
+  if(wrap) $$('.chip',wrap).forEach(c=>c.classList.toggle('on', c.dataset.lvl===level));
+  toast('Beard coverage saved: '+level);
+}
+function noseChecklistHtml(){
+  const on = store.get('noseHairTrimmed', false);
+  return `<div class="selfchk"><div class="lbl">Guided self-check</div><div class="row" style="border:0;padding:6px 0"><label>Nose hair trimmed this week?</label><div class="switch${on?' on':''}" onclick="toggleNoseHair(this)"></div></div></div>`;
+}
+function toggleNoseHair(el){
+  const on = !el.classList.contains('on');
+  el.classList.toggle('on', on);
+  store.set('noseHairTrimmed', on);
+  toast(on?'Nice — logged for this week':'Reminder: trim, don\'t pluck');
+}
+
+/* ---------- Wellbeing guardrails ---------- */
+function initAgeGate(){
+  if(store.get('ageVerified', false)){ $('#ageGate').style.display='none'; return; }
+  $('#ageGate').style.display='flex';
+}
+$('#ageYes').addEventListener('click', ()=>{ store.set('ageVerified', true); $('#ageGate').style.display='none'; });
+$('#ageNo').addEventListener('click', ()=>{ $('#ageGate').style.display='none'; $('#ageBlock').style.display='flex'; });
+function showWellbeingModal(){ $('#wellModal').classList.add('on'); }
+$('#openWellbeing').addEventListener('click', showWellbeingModal);
+$('#wellX').addEventListener('click', ()=>$('#wellModal').classList.remove('on'));
+$('#wellOk').addEventListener('click', ()=>$('#wellModal').classList.remove('on'));
+$('#wellModal').addEventListener('click', e=>{ if(e.target.id==='wellModal') $('#wellModal').classList.remove('on') });
+/* Heuristic, on-device only — never diagnostic. Flags heavy same-session /
+   same-day scanning so the app can surface support resources rather than
+   silently rewarding compulsive checking. Cooldown avoids nagging. */
+function checkWellbeing(){
+  const arr = store.get('scans',[]);
+  const now = Date.now();
+  const lastHour = arr.filter(s=>now-s.t<60*60*1000).length;
+  const today = arr.filter(s=>now-s.t<24*60*60*1000).length;
+  const lastShown = store.get('wellbeingShown', 0);
+  if(now-lastShown>6*60*60*1000 && (lastHour>=4 || today>=8)){
+    store.set('wellbeingShown', now);
+    showWellbeingModal();
+  }
+}
+
+/* ---------- Shareable progress card (virality, not a rate-me card) ---------- */
+function pickShareStat(){
+  const arr = store.get('scans',[]);
+  if(arr.length>=2){
+    const first=arr[0], last=arr[arr.length-1];
+    let best=null;
+    [['skin','Skin evenness'],['jaw','Jaw definition'],['sym','Symmetry']].forEach(([k,label])=>{
+      if(typeof first[k]==='number' && typeof last[k]==='number'){
+        const d=last[k]-first[k];
+        if(d>0 && (!best || d>best.d)) best={label,d};
+      }
+    });
+    if(best) return `${best.label} +${Math.round(best.d)}`;
+  }
+  const s = store.get('streak',{count:0});
+  return `${s.count}-day streak`;
+}
+async function renderShareCard(){
+  if(document.fonts && document.fonts.ready) await document.fonts.ready;
+  const c=$('#shareCanvas'), g=c.getContext('2d');
+  const w=c.width,h=c.height;
+  const bg=g.createLinearGradient(0,0,0,h);
+  bg.addColorStop(0,'#0d0d10'); bg.addColorStop(1,'#0A0A0B');
+  g.fillStyle=bg; g.fillRect(0,0,w,h);
+  const glow=g.createRadialGradient(w*0.75,h*0.12,50,w*0.75,h*0.12,700);
+  glow.addColorStop(0,'rgba(201,168,106,.20)'); glow.addColorStop(1,'rgba(201,168,106,0)');
+  g.fillStyle=glow; g.fillRect(0,0,w,h);
+  g.textAlign='center';
+  g.fillStyle='#E2C58A'; g.font='500 96px "Cormorant Garamond"';
+  g.fillText('Chisel', w/2, 210);
+  g.fillStyle='rgba(242,237,228,.55)'; g.font='600 22px Inter';
+  g.fillText('CONFIDENCE, BACKED BY EVIDENCE', w/2, 258);
+  g.fillStyle='#F2EDE4'; g.font='500 118px "Cormorant Garamond"';
+  g.fillText(pickShareStat(), w/2, h/2, w-160);
+  const s=store.get('streak',{count:0});
+  g.fillStyle='rgba(242,237,228,.6)'; g.font='500 32px Inter';
+  g.fillText(`${s.count} day streak · ${new Date().toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'})}`, w/2, h/2+120);
+  g.strokeStyle='rgba(201,168,106,.35)'; g.lineWidth=2;
+  g.strokeRect(60,60,w-120,h-120);
+  g.fillStyle='rgba(201,168,106,.8)'; g.font='600 20px Inter';
+  g.fillText('MEASURE WHAT MATTERS · IMPROVE WHAT YOU CONTROL', w/2, h-100);
+}
+$('#openShare').addEventListener('click', async ()=>{ $('#shareModal').classList.add('on'); await renderShareCard(); });
+$('#shareX').addEventListener('click', ()=>$('#shareModal').classList.remove('on'));
+$('#shareModal').addEventListener('click', e=>{ if(e.target.id==='shareModal') $('#shareModal').classList.remove('on') });
+$('#shareDL').addEventListener('click', ()=>{
+  const c=$('#shareCanvas'); const a=document.createElement('a');
+  a.download='chisel-progress.png'; a.href=c.toDataURL('image/png'); a.click();
+});
+$('#shareSend').addEventListener('click', ()=>{
+  const c=$('#shareCanvas');
+  c.toBlob(async (blob)=>{
+    if(!blob) return;
+    const file = new File([blob], 'chisel-progress.png', {type:'image/png'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      try{ await navigator.share({files:[file], title:'Chisel Progress', text:'Confidence, backed by evidence.'}); }
+      catch(e){ /* user cancelled */ }
+    } else { $('#shareDL').click(); toast('Sharing not supported here — downloaded instead'); }
+  }, 'image/png');
+});
+
 /* ---------- Grooming cards ---------- */
 const GROOM = [
   {id:'jawline', icon:'◢', num:'01', name:'Jawline',
@@ -1463,6 +1683,7 @@ $('#refreshDiag').addEventListener('click', runDiag);
 /* ---------- Boot ---------- */
 buildGroom();
 renderTimeline();
+initAgeGate();
 go(location.hash.slice(1) || 'home');
 setTimeout(()=>{ $('#boot').classList.add('gone'); setTimeout(()=>$('#boot').remove(),900) }, 1300);
 </script>
