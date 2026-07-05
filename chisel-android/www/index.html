@@ -63,10 +63,10 @@
   nav.rail .footer b{color:var(--gold)}
 
   nav.tabs{display:none;background:linear-gradient(180deg,var(--graphite),#0d0d0f);border-top:1px solid var(--line);position:relative}
-  @media (max-width:760px){nav.rail{display:none}nav.tabs{display:grid;grid-template-columns:repeat(6,1fr);align-items:center}}
-  nav.tabs a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:44px;color:var(--ivory-dim);text-decoration:none;font-size:9px;letter-spacing:.2em;text-transform:uppercase;position:relative;z-index:1}
+  @media (max-width:760px){nav.rail{display:none}nav.tabs{display:grid;grid-template-columns:repeat(7,1fr);align-items:center}}
+  nav.tabs a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:44px;color:var(--ivory-dim);text-decoration:none;font-size:8px;letter-spacing:.1em;text-transform:uppercase;position:relative;z-index:1}
   nav.tabs a.active{color:var(--onyx)}
-  nav.tabs .pill{position:absolute;top:6px;left:0;height:calc(100% - 12px);width:calc(100%/6);background:linear-gradient(180deg,var(--gold),var(--gold-bright));border-radius:10px;transition:transform .35s var(--ease-out)}
+  nav.tabs .pill{position:absolute;top:6px;left:0;height:calc(100% - 12px);width:calc(100%/7);background:linear-gradient(180deg,var(--gold),var(--gold-bright));border-radius:10px;transition:transform .35s var(--ease-out)}
 
   main.view{overflow-y:auto;overflow-x:hidden;padding:32px 40px 80px;position:relative;scroll-behavior:smooth}
   @media (max-width:760px){main.view{padding:20px 16px 24px}}
@@ -205,6 +205,14 @@
   #shareModal .panel{max-width:440px;text-align:center}
   #shareCanvas{width:100%;height:auto;border-radius:16px;border:1px solid var(--line);background:#0A0A0B}
 
+  /* Evidence badges (global — same palette as the scan sheet) */
+  .ev{font-style:normal;font-size:9px;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:5px;margin-right:6px;white-space:nowrap;display:inline-block}
+  .ev-strong{background:rgba(62,107,90,.25);color:#7CC79A;border:1px solid rgba(124,199,154,.4)}
+  .ev-moderate{background:rgba(201,168,106,.18);color:var(--gold-bright);border:1px solid rgba(201,168,106,.4)}
+  .ev-limited{background:rgba(255,255,255,.06);color:var(--ivory-dim);border:1px solid var(--line)}
+  .ev-myth{background:rgba(224,122,122,.16);color:#E59A9A;border:1px solid rgba(224,122,122,.4)}
+  .ev-plan{background:rgba(201,168,106,.18);color:var(--gold-bright);border:1px solid rgba(201,168,106,.4)}
+
   /* Connect diagnostic */
   .diag{display:grid;grid-template-columns:1fr auto;gap:8px 14px;padding:14px 16px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;font-size:12px}
   .diag .k{color:var(--ivory-dim);letter-spacing:.05em}
@@ -303,6 +311,7 @@
     <div class="links" id="navLinks">
       <a href="#home" data-route="home" class="active"><span class="ico">◇</span> Home</a>
       <a href="#analyze" data-route="analyze"><span class="ico">◉</span> Analyze</a>
+      <a href="#jawlab" data-route="jawlab"><span class="ico">◈</span> Jaw Lab</a>
       <a href="#affirm" data-route="affirm"><span class="ico">✦</span> Affirm</a>
       <a href="#meditate" data-route="meditate"><span class="ico">◯</span> Meditate</a>
       <a href="#groom" data-route="groom"><span class="ico">▣</span> Groom</a>
@@ -315,6 +324,7 @@
     <span class="pill" id="tabPill"></span>
     <a href="#home" data-route="home">Home</a>
     <a href="#analyze" data-route="analyze">Analyze</a>
+    <a href="#jawlab" data-route="jawlab">Jaw</a>
     <a href="#affirm" data-route="affirm">Affirm</a>
     <a href="#meditate" data-route="meditate">Meditate</a>
     <a href="#groom" data-route="groom">Groom</a>
@@ -332,6 +342,7 @@
           <p class="lede" style="margin-top:18px">A precision lookmax studio. Real-time facial analysis, science-grounded grooming, and the affirmations to match. Open the camera, look at yourself, and become it.</p>
           <div class="btn-row" style="margin-top:24px">
             <button class="btn solid" data-go="analyze">Start Analysis</button>
+            <button class="btn" data-go="jawlab">Jaw Lab</button>
             <button class="btn" data-go="affirm">Affirm Out Loud</button>
             <button class="btn ghost" data-go="meditate">Visualize</button>
           </div>
@@ -414,6 +425,43 @@
         </div>
       </div>
       <div id="scanHistory"></div>
+    </section>
+
+    <!-- JAW LAB -->
+    <section class="screen" data-screen="jawlab">
+      <div class="eyebrow">Jaw Lab · Your hero module</div>
+      <h2 class="section">Build the jawline — <span class="gold">the honest way.</span></h2>
+      <p class="lede" style="margin-bottom:18px">Bone is the gift; definition is the work. Everything here targets what actually moves a jawline — <b>body-fat, masseter, posture</b> — with each method's evidence strength shown, and myths called myths.</p>
+
+      <div class="grid g-2">
+        <div class="card"><div class="eyebrow">Jaw definition trend</div><div id="jawTrend"></div></div>
+        <div class="card gold"><div class="eyebrow">Training program</div><div id="jawProgram"></div></div>
+      </div>
+
+      <div class="card" style="margin-top:18px"><div class="eyebrow">Your controllable wins</div><div id="jawWins" style="margin-top:8px"></div></div>
+
+      <div class="grid g-2" style="margin-top:18px">
+        <div class="card"><div class="eyebrow">Masseter chew timer</div><div id="chewBox"></div></div>
+        <div class="card"><div class="eyebrow">Chin-tuck counter · today</div><div id="tuckBox"></div></div>
+      </div>
+
+      <div class="card" style="margin-top:18px"><div class="eyebrow">The #1 lever · body-fat</div><div id="bfBox"></div></div>
+
+      <div class="card" style="margin-top:18px"><div class="eyebrow">Myth buster</div><div id="mythBox" style="margin-top:8px"></div></div>
+
+      <div class="card" style="margin-top:18px"><div class="eyebrow">Jaw habit stack</div><div id="stackBox" style="margin-top:8px"></div></div>
+
+      <div class="card" style="margin-top:18px"><div class="eyebrow">Consistency · last 5 weeks</div><div id="heatBox" style="margin-top:10px"></div></div>
+
+      <div class="card" style="margin-top:18px"><div class="eyebrow">Progress photos · on-device only</div><div id="photoBox" style="margin-top:10px"></div></div>
+
+      <div class="card" style="margin-top:18px"><div class="eyebrow">Evidence library</div><div id="evLib" style="margin-top:8px"></div></div>
+
+      <div class="card gold" style="margin-top:18px">
+        <div class="eyebrow">Jaw affirmation</div>
+        <div id="jawAff" style="font-family:var(--display);font-style:italic;font-size:22px;line-height:1.35;margin-top:6px">—</div>
+        <div class="btn-row" style="margin-top:14px"><button class="btn" id="jawAffNext">Next</button><button class="btn ghost" id="jawAffSpeak">Say it</button></div>
+      </div>
     </section>
 
     <!-- AFFIRM -->
@@ -628,12 +676,13 @@ const platform = (window.Capacitor && window.Capacitor.getPlatform) ? window.Cap
 $('#buildTag').textContent = '1.0.0 · ' + (isCap?('native · '+platform):'web');
 
 /* ---------- Routing ---------- */
-const routes = ['home','analyze','affirm','meditate','groom','connect'];
+const routes = ['home','analyze','jawlab','affirm','meditate','groom','connect'];
 function go(route){
   if(!routes.includes(route)) route='home';
   $$('.screen').forEach(s=>s.classList.toggle('active', s.dataset.screen===route));
   $$('[data-route]').forEach(a=>a.classList.toggle('active', a.dataset.route===route));
   if(route==='home') renderHome();
+  if(route==='jawlab') renderJawLab();
   if(route==='connect') runDiag();
   // move mobile pill
   const idx = routes.indexOf(route);
@@ -701,15 +750,19 @@ async function openCam(){
     toast('Camera blocked: '+err.message, 3000); console.warn(err);
   }
   sizeCanvas();
-  $('#camMeta').textContent = 'Loading face engine…';
-  faceKitReady = window.faceKit ? await window.faceKit.ready() : false;
   _lockAt=0; _miss=0;
-  if(faceKitReady){
-    $('#camMeta').textContent = trainMode ? JAW_TRAIN[0].name : (scanMode ? 'Auto-scan' : 'Live');
-    if(scanMode) setGuideMsg('', 'CENTER YOUR FACE IN THE OVAL');
-    if(trainMode) setGuideMsg('', 'CENTER YOUR FACE — JAW TRAINING');
+  if(photoMode){
+    $('#camMeta').textContent = _photoKind==='profile' ? 'Profile photo' : 'Front photo';
+  } else {
+    $('#camMeta').textContent = 'Loading face engine…';
+    faceKitReady = window.faceKit ? await window.faceKit.ready() : false;
+    if(faceKitReady){
+      $('#camMeta').textContent = trainMode ? JAW_TRAIN[0].name : (scanMode ? 'Auto-scan' : 'Live');
+      if(scanMode) setGuideMsg('', 'CENTER YOUR FACE IN THE OVAL');
+      if(trainMode) setGuideMsg('', 'CENTER YOUR FACE — JAW TRAINING');
+    }
+    else { const e=window.faceKit&&window.faceKit.error; const msg='Engine: '+(e?String(e.message||e):'no module'); $('#camMeta').textContent='Face engine offline'; toast(msg, 12000); }
   }
-  else { const e=window.faceKit&&window.faceKit.error; const msg='Engine: '+(e?String(e.message||e):'no module'); $('#camMeta').textContent='Face engine offline'; toast(msg, 12000); }
   if(detLoop) cancelAnimationFrame(detLoop);
   detLoop = requestAnimationFrame(meshLoop);
   runDiag();
@@ -719,7 +772,7 @@ function closeCam(){
   $('#affirmOverlay').style.display='none';
   $('#camSheet').style.display='none';
   $('#scanGuide').style.display='none';
-  scanMode=false; trainMode=false; _tr=null; _lockAt=0; _miss=0;
+  scanMode=false; trainMode=false; photoMode=false; _tr=null; _lockAt=0; _miss=0;
   if(detLoop) cancelAnimationFrame(detLoop); detLoop=null;
   if(stream) stream.getTracks().forEach(t=>t.stop()); stream=null;
   ctx && ctx.clearRect(0,0,cv.width,cv.height);
@@ -731,6 +784,7 @@ $('#camBack').addEventListener('click', closeCam);
 $('#camFlip').addEventListener('click', async ()=>{ facing = facing==='user'?'environment':'user'; closeCam(); await openCam() });
 let _snapTO=null;
 $('#camShot').addEventListener('click', ()=>{
+  if(photoMode){ capturePhoto(); return; }
   if(trainMode) return;
   if(!faceKitReady){ toast('Face engine still loading…'); return; }
   manualSnap = true; $('#camMeta').textContent='Hold still — capturing…';
@@ -834,8 +888,9 @@ function jawGeom(d){
 }
 function trainStep(d){
   if(!_tr) return;
-  const now=performance.now(), ex=JAW_TRAIN[_tr.ex];
-  $('#camMeta').textContent = `${ex.name} · ex ${_tr.ex+1}/${JAW_TRAIN.length}`;
+  const plan=_tr.plan||JAW_TRAIN;
+  const now=performance.now(), ex=plan[_tr.ex];
+  $('#camMeta').textContent = `${ex.name} · ex ${_tr.ex+1}/${plan.length}`;
   if(_tr.rest){                                          // brief relax between reps
     const left=_tr.rest-now;
     if(left>0){ setGuideMsg('•','Relax — next rep in '+Math.ceil(left/1000)); return; }
@@ -857,7 +912,7 @@ function trainStep(d){
     _tr.rep++; _tr.t0=0;
     if(_tr.rep>=ex.reps){
       _tr.ex++; _tr.rep=0;
-      if(_tr.ex>=JAW_TRAIN.length){ finishTrain(); return; }
+      if(_tr.ex>=plan.length){ finishTrain(); return; }
     }
     _tr.rest=now+1300;
     setGuideMsg('✓', JAW_TIPS[Math.floor(Math.random()*JAW_TIPS.length)]);
@@ -866,14 +921,17 @@ function trainStep(d){
 function finishTrain(){
   trainMode=false; _tr=null;
   const n=(store.get('jawTrain',0))+1; store.set('jawTrain',n);
+  const pr=store.get('jawProgram',{sessions:0}); pr.sessions=(pr.sessions||0)+1; store.set('jawProgram',pr);
+  logJaw('train');
   setGuideMsg('✓','Jaw session complete · '+n+' done');
   bumpStreak(); toast('Jawline session complete 💪', 2600);
   setTimeout(closeCam, 1700);
 }
-function openTrain(){ scanMode=false; trainMode=true; _tr={ex:0,rep:0,t0:0,rest:0}; const h=$('.tap-hint'); if(h) h.textContent='Follow the on-screen cues'; openCam(); }
+function openTrain(){ scanMode=false; photoMode=false; trainMode=true; _tr={ex:0,rep:0,t0:0,rest:0, plan: currentJawPlan(jawProgramState().week)}; const h=$('.tap-hint'); if(h) h.textContent='Follow the on-screen cues'; openCam(); }
 
 function meshLoop(){
   if(!stream){ detLoop=null; return; }
+  if(photoMode){ drawPhotoGuide(); detLoop=requestAnimationFrame(meshLoop); return; }
   const d = readLandmarks();
   const inAffirm = $('#affirmOverlay').style.display==='flex';
   const sheetUp = $('#camSheet').style.display==='block';
@@ -1680,10 +1738,271 @@ async function runDiag(){
 $('#testCam').addEventListener('click', async ()=>{ scanMode=false; await openCam(); $('#camMeta').textContent='Test mode' });
 $('#refreshDiag').addEventListener('click', runDiag);
 
+/* ================= JAW LAB — the hero module ================= */
+let photoMode=false, _photoKind='front';
+let chewT=null, chewLeft=0, chewSet=1; const CHEW_SETS=3, CHEW_DUR=120;
+let mythIdx=0;
+
+/* On-device activity log powering the streak, heatmap & program */
+function logJaw(kind){
+  const log=store.get('jawLog',{});
+  const day=new Date().toDateString();
+  if(!log[day]) log[day]={};
+  log[day][kind]=(log[day][kind]||0)+1;
+  const cutoff=Date.now()-70*86400000;
+  Object.keys(log).forEach(d=>{ const t=new Date(d).getTime(); if(!isNaN(t)&&t<cutoff) delete log[d]; });
+  store.set('jawLog',log);
+}
+
+/* --- 1. Progressive 6-week program (reps scale with the week) --- */
+function jawProgramState(){
+  const p=store.get('jawProgram',{sessions:0});
+  const sessions=p.sessions||0;
+  const week=Math.min(6, Math.floor(sessions/3)+1);
+  return { sessions, week, sessionsThisWeek: sessions-(week-1)*3 };
+}
+function currentJawPlan(week){
+  const add=Math.max(0,week-1);
+  return JAW_TRAIN.map(ex=>({ ...ex, reps: ex.reps+add, hold: ex.hold+Math.floor(add/2) }));
+}
+function renderJawProgram(){
+  const el=$('#jawProgram'); if(!el) return;
+  const st=jawProgramState();
+  const pct=Math.min(100,Math.round(st.sessionsThisWeek/3*100));
+  el.innerHTML=`<div class="ring-row" style="margin-top:8px"><div class="ring" style="--p:${pct}"><span>${st.week}</span></div>
+    <div><b style="font-size:15px">Week ${st.week} of 6</b><br><small style="color:var(--ivory-dim)">${st.sessionsThisWeek}/3 sessions this week · ${st.sessions} total</small></div></div>
+    <p class="lede" style="font-size:12px;margin:12px 0 0">Reps scale as you level up. The camera coaches every rep and only counts the hold while your form holds.</p>
+    <div class="btn-row" style="margin-top:14px"><button class="btn solid" id="jawStartSession">Start today's session</button></div>`;
+  const b=$('#jawStartSession'); if(b) b.addEventListener('click', openTrain);
+}
+
+/* --- 2. Jaw definition trend from saved scans (progress, not rank) --- */
+function renderJawTrend(){
+  const el=$('#jawTrend'); if(!el) return;
+  const arr=store.get('scans',[]).filter(s=>typeof s.jaw==='number');
+  if(!arr.length){ el.innerHTML='<p class="lede" style="font-size:13px;margin-top:8px">No jaw readings yet. Run an <b>Analyze</b> scan to start tracking your jaw definition over time.</p>'; return; }
+  const last=arr[arr.length-1], first=arr[0], delta=last.jaw-first.jaw;
+  const bars=arr.slice(-16).map(s=>`<div title="${new Date(s.t).toLocaleDateString()}" style="flex:1;min-width:5px;background:linear-gradient(180deg,var(--gold-bright),var(--gold));height:${Math.max(8,s.jaw)}%;border-radius:3px 3px 0 0"></div>`).join('');
+  const trend=arr.length<2?'baseline':(delta>0?`▲ +${delta} since you started`:(delta<0?`▼ ${delta} — keep at it`:'– steady'));
+  el.innerHTML=`<div style="display:flex;align-items:baseline;gap:10px;margin-top:6px"><b style="font-family:var(--display);font-size:40px;color:var(--gold)">${last.jaw}</b><small style="color:var(--ivory-dim);font-size:11px;letter-spacing:.12em;text-transform:uppercase">jaw · ${trend}</small></div>
+    <div style="display:flex;align-items:flex-end;gap:4px;height:56px;margin:12px 0 4px">${bars}</div>`;
+}
+
+/* --- 3. Controllable wins checklist (evidence-ordered) --- */
+const JAW_WINS=[
+  {id:'bf', t:'Strong', txt:'Get to ~12–14% body-fat — the single biggest lever on a visible jawline.'},
+  {id:'chew', t:'Moderate', txt:'Load the masseter: firm gum, alternating sides evenly.'},
+  {id:'tuck', t:'Moderate', txt:'Chin tucks daily to fix forward-head posture and lift the neck-jaw line.'},
+  {id:'sleep', t:'Moderate', txt:'Sleep 7–9h on your back — fluid pooling under the chin softens the jawline.'},
+  {id:'sodium', t:'Limited', txt:'Cut evening sodium & alcohol to reduce next-morning facial bloat.'},
+  {id:'water', t:'Limited', txt:'Stay hydrated; chronic dehydration puffs the lower face.'}
+];
+function renderJawWins(){
+  const el=$('#jawWins'); if(!el) return;
+  const done=store.get('jawWinsDone',{});
+  el.innerHTML=JAW_WINS.map(w=>`<div class="row" style="align-items:flex-start;gap:12px">
+    <div class="switch${done[w.id]?' on':''}" data-win="${w.id}"></div>
+    <label style="flex:1;font-size:13px"><i class="ev ev-${w.t.toLowerCase()}">${w.t}</i>${w.txt}</label></div>`).join('');
+  $$('#jawWins [data-win]').forEach(sw=>sw.addEventListener('click',()=>{
+    const d=store.get('jawWinsDone',{}); d[sw.dataset.win]=!d[sw.dataset.win]; store.set('jawWinsDone',d);
+    sw.classList.toggle('on',!!d[sw.dataset.win]);
+    if(d[sw.dataset.win]) logJaw('win');
+  }));
+}
+
+/* --- 4. Masseter chew timer (3 sets, alternating sides) --- */
+function fmtC(s){ const m=Math.floor(s/60); return m+':'+String(s%60).padStart(2,'0'); }
+function renderChew(){
+  const el=$('#chewBox'); if(!el) return;
+  const running=!!chewT;
+  el.innerHTML=`<div style="font-family:var(--display);font-size:44px;color:var(--gold);text-align:center;margin:6px 0"><span id="chewTime">${fmtC(chewLeft>0?chewLeft:CHEW_DUR)}</span></div>
+    <div class="phase" id="chewPhase" style="min-height:14px">Set ${chewSet} of ${CHEW_SETS} · ${chewSet%2?'left':'right'} side</div>
+    <div class="btn-row" style="justify-content:center;margin-top:10px"><button class="btn solid" id="chewStart">${running?'Pause':(chewLeft>0?'Resume':'Start')}</button><button class="btn ghost" id="chewReset">Reset</button></div>
+    <p class="lede" style="font-size:11px;margin-top:10px"><i class="ev ev-moderate">Moderate</i>Mastication load builds masseter activity — alternate sides so you don't overdevelop one.</p>`;
+  $('#chewStart').addEventListener('click', toggleChew);
+  $('#chewReset').addEventListener('click', resetChew);
+}
+function toggleChew(){
+  if(chewT){ clearInterval(chewT); chewT=null; const b=$('#chewStart'); if(b) b.textContent='Resume'; return; }
+  if(chewLeft<=0){ chewLeft=CHEW_DUR; chewSet=1; }
+  const b=$('#chewStart'); if(b) b.textContent='Pause';
+  chewT=setInterval(()=>{
+    chewLeft--;
+    const t=$('#chewTime'); if(t) t.textContent=fmtC(Math.max(0,chewLeft));
+    if(chewLeft<=0){
+      if(chewSet>=CHEW_SETS){ clearInterval(chewT); chewT=null; const s=$('#chewStart'); if(s) s.textContent='Start'; const p=$('#chewPhase'); if(p) p.textContent='Done · nice work 💪'; chewLeft=0; chewSet=1; logJaw('chew'); bumpStreak(); toast('Chew session complete'); return; }
+      chewSet++; chewLeft=CHEW_DUR;
+      const p=$('#chewPhase'); if(p) p.textContent=`Set ${chewSet} of ${CHEW_SETS} · ${chewSet%2?'left':'right'} side`;
+    }
+  },1000);
+}
+function resetChew(){ if(chewT) clearInterval(chewT); chewT=null; chewLeft=0; chewSet=1; renderChew(); }
+
+/* --- 5. Chin-tuck daily counter (resets each day) --- */
+function tuckState(){
+  const t=store.get('tuck',{day:null,count:0});
+  const today=new Date().toDateString();
+  if(t.day!==today){ t.day=today; t.count=0; store.set('tuck',t); }
+  return t;
+}
+function renderTuck(){
+  const el=$('#tuckBox'); if(!el) return;
+  const t=tuckState(), goal=30, pct=Math.min(100,Math.round(t.count/goal*100));
+  el.innerHTML=`<div style="text-align:center;margin:6px 0"><b style="font-family:var(--display);font-size:44px;color:var(--gold)">${t.count}</b><small style="color:var(--ivory-dim)"> / ${goal} reps</small></div>
+    <div style="height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden"><div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--gold),var(--gold-bright))"></div></div>
+    <div class="btn-row" style="justify-content:center;margin-top:12px"><button class="btn solid" id="tuckAdd">+1 rep</button><button class="btn ghost" id="tuckAdd5">+5</button></div>
+    <p class="lede" style="font-size:11px;margin-top:10px"><i class="ev ev-moderate">Moderate</i>Chin tucks (cervical retraction) improve forward-head posture and the neck-jaw profile.</p>`;
+  $('#tuckAdd').addEventListener('click',()=>addTuck(1));
+  $('#tuckAdd5').addEventListener('click',()=>addTuck(5));
+}
+function addTuck(n){
+  const t=tuckState(), prev=t.count; t.count+=n; store.set('tuck',t);
+  if(prev<30 && t.count>=30){ logJaw('tuck'); bumpStreak(); toast('Daily chin-tuck goal hit 🎯'); }
+  renderTuck();
+}
+
+/* --- 6. Body-fat lever calculator (honest, non-pushy) --- */
+function renderBF(){
+  const el=$('#bfBox'); if(!el) return;
+  const cur=store.get('bfCur',''), goal=store.get('bfGoal','13');
+  el.innerHTML=`<p class="lede" style="font-size:13px;margin-top:6px">Facial fat is the strongest driver of how defined your jaw looks. Most men see a clear jawline emerge around <b class="gold">12–14%</b> body-fat. This isn't a target for everyone — it's a guide, and lower isn't automatically healthier.</p>
+    <div class="grid g-2" style="margin-top:12px">
+      <div><small style="font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--ivory-dim)">Current est. %</small><input id="bfCur" inputmode="decimal" value="${cur}" placeholder="e.g. 20" style="width:100%;background:transparent;border:0;border-bottom:1px solid var(--line);color:var(--ivory);font-family:var(--display);font-size:22px;padding:8px 0;outline:none"></div>
+      <div><small style="font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--ivory-dim)">Target %</small><input id="bfGoal" inputmode="decimal" value="${goal}" style="width:100%;background:transparent;border:0;border-bottom:1px solid var(--line);color:var(--gold);font-family:var(--display);font-size:22px;padding:8px 0;outline:none"></div>
+    </div>
+    <div id="bfNote" style="margin-top:10px;font-size:12px;color:var(--ivory-dim)"></div>`;
+  const upd=()=>{
+    const c=parseFloat($('#bfCur').value), g=parseFloat($('#bfGoal').value);
+    store.set('bfCur',$('#bfCur').value); store.set('bfGoal',$('#bfGoal').value);
+    const n=$('#bfNote');
+    if(isNaN(c)||isNaN(g)){ n.textContent='Enter your estimates to see a realistic timeline.'; return; }
+    const drop=c-g;
+    if(drop<=0){ n.innerHTML='<i class="ev ev-strong">On target</i>You\'re at or below your goal — maintain, don\'t crash-diet.'; return; }
+    const weeks=Math.ceil(drop/0.5);
+    n.innerHTML=`<i class="ev ev-plan">Plan</i>~${drop.toFixed(1)}% to lose. At a sustainable ~0.5%/week that's about <b>${weeks} weeks</b>. Slow and steady protects muscle and skin.`;
+  };
+  $('#bfCur').addEventListener('input',upd); $('#bfGoal').addEventListener('input',upd); upd();
+}
+
+/* --- 7. Myth-buster deck (tap to advance) --- */
+const JAW_MYTHS=[
+  {q:'Does "mewing" reshape your jaw bone?', v:'Myth', a:'No controlled evidence that tongue posture changes adult bone. It may cue better resting posture, nothing more.'},
+  {q:'Do jaw-exercise gadgets build bone?', v:'Myth', a:'They can grow the masseter muscle a little — they cannot change your skeleton.'},
+  {q:'Does chewing gum help the masseter?', v:'Moderate', a:'Yes — mastication load increases masseter activity/thickness. Muscle, not bone.'},
+  {q:'Is lowering body-fat effective?', v:'Strong', a:'Yes — facial adiposity strongly drives perceived jaw definition. The #1 lever.'},
+  {q:'Do chin tucks help the jaw/neck line?', v:'Moderate', a:'Yes — they improve forward-head posture and the submental/neck profile.'},
+  {q:'Can face "yoga" chisel bone?', v:'Myth', a:'It may affect muscle tone slightly; bone structure is fixed.'}
+];
+function renderMyth(){
+  const el=$('#mythBox'); if(!el) return;
+  const i=mythIdx%JAW_MYTHS.length, m=JAW_MYTHS[i];
+  el.innerHTML=`<div id="mythCard" style="cursor:pointer;border:1px solid var(--line);border-radius:12px;padding:16px;background:rgba(255,255,255,.02)">
+    <div style="font-family:var(--display);font-size:20px;line-height:1.2">${m.q}</div>
+    <div style="margin-top:10px"><i class="ev ev-${m.v.toLowerCase()}">${m.v}</i><span style="font-size:13px;color:var(--ivory-dim)">${m.a}</span></div>
+    <div style="font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-top:12px">Tap for next · ${i+1}/${JAW_MYTHS.length}</div></div>`;
+  $('#mythCard').addEventListener('click',()=>{ mythIdx++; renderMyth(); });
+}
+
+/* --- 8. Jaw habit stack builder --- */
+const STACK_ANCHORS=['brush my teeth','make coffee','shower','sit down at my desk','lock my phone for bed'];
+const STACK_HABITS=['do 10 chin tucks','chew gum for 2 min','check my posture','drink a glass of water','review my jaw affirmation'];
+function renderStack(){
+  const el=$('#stackBox'); if(!el) return;
+  const stacks=store.get('jawStacks',[]);
+  const list=stacks.length? stacks.map((s,i)=>`<div class="row"><label style="flex:1;font-size:13px">After I <b class="gold">${s.a}</b>, I'll <b>${s.h}</b>.</label><span class="gold" style="cursor:pointer;padding-left:10px" data-stack="${i}">✕</span></div>`).join('')
+    : '<p class="lede" style="font-size:13px;margin:6px 0">Anchor a jaw habit to something you already do — the most reliable way to make it stick.</p>';
+  el.innerHTML=`${list}
+    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px">
+      <span style="font-size:12px;color:var(--ivory-dim)">After I</span>
+      <select id="stackA" style="padding:8px;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:8px;color:var(--ivory);font-family:var(--sans)">${STACK_ANCHORS.map(a=>`<option value="${a}">${a}</option>`).join('')}</select>
+      <span style="font-size:12px;color:var(--ivory-dim)">, I'll</span>
+      <select id="stackH" style="padding:8px;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:8px;color:var(--ivory);font-family:var(--sans)">${STACK_HABITS.map(h=>`<option value="${h}">${h}</option>`).join('')}</select>
+      <button class="btn" style="min-height:36px;padding:8px 14px" id="stackAdd">Add</button>
+    </div>`;
+  $('#stackAdd').addEventListener('click',()=>{ const arr=store.get('jawStacks',[]); arr.push({a:$('#stackA').value,h:$('#stackH').value}); store.set('jawStacks',arr); renderStack(); toast('Habit stacked'); });
+  $$('#stackBox [data-stack]').forEach(x=>x.addEventListener('click',()=>{ const arr=store.get('jawStacks',[]); arr.splice(+x.dataset.stack,1); store.set('jawStacks',arr); renderStack(); }));
+}
+
+/* --- 9. Consistency heatmap (last 35 days of jaw activity) --- */
+function renderHeat(){
+  const el=$('#heatBox'); if(!el) return;
+  const log=store.get('jawLog',{}), days=35, cells=[];
+  for(let i=days-1;i>=0;i--){
+    const d=new Date(Date.now()-i*86400000), key=d.toDateString();
+    const acts=log[key]? Object.values(log[key]).reduce((a,b)=>a+b,0):0;
+    const op=acts===0?0.05:Math.min(1,0.25+acts*0.2);
+    cells.push(`<div title="${d.toLocaleDateString()} · ${acts} action${acts!==1?'s':''}" style="aspect-ratio:1;border-radius:3px;background:rgba(201,168,106,${op})"></div>`);
+  }
+  const total=Object.keys(log).length;
+  el.innerHTML=`<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">${cells.join('')}</div>
+    <p class="lede" style="font-size:11px;margin-top:10px">${total} active day${total!==1?'s':''} logged. Every jaw session, chew set, chin-tuck goal and photo counts — consistency is the whole game.</p>`;
+}
+
+/* --- 10. On-device progress photo journal (front + profile) --- */
+function openPhoto(kind){ scanMode=false; trainMode=false; photoMode=true; _photoKind=kind; const h=$('.tap-hint'); if(h) h.textContent='Tap ◉ to capture'; openCam(); }
+function drawPhotoGuide(){
+  const w=cv.width,h=cv.height; ctx.clearRect(0,0,w,h);
+  const cx=w/2,cy=h/2.05,rx=w*.22,ry=h*.32;
+  ctx.strokeStyle='rgba(201,168,106,.6)'; ctx.lineWidth=2; ctx.setLineDash([6,8]);
+  ctx.beginPath(); ctx.ellipse(cx,cy,rx,ry,0,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle='rgba(242,237,228,.9)'; ctx.font='12px Inter'; ctx.textAlign='center';
+  ctx.fillText(_photoKind==='profile'?'TURN TO YOUR PROFILE · TAP ◉':'FACE FORWARD · TAP ◉', cx, cy-ry-14);
+}
+function capturePhoto(){
+  if(!cam.videoWidth){ toast('Camera not ready — hold on a second'); return; }
+  const cw=cam.videoWidth, ch=cam.videoHeight, tw=Math.min(420,cw), th=Math.round(ch*(tw/cw));
+  const tc=document.createElement('canvas'); tc.width=tw; tc.height=th; const tctx=tc.getContext('2d');
+  if(facing==='user'){ tctx.translate(tw,0); tctx.scale(-1,1); }
+  tctx.drawImage(cam,0,0,tw,th);
+  let data; try{ data=tc.toDataURL('image/jpeg',0.55); }catch(e){ toast('Capture failed'); return; }
+  const arr=store.get('jawPhotos',[]); arr.push({t:Date.now(), kind:_photoKind, data});
+  while(arr.length>9) arr.shift();
+  try{ store.set('jawPhotos',arr); }catch(e){ arr.shift(); try{ store.set('jawPhotos',arr); }catch(_){} }
+  logJaw('photo');
+  toast('Progress photo saved · on-device only');
+  renderJawPhotos();
+  closeCam();
+}
+function renderJawPhotos(){
+  const el=$('#photoBox'); if(!el) return;
+  const arr=store.get('jawPhotos',[]);
+  const thumbs=arr.length? `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px">`+arr.map((p,realIdx)=>({p,realIdx})).reverse().map(({p,realIdx})=>
+      `<div style="position:relative"><img src="${p.data}" style="width:100%;border-radius:10px;border:1px solid var(--line);display:block"><div style="position:absolute;left:6px;bottom:6px;font-size:9px;letter-spacing:.15em;text-transform:uppercase;background:rgba(0,0,0,.6);padding:2px 6px;border-radius:5px;color:var(--ivory)">${p.kind} · ${new Date(p.t).toLocaleDateString([], {month:'short',day:'numeric'})}</div><span data-photo="${realIdx}" style="position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.6);display:grid;place-items:center;color:var(--ivory);cursor:pointer;font-size:11px">✕</span></div>`
+    ).join('')+`</div>`
+    : '<p class="lede" style="font-size:13px;margin:6px 0">No photos yet. Capture a front and profile shot to build a private before/after — stored only on this device, never uploaded, never scored.</p>';
+  el.innerHTML=`${thumbs}
+    <div class="btn-row" style="margin-top:12px"><button class="btn solid" id="photoFront">Capture front</button><button class="btn" id="photoProfile">Capture profile</button></div>`;
+  $('#photoFront').addEventListener('click',()=>openPhoto('front'));
+  $('#photoProfile').addEventListener('click',()=>openPhoto('profile'));
+  $$('#photoBox [data-photo]').forEach(x=>x.addEventListener('click',()=>{ const a=store.get('jawPhotos',[]); a.splice(+x.dataset.photo,1); store.set('jawPhotos',a); renderJawPhotos(); }));
+}
+
+/* --- 11. Evidence library --- */
+const JAW_EV=[
+  {t:'Strong', ref:'Rhodes 2006 · facial adiposity', txt:'Facial fat strongly influences perceived jawline and health.'},
+  {t:'Moderate', ref:'Mastication studies', txt:'Chewing load increases masseter thickness/activity (muscle, not bone).'},
+  {t:'Moderate', ref:'Cervical-retraction RCTs', txt:'Chin tucks & deep-neck-flexor work improve forward head posture.'},
+  {t:'Myth', ref:'Orthotropics / "mewing"', txt:'No controlled clinical evidence for adult bone change.'}
+];
+function renderEvLib(){
+  const el=$('#evLib'); if(!el) return;
+  el.innerHTML=JAW_EV.map(e=>`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><i class="ev ev-${e.t.toLowerCase()}">${e.t}</i><b style="font-size:12px">${e.ref}</b><div style="font-size:12px;color:var(--ivory-dim);margin-top:4px">${e.txt}</div></div>`).join('');
+}
+
+/* --- 12. Daily jaw affirmation (spoken) --- */
+function setJawAff(){ const el=$('#jawAff'); if(el) el.textContent=pickAffirm('jawline'); }
+
+function renderJawLab(){
+  renderJawTrend(); renderJawProgram(); renderJawWins(); renderChew(); renderTuck();
+  renderBF(); renderMyth(); renderStack(); renderHeat(); renderJawPhotos(); renderEvLib(); setJawAff();
+}
+
 /* ---------- Boot ---------- */
 buildGroom();
 renderTimeline();
 initAgeGate();
+$('#jawAffNext') && $('#jawAffNext').addEventListener('click', setJawAff);
+$('#jawAffSpeak') && $('#jawAffSpeak').addEventListener('click', ()=>{ const t=$('#jawAff'); if(t) speak(t.textContent); });
 go(location.hash.slice(1) || 'home');
 setTimeout(()=>{ $('#boot').classList.add('gone'); setTimeout(()=>$('#boot').remove(),900) }, 1300);
 </script>
