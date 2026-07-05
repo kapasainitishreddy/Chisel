@@ -140,7 +140,7 @@
   .camctrl{width:48px;height:48px;border-radius:50%;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.2);display:grid;place-items:center;color:#fff;cursor:pointer}
 
   /* Affirm overlay */
-  .affirm-overlay{position:absolute;left:0;right:0;top:env(safe-area-inset-top);padding:24px;display:flex;flex-direction:column;align-items:center;gap:14px;z-index:3;pointer-events:none}
+  .affirm-overlay{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top) + 76px);padding:0 24px 24px;display:flex;flex-direction:column;align-items:center;gap:14px;z-index:3;pointer-events:none}
   .affirm-overlay .card{background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.7));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(201,168,106,.4);border-radius:16px;padding:22px 24px;max-width:520px;width:100%;text-align:center;pointer-events:auto;box-shadow:0 20px 60px -10px rgba(0,0,0,.6)}
   .affirm-overlay .cat{font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
   .affirm-overlay .txt{font-family:var(--display);font-style:italic;font-size:clamp(22px,4vw,30px);line-height:1.3;color:var(--ivory)}
