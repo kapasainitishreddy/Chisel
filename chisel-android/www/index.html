@@ -49,7 +49,7 @@
 
   /* Layout */
   .app{height:100%;display:grid;grid-template-columns:240px 1fr}
-  @media (max-width:760px){.app{grid-template-columns:1fr;grid-template-rows:1fr 64px}main.view{grid-row:1}nav.tabs{grid-row:2}}
+  @media (max-width:760px){.app{grid-template-columns:1fr;grid-template-rows:1fr}main.view{grid-row:1;padding-bottom:118px}}
 
   nav.rail{background:linear-gradient(180deg,var(--graphite),#0d0d0f);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:24px 16px;position:relative}
   nav.rail .logo{font-family:var(--display);font-size:34px;line-height:1;letter-spacing:.03em;background:linear-gradient(180deg,var(--ivory),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;padding:8px 4px 18px;border-bottom:1px solid var(--line)}
@@ -62,11 +62,29 @@
   nav.rail .footer{font-size:10px;color:var(--ivory-dim);letter-spacing:.3em;text-transform:uppercase;padding-top:12px;border-top:1px solid var(--line)}
   nav.rail .footer b{color:var(--gold)}
 
-  nav.tabs{display:none;background:linear-gradient(180deg,var(--graphite),#0d0d0f);border-top:1px solid var(--line);position:relative}
-  @media (max-width:760px){nav.rail{display:none}nav.tabs{display:grid;grid-template-columns:repeat(6,1fr);align-items:center}}
-  nav.tabs a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:44px;color:var(--ivory-dim);text-decoration:none;font-size:9px;letter-spacing:.2em;text-transform:uppercase;position:relative;z-index:1}
-  nav.tabs a.active{color:var(--onyx)}
-  nav.tabs .pill{position:absolute;top:6px;left:0;height:calc(100% - 12px);width:calc(100%/6);background:linear-gradient(180deg,var(--gold),var(--gold-bright));border-radius:10px;transition:transform .35s var(--ease-out)}
+  /* ---- Radial wheel nav (mobile) ---- */
+  .radial-nav{display:none}
+  @media (max-width:760px){
+    nav.rail{display:none}
+    .radial-nav{display:block}
+  }
+  .radial-backdrop{position:fixed;inset:0;background:rgba(6,6,7,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .35s var(--ease);z-index:140}
+  .radial-backdrop.open{opacity:1;pointer-events:auto}
+  .radial-label{position:fixed;left:50%;bottom:calc(210px + env(safe-area-inset-bottom));transform:translate(-50%,6px);z-index:150;font-size:10px;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);background:rgba(10,10,11,.7);border:1px solid var(--line);padding:7px 16px;border-radius:999px;opacity:0;transition:opacity .25s var(--ease),transform .25s var(--ease);pointer-events:none;white-space:nowrap}
+  .radial-label.show{opacity:1;transform:translate(-50%,0)}
+  .radial-menu{position:fixed;left:50%;bottom:calc(30px + env(safe-area-inset-bottom));width:0;height:0;z-index:150;pointer-events:none}
+  .r-item{--tx:0px;--ty:0px;position:absolute;left:0;bottom:0;width:52px;height:52px;margin-left:-26px;margin-bottom:-26px;border-radius:50%;background:linear-gradient(180deg,rgba(26,26,29,.97),rgba(13,13,15,.99));border:1px solid rgba(201,168,106,.35);box-shadow:0 8px 24px -8px rgba(0,0,0,.6);display:grid;place-items:center;font-size:19px;color:var(--ivory-dim);text-decoration:none;transform:translate(0,0) scale(.3);opacity:0;transition:transform .5s var(--ease-out),opacity .3s ease,background .25s var(--ease),border-color .25s var(--ease),color .25s var(--ease);transition-delay:calc(var(--i) * 28ms)}
+  .radial-menu.open .r-item{transform:translate(var(--tx),var(--ty)) scale(1);opacity:1;pointer-events:auto}
+  .radial-menu:not(.open) .r-item{transition-delay:calc((5 - var(--i)) * 22ms)}
+  .r-item.active{background:linear-gradient(180deg,var(--gold),var(--gold-bright));border-color:var(--gold-bright);color:var(--onyx);box-shadow:0 8px 28px -6px rgba(201,168,106,.55)}
+  .r-item:active{transform:translate(var(--tx),var(--ty)) scale(.9) !important}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+  .radial-fab{position:fixed;left:50%;bottom:calc(30px + env(safe-area-inset-bottom));transform:translate(-50%,50%);width:60px;height:60px;border-radius:50%;background:linear-gradient(160deg,var(--gold-bright),var(--gold));border:none;display:grid;place-items:center;z-index:151;cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.4),0 0 0 6px rgba(201,168,106,.1),0 0 34px rgba(201,168,106,.35);transition:transform .4s var(--ease-out),box-shadow .4s var(--ease);animation:fabPulse 3.6s ease-in-out infinite}
+  .radial-fab span{font-size:22px;color:var(--onyx);transition:transform .4s var(--ease-out);display:block}
+  .radial-fab.open{box-shadow:0 4px 18px rgba(0,0,0,.4),0 0 0 10px rgba(201,168,106,.16);animation:none}
+  .radial-fab.open span{transform:rotate(135deg)}
+  @keyframes fabPulse{0%,100%{box-shadow:0 4px 18px rgba(0,0,0,.4),0 0 0 6px rgba(201,168,106,.1),0 0 34px rgba(201,168,106,.35)}50%{box-shadow:0 4px 18px rgba(0,0,0,.4),0 0 0 9px rgba(201,168,106,.05),0 0 46px rgba(201,168,106,.5)}}
+  @media (prefers-reduced-motion:reduce){.radial-fab{animation:none}}
 
   main.view{overflow-y:auto;overflow-x:hidden;padding:32px 40px 80px;position:relative;scroll-behavior:smooth}
   @media (max-width:760px){main.view{padding:20px 16px 24px}}
@@ -242,15 +260,19 @@
     <div class="footer">Build <b id="buildTag">1.0.0</b></div>
   </nav>
 
-  <nav class="tabs" id="bottomTabs">
-    <span class="pill" id="tabPill"></span>
-    <a href="#home" data-route="home">Home</a>
-    <a href="#analyze" data-route="analyze">Analyze</a>
-    <a href="#affirm" data-route="affirm">Affirm</a>
-    <a href="#meditate" data-route="meditate">Meditate</a>
-    <a href="#groom" data-route="groom">Groom</a>
-    <a href="#connect" data-route="connect">Connect</a>
-  </nav>
+  <div class="radial-nav" id="radialNav">
+    <div class="radial-backdrop" id="radialBackdrop"></div>
+    <div class="radial-label" id="radialLabel"></div>
+    <div class="radial-menu" id="radialMenu">
+      <a href="#home" data-route="home" data-label="Home" class="r-item active" style="--i:0" aria-label="Home">◇<span class="sr-only">Home</span></a>
+      <a href="#analyze" data-route="analyze" data-label="Analyze" class="r-item" style="--i:1" aria-label="Analyze">◉<span class="sr-only">Analyze</span></a>
+      <a href="#affirm" data-route="affirm" data-label="Affirm" class="r-item" style="--i:2" aria-label="Affirm">✦<span class="sr-only">Affirm</span></a>
+      <a href="#meditate" data-route="meditate" data-label="Meditate" class="r-item" style="--i:3" aria-label="Meditate">◯<span class="sr-only">Meditate</span></a>
+      <a href="#groom" data-route="groom" data-label="Groom" class="r-item" style="--i:4" aria-label="Groom">▣<span class="sr-only">Groom</span></a>
+      <a href="#connect" data-route="connect" data-label="Connect" class="r-item" style="--i:5" aria-label="Connect">⤓<span class="sr-only">Connect</span></a>
+    </div>
+    <button class="radial-fab" id="radialFab" aria-label="Open menu" aria-expanded="false"><span id="fabIcon">✦</span></button>
+  </div>
 
   <main class="view" id="view">
 
@@ -546,15 +568,15 @@ $('#buildTag').textContent = '1.0.0 · ' + (isCap?('native · '+platform):'web')
 
 /* ---------- Routing ---------- */
 const routes = ['home','analyze','affirm','meditate','groom','connect'];
+const ROUTE_ICON = {home:'◇',analyze:'◉',affirm:'✦',meditate:'◯',groom:'▣',connect:'⤓'};
 function go(route){
   if(!routes.includes(route)) route='home';
   $$('.screen').forEach(s=>s.classList.toggle('active', s.dataset.screen===route));
   $$('[data-route]').forEach(a=>a.classList.toggle('active', a.dataset.route===route));
   if(route==='home') renderHome();
   if(route==='connect') runDiag();
-  // move mobile pill
-  const idx = routes.indexOf(route);
-  const pill = $('#tabPill'); if(pill) pill.style.transform = `translateX(${idx*100}%)`;
+  const icon=$('#fabIcon'); if(icon) icon.textContent = ROUTE_ICON[route] || '✦';
+  if(typeof closeRadial==='function') closeRadial();
   location.hash = '#'+route;
 }
 window.addEventListener('hashchange', ()=>go(location.hash.slice(1)));
@@ -562,6 +584,35 @@ document.addEventListener('click', e=>{
   const a = e.target.closest('[data-go]'); if(a){ go(a.dataset.go); return }
   const r = e.target.closest('[data-route]'); if(r){ go(r.dataset.route); e.preventDefault(); return }
 });
+
+/* ---------- Radial wheel nav (mobile) ---------- */
+(function(){
+  const menu=$('#radialMenu'), fab=$('#radialFab'), backdrop=$('#radialBackdrop'), label=$('#radialLabel');
+  if(!menu || !fab) return;
+  const items=$$('.r-item', menu);
+  const RADIUS=132, SPAN=152, START=270-SPAN/2;                 // fan centred straight up, wide spacing so 6 discs never touch
+  function layout(){
+    const n=items.length;
+    items.forEach((el,i)=>{
+      const deg = n>1 ? START + (SPAN*i/(n-1)) : 270;
+      const rad = deg*Math.PI/180;
+      el.style.setProperty('--tx', (Math.cos(rad)*RADIUS).toFixed(1)+'px');
+      el.style.setProperty('--ty', (Math.sin(rad)*RADIUS).toFixed(1)+'px');
+    });
+  }
+  layout(); window.addEventListener('resize', layout);
+  function showLabel(el){ if(!label||!el) return; label.textContent = el.dataset.label||''; label.classList.add('show'); }
+  function hideLabel(){ if(label) label.classList.remove('show'); }
+  items.forEach(el=>{
+    el.addEventListener('pointerenter', ()=>showLabel(el));
+    el.addEventListener('pointerdown', ()=>showLabel(el));
+    el.addEventListener('pointerleave', hideLabel);
+  });
+  function openRadial(){ menu.classList.add('open'); fab.classList.add('open'); backdrop.classList.add('open'); fab.setAttribute('aria-expanded','true'); showLabel(menu.querySelector('.r-item.active')); }
+  window.closeRadial = function(){ menu.classList.remove('open'); fab.classList.remove('open'); backdrop.classList.remove('open'); fab.setAttribute('aria-expanded','false'); hideLabel(); };
+  fab.addEventListener('click', ()=> menu.classList.contains('open') ? closeRadial() : openRadial());
+  backdrop.addEventListener('click', closeRadial);
+})();
 
 /* ---------- Home / Date / Affirmation ---------- */
 const AFFIRM = {
