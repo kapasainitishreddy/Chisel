@@ -139,6 +139,28 @@
   .camwrap .controls{position:absolute;right:16px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;z-index:2}
   .camctrl{width:48px;height:48px;border-radius:50%;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.2);display:grid;place-items:center;color:#fff;cursor:pointer}
 
+  /* Style try-on bar */
+  #styleBar{position:absolute;left:0;right:0;bottom:0;z-index:4;padding:14px 12px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(10,10,11,0),rgba(10,10,11,.92) 38%);display:none;flex-direction:column;gap:8px}
+  #styleBar .lab{font-size:9px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold);padding:0 2px}
+  #styleBar .scroller{display:flex;gap:7px;overflow-x:auto;padding:2px;scrollbar-width:none}
+  #styleBar .scroller::-webkit-scrollbar{display:none}
+  #styleBar .sc{flex:0 0 auto;padding:8px 13px;min-height:36px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(0,0,0,.45);color:var(--ivory-dim);font-size:11px;letter-spacing:.08em;white-space:nowrap;cursor:pointer}
+  #styleBar .sc.on{background:linear-gradient(90deg,var(--gold),var(--gold-bright));color:var(--onyx);border-color:var(--gold)}
+  #styleBar .sw{flex:0 0 auto;width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,.25);cursor:pointer;padding:0;position:relative}
+  #styleBar .sw.on{border-color:var(--gold-bright);box-shadow:0 0 0 2px rgba(226,197,138,.4)}
+  #styleBar .sc.match::before,#styleBar .sw.match::after{content:"✓";color:var(--emerald);font-size:10px;font-weight:700}
+  #styleBar .sc.match::before{margin-right:5px;color:#7CC79A}
+  #styleBar .sw.match::after{position:absolute;top:-7px;right:-3px;background:var(--onyx);border-radius:50%;width:13px;height:13px;display:grid;place-items:center;color:#7CC79A}
+  #styleBar .sc.info{background:transparent;border-color:transparent;color:var(--ivory-dim);letter-spacing:.04em;cursor:default}
+  #styleBar .seg{display:flex;flex:0 0 auto;border:1px solid rgba(255,255,255,.18);border-radius:999px;overflow:hidden}
+  #styleBar .seg .sc{border:0;border-radius:0;background:rgba(0,0,0,.45)}
+  #styleBar .seg .sc.on{background:linear-gradient(90deg,var(--gold),var(--gold-bright))}
+
+  /* Dev validation readout */
+  #devReadout{position:absolute;left:12px;top:calc(64px + env(safe-area-inset-top));z-index:5;display:none;
+    font:11px/1.5 ui-monospace,Menlo,Consolas,monospace;white-space:pre;color:#7CC79A;
+    background:rgba(0,0,0,.62);border:1px solid rgba(124,199,154,.35);border-radius:8px;padding:8px 10px;pointer-events:none}
+
   /* Affirm overlay */
   .affirm-overlay{position:absolute;left:0;right:0;top:env(safe-area-inset-top);padding:24px;display:flex;flex-direction:column;align-items:center;gap:14px;z-index:3;pointer-events:none}
   .affirm-overlay .card{background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.7));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(201,168,106,.4);border-radius:16px;padding:22px 24px;max-width:520px;width:100%;text-align:center;pointer-events:auto;box-shadow:0 20px 60px -10px rgba(0,0,0,.6)}
@@ -401,6 +423,14 @@
       <div class="eyebrow">Science of Grooming</div>
       <h2 class="section">Routines that actually <span class="gold">move the needle.</span></h2>
       <p class="lede" style="margin-bottom:18px">Tap a region. Each card opens an anatomy overview, the science behind it, the routine, and the products that work.</p>
+      <div class="card gold" style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px">
+        <div>
+          <div class="eyebrow" style="margin-bottom:6px">Live try-on</div>
+          <h3 style="font-family:var(--display);font-size:24px;margin:0;font-weight:500">Hair, beard &amp; moustache mirror</h3>
+          <p class="lede" style="font-size:13px;margin:4px 0 0">Preview cuts and beard styles on your live face, on-device. Pick a shape, tune the colour, snap a look.</p>
+        </div>
+        <button class="btn solid" id="openStyle">Open Try-on</button>
+      </div>
       <div class="groom-grid" id="groomGrid"></div>
 
       <div class="card" style="margin-top:24px">
@@ -478,7 +508,17 @@
     </div>
   </div>
   <div id="scanGuide"><div class="sg-big" id="sgBig"></div><div class="sg-sub" id="sgSub"></div></div>
+  <div id="devReadout"></div>
   <div class="tap-hint">Tap anywhere to advance</div>
+  <div id="styleBar">
+    <div class="scroller" id="styleTop"></div>
+    <div class="lab" id="hairLab">Hairstyle</div>
+    <div class="scroller" id="hairChips"></div>
+    <div class="lab" id="beardLab">Beard &amp; moustache</div>
+    <div class="scroller" id="beardChips"></div>
+    <div class="lab">Hair colour</div>
+    <div class="scroller" id="colorChips"></div>
+  </div>
   <div class="sheet" id="camSheet" style="display:none"></div>
 </div>
 
@@ -606,6 +646,10 @@ const cam = $('#cam'), cv = $('#overlay'), ctx = cv.getContext('2d');
 let stream=null, facing='user', detLoop=null, manualSnap=null;
 let scanMode=false, _lockAt=0, _miss=0;        // auto-capture state
 let trainMode=false, _tr=null;                  // jawline-training state
+let styleMode=false, styleHair=0, styleBeard=0, _styleHairCol=null, _styleHairColLock=null; // hair/beard try-on
+let styleGender='men', styleView='match', _faceShape=null;     // gender + match/all + detected shape
+let _shapeBuf=[], _shapeT=0;                                    // frontal-frame buffer for shape voting
+let devMetrics=false, _devT=0;                                  // live shape-ratio validation overlay
 let _burst=[], _lastSample=0;                   // rolling buffer of measured frames (median → stable scores)
 const COUNT_MS=2600;                            // hold-still countdown before auto-capture
 
@@ -622,7 +666,7 @@ async function openCam(){
   faceKitReady = window.faceKit ? await window.faceKit.ready() : false;
   _lockAt=0; _miss=0;
   if(faceKitReady){
-    $('#camMeta').textContent = trainMode ? JAW_TRAIN[0].name : (scanMode ? 'Auto-scan' : 'Live');
+    $('#camMeta').textContent = styleMode ? 'Style try-on' : (trainMode ? JAW_TRAIN[0].name : (scanMode ? 'Auto-scan' : 'Live'));
     if(scanMode) setGuideMsg('', 'CENTER YOUR FACE IN THE OVAL');
     if(trainMode) setGuideMsg('', 'CENTER YOUR FACE — JAW TRAINING');
   }
@@ -637,17 +681,36 @@ function closeCam(){
   $('#camSheet').style.display='none';
   $('#scanGuide').style.display='none';
   scanMode=false; trainMode=false; _tr=null; _lockAt=0; _miss=0;
+  styleMode=false; const sb=$('#styleBar'); if(sb) sb.style.display='none';
+  const dr=$('#devReadout'); if(dr) dr.style.display='none';
+  const th=$('.tap-hint'); if(th) th.style.display='';
   if(detLoop) cancelAnimationFrame(detLoop); detLoop=null;
   if(stream) stream.getTracks().forEach(t=>t.stop()); stream=null;
-  ctx && ctx.clearRect(0,0,cv.width,cv.height);
+  if(ctx){ ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,cv.width,cv.height); }
 }
-function sizeCanvas(){ cv.width = cam.videoWidth || cv.clientWidth; cv.height = cam.videoHeight || cv.clientHeight; }
+/* Backing store = displayed CSS size (× dpr), NOT the camera resolution. The
+   video is object-fit:cover, so the overlay must replicate that cover mapping or
+   every landmark (lips, jaw, eyes) lands offset/stretched. coverRect() gives the
+   scale+offset that maps a normalised landmark into canvas-backing pixels so the
+   mesh sits exactly on the face. */
+function sizeCanvas(){
+  const dpr=Math.min(window.devicePixelRatio||1, 2);
+  cv.width  = Math.max(1, Math.round((cv.clientWidth ||window.innerWidth ) * dpr));
+  cv.height = Math.max(1, Math.round((cv.clientHeight||window.innerHeight) * dpr));
+}
+function coverRect(){
+  const cw=cv.width, ch=cv.height;
+  const vw=cam.videoWidth||cw, vh=cam.videoHeight||ch;
+  const s=Math.max(cw/vw, ch/vh);                 // cover = fill, crop overflow
+  return { s, ox:(cw-vw*s)/2, oy:(ch-vh*s)/2, vw, vh, cw, ch };
+}
 cam.addEventListener('loadedmetadata', sizeCanvas);
 window.addEventListener('resize', sizeCanvas);
 $('#camBack').addEventListener('click', closeCam);
 $('#camFlip').addEventListener('click', async ()=>{ facing = facing==='user'?'environment':'user'; closeCam(); await openCam() });
 let _snapTO=null;
 $('#camShot').addEventListener('click', ()=>{
+  if(styleMode){ snapStyle(); return; }
   if(trainMode) return;
   if(!faceKitReady){ toast('Face engine still loading…'); return; }
   manualSnap = true; $('#camMeta').textContent='Hold still — capturing…';
@@ -789,9 +852,326 @@ function finishTrain(){
 }
 function openTrain(){ scanMode=false; trainMode=true; _tr={ex:0,rep:0,t0:0,rest:0}; const h=$('.tap-hint'); if(h) h.textContent='Follow the on-screen cues'; openCam(); }
 
+/* ---------- Hair / beard / moustache try-on (on-device overlay) ----------
+   Stylized preview, not photoreal: shapes are anchored to the live face mesh,
+   tinted with your sampled or chosen hair colour, feathered + lightly textured.
+   100% on-device — no photo leaves the phone. */
+const HAIR_MEN=[
+  {id:'none', name:'No hair'},
+  {id:'buzz', name:'Buzz',      top:0.10, side:0.06, front:0.10, jitter:0},
+  {id:'crop', name:'Crop',      top:0.20, side:0.10, front:0.26, jitter:0.01},
+  {id:'quiff',name:'Quiff',     top:0.34, side:0.10, front:0.52, jitter:0.015},
+  {id:'pomp', name:'Pompadour', top:0.44, side:0.12, front:0.62, jitter:0.02},
+  {id:'slick',name:'Slick back',top:0.40, side:0.12, front:0.30, jitter:0.01},
+  {id:'curly',name:'Curly',     top:0.40, side:0.20, front:0.40, jitter:0.06},
+  {id:'mlong',name:'Flow',      top:0.34, side:0.30, front:0.34, jitter:0.03, fall:0.45, flare:0.10},
+];
+const HAIR_WOMEN=[
+  {id:'none', name:'No hair'},
+  {id:'pixie',name:'Pixie',     top:0.30, side:0.12, front:0.34, jitter:0.02},
+  {id:'bob',  name:'Bob',       top:0.30, side:0.16, front:0.34, jitter:0.02, fall:0.45, flare:0.12},
+  {id:'lob',  name:'Long bob',  top:0.30, side:0.16, front:0.34, jitter:0.02, fall:0.75, flare:0.13},
+  {id:'long', name:'Long',      top:0.32, side:0.16, front:0.34, jitter:0.03, fall:1.15, flare:0.14},
+  {id:'wavy', name:'Wavy',      top:0.40, side:0.18, front:0.40, jitter:0.06, fall:1.0,  flare:0.18},
+  {id:'curly',name:'Curly',     top:0.46, side:0.22, front:0.44, jitter:0.10, fall:0.8,  flare:0.20},
+  {id:'bangs',name:'Bangs',     top:0.34, side:0.16, front:0.16, jitter:0.02, fall:0.75, flare:0.13},
+  {id:'updo', name:'Updo',      top:0.52, side:0.14, front:0.42, jitter:0.02},
+];
+const BEARD_STYLES=[
+  {id:'none',    name:'Clean'},
+  {id:'stubble', name:'Stubble',  region:'full',     alpha:0.34, speckle:true},
+  {id:'short',   name:'Short',    region:'full',     alpha:0.62, speckle:false},
+  {id:'full',    name:'Full',     region:'full',     alpha:0.82, speckle:false},
+  {id:'goatee',  name:'Goatee',   region:'goatee',   alpha:0.80, speckle:false},
+  {id:'vandyke', name:'Van Dyke', region:'vandyke',  alpha:0.80, speckle:false},
+  {id:'mous',    name:'Moustache',region:'mous',     alpha:0.84, speckle:false},
+  {id:'chin',    name:'Chinstrap',region:'chinstrap',alpha:0.78, speckle:false},
+];
+const HAIR_COLORS=[
+  {id:'match', name:'Match', rgb:null},
+  {name:'Black',         rgb:[26,22,20]},
+  {name:'Espresso',      rgb:[44,32,26]},
+  {name:'Dk brown',      rgb:[58,42,32]},
+  {name:'Ash brown',     rgb:[74,64,56]},
+  {name:'Brown',         rgb:[96,66,44]},
+  {name:'Caramel',       rgb:[140,96,54]},
+  {name:'Auburn',        rgb:[120,58,40]},
+  {name:'Golden blonde', rgb:[184,144,80]},
+  {name:'Blonde',        rgb:[200,168,110]},
+  {name:'Ash blonde',    rgb:[176,166,140]},
+  {name:'Grey',          rgb:[150,148,146]},
+  {name:'Platinum',      rgb:[210,206,200]},
+];
+/* Barbering/styling guidance: balance the face — add height/length where it's
+   short, add width/fringe where it's narrow or the forehead is broad. */
+const HAIR_MATCH={
+  oval:    {men:['crop','quiff','pomp','slick','buzz','curly'], women:['lob','long','wavy','bob','pixie','bangs']},
+  round:   {men:['quiff','pomp','crop'],                        women:['long','lob','updo','wavy']},
+  square:  {men:['crop','quiff','slick','buzz','pomp'],         women:['lob','wavy','long','bob']},
+  oblong:  {men:['crop','curly','slick'],                       women:['bob','wavy','curly','bangs']},
+  heart:   {men:['crop','slick','quiff'],                       women:['bob','lob','bangs','wavy']},
+  diamond: {men:['crop','quiff','slick'],                       women:['bob','bangs','lob','wavy']},
+  triangle:{men:['quiff','pomp','crop'],                        women:['lob','wavy','bangs','long']}, // volume up top to balance wide jaw
+};
+const BEARD_MATCH={
+  oval:['short','stubble','full','goatee'], round:['goatee','vandyke','full'],
+  square:['stubble','short','full'],        oblong:['stubble','chin','short'],
+  heart:['full','short','stubble'],         diamond:['full','short','stubble'],
+  triangle:['stubble','short','goatee'],    // keep sides light so the jaw isn't widened further
+};
+const COLOR_MATCH={
+  Warm:['Brown','Auburn','Caramel','Golden blonde','Black'],
+  Cool:['Black','Ash brown','Ash blonde','Dk brown','Espresso'],
+  Neutral:['Dk brown','Brown','Black','Ash brown','Caramel'],
+  Olive:['Dk brown','Espresso','Auburn','Caramel','Black'],
+};
+const SHAPE_NAME={oval:'Oval',round:'Round',square:'Square',oblong:'Long',heart:'Heart',diamond:'Diamond',triangle:'Triangle'};
+const JAW_LOW=[234,93,132,58,172,136,150,149,176,148,152,377,400,378,379,365,397,288,361,323,454];
+const BEARD_FULL=JAW_LOW.concat([280,425,2,205,50]);   // jaw bottom + cheeks + under-nose
+const LIP_RING=[61,185,40,39,37,0,267,269,270,409,291,375,321,405,314,17,84,181,91,146];
+const MOUS=[129,2,358,291,269,267,0,37,39,61];
+const CHIN_PATCH=[91,84,17,314,321,400,377,152,176,148];
+
+function pathPts(P,idx){ ctx.beginPath(); idx.forEach((i,n)=>{ const p=P(i); n?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y); }); ctx.closePath(); }
+function rgbStr(c,a){ return `rgba(${Math.round(c[0])},${Math.round(c[1])},${Math.round(c[2])},${a})`; }
+function sampleHairColor(d){
+  const vw=cam.videoWidth||1280, vh=cam.videoHeight||720;
+  _off.width=vw; _off.height=vh; _octx.drawImage(cam,0,0,vw,vh);
+  const P=i=>({x:d.pts[i].x*vw, y:d.pts[i].y*vh});
+  const top=P(10), chin=P(152), fH=Math.hypot(top.x-chin.x,top.y-chin.y)||1;
+  const up={x:(top.x-chin.x)/fH,y:(top.y-chin.y)/fH};
+  const probes=[105,334,107,336,66,296].map(P)                                   // eyebrows
+    .concat([10,67,297,103,332].map(P).map(p=>({x:p.x+up.x*fH*0.16,y:p.y+up.y*fH*0.16}))); // just above hairline
+  const cols=probes.map(p=>patchMed(p.x,p.y,3,false)).sort((a,b)=>lum(a)-lum(b)).slice(0,8); // darker = hair, not skin
+  const m=cols.reduce((a,c)=>[a[0]+c[0],a[1]+c[1],a[2]+c[2]],[0,0,0]).map(v=>v/(cols.length||1));
+  return m.map(v=>Math.max(8,v));
+}
+/* Face-shape read, accuracy-hardened: only frontal frames count, landmarks are
+   roll-normalised (eyes levelled) so head-tilt can't distort width/length, and
+   the verdict is a MAJORITY VOTE across ~6+ frames with a confidence = share of
+   frames that agreed. Low agreement → we say so and default to "All". */
+function shapeRatios(d){          // always returns numbers + a frontal flag
+  const q=poseGate(d.pts, d.mat);
+  const pts=d.pts, vw=cam.videoWidth||1280, vh=cam.videoHeight||720;
+  const RAW=i=>({x:pts[i].x*vw, y:pts[i].y*vh});
+  const eR=RAW(33), eL=RAW(263), nt=RAW(4);
+  const roll=Math.atan2(eL.y-eR.y, eL.x-eR.x), cz=Math.cos(-roll), sz=Math.sin(-roll);
+  const P=i=>{ const p=RAW(i), dx=p.x-nt.x, dy=p.y-nt.y; return {x:nt.x+dx*cz-dy*sz, y:nt.y+dx*sz+dy*cz}; };
+  const D=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+  const cheek=D(P(234),P(454))||1;
+  return { frontal:q.frontal, lw:D(P(10),P(152))/cheek, jc:D(P(172),P(397))/cheek, fc:D(P(162),P(389))/cheek,
+           gon:(angleAt(P(172),P(234),P(152))+angleAt(P(397),P(454),P(152)))/2 };
+}
+function shapeRatiosFrontal(d){ const r=shapeRatios(d); return r.frontal?r:null; }   // gated, for voting
+/* Classification per published face-shape systems (loopedinlooks calc,
+   faceshapedetector): widths are expressed ÷ cheekbone (so cheek = 1.0), and
+   the WIDTH HIERARCHY is the primary, scale-invariant discriminator. The two
+   length cutoffs are the only scale-dependent knobs — CALIBRATE them with the
+   Metrics overlay, because our "length" (mesh pt 10→152) is shorter than the
+   clinical hairline→chin and our width is the cheek-level mesh edge. */
+const SHAPE_LONG=1.5;   // lw ≥ this → long face (oblong)
+const SHAPE_SHORT=1.30; // lw ≤ this → short face (round/square); between → oval band
+const SHAPE_GON=118;    // gonial° below this = angular (square), above = soft (round)
+function classifyRatios(r){
+  const fore=r.fc, jaw=r.jc, lw=r.lw;                       // cheek = 1.0 reference
+  if(fore-jaw>0.10 && jaw<0.95) return 'heart';            // forehead widest, chin narrows
+  if(jaw-fore>0.08 && jaw>0.98)  return 'triangle';        // jaw widest (pear)
+  if(fore<0.94 && jaw<0.94)      return 'diamond';         // cheekbones widest by margin
+  if(lw>=SHAPE_LONG)             return 'oblong';          // clearly long
+  if(lw<=SHAPE_SHORT)            return r.gon<SHAPE_GON?'square':'round'; // short → jaw angle
+  return 'oval';                                           // balanced, medium length
+}
+function collectShape(d){
+  const now=performance.now(); if(now-_shapeT<120) return; _shapeT=now;
+  const r=shapeRatiosFrontal(d); if(!r) return;             // skip non-frontal frames
+  _shapeBuf.push(r); while(_shapeBuf.length>10) _shapeBuf.shift();
+  if(_shapeBuf.length<6) return;
+  const med=k=>{ const a=_shapeBuf.map(x=>x[k]).sort((p,q)=>p-q); const i=a.length>>1; return a.length%2?a[i]:(a[i-1]+a[i])/2; };
+  const votes={}; _shapeBuf.forEach(x=>{ const s=classifyRatios(x); votes[s]=(votes[s]||0)+1; });
+  let win='oval', wn=0; for(const s in votes) if(votes[s]>wn){ win=s; wn=votes[s]; }
+  const conf=wn/_shapeBuf.length;
+  _faceShape={ shape:win, lw:+med('lw').toFixed(2), jc:+med('jc').toFixed(2), fc:+med('fc').toFixed(2), gon:Math.round(med('gon')), conf:+conf.toFixed(2) };
+  if(conf<0.6) styleView='all';                            // unsure → show everything
+  applyMatches();
+}
+function updateDevReadout(d){
+  const el=$('#devReadout'); if(!el) return;
+  if(!devMetrics){ el.style.display='none'; return; }
+  el.style.display='block';
+  const now=performance.now(); if(now-_devT<100) return; _devT=now;
+  if(!d){ el.textContent='shape metrics\nno face detected'; return; }
+  const r=shapeRatios(d), v=classifyRatios(r);
+  const lk=_faceShape? `${SHAPE_NAME[_faceShape.shape]||_faceShape.shape} · conf ${_faceShape.conf}` : '(reading…)';
+  el.textContent =
+    `shape metrics   frontal:${r.frontal?'Y':'N'}\n`+
+    `L/W len/cheek : ${r.lw.toFixed(3)}\n`+
+    `jaw/cheek     : ${r.jc.toFixed(3)}\n`+
+    `fore/cheek    : ${r.fc.toFixed(3)}\n`+
+    `gonial        : ${r.gon.toFixed(1)} deg\n`+
+    `frame vote    : ${v}\n`+
+    `locked        : ${lk}\n`+
+    `buffer        : ${_shapeBuf.length}/10`;
+}
+function drawStyle(d,R){
+  const pts=d.pts, w=R.vw, h=R.vh;
+  if(_faceShape==null){ try{ collectShape(d); }catch(e){ console.warn('shape',e); } }
+  if(_styleHairColLock==null && _styleHairCol==null){ try{ _styleHairCol=sampleHairColor(d); }catch(e){ _styleHairCol=[60,46,38]; } }
+  const col=_styleHairColLock||_styleHairCol||[60,46,38];
+  ctx.save();
+  if(facing==='user'){ ctx.translate(R.cw,0); ctx.scale(-1,1); }
+  ctx.translate(R.ox,R.oy); ctx.scale(R.s,R.s);
+  const P=i=>({x:pts[i].x*w, y:pts[i].y*h});
+  const fH=Math.hypot(P(10).x-P(152).x, P(10).y-P(152).y)||1;
+  drawBeard(P,col,fH);
+  drawHair(P,col,fH);
+  ctx.restore();
+}
+function drawBeard(P,col,fH){
+  if(styleGender==='women') return;
+  const st=BEARD_STYLES[styleBeard]; if(!st||st.id==='none') return;
+  const dark=col.map(v=>v*0.7);
+  ctx.save(); ctx.fillStyle=rgbStr(dark,st.alpha);
+  ctx.shadowColor=rgbStr(dark,st.alpha); ctx.shadowBlur=fH*0.05;
+  if(st.region==='full'){
+    pathPts(P,BEARD_FULL); ctx.fill();
+    ctx.shadowBlur=0; ctx.globalCompositeOperation='destination-out'; pathPts(P,LIP_RING); ctx.fill(); ctx.globalCompositeOperation='source-over';
+  } else if(st.region==='goatee'||st.region==='vandyke'){ pathPts(P,MOUS); ctx.fill(); pathPts(P,CHIN_PATCH); ctx.fill(); }
+  else if(st.region==='mous'){ pathPts(P,MOUS); ctx.fill(); }
+  else if(st.region==='chinstrap'){ ctx.shadowBlur=0; ctx.strokeStyle=rgbStr(dark,st.alpha); ctx.lineWidth=fH*0.05; ctx.lineJoin='round'; ctx.beginPath(); JAW_LOW.forEach((i,n)=>{const p=P(i); n?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y);}); ctx.stroke(); }
+  if(st.speckle){
+    ctx.shadowBlur=0; ctx.save(); pathPts(P,BEARD_FULL); ctx.clip();
+    pathPts(P,LIP_RING); ctx.globalCompositeOperation='destination-out'; ctx.fill(); ctx.globalCompositeOperation='source-over';
+    ctx.fillStyle=rgbStr(dark,0.55);
+    const lx=P(234).x, rx=P(454).x, ty=P(2).y, by=P(152).y, dot=fH*0.006;
+    for(let k=0;k<460;k++){ ctx.fillRect(lx+Math.random()*(rx-lx), ty+Math.random()*(by-ty), dot, dot); }
+    ctx.restore();
+  }
+  ctx.restore();
+}
+function hairDef(){ return (styleGender==='women'?HAIR_WOMEN:HAIR_MEN)[styleHair]; }
+function drawHairFall(P,col,fH,up,st){
+  const ctr=P(1), down={x:-up.x,y:-up.y}, shade=col.map(v=>v*0.82);
+  ctx.save(); ctx.fillStyle=rgbStr(shade,0.95); ctx.shadowColor='rgba(0,0,0,.4)'; ctx.shadowBlur=fH*0.04;
+  [[127,172],[356,397]].forEach(([tIdx,jIdx])=>{
+    const t=P(tIdx), j=P(jIdx);
+    const out={x:t.x-ctr.x,y:t.y-ctr.y}; const ol=Math.hypot(out.x,out.y)||1; out.x/=ol; out.y/=ol;
+    const flareV=fH*(st.flare||0.12), fallV=fH*st.fall;
+    const p1=t, p2={x:t.x+out.x*flareV,y:t.y+out.y*flareV};
+    const p3={x:p2.x+down.x*fallV,y:p2.y+down.y*fallV};
+    const p4={x:j.x+out.x*flareV*0.4+down.x*fallV*0.82, y:j.y+out.y*flareV*0.4+down.y*fallV*0.82};
+    ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.lineTo(p3.x,p3.y); ctx.lineTo(p4.x,p4.y); ctx.closePath(); ctx.fill();
+  });
+  ctx.restore();
+}
+function drawHair(P,col,fH){
+  const st=hairDef(); if(!st||st.id==='none') return;
+  const up={x:(P(10).x-P(152).x)/fH, y:(P(10).y-P(152).y)/fH};
+  if(st.fall) drawHairFall(P,col,fH,up,st);
+  const base=[234,127,162,21,54,103,67,109,10,338,297,332,284,251,389,356,454];
+  const mid=(base.length-1)/2;
+  const dome=base.map((idx,n)=>{
+    const p=P(idx), cw=1-Math.abs(n-mid)/mid;                         // 1 centre-front → 0 ears
+    const lift=(st.side+(st.top-st.side)*cw+(st.front-st.top)*cw*cw)*fH;
+    const j=st.jitter?(Math.random()-0.5)*fH*st.jitter*2:0;
+    return {x:p.x+up.x*(lift+j), y:p.y+up.y*(lift+j)};
+  });
+  ctx.save();
+  ctx.beginPath();
+  base.forEach((idx,n)=>{ const p=P(idx); n?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y); });   // hairline
+  for(let n=dome.length-1;n>=0;n--) ctx.lineTo(dome[n].x,dome[n].y);                       // dome back
+  ctx.closePath();
+  const g=ctx.createLinearGradient(0,P(10).y-fH*st.top,0,P(10).y+fH*0.1);
+  g.addColorStop(0,rgbStr(col.map(v=>Math.min(255,v*1.25)),0.97));
+  g.addColorStop(1,rgbStr(col.map(v=>v*0.8),0.97));
+  ctx.fillStyle=g; ctx.shadowColor='rgba(0,0,0,.35)'; ctx.shadowBlur=fH*0.03; ctx.fill();
+  ctx.shadowBlur=0; ctx.strokeStyle=rgbStr(col.map(v=>v*0.6),0.5); ctx.lineWidth=fH*0.006;
+  for(let n=0;n<base.length;n++){ const p=P(base[n]), q=dome[n]; ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y); ctx.stroke(); }
+  ctx.restore();
+}
+/* ---- match engine: rank styles & colours to the detected face + skin ---- */
+function curHairList(){ return styleGender==='women'?HAIR_WOMEN:HAIR_MEN; }
+function userTone(){
+  const last=store.get('scans',[]).slice(-1)[0];
+  return last&&last.undertone ? {undertone:last.undertone, ita:last.ita} : null;
+}
+function matchHairIds(){ return _faceShape ? ((HAIR_MATCH[_faceShape.shape]||{})[styleGender]||[]) : []; }
+function matchBeardIds(){ return _faceShape ? (BEARD_MATCH[_faceShape.shape]||[]) : []; }
+function matchColorNames(){ const t=userTone(); return t ? (COLOR_MATCH[t.undertone]||COLOR_MATCH.Neutral) : null; }
+function applyMatches(){
+  if(!_faceShape) return;
+  const hl=curHairList(), mh=matchHairIds();
+  const ti=hl.findIndex(s=>s.id===mh[0]); if(ti>0) styleHair=ti;
+  if(styleGender==='men'){ const mb=matchBeardIds(); const bi=BEARD_STYLES.findIndex(s=>s.id===mb[0]); if(bi>0) styleBeard=bi; }
+  renderStyleTop(); renderStyleChips();
+}
+function chipBtn(label, on, match, fn){
+  const b=document.createElement('button'); b.className='sc'+(on?' on':'')+(match?' match':''); b.textContent=label; b.onclick=fn; return b;
+}
+function renderStyleTop(){
+  const t=$('#styleTop'); if(!t) return; t.innerHTML='';
+  const seg=document.createElement('div'); seg.className='seg';
+  ['men','women'].forEach(g=>{ seg.appendChild(chipBtn(g==='men'?'Men':'Women', styleGender===g, false, ()=>{ if(styleGender===g) return; styleGender=g; styleHair=1; if(_faceShape) applyMatches(); else { renderStyleTop(); renderStyleChips(); } })); });
+  t.appendChild(seg);
+  const seg2=document.createElement('div'); seg2.className='seg';
+  [['match','Best matches'],['all','All']].forEach(([v,l])=>{ seg2.appendChild(chipBtn(l, styleView===v, false, ()=>{ styleView=v; renderStyleChips(); })); });
+  t.appendChild(seg2);
+  const info=document.createElement('button'); info.className='sc info';
+  if(!_faceShape) info.textContent='Reading face — look straight on…';
+  else { const nm=SHAPE_NAME[_faceShape.shape]||_faceShape.shape, c=_faceShape.conf;
+    info.textContent = c>=0.8 ? ('Face: '+nm) : c>=0.6 ? ('Face: '+nm+' (likely)') : ('Face: '+nm+'? · low confidence — showing all'); }
+  t.appendChild(info);
+  t.appendChild(chipBtn('Metrics', devMetrics, false, ()=>{ devMetrics=!devMetrics; renderStyleTop(); }));
+}
+function renderStyleChips(){
+  const matchOnly = styleView==='match';
+  const hc=$('#hairChips'); if(hc){ hc.innerHTML=''; const hl=curHairList(), mh=matchHairIds();
+    hl.forEach((s,i)=>{ const m=mh.includes(s.id); if(matchOnly && s.id!=='none' && _faceShape && !m) return;
+      hc.appendChild(chipBtn(s.name, i===styleHair, m, ()=>{ styleHair=i; renderStyleChips(); })); });
+  }
+  const bl=$('#beardLab'), bc=$('#beardChips'), women=styleGender==='women';
+  if(bl) bl.style.display=women?'none':'';
+  if(bc){ bc.style.display=women?'none':''; bc.innerHTML='';
+    if(!women){ const mb=matchBeardIds();
+      BEARD_STYLES.forEach((s,i)=>{ const m=mb.includes(s.id); if(matchOnly && s.id!=='none' && _faceShape && !m) return;
+        bc.appendChild(chipBtn(s.name, i===styleBeard, m, ()=>{ styleBeard=i; renderStyleChips(); })); }); }
+  }
+  const cc=$('#colorChips'); if(cc){ cc.innerHTML=''; const mc=matchColorNames();
+    HAIR_COLORS.forEach(c=>{ const m=!!(mc&&c.rgb&&mc.includes(c.name)); if(matchOnly && c.rgb && mc && !m) return;
+      const on = c.rgb ? (_styleHairColLock&&hex(_styleHairColLock)===hex(c.rgb)) : (_styleHairColLock==null);
+      const b=document.createElement('button');
+      if(c.rgb){ b.className='sw'+(on?' on':'')+(m?' match':''); b.style.background=hex(c.rgb); b.title=c.name+(m?' · suits you':''); }
+      else { b.className='sc'+(on?' on':''); b.textContent=c.name; }
+      b.onclick=()=>{ _styleHairColLock=c.rgb||null; if(!c.rgb) _styleHairCol=null; renderStyleChips(); };
+      cc.appendChild(b); });
+    if(mc===null){ const note=document.createElement('button'); note.className='sc info'; note.textContent='Scan in Analyze for colour match'; cc.appendChild(note); }
+  }
+}
+function snapStyle(){
+  try{
+    const R=coverRect(), out=document.createElement('canvas'); out.width=R.cw; out.height=R.ch;
+    const o=out.getContext('2d');
+    o.save(); if(facing==='user'){ o.translate(R.cw,0); o.scale(-1,1); }
+    o.drawImage(cam,R.ox,R.oy,R.vw*R.s,R.vh*R.s); o.restore();   // video (mirrored as displayed)
+    o.drawImage(cv,0,0,R.cw,R.ch);                               // overlay (mirror already baked in)
+    const url=out.toDataURL('image/jpeg',0.92), a=document.createElement('a');
+    a.href=url; a.download='chisel-look-'+Date.now()+'.jpg'; document.body.appendChild(a); a.click(); a.remove();
+    toast('Snapshot saved');
+  }catch(e){ console.warn('snap',e); toast('Couldn\'t save snapshot'); }
+}
+function openStyle(){
+  scanMode=false; trainMode=false; styleMode=true;
+  styleGender='men'; styleView='match'; _faceShape=null; _shapeBuf=[]; _shapeT=0;
+  styleHair=2; styleBeard=1; _styleHairCol=null; _styleHairColLock=null;
+  renderStyleTop(); renderStyleChips();   // re-ranks once the face is read (drawStyle→applyMatches)
+  $('#styleBar').style.display='flex';
+  const h=$('.tap-hint'); if(h) h.style.display='none';   // styleBar owns the bottom
+  openCam();
+}
+
 function meshLoop(){
   if(!stream){ detLoop=null; return; }
   const d = readLandmarks();
+  if(styleMode) updateDevReadout(d);
   const inAffirm = $('#affirmOverlay').style.display==='flex';
   const sheetUp = $('#camSheet').style.display==='block';
   const active = (scanMode||trainMode) && !inAffirm && !sheetUp;
@@ -828,28 +1208,33 @@ function drawConn(list,pts,w,h,color,width){
   ctx.stroke();
 }
 function drawMesh(d){
-  const w=cv.width,h=cv.height,pts=d.pts; ctx.save(); ctx.clearRect(0,0,w,h);
-  if(facing==='user'){ ctx.translate(w,0); ctx.scale(-1,1); }
+  const pts=d.pts, R=coverRect(), w=R.vw, h=R.vh;
+  ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,R.cw,R.ch);
+  if(styleMode){ drawStyle(d,R); return; }
+  ctx.save();
+  if(facing==='user'){ ctx.translate(R.cw,0); ctx.scale(-1,1); }
+  ctx.translate(R.ox,R.oy); ctx.scale(R.s,R.s);   // draw in video-pixel space, cover-mapped
+  const sc=1/R.s;                                  // keep stroke widths visually constant
   const k=window.faceKit;
-  drawConn(k.TESS,pts,w,h,'rgba(201,168,106,0.16)',0.6);
-  drawConn(k.OVAL,pts,w,h,'rgba(226,197,138,0.85)',1.6);
-  drawConn(k.LBROW,pts,w,h,'rgba(154,182,201,0.8)',1.2);
-  drawConn(k.RBROW,pts,w,h,'rgba(154,182,201,0.8)',1.2);
-  drawConn(k.LEYE,pts,w,h,'rgba(124,199,154,0.85)',1.2);
-  drawConn(k.REYE,pts,w,h,'rgba(124,199,154,0.85)',1.2);
-  drawConn(k.LIRIS,pts,w,h,'rgba(124,199,154,0.95)',1.2);
-  drawConn(k.RIRIS,pts,w,h,'rgba(124,199,154,0.95)',1.2);
-  drawConn(k.LIPS,pts,w,h,'rgba(212,165,165,0.9)',1.4);
+  drawConn(k.TESS,pts,w,h,'rgba(201,168,106,0.16)',0.6*sc*2);
+  drawConn(k.OVAL,pts,w,h,'rgba(226,197,138,0.85)',1.6*sc*2);
+  drawConn(k.LBROW,pts,w,h,'rgba(154,182,201,0.8)',1.2*sc*2);
+  drawConn(k.RBROW,pts,w,h,'rgba(154,182,201,0.8)',1.2*sc*2);
+  drawConn(k.LEYE,pts,w,h,'rgba(124,199,154,0.85)',1.2*sc*2);
+  drawConn(k.REYE,pts,w,h,'rgba(124,199,154,0.85)',1.2*sc*2);
+  drawConn(k.LIRIS,pts,w,h,'rgba(124,199,154,0.95)',1.2*sc*2);
+  drawConn(k.RIRIS,pts,w,h,'rgba(124,199,154,0.95)',1.2*sc*2);
+  drawConn(k.LIPS,pts,w,h,'rgba(212,165,165,0.95)',1.6*sc*2);
   ctx.fillStyle='rgba(226,197,138,0.9)';
-  [FACE.CHIN,FACE.NTIP,FACE.ZYG_R,FACE.ZYG_L,FACE.GON_R,FACE.GON_L].forEach(i=>{const p=pts[i];if(p){ctx.beginPath();ctx.arc(p.x*w,p.y*h,2.2,0,7);ctx.fill();}});
+  [FACE.CHIN,FACE.NTIP,FACE.ZYG_R,FACE.ZYG_L,FACE.GON_R,FACE.GON_L].forEach(i=>{const p=pts[i];if(p){ctx.beginPath();ctx.arc(p.x*w,p.y*h,2.4*sc*2,0,7);ctx.fill();}});
   ctx.restore();
-  _scan=(_scan+0.01)%1; const sy=_scan*h;
+  _scan=(_scan+0.01)%1; const sy=_scan*R.ch;
   const g=ctx.createLinearGradient(0,sy-36,0,sy+36);
   g.addColorStop(0,'rgba(201,168,106,0)'); g.addColorStop(.5,'rgba(226,197,138,0.22)'); g.addColorStop(1,'rgba(201,168,106,0)');
-  ctx.fillStyle=g; ctx.fillRect(0,sy-36,w,72);
+  ctx.fillStyle=g; ctx.fillRect(0,sy-36,R.cw,72);
 }
 function drawGuide(){
-  const w=cv.width,h=cv.height; ctx.clearRect(0,0,w,h);
+  const w=cv.width,h=cv.height; ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,w,h);
   const cx=w/2,cy=h/2.05,rx=w*.20,ry=h*.30;
   ctx.strokeStyle='rgba(201,168,106,.5)'; ctx.lineWidth=2; ctx.setLineDash([6,8]);
   ctx.beginPath(); ctx.ellipse(cx,cy,rx,ry,0,0,Math.PI*2); ctx.stroke(); ctx.setLineDash([]);
@@ -858,6 +1243,11 @@ function drawGuide(){
 }
 /* ---------- Pixel + geometry helpers ---------- */
 function mid(a,b){ return {x:(a.x+b.x)/2, y:(a.y+b.y)/2}; }
+function angleAt(v,a,b){            // interior angle a-v-b in degrees
+  const v1={x:a.x-v.x,y:a.y-v.y}, v2={x:b.x-v.x,y:b.y-v.y};
+  const dot=(v1.x*v2.x+v1.y*v2.y)/((Math.hypot(v1.x,v1.y)||1)*(Math.hypot(v2.x,v2.y)||1));
+  return Math.acos(Math.max(-1,Math.min(1,dot)))*180/Math.PI;
+}
 function hex(c){ return '#'+c.map(v=>('0'+Math.max(0,Math.min(255,Math.round(v))).toString(16)).slice(-2)).join(''); }
 function lum(c){ return 0.2126*c[0]+0.7152*c[1]+0.0722*c[2]; }
 function patch(xc,yc,r=3){
@@ -1010,18 +1400,26 @@ function measureFrame(d){
   const thirdsDev=Math.abs(thirds[0]-1/3)+Math.abs(thirds[1]-1/3)+Math.abs(thirds[2]-1/3);
   const thirdsScore=bell(thirdsDev,0,0.10);
 
-  /* Jaw, fWHR */
+  /* Jaw, fWHR, gonial angle */
   const jawTaper=jawW/faceW, jawScore=bell(jawTaper,0.78,0.12);
   const browTop=Math.min(P(FACE.BROW_R).y,P(FACE.BROW_L).y);
   const fWHR=faceW/(Math.abs(P(FACE.LIP_UT).y-browTop)||1);
+  /* Frontal jaw-flare angle at the gonion (ramus→gonion→chin). NOTE: the true
+     gonial angle is a lateral cephalometric measure; from a front photo this is
+     an approximation/proxy — labelled as such in the report. */
+  const gonial=(angleAt(P(FACE.GON_R),P(FACE.ZYG_R),chin)+angleAt(P(FACE.GON_L),P(FACE.ZYG_L),chin))/2;
 
   /* Nose */
   const noseW=D(P(FACE.ALA_R),P(FACE.ALA_L)), noseL=Math.abs(subn.y-nasion.y)||1, nasalIdx=noseW/noseL;
   const noseScore=bell(nasalIdx,0.72,0.18);
 
-  /* Lips */
+  /* Lips — vermilion thickness averaged across 3 columns (centre + both
+     philtral/oral-commissure sides) so one noisy point can't skew the read.
+     Upper = outer-top→inner-top, lower = inner-bottom→outer-bottom; both are
+     robust to a slightly parted mouth (inner-top of the upper lip barely moves). */
   const mouthW=D(P(FACE.M_R),P(FACE.M_L))||1;
-  const upLip=D(P(FACE.LIP_UT),P(FACE.LIP_UI)), loLip=D(P(FACE.LIP_LI),P(FACE.LIP_LB));
+  const upLip=(D(P(0),P(13))+D(P(37),P(82))+D(P(267),P(312)))/3;
+  const loLip=(D(P(17),P(14))+D(P(84),P(87))+D(P(314),P(317)))/3;
   const lipFull=(upLip+loLip)/mouthW, lipRatio=loLip/(upLip||1), lipScore=bell(lipFull,0.42,0.16);
 
   /* Eyes */
@@ -1030,8 +1428,14 @@ function measureFrame(d){
   const tiltL=Math.atan2(P(FACE.EI_L).y-P(FACE.EO_L).y, Math.abs(P(FACE.EO_L).x-P(FACE.EI_L).x))*180/Math.PI;
   const canthal=(tiltR+tiltL)/2, eyeScore=Math.round((bell(spacing,1.0,0.18)+bell(canthal,5,7))/2);
 
-  /* Bloat / fullness */
-  const fullness=faceW/faceH, cheekPuff=blendVal(blend,'cheekPuff');
+  /* Bloat / fullness — width:height of three lower-face spans. Water retention
+     widens cheeks + lower face faster than it lengthens it, so a rise in this
+     ratio against your own baseline tracks puffiness/bloat. */
+  const fullness=faceW/faceH;
+  const cheekFull=D(P(FACE.CHEEK_R),P(FACE.CHEEK_L))/faceH;
+  const jawFull=jawW/faceH;
+  const bloatRaw=(fullness+cheekFull+jawFull)/3;
+  const blink=Math.max(blendVal(blend,'eyeBlinkLeft'),blendVal(blend,'eyeBlinkRight'));
 
   /* ---- colour read on the RAW (unrotated) frame ---- */
   _off.width=vw; _off.height=vh; _octx.drawImage(cam,0,0,vw,vh);
@@ -1083,8 +1487,9 @@ function measureFrame(d){
 
   return { frontal, yaw, rollDeg, qLum:cheekLum, faceFill,
     symScore, asym, thirdsScore, t0:thirds[0], t1:thirds[1], t2:thirds[2],
-    jawScore, jawTaper, fWHR, noseScore, nasalIdx,
-    lipScore, lipFull, lipRatio, eyeScore, spacing, canthal, fullness,
+    jawScore, jawTaper, fWHR, gonial, noseScore, nasalIdx,
+    lipScore, lipFull, lipRatio, eyeScore, spacing, canthal, blink,
+    fullness, bloatRaw,
     skinEven, aRed, redLevel, oilPct, undEyeDark, skinScore, wbOn,
     skinL:skinLab[0], skinA:skinLab[1], skinB:skinLab[2], skinCol,
     hairCover, hairGloss, foreRatio, hairCol,
@@ -1103,17 +1508,29 @@ function finalizeScan(){
   const exp=frames.filter(f=>f.qLum>=50 && f.qLum<=240);
   const usedExp = exp.length>=3;
   if(usedExp) frames=exp;
+  /* drop blinking frames so eye spacing/canthal-tilt aren't measured on a
+     half-shut eye — but only if enough open-eye frames remain. */
+  const openEye=frames.filter(f=>(f.blink||0)<0.4);
+  const usedBlink=openEye.length>=3;
+  if(usedBlink) frames=openEye;
   const M=k=>{ const a=frames.map(f=>f[k]).filter(v=>typeof v==='number'&&!isNaN(v)).sort((x,y)=>x-y); if(!a.length) return 0; const i=a.length>>1; return a.length%2?a[i]:(a[i-1]+a[i])/2; };
   const Marr=(k,n)=>{ const o=[]; for(let j=0;j<n;j++){ const a=frames.map(f=>f[k][j]).sort((x,y)=>x-y); const i=a.length>>1; o.push(a.length%2?a[i]:(a[i-1]+a[i])/2);} return o; };
   const rnd=Math.round;
 
   const symScore=rnd(M('symScore')), asym=M('asym'), thirdsScore=rnd(M('thirdsScore'));
   const thirds=[M('t0'),M('t1'),M('t2')];
-  const jawScore=rnd(M('jawScore')), jawTaper=M('jawTaper'), fWHR=M('fWHR');
+  const jawScore=rnd(M('jawScore')), jawTaper=M('jawTaper'), fWHR=M('fWHR'), gonial=M('gonial');
   const noseScore=rnd(M('noseScore')), nasalIdx=M('nasalIdx');
   const lipScore=rnd(M('lipScore')), lipFull=M('lipFull'), lipRatio=M('lipRatio');
   const eyeScore=rnd(M('eyeScore')), spacing=M('spacing'), canthal=M('canthal');
-  const fullness=M('fullness');
+  const fullness=M('fullness'), bloatRaw=M('bloatRaw');
+  /* Bloat index = your fullness vs your own baseline (first scan). 50 = baseline,
+     higher = more retention/puffiness, lower = leaner. Self-relative on purpose:
+     absolute face width:height is bone-driven and not a health signal. */
+  let bloatBase=store.get('bloatBase',null), bloatNote;
+  if(bloatBase==null && bloatRaw>0){ bloatBase=+bloatRaw.toFixed(4); store.set('bloatBase',bloatBase); bloatNote='baseline set — rescan tomorrow to track'; }
+  const bloatIndex = bloatBase? Math.max(0,Math.min(100,Math.round(50+(bloatRaw-bloatBase)/bloatBase*350))) : 50;
+  if(!bloatNote) bloatNote = bloatIndex>=66?'puffy vs your baseline':bloatIndex<=38?'lean vs your baseline':'near your baseline';
   const skinEven=M('skinEven'), aRed=M('aRed'), redLevel=rnd(M('redLevel')), oilPct=rnd(M('oilPct')), undEyeDark=rnd(M('undEyeDark')), skinScore=rnd(M('skinScore'));
   const skinLab=[M('skinL'),M('skinA'),M('skinB')], skinCol=Marr('skinCol',3);
   const ita=itaAngle(skinLab), tone=toneLabel(ita);
@@ -1163,6 +1580,17 @@ function finalizeScan(){
   if(lipLab[0]<45) lipRem.push(R('Moderate','Lips read pale/dark — hydrate (lip skin mirrors whole-body water), exfoliate weekly, stop licking/biting (thins the vermilion border).'));
   lipRem.push(R('Myth','Lip "exercises" don\'t change lip size — that isn\'t muscle you can grow.'));
 
+  const bloatRem=[];
+  if(bloatBase && bloatIndex>=60){
+    bloatRem.push(R('Strong','Facial puffiness up vs your baseline. Cut sodium/processed food — high salt drives water retention you see first in the face. [sodium–fluid balance]'));
+    bloatRem.push(R('Strong','Alcohol dehydrates then rebounds into facial swelling — skip it for a few days and re-scan.'));
+    bloatRem.push(R('Moderate','Protect 7–9h sleep and don\'t sleep face-down; overnight fluid pools under the eyes and jaw.'));
+    bloatRem.push(R('Moderate','Hydrate well and eat potassium-rich produce — it offsets sodium and helps shed retained water.'));
+  } else if(bloatBase){
+    bloatRem.push(R('Strong','At/below your baseline — keep sodium, alcohol and sleep where they are. Lower body-fat is the only lever that changes underlying fullness. [facial-adiposity research]'));
+  }
+  bloatRem.push(R('Limited','Scan at the same time of day (ideally morning) — facial fluid shifts hour to hour, so consistent timing makes the trend honest.'));
+
   const areas=[
     {k:'Skin', ctrl:true, score:skinScore, swatch:hex(skinCol),
      status:`${tone[0]} tone · Fitzpatrick ${tone[1]} (approx) · ITA ${ita.toFixed(0)}° · ${und.label} undertone`,
@@ -1180,10 +1608,14 @@ function finalizeScan(){
      status:`Fullness ${lipFull.toFixed(2)} · lower:upper ${lipRatio.toFixed(2)}`,
      metrics:[['Fullness',lipFull.toFixed(2)],['L:U ratio',lipRatio.toFixed(2)]],
      rem:lipRem},
+    {k:'Bloat / fullness', ctrl:true, score:bloatIndex,
+     status:`${bloatIndex}/100 · ${bloatNote}`,
+     metrics:[['Index (50 = baseline)',`${bloatIndex}/100`],['Fullness ratio',bloatRaw.toFixed(3)],['vs baseline',bloatBase?(bloatRaw>=bloatBase?'+':'')+(((bloatRaw-bloatBase)/bloatBase)*100).toFixed(1)+'%':'—']],
+     rem:bloatRem},
     {k:'Jaw', ctrl:true, score:jawScore,
-     status:`Taper ${jawTaper.toFixed(2)} (jaw/cheek width)`,
-     metrics:[['Taper',jawTaper.toFixed(2)],['fWHR',fWHR.toFixed(2)]],
-     rem:[R('Strong','Lower body-fat is the biggest lever on a visible jawline. [facial-adiposity research]'),R('Moderate','Firm gum/chewing loads the masseter. [mastication studies]'),R('Myth','"Mewing" has no controlled evidence of changing bone.')]},
+     status:`Taper ${jawTaper.toFixed(2)} · gonial ~${gonial.toFixed(0)}° (frontal proxy)`,
+     metrics:[['Taper (jaw/cheek)',jawTaper.toFixed(2)],['fWHR',fWHR.toFixed(2)],['Gonial angle ~',gonial.toFixed(0)+'°']],
+     rem:[R('Strong','Lower body-fat is the biggest lever on a visible jawline. [facial-adiposity research]'),R('Moderate','Firm gum/chewing loads the masseter. [mastication studies]'),R('Moderate','Run Analyze → Jawline training: chin tucks, jaw jut, opener and clench, form-checked live.'),R('Myth','"Mewing" has no controlled evidence of changing bone.')]},
     {k:'Nose', ctrl:false, score:noseScore,
      status:`Nasal index ${nasalIdx.toFixed(2)} (width/length)`,
      metrics:[['Nasal index',nasalIdx.toFixed(2)]],
@@ -1203,13 +1635,13 @@ function finalizeScan(){
   const overall=Math.round(core.reduce((a,b)=>a+b,0)/core.length);
 
   const prev=store.get('scans',[]).slice(-1)[0];
-  const bloatTrend = prev && prev.fullness ? (fullness>prev.fullness*1.02?'▲ up':(fullness<prev.fullness*0.98?'▼ down':'– steady')) : 'baseline';
+  const bloatTrend = prev && typeof prev.bloat==='number' ? (bloatIndex>prev.bloat+3?'▲ up':(bloatIndex<prev.bloat-3?'▼ down':'– steady')) : (bloatBase?'tracking':'baseline');
 
-  renderResults(overall, areas, {bloat:`${fullness.toFixed(2)} ${bloatTrend}`, quality:_qual});
-  saveScan({ t:Date.now(), overall, sym:symScore, jaw:jawScore, nose:noseScore, lips:lipScore, eyes:eyeScore,
+  renderResults(overall, areas, {bloat:`${bloatIndex}/100 ${bloatTrend}`, quality:_qual});
+  saveScan({ t:Date.now(), overall, sym:symScore, jaw:jawScore, gonial:+gonial.toFixed(0), nose:noseScore, lips:lipScore, eyes:eyeScore,
     skin:skinScore, teeth:teethScore, hairGloss, redLevel, oilPct, ita:+ita.toFixed(1),
     undertone:und.label, hue:+und.hue.toFixed(1), wb:wbOn?1:0,
-    fullness:+fullness.toFixed(3), under:undEyeDark, skinHex:hex(skinCol), lipHex:hex(lipCol) });
+    bloat:bloatIndex, fullness:+fullness.toFixed(3), under:undEyeDark, skinHex:hex(skinCol), lipHex:hex(lipCol) });
   store.set('lastScore', overall); renderHome(); bumpStreak(); renderTimeline();
   _burst=[];
   $('#camSheet').style.display='block'; $('#camSheet').scrollTop=0;
@@ -1264,7 +1696,8 @@ function renderTimeline(){
   const bars=arr.slice(-14).map(s=>`<div title="${new Date(s.t).toLocaleDateString()}" style="flex:1;min-width:5px;background:linear-gradient(180deg,var(--gold-bright),var(--gold));height:${Math.max(8,s.overall)}%;border-radius:3px 3px 0 0"></div>`).join('');
   const rows=arr.slice(-8).reverse().map(s=>{
     const dd=new Date(s.t), when=dd.toLocaleDateString([], {month:'short',day:'numeric'})+' · '+dd.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-    return `<div class="row"><label>${when}</label><span>bloat ${s.fullness} · <span class="gold">${s.overall}</span></span></div>`;
+    const bl = (typeof s.bloat==='number') ? s.bloat+'/100' : (s.fullness??'—');
+    return `<div class="row"><label>${when}</label><span>bloat ${bl} · <span class="gold">${s.overall}</span></span></div>`;
   }).join('');
   el.innerHTML=`<div class="card" style="margin-top:18px">
     <div class="eyebrow">Your timeline · ${arr.length} scan${arr.length>1?'s':''}</div>
@@ -1274,6 +1707,7 @@ function renderTimeline(){
 
 $('#openAnalyze').addEventListener('click', async ()=>{ scanMode=true; const h=$('.tap-hint'); if(h) h.textContent='Auto-scanning · or tap to capture now'; await openCam(); });
 $('#openTrain').addEventListener('click', openTrain);
+$('#openStyle') && $('#openStyle').addEventListener('click', openStyle);
 $('#hintAnalyze').addEventListener('click', ()=>{ openGroom('jawline') });
 $('#camSheet') && $('#camSheet').addEventListener('click', e=>e.stopPropagation());
 
@@ -1297,7 +1731,7 @@ function showAffirm(){
 function nextAffirm(){ idx=(idx+1)%pool.length; showAffirm() }
 $('#openAffirm').addEventListener('click', async ()=>{ scanMode=false; const h=$('.tap-hint'); if(h) h.textContent='Tap anywhere to advance'; await openCam(); $('#affirmOverlay').style.display='flex'; buildPool(); showAffirm() });
 $('#camwrap').addEventListener('click', e=>{
-  if(trainMode) return;
+  if(trainMode||styleMode) return;
   if(e.target.closest('.affirm-overlay')||e.target.closest('.camctrl')||e.target.closest('.hud')||e.target.closest('.sheet')) return;
   if($('#affirmOverlay').style.display==='flex'){ nextAffirm(); }
   else { $('#camShot').click(); }   /* analyze mode: tap anywhere to scan */
