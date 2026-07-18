@@ -1200,8 +1200,10 @@ function capturePhotorealSource(){
   o.drawImage(cam,R.ox,R.oy,R.vw*R.s,R.vh*R.s); o.restore();
   return out.toDataURL('image/jpeg',0.9);
 }
+let _prBusy=false;
 async function renderPhotoreal(){
-  const btn=$('#photorealBtn');
+  if(_prBusy) return;
+  const btn=$('#photorealBtn'), retryBtn=$('#prRetry');
   if(!navigator.onLine){ toast('Needs internet'); return; }
   const hl=curHairList(), hairId=hl[styleHair]&&hl[styleHair].id;
   if(!hairId){ toast('Pick a style first'); return; }
@@ -1209,7 +1211,9 @@ async function renderPhotoreal(){
   const colorName = _styleHairColLock ? (HAIR_COLORS.find(c=>c.rgb&&hex(c.rgb)===hex(_styleHairColLock))||{}).name : 'match';
   const image = capturePhotorealSource();
   _prBeforeUrl = image;
+  _prBusy = true;
   btn.disabled = true; const origText = btn.textContent; btn.textContent = 'Rendering… (~10s)';
+  if(retryBtn) retryBtn.disabled = true;
   try{
     const res = await fetch(RENDER_FN_URL, {
       method:'POST',
@@ -1229,6 +1233,8 @@ async function renderPhotoreal(){
     console.warn('renderPhotoreal', e); toast('Couldn\'t render that one — try again');
   }finally{
     btn.disabled = false; btn.textContent = origText;
+    if(retryBtn) retryBtn.disabled = false;
+    _prBusy = false;
   }
 }
 function showPhotorealResult(beforeUrl, afterUrl){
