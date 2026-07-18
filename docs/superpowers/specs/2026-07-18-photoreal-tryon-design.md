@@ -25,18 +25,20 @@ This is Phase 1 of a 5-phase roadmap (backend infra + hair/beard photoreal → m
 ## Architecture
 
 ```
-Chisel app (offline-first)          InsForge project (new)                Replicate API
-─────────────────────────           ─────────────────────────             ──────────────
-Style try-on screen                 Edge function: POST /render-lookmax   flux-kontext-apps/
-  live overlay (existing,  ──POST──▶  - holds REPLICATE_API_TOKEN secret    change-haircut
-  unchanged, free/offline)            - maps our preset id/color → the
-  "Make it photoreal" btn             model's hairstyle/color/gender
-  (new)                    ◀─result──  fields, calls Replicate, polls,
-                                        returns the rendered image
-                                      - per-device daily counter (rate limit)
+Chisel app (offline-first)          Supabase project "looksmaxxing"       Replicate API
+─────────────────────────           (wnzbmmhtdchdqjnskwlo, existing,      ──────────────
+Style try-on screen                  pre-provisioned, restored)           black-forest-labs/
+  live overlay (existing,  ──POST──▶ Edge function: render-lookmax        flux-kontext-pro
+  unchanged, free/offline)            - holds REPLICATE_API_TOKEN secret
+  "Make it photoreal" btn             - maps our preset id/color →
+  (new)                    ◀─result──   a server-built prompt string
+                                       - render_counts table: per-device
+                                         daily counter (rate limit)
 ```
 
-Model choice: **`flux-kontext-apps/change-haircut`** (Replicate) — purpose-built FLUX.1 Kontext app for hairstyle/color swap with identity preservation. No server-side face-mask generation needed; the model consumes the photo plus a style/color description directly. Fallback if quality is unsatisfactory in testing: `black-forest-labs/flux-kontext-pro` with a hand-authored prompt (same call shape, drop-in swap).
+Backend: reusing the existing (previously idle) Supabase project `looksmaxxing` rather than provisioning InsForge — it's already in the user's account, just needed restoring from paused. It has an unrelated, empty fitness-tracker schema from an earlier project; this feature adds one new table (`render_counts`) alongside it and touches nothing else.
+
+Model choice: **`black-forest-labs/flux-kontext-pro`** (Replicate) — the officially documented FLUX.1 Kontext model (`prompt` + `input_image` in, image URL out), identity-preserving by design. (The original plan considered `flux-kontext-apps/change-haircut`, a thin community wrapper around the same underlying model — same result, but its exact input schema wasn't independently verifiable, so the well-documented base model is used directly with a server-built prompt instead.)
 
 ## Data flow
 
