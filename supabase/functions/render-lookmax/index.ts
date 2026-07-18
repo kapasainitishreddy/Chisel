@@ -87,12 +87,20 @@ Deno.serve(async (req: Request) => {
   );
 
   const today = new Date().toISOString().slice(0, 10);
-  const { data: existing } = await supabase
+  const { data: existing, error: rateLimitError } = await supabase
     .from("render_counts")
     .select("count")
     .eq("device_id", deviceId)
     .eq("day", today)
     .maybeSingle();
+
+  // Fail closed: if the rate-limit read itself fails (RLS misconfig, DB
+  // hiccup), don't silently let the request through — that would bypass the
+  // cap that exists specifically to bound Replicate API spend.
+  if (rateLimitError) {
+    console.error("Rate limit check failed", rateLimitError);
+    return new Response(JSON.stringify({ error: "rate_limit_check_failed" }), { status: 500, headers: CORS });
+  }
 
   const used = existing?.count ?? 0;
   if (used >= RATE_LIMIT_PER_DAY) {
@@ -138,7 +146,13 @@ Deno.serve(async (req: Request) => {
     return new Response(JSON.stringify({ error: "render_failed" }), { status: 502, headers: CORS });
   }
 
-  let prediction = await predictionRes.json();
+  let prediction;
+  try {
+    prediction = await predictionRes.json();
+  } catch (err) {
+    console.error("Replicate response not JSON", err);
+    return new Response(JSON.stringify({ error: "render_failed" }), { status: 502, headers: CORS });
+  }
 
   let attempts = 0;
   while (
@@ -151,7 +165,16 @@ Deno.serve(async (req: Request) => {
     const pollRes = await fetch(prediction.urls.get, {
       headers: { Authorization: `Bearer ${replicateToken}` },
     });
-    prediction = await pollRes.json();
+    if (!pollRes.ok) {
+      console.error("Replicate poll error", pollRes.status, await pollRes.text());
+      return new Response(JSON.stringify({ error: "render_failed" }), { status: 502, headers: CORS });
+    }
+    try {
+      prediction = await pollRes.json();
+    } catch (err) {
+      console.error("Replicate poll response not JSON", err);
+      return new Response(JSON.stringify({ error: "render_failed" }), { status: 502, headers: CORS });
+    }
     attempts++;
   }
 
