@@ -156,6 +156,18 @@
   #styleBar .seg .sc{border:0;border-radius:0;background:rgba(0,0,0,.45)}
   #styleBar .seg .sc.on{background:linear-gradient(90deg,var(--gold),var(--gold-bright))}
 
+  #styleBar .photoreal-btn{flex:0 0 auto;padding:8px 16px;min-height:36px;border:0;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--gold-bright));color:var(--onyx);font-size:11px;font-weight:600;letter-spacing:.08em;white-space:nowrap;cursor:pointer}
+  #styleBar .photoreal-btn:disabled{opacity:.5;cursor:default}
+  #styleBar .photoreal-note{font-size:10px;color:var(--ivory-dim);padding:0 2px}
+
+  #photorealSheet{display:none;flex-direction:column;gap:14px;align-items:center}
+  #photorealSheet .compare{display:flex;gap:10px;width:100%}
+  #photorealSheet .compare > div{flex:1;display:flex;flex-direction:column;gap:6px;align-items:center}
+  #photorealSheet .compare img{width:100%;border-radius:12px;border:1px solid var(--line)}
+  #photorealSheet .compare .lab{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--ivory-dim)}
+  #photorealSheet .btn-row{display:flex;gap:10px;width:100%}
+  #photorealSheet .btn-row .btn{flex:1}
+
   /* Dev validation readout */
   #devReadout{position:absolute;left:12px;top:calc(64px + env(safe-area-inset-top));z-index:5;display:none;
     font:11px/1.5 ui-monospace,Menlo,Consolas,monospace;white-space:pre;color:#7CC79A;
@@ -512,12 +524,27 @@
   <div class="tap-hint">Tap anywhere to advance</div>
   <div id="styleBar">
     <div class="scroller" id="styleTop"></div>
+    <div class="photorealRow" style="display:flex;align-items:center;gap:10px">
+      <button class="photoreal-btn" id="photorealBtn">✦ Make it photoreal</button>
+      <span class="photoreal-note" id="photorealNote"></span>
+    </div>
     <div class="lab" id="hairLab">Hairstyle</div>
     <div class="scroller" id="hairChips"></div>
     <div class="lab" id="beardLab">Beard &amp; moustache</div>
     <div class="scroller" id="beardChips"></div>
     <div class="lab">Hair colour</div>
     <div class="scroller" id="colorChips"></div>
+  </div>
+  <div class="sheet" id="photorealSheet">
+    <div class="compare">
+      <div><span class="lab">Before</span><img id="prBefore" /></div>
+      <div><span class="lab">Photoreal</span><img id="prAfter" /></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn ghost" id="prRetry">Retry</button>
+      <button class="btn solid" id="prSave">Save</button>
+    </div>
+    <button class="btn ghost" id="prClose" style="min-height:36px;padding:8px 14px">Close</button>
   </div>
   <div class="sheet" id="camSheet" style="display:none"></div>
 </div>
@@ -1165,6 +1192,58 @@ function snapStyle(){
     toast('Snapshot saved');
   }catch(e){ console.warn('snap',e); toast('Couldn\'t save snapshot'); }
 }
+let _prLastResult=null, _prBeforeUrl=null;
+function capturePhotorealSource(){
+  const R=coverRect(), out=document.createElement('canvas'); out.width=R.cw; out.height=R.ch;
+  const o=out.getContext('2d');
+  o.save(); if(facing==='user'){ o.translate(R.cw,0); o.scale(-1,1); }
+  o.drawImage(cam,R.ox,R.oy,R.vw*R.s,R.vh*R.s); o.restore();
+  return out.toDataURL('image/jpeg',0.9);
+}
+async function renderPhotoreal(){
+  const btn=$('#photorealBtn');
+  if(!navigator.onLine){ toast('Needs internet'); return; }
+  const hl=curHairList(), hairId=hl[styleHair]&&hl[styleHair].id;
+  if(!hairId){ toast('Pick a style first'); return; }
+  const beardId = styleGender==='men' ? (BEARD_STYLES[styleBeard]&&BEARD_STYLES[styleBeard].id) : undefined;
+  const colorName = _styleHairColLock ? (HAIR_COLORS.find(c=>c.rgb&&hex(c.rgb)===hex(_styleHairColLock))||{}).name : 'match';
+  const image = capturePhotorealSource();
+  _prBeforeUrl = image;
+  btn.disabled = true; const origText = btn.textContent; btn.textContent = 'Rendering… (~10s)';
+  try{
+    const res = await fetch(RENDER_FN_URL, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'apikey':RENDER_ANON_KEY },
+      body: JSON.stringify({ image, deviceId: deviceId(), hairId, beardId, colorName: colorName||'match', gender: styleGender })
+    });
+    const data = await res.json();
+    if(!res.ok){
+      if(data.error==='rate_limited') toast('You\'ve hit today\'s render limit — back tomorrow');
+      else toast('Couldn\'t render that one — try again');
+      return;
+    }
+    _prLastResult = data.imageUrl;
+    $('#photorealNote').textContent = data.remaining+' left today';
+    showPhotorealResult(_prBeforeUrl, _prLastResult);
+  }catch(e){
+    console.warn('renderPhotoreal', e); toast('Couldn\'t render that one — try again');
+  }finally{
+    btn.disabled = false; btn.textContent = origText;
+  }
+}
+function showPhotorealResult(beforeUrl, afterUrl){
+  $('#prBefore').src = beforeUrl; $('#prAfter').src = afterUrl;
+  $('#photorealSheet').style.display = 'flex';
+}
+function closePhotorealResult(){ $('#photorealSheet').style.display = 'none'; }
+$('#photorealBtn') && $('#photorealBtn').addEventListener('click', renderPhotoreal);
+$('#prRetry') && $('#prRetry').addEventListener('click', renderPhotoreal);
+$('#prClose') && $('#prClose').addEventListener('click', closePhotorealResult);
+$('#prSave') && $('#prSave').addEventListener('click', ()=>{
+  if(!_prLastResult) return;
+  const a=document.createElement('a'); a.href=_prLastResult; a.download='chisel-photoreal-'+Date.now()+'.jpg';
+  document.body.appendChild(a); a.click(); a.remove(); toast('Saved');
+});
 function openStyle(){
   scanMode=false; trainMode=false; styleMode=true;
   styleGender='men'; styleView='match'; _faceShape=null; _shapeBuf=[]; _shapeT=0;
@@ -1172,6 +1251,7 @@ function openStyle(){
   renderStyleTop(); renderStyleChips();   // re-ranks once the face is read (drawStyle→applyMatches)
   $('#styleBar').style.display='flex';
   const h=$('.tap-hint'); if(h) h.style.display='none';   // styleBar owns the bottom
+  closePhotorealResult();
   openCam();
 }
 
