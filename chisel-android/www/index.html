@@ -1233,16 +1233,27 @@ async function renderPhotoreal(){
 }
 function showPhotorealResult(beforeUrl, afterUrl){
   $('#prBefore').src = beforeUrl; $('#prAfter').src = afterUrl;
+  $('#styleBar').style.display = 'none';
   $('#photorealSheet').style.display = 'flex';
 }
-function closePhotorealResult(){ $('#photorealSheet').style.display = 'none'; }
+function closePhotorealResult(){
+  $('#photorealSheet').style.display = 'none';
+  $('#styleBar').style.display = 'flex';
+}
 $('#photorealBtn') && $('#photorealBtn').addEventListener('click', renderPhotoreal);
 $('#prRetry') && $('#prRetry').addEventListener('click', renderPhotoreal);
 $('#prClose') && $('#prClose').addEventListener('click', closePhotorealResult);
-$('#prSave') && $('#prSave').addEventListener('click', ()=>{
+$('#prSave') && $('#prSave').addEventListener('click', async ()=>{
   if(!_prLastResult) return;
-  const a=document.createElement('a'); a.href=_prLastResult; a.download='chisel-photoreal-'+Date.now()+'.jpg';
-  document.body.appendChild(a); a.click(); a.remove(); toast('Saved');
+  try{
+    const resp = await fetch(_prLastResult);
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download='chisel-photoreal-'+Date.now()+'.jpg';
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    toast('Saved');
+  }catch(e){ console.warn('prSave', e); toast('Couldn\'t save that image'); }
 });
 function openStyle(){
   scanMode=false; trainMode=false; styleMode=true;
@@ -1252,6 +1263,7 @@ function openStyle(){
   $('#styleBar').style.display='flex';
   const h=$('.tap-hint'); if(h) h.style.display='none';   // styleBar owns the bottom
   closePhotorealResult();
+  $('#photorealNote').textContent = 'Up to 5 today';
   openCam();
 }
 
