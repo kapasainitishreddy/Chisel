@@ -7,3 +7,4 @@ android/local.properties
 .DS_Store
 _dbg*.png
 _verify.png
+.superpowers/
