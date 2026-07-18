@@ -48,12 +48,21 @@ Model choice: **`flux-kontext-apps/change-haircut`** (Replicate) — purpose-bui
 
 ## UI/UX
 
-- New pill button in `#styleBar`, visually consistent with existing `.sc` chip styling but gold-solid to signal it's the premium/cloud action: "✨ Make it photoreal".
+- New pill button in `#styleBar`, visually consistent with existing `.sc` chip styling but gold-solid to signal it's the premium/cloud action: "✦ Make it photoreal" — reusing the `✦` glyph already established for "Facial Hair" in the Groom grid rather than inventing a new icon, per the design quality bar below.
 - Disabled (with tooltip "Needs internet") when `navigator.onLine` is false — never a dead click.
 - On tap: button becomes a spinner with "Rendering your look… (~10s)" and a Cancel that aborts the fetch.
 - Result view: reuses `#camSheet` slide-up sheet — large before/after (swipeable or side-by-side depending on screen width), Retry and Save buttons styled to match existing result-sheet buttons (see `renderResults()` for the existing pattern to follow).
 - Errors (timeout, network, rate-limit hit, model content-policy reject) → toast (reuses existing `toast()` helper) with a specific, human message ("Couldn't render that one — try again" / "You've hit today's render limit, back tomorrow") and the sheet simply closes, returning to the live overlay — never a blank/broken state.
 - Rate-limit remaining count shown subtly near the button ("3 photoreal renders left today") so the user isn't surprised by the cap.
+- Navigation: no new bottom-tab or top-level route. The feature lives entirely inside the existing Style try-on flow (Groom tab → Open Try-on → new button), and the result sheet closes via the same `✕`/back pattern already used by `#camBack` and `#modalX` — one consistent way to "go back" across the whole app, not a bespoke one for this feature.
+
+## Design quality bar
+
+Chisel's existing visual language is a deliberate, restrained editorial system: onyx/gold/ivory palette, serif display type, monochrome geometric-glyph icons (◉ ◢ ◣ ◤ ▤ ✦ ▥ ✕ ⟲ — never color emoji, never a mismatched icon-font pack), and reused component patterns (`.card`, `.btn`, `.sc` chip, the slide-up sheet). This phase must read as a native extension of that system, not a bolted-on "AI feature":
+- No new icon vocabulary — reuse existing glyphs or extend the same monochrome style if a genuinely new concept needs one.
+- No generic AI-app tropes: no purple/blue gradient "magic" buttons, no sparkle-emoji buttons, no stock "✨ AI-powered ✨" copy. The gold-solid `.btn.solid` treatment already used elsewhere in the app is the "this is the premium action" signal — lean on it instead of inventing new visual metaphors for "AI."
+- Copy stays in the app's existing voice (direct, plain, e.g. "Make it photoreal" not "Unleash AI Magic").
+- Loading/result states reuse existing motion and layout patterns (the slide-up sheet, existing spinner/toast conventions) rather than introducing a new interaction pattern just for this one feature.
 
 ## Cost controls
 
