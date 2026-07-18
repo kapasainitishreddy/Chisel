@@ -578,6 +578,13 @@ const $ = (s,r=document)=>r.querySelector(s);
 const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
 const toast = (m,t=1800)=>{ const el=$('#toast'); el.textContent=m; el.classList.add('on'); clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove('on'),t) };
 const store = { get:(k,d)=>{ try{return JSON.parse(localStorage.getItem('chisel:'+k))??d}catch{return d} }, set:(k,v)=>localStorage.setItem('chisel:'+k, JSON.stringify(v)) };
+const RENDER_FN_URL = 'https://wnzbmmhtdchdqjnskwlo.supabase.co/functions/v1/render-lookmax';
+const RENDER_ANON_KEY = 'sb_publishable_kr_GPQ_vODmXjIxQoV8v6A_FqH8RCts';
+function deviceId(){
+  let id = store.get('deviceId', null);
+  if(!id){ id = 'c-'+Math.random().toString(36).slice(2)+Date.now().toString(36); store.set('deviceId', id); }
+  return id;
+}
 
 /* ---------- Native / Capacitor detection ---------- */
 const isCap = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
