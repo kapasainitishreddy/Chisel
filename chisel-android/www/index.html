@@ -292,7 +292,7 @@
     <section class="screen active" data-screen="home">
       <div class="hero">
         <div>
-          <div class="eyebrow">Today · <span id="todayDate"></span></div>
+          <div class="eyebrow">Today · <span id="todayDate"></span> · <span id="identityChip" style="cursor:pointer;border-bottom:1px dotted var(--gold)">Set identity</span></div>
           <h1 class="display">Sculpt <em>your best</em><br/>self, in plain sight.</h1>
           <p class="lede" style="margin-top:18px">A precision lookmax studio. Real-time facial analysis, science-grounded grooming, and the affirmations to match. Open the camera, look at yourself, and become it.</p>
           <div class="btn-row" style="margin-top:24px">
@@ -336,7 +336,7 @@
           <div class="card" data-go="affirm" style="cursor:pointer">
             <div style="font-size:32px">✦</div>
             <h3 style="font-family:var(--display);font-size:24px;margin:8px 0 0;font-weight:500">Affirm</h3>
-            <p class="lede" style="font-size:13px;margin:4px 0 0">Read affirmations on top of your live reflection. Lock eyes with the man you're becoming.</p>
+            <p class="lede" id="affirmCardSub" style="font-size:13px;margin:4px 0 0">Read affirmations on top of your live reflection. Lock eyes with the person you're becoming.</p>
           </div>
           <div class="card" data-go="meditate" style="cursor:pointer">
             <div style="font-size:32px">◯</div>
@@ -634,6 +634,28 @@
   </div>
 </div>
 
+<!-- IDENTITY MODAL -->
+<div class="modal" id="idModal">
+  <div class="panel">
+    <div class="x" id="idX">✕</div>
+    <div class="eyebrow">You</div>
+    <h3>Who is Chisel for?</h3>
+    <p class="lede">This tailors your affirmations, the way your scan is framed, grooming advice and the try-on. Your measurements stay the same honest geometry either way. Stored only on your device — change it anytime.</p>
+    <div id="idChips" style="display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 6px">
+      <button class="chip" data-gender="male">Male</button>
+      <button class="chip" data-gender="female">Female</button>
+      <button class="chip" data-gender="nonbinary">Non-binary</button>
+      <button class="chip" data-gender="custom">Custom</button>
+    </div>
+    <div id="idCustomWrap" style="display:none;margin-top:8px">
+      <input id="idCustom" placeholder="Describe your identity (optional)" maxlength="40" style="width:100%;background:transparent;border:0;border-bottom:1px solid var(--line);color:var(--ivory);font-family:var(--display);font-size:20px;padding:8px 0;outline:none"/>
+    </div>
+    <div class="btn-row" style="margin-top:18px">
+      <button class="btn solid" id="idSave">Save</button>
+    </div>
+  </div>
+</div>
+
 <script>
   /* MediaPipe FaceLandmarker loader (468-point mesh + blendshapes).
      Dynamic import in try/catch so any CDN/parse error is captured, not silent. */
@@ -713,8 +735,35 @@ const AFFIRM = {
   presence:["I speak slowly because I have nothing to prove.","I listen more than I talk. I observe more than I react.","I am fully here. The past is closed. The future is unwritten. This moment is mine.","My attention is the most valuable thing I own. I spend it on purpose.","I am not in a hurry. The world can wait."],
   manifest:["I see the chiseled jawline. I feel the discipline that carved it. I am grateful it is mine.","I see the strong posture. I see the calm eyes. I see the steady hands. This is me, in 12 months.","I see the bank account that reflects the man I became. I see the respect I earned by earning it.","I see the woman who looks at me differently. I see the man in the mirror looking back with pride.","I see the life I built from small, boring, daily choices. I see it clearly. I am grateful."]
 };
+const AFFIRM_F = {
+  confidence:["I am the architect of my confidence. I walk into rooms like I own them — because I do.","My presence is calm, my posture is regal, my eye contact is unshakable.","Every day, in every way, I become more magnetic.","I do not shrink. I do not apologize for taking up space.","I trust the woman I am becoming."],
+  jawline:["My features are defined because I am disciplined with sleep, water and training.","I carry myself with poise — chin level, shoulders back, spine tall.","A lean, sculpted jawline follows the habits I keep every day.","I sculpt my face with my routine, not with comparison.","The bone is the gift. The care is the work. I do the work."],
+  skin:["My skin is clear because I treat it like the canvas it is.","I feed my face from the inside: water, protein, sleep, sunlight.","My glow comes from consistency, not products.","I am patient with my skin the way I am patient with my growth.","I touch my face less. I drink more water. I sleep deeper."],
+  discipline:["I am not motivated. I am disciplined. Motivation is a guest — discipline is the host.","I do the boring thing twice a day: morning and night. That is the entire game.","I keep the promises I make to myself. That is the foundation.","I would rather be respected for who I am than liked for who I am not.","Hard things first. Easy things later. That is the order."],
+  wealth:["Money flows toward me because I provide value, solve problems, and ship work.","I am paid in proportion to the problems I solve. I solve bigger ones.","I am a magnet for opportunity. I move with speed and decisiveness.","I do not trade my time for comfort. I trade it for leverage.","I am building something that outlasts me."],
+  presence:["I speak slowly because I have nothing to prove.","I listen more than I talk. I observe more than I react.","I am fully here. The past is closed. The future is unwritten. This moment is mine.","My attention is the most valuable thing I own. I spend it on purpose.","I am not in a hurry. The world can wait."],
+  manifest:["I see the sculpted, radiant version of me. I feel the discipline that shaped her. I am grateful she is mine.","I see the strong posture, the calm eyes, the steady hands. This is me, in 12 months.","I see the life and the freedom that reflect the work I put in. I earned them.","I see the woman in the mirror looking back with pride.","I see the life I built from small, boring, daily choices. I see it clearly. I am grateful."]
+};
+const AFFIRM_N = {
+  confidence:["I am the architect of my confidence. I walk into rooms like I own them — because I do.","My presence is calm, my posture is grounded, my eye contact is unshakable.","Every day, in every way, I become more magnetic.","I do not shrink. I do not apologize for taking up space.","I trust the person I am becoming."],
+  jawline:["My features are defined because I am disciplined with sleep, water and training.","I carry myself with the structure of someone who trains body and mind.","A strong, healthy jawline follows the habits I keep.","I sculpt my face with my routine — sleep, water, training, restraint.","The bone is the gift. The work is mine to do."],
+  skin:["My skin is clear because I treat it like the canvas it is.","I feed my face from the inside: water, protein, sleep, sunlight.","My glow comes from consistency, not products.","I am patient with my skin the way I am patient with my growth.","I touch my face less. I drink more water. I sleep deeper."],
+  discipline:["I am not motivated. I am disciplined. Motivation is a guest — discipline is the host.","I do the boring thing twice a day: morning and night. That is the entire game.","I keep the promises I make to myself. That is the foundation.","I would rather be respected for who I am than liked for who I am not.","Hard things first. Easy things later. That is the order."],
+  wealth:["Money flows toward me because I provide value, solve problems, and ship work.","I am paid in proportion to the problems I solve. I solve bigger ones.","I am a magnet for opportunity. I move with speed and decisiveness.","I do not trade my time for comfort. I trade it for leverage.","I am building something that outlasts me."],
+  presence:["I speak slowly because I have nothing to prove.","I listen more than I talk. I observe more than I react.","I am fully here. The past is closed. The future is unwritten. This moment is mine.","My attention is the most valuable thing I own. I spend it on purpose.","I am not in a hurry. The world can wait."],
+  manifest:["I see the sculpted, confident version of me. I feel the discipline that shaped it. I am grateful it is mine.","I see the strong posture, the calm eyes, the steady hands. This is me, in 12 months.","I see the life and the respect that reflect the work I put in. I earned them.","I see the person in the mirror looking back with pride.","I see the life I built from small, boring, daily choices. I see it clearly. I am grateful."]
+};
+/* ---------- Identity (gender-aware content) ---------- */
+function identity(){ return store.get('identity',{gender:null,label:null}); }
+function identityGender(){ return identity().gender || 'male'; }   // male default only until the user chooses
+function identityChosen(){ return !!identity().gender; }
+function identitySet(gender,label){ store.set('identity',{gender, label:(label||'').trim()||null}); }
+function identityNoun(){ const g=identityGender(); return g==='male'?'man':g==='female'?'woman':'person'; }
+function identityDisplay(){ const i=identity(); if(i.gender==='custom') return i.label||'Custom'; return {male:'Male',female:'Female',nonbinary:'Non-binary'}[i.gender]||'Not set'; }
+function affirmBank(){ const g=identityGender(); return g==='female'?AFFIRM_F : g==='male'?AFFIRM : AFFIRM_N; }
 function pickAffirm(cat){
-  const pool = cat==='all' ? [...Object.values(AFFIRM)].flat() : AFFIRM[cat] || AFFIRM.confidence;
+  const B=affirmBank();
+  const pool = cat==='all' ? [...Object.values(B)].flat() : B[cat] || B.confidence;
   return pool[Math.floor(Math.random()*pool.length)];
 }
 function renderHome(){
@@ -1413,7 +1462,7 @@ $('#prSave') && $('#prSave').addEventListener('click', async ()=>{
 });
 function openStyle(){
   scanMode=false; trainMode=false; styleMode=true;
-  styleGender='men'; styleView='match'; _faceShape=null; _shapeBuf=[]; _shapeT=0;
+  styleGender = (typeof identityGender==='function' && identityGender()==='female') ? 'women' : 'men'; styleView='match'; _faceShape=null; _shapeBuf=[]; _shapeT=0;
   styleHair=2; styleBeard=1; styleGlass=0; _styleHairCol=null; _styleHairColLock=null;
   renderStyleTop(); renderStyleChips();   // re-ranks once the face is read (drawStyle→applyMatches)
   $('#styleBar').style.display='flex';
@@ -1880,24 +1929,55 @@ function finalizeScan(){
   }
   bloatRem.push(R('Limited','Scan at the same time of day (ideally morning) — facial fluid shifts hour to hour, so consistent timing makes the trend honest.'));
 
-  /* ---------- Beard & haircut fit, from the detected face shape ---------- */
+  /* ---------- Grooming fit, tailored to identity + detected face shape ---------- */
+  const gid = identityGender();
   const shapeNm = shapeConf ? (SHAPE_NAME[shape]||shape) : null;
-  const BEARD_REC={
-    oval:'Heavy stubble to a short, tidy beard — balanced proportions carry almost any length. Keep the neckline clean and let it fill in.',
-    round:'Add length at the chin (short boxed beard, Van Dyke or goatee) and keep the cheeks tight — vertical shape slims a round face.',
-    square:'Stubble to a short beard following the jaw. Your angles are already strong, so don\'t bury them under bulk.',
-    oblong:'Fuller on the cheeks and sides, short at the chin — width balances a long face. Avoid pointed goatees that add length.',
-    heart:'A fuller beard adds welcome mass to a narrower chin and balances a wider forehead.',
-    diamond:'Build fullness along the lower jaw to widen a narrow jawline against prominent cheekbones.',
-    triangle:'Keep the sides light and neatly lined — you don\'t want to add width to an already-broad jaw.'
-  };
-  const beardRecTxt = shapeNm ? BEARD_REC[shape] : 'Face shape wasn\'t locked this scan — stay square to the camera and rescan. Heavy stubble to a short beard is the safe default for most faces.';
-  const recBeardId = shapeNm ? (BEARD_MATCH[shape]||[])[0] : null;
-  const recBeardNm = recBeardId ? (BEARD_STYLES.find(b=>b.id===recBeardId)||{}).name : '—';
-  const recHairIds = shapeNm ? ((HAIR_MATCH[shape]||{}).men||[]) : [];
+  const hairGender = gid==='female' ? 'women' : 'men';
+  const hairList = hairGender==='women' ? HAIR_WOMEN : HAIR_MEN;
+  const recHairIds = shapeNm ? ((HAIR_MATCH[shape]||{})[hairGender]||[]) : [];
   const recHairTxt = recHairIds.length
-    ? ('Cuts that suit a '+shapeNm.toLowerCase()+' face: '+recHairIds.slice(0,4).map(id=>(HAIR_MEN.find(h=>h.id===id)||{}).name).filter(Boolean).join(', ')+'. Preview them live in Groom → Try-on.')
-    : 'Open Groom → Try-on to preview cuts and beards on your live face.';
+    ? ('Cuts that suit a '+shapeNm.toLowerCase()+' face: '+recHairIds.slice(0,4).map(id=>(hairList.find(h=>h.id===id)||{}).name).filter(Boolean).join(', ')+'. Preview them live in Groom → Try-on.')
+    : 'Open Groom → Try-on to preview cuts on your live face.';
+  let groomArea;
+  if(gid==='female'){
+    groomArea={k:'Brows & style', ctrl:true, score:null,
+      status: shapeNm ? `${shapeNm} face · styling that balances it` : 'Stay frontal and rescan to lock your face shape',
+      metrics:[['Face shape', shapeNm||'not locked']],
+      rem:[
+        R('Moderate', recHairTxt),
+        R('Moderate','Brows frame the whole face — follow your natural arch, fill sparse spots, and avoid over-plucking (repeated plucking thins brows permanently).'),
+        R('Limited','Contour and highlight can visually sharpen cheekbones and jaw — a styling cue, not a structural change.'),
+        R('Strong','Whatever the look, daily SPF and a consistent routine do more for how your skin reads than any single product. [Hughes 2013]')
+      ]};
+  } else {
+    const BEARD_REC={
+      oval:'Heavy stubble to a short, tidy beard — balanced proportions carry almost any length. Keep the neckline clean and let it fill in.',
+      round:'Add length at the chin (short boxed beard, Van Dyke or goatee) and keep the cheeks tight — vertical shape slims a round face.',
+      square:'Stubble to a short beard following the jaw. Your angles are already strong, so don\'t bury them under bulk.',
+      oblong:'Fuller on the cheeks and sides, short at the chin — width balances a long face. Avoid pointed goatees that add length.',
+      heart:'A fuller beard adds welcome mass to a narrower chin and balances a wider forehead.',
+      diamond:'Build fullness along the lower jaw to widen a narrow jawline against prominent cheekbones.',
+      triangle:'Keep the sides light and neatly lined — you don\'t want to add width to an already-broad jaw.'
+    };
+    const beardRecTxt = shapeNm ? BEARD_REC[shape] : 'Face shape wasn\'t locked this scan — stay square to the camera and rescan. Heavy stubble to a short beard is the safe default for most faces.';
+    const recBeardId = shapeNm ? (BEARD_MATCH[shape]||[])[0] : null;
+    const recBeardNm = recBeardId ? (BEARD_STYLES.find(b=>b.id===recBeardId)||{}).name : '—';
+    groomArea={k:'Beard & style', ctrl:true, score:null,
+      status: shapeNm ? `${shapeNm} face · recommended beard: ${recBeardNm}` : 'Stay frontal and rescan to lock your face shape',
+      metrics:[['Face shape', shapeNm||'not locked'],['Recommended beard', recBeardNm]],
+      rem:[
+        R('Moderate', beardRecTxt),
+        R('Limited', recHairTxt),
+        R('Moderate','Beard density itself is genetic / DHT-driven — topical minoxidil 5% has emerging RCT support for thickening patchy growth (give it 16+ weeks). It won\'t create hair where no follicles exist. [minoxidil-for-beard RCTs]'),
+        R('Strong','Whatever length you grow: define the neckline two fingers above the Adam\'s apple, and trim strays — never pluck (infection risk in the facial "danger triangle"). [ENT guidance]')
+      ]};
+  }
+  /* jaw framing adapts to identity (goal wording), the measurement itself does not */
+  const jawFrame = gid==='female'
+    ? R('Limited','A clean, tapered jawline reads as defined and healthy. The levers below are facial fat and posture — bone structure itself isn\'t trainable.')
+    : gid==='male'
+    ? R('Limited','A defined, slightly squarer jaw reads as a masculine cue. The levers below are lower facial fat and posture — not bone, which you can\'t train.')
+    : R('Limited','A defined jawline comes from lower facial fat and good posture — not bone structure, which you can\'t train.');
 
   const areas=[
     {k:'Skin', ctrl:true, score:skinScore, swatch:hex(skinCol),
@@ -1908,15 +1988,7 @@ function finalizeScan(){
      status: hairDetected? `Detected · gloss ${hairGloss}/100 · hairline ${foreRatio.toFixed(2)}` : 'Not clearly read — retake in even light',
      metrics:[['Coverage read',`${Math.round(hairCover*100)}%`],['Shine',`${hairGloss}/100`],['Forehead height',foreRatio.toFixed(2)]],
      rem:hairRem},
-    {k:'Beard & style', ctrl:true, score:null,
-     status: shapeNm ? `${shapeNm} face · recommended beard: ${recBeardNm}` : 'Stay frontal and rescan to lock your face shape',
-     metrics:[['Face shape', shapeNm||'not locked'],['Recommended beard', recBeardNm]],
-     rem:[
-       R('Moderate', beardRecTxt),
-       R('Limited', recHairTxt),
-       R('Moderate','Beard density itself is genetic / DHT-driven — topical minoxidil 5% has emerging RCT support for thickening patchy growth (give it 16+ weeks). It won\'t create hair where no follicles exist. [minoxidil-for-beard RCTs]'),
-       R('Strong','Whatever length you grow: define the neckline two fingers above the Adam\'s apple, and trim strays — never pluck (infection risk in the facial "danger triangle"). [ENT guidance]')
-     ]},
+    groomArea,
     {k:'Teeth', ctrl:true, score:teethScore,
      status: teethShade? `Shade ${teethShade}` : 'Smile to measure',
      metrics:[['Shade',teethShade||'—'],['Yellowness (b*)',teethScore!=null?teethYellow.toFixed(1):'—']],
@@ -1932,7 +2004,7 @@ function finalizeScan(){
     {k:'Jaw', ctrl:true, score:jawScore,
      status:`Taper ${jawTaper.toFixed(2)} · gonial ~${gonial.toFixed(0)}° (frontal proxy)`,
      metrics:[['Taper (jaw/cheek)',jawTaper.toFixed(2)],['fWHR',fWHR.toFixed(2)],['Gonial angle ~',gonial.toFixed(0)+'°']],
-     rem:[R('Strong','Lower body-fat is the biggest lever on a visible jawline. [facial-adiposity research]'),R('Moderate','Firm gum/chewing loads the masseter. [mastication studies]'),R('Moderate','Run Analyze → Jawline training: chin tucks, jaw jut, opener and clench, form-checked live.'),R('Myth','"Mewing" has no controlled evidence of changing bone.')]},
+     rem:[jawFrame,R('Strong','Lower body-fat is the biggest lever on a visible jawline. [facial-adiposity research]'),R('Moderate','Firm gum/chewing loads the masseter. [mastication studies]'),R('Moderate','Run Analyze → Jawline training: chin tucks, jaw jut, opener and clench, form-checked live.'),R('Myth','"Mewing" has no controlled evidence of changing bone.')]},
     {k:'Nose', ctrl:false, score:noseScore,
      status:`Nasal index ${nasalIdx.toFixed(2)} (width/length)`,
      metrics:[['Nasal index',nasalIdx.toFixed(2)]],
@@ -2052,8 +2124,9 @@ $('#camSheet') && $('#camSheet').addEventListener('click', e=>e.stopPropagation(
 /* ---------- Affirm overlay ---------- */
 let curCat='confidence', auto=false, manifest=false, idx=0, pool=[];
 function buildPool(){
-  pool = curCat==='all' ? [...Object.values(AFFIRM)].flat() : (AFFIRM[curCat]||AFFIRM.confidence);
-  if(manifest) pool = AFFIRM.manifest;
+  const B=affirmBank();
+  pool = curCat==='all' ? [...Object.values(B)].flat() : (B[curCat]||B.confidence);
+  if(manifest) pool = B.manifest;
   idx=0; renderAffirmPager();
 }
 function renderAffirmPager(){
@@ -2096,18 +2169,18 @@ function speak(text, opts={}){
 /* ---------- Meditation ---------- */
 let medTimer=null, medT=0, medDur=600, medPhase='idle', humOn=true, humCtx=null, humOsc=null, humGain=null;
 const SCRIPTS = {
-  intro:"Close your eyes. Take a deep breath. Begin to visualize the chiseled, confident version of yourself.",
+  intro:"Close your eyes. Take a deep breath. Begin to visualize the strong, confident version of yourself.",
   mid:[
     "See the sharp jawline. Feel the discipline that carved it.",
-    "Notice the calm, steady eyes. Nothing rattles this man.",
+    "Notice the calm, steady eyes. Nothing rattles you.",
     "Feel the strong, upright posture. You stand like you belong.",
     "Picture the skin — clear, rested, well-fed. You earned it.",
     "See the room responding to you. People lean in. They listen.",
     "Feel the discipline: morning routine, training, restraint, sleep.",
-    "See the bank account that reflects the work. You are paid what you are worth.",
+    "See the life that reflects the work. You are paid what you are worth.",
     "Hear your own voice — slow, low, certain. You speak because you have something to say.",
-    "Notice how easy it is. The boring work became the foundation. The foundation became the man.",
-    "You are not becoming him. He is already you — you are just catching up."
+    "Notice how easy it is. The boring work became the foundation. The foundation became who you are.",
+    "You are not becoming someone else. This is already you — you are just catching up."
   ],
   outro:"Slowly open your eyes. You are the sculptor of your own face. Begin."
 };
@@ -2557,10 +2630,42 @@ $('#pickerFiles') && $('#pickerFiles').addEventListener('change', async (e)=>{
 $('#pickerX') && $('#pickerX').addEventListener('click', ()=>$('#pickerModal').classList.remove('on'));
 $('#pickerModal') && $('#pickerModal').addEventListener('click', e=>{ if(e.target.id==='pickerModal') $('#pickerModal').classList.remove('on'); });
 
+/* ---------- Identity UI ---------- */
+let _idSel=null;
+function openIdentity(){
+  _idSel = identity().gender || null;
+  $$('#idChips .chip').forEach(c=>c.classList.toggle('on', c.dataset.gender===_idSel));
+  $('#idCustomWrap').style.display = _idSel==='custom' ? 'block' : 'none';
+  if(identity().gender==='custom' && $('#idCustom')) $('#idCustom').value = identity().label||'';
+  $('#idModal').classList.add('on');
+}
+function closeIdentity(){ $('#idModal').classList.remove('on'); }
+function applyIdentity(){
+  const chip=$('#identityChip'); if(chip) chip.textContent = identityChosen()? identityDisplay() : 'Set identity';
+  const sub=$('#affirmCardSub'); if(sub) sub.textContent = 'Read affirmations on top of your live reflection. Lock eyes with the '+identityNoun()+' you\'re becoming.';
+  styleGender = identityGender()==='female' ? 'women' : 'men';   // sensible try-on default; still switchable
+}
+$('#identityChip') && $('#identityChip').addEventListener('click', openIdentity);
+$('#idX') && $('#idX').addEventListener('click', closeIdentity);
+$('#idModal') && $('#idModal').addEventListener('click', e=>{ if(e.target.id==='idModal') closeIdentity(); });
+$$('#idChips .chip').forEach(c=>c.addEventListener('click', ()=>{
+  _idSel=c.dataset.gender;
+  $$('#idChips .chip').forEach(x=>x.classList.toggle('on', x===c));
+  $('#idCustomWrap').style.display = _idSel==='custom' ? 'block' : 'none';
+}));
+$('#idSave') && $('#idSave').addEventListener('click', ()=>{
+  if(!_idSel){ toast('Pick one'); return; }
+  identitySet(_idSel, _idSel==='custom' ? ($('#idCustom')?$('#idCustom').value:'') : null);
+  closeIdentity(); applyIdentity(); renderHome();
+  toast('Set to '+identityDisplay());
+});
+
 /* ---------- Boot ---------- */
 buildGroom();
 initReminders();
+applyIdentity();
 renderTimeline();
+if(!identityChosen()) setTimeout(openIdentity, 1700);   // first-run identity picker
 go(location.hash.slice(1) || 'home');
 setTimeout(()=>{ $('#boot').classList.add('gone'); setTimeout(()=>$('#boot').remove(),900) }, 1300);
 </script>

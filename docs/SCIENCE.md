@@ -73,6 +73,24 @@ chin; triangle → light sides). Honest caveats in-app: **beard density is
 genetic/DHT-driven** (minoxidil has *emerging* RCT support), and **trim, never
 pluck** stray hairs.
 
+## Gender & identity
+
+Chisel supports **Male, Female, Non-binary, and a Custom (free-text)** identity,
+set on first run and changeable anytime (stored only on-device). Identity tailors
+**framing, not the underlying measurement**:
+
+- **Affirmations** use a gendered self-talk bank (male / female / neutral).
+- **Meditation** copy is identity-neutral for everyone.
+- **Jaw framing** adapts the *goal wording* — a squarer jaw is framed as a
+  masculine cue, a tapered jaw as defined/feminine — while the measured taper,
+  fWHR and gonial numbers are identical regardless of identity.
+- **Grooming fit** shows a beard/style recommendation for male / non-binary /
+  custom, and a brows/hairline styling recommendation for female.
+- **Try-on** defaults to women's or men's cuts by identity (still switchable).
+
+The geometry, colour science, and scores themselves are the same for everyone —
+Chisel measures the same face and never ranks one identity against another.
+
 ## Evidence grades
 
 Every recommendation is tagged so you know how much to trust it:
