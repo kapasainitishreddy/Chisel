@@ -314,6 +314,9 @@
             <div class="eyebrow" style="margin-bottom:8px">Streak</div>
             <div class="streak"><b id="streakNum">0</b><small>days</small></div>
             <div style="font-size:12px;color:var(--ivory-dim);margin-top:6px" id="streakSub">Begin a session to start your streak.</div>
+            <div class="btn-row" style="margin-top:14px">
+              <button class="btn" id="shareProgress" style="min-height:38px;padding:9px 16px">Share progress</button>
+            </div>
           </div>
           <div class="card" style="padding:24px;margin-top:14px">
             <div class="eyebrow" style="margin-bottom:8px">Lookmax Score</div>
@@ -343,7 +346,42 @@
         </div>
       </div>
 
-      <div style="margin-top:36px" class="card">
+      <div style="margin-top:36px">
+        <div class="eyebrow">Milestones</div>
+        <div class="grid g-3" id="milestones" style="margin-top:10px"></div>
+      </div>
+
+      <div class="grid g-2" style="margin-top:36px">
+        <div class="card">
+          <div class="eyebrow" style="margin-bottom:8px">Last night's sleep</div>
+          <p class="lede" style="font-size:12px;margin:0 0 10px">Sleep drives skin recovery and under-eye shadow. Log it and Chisel ties it to your scans. [Oyetakin-White 2015]</p>
+          <div style="display:flex;align-items:center;gap:10px">
+            <input id="sleepHrs" type="number" min="0" max="14" step="0.5" placeholder="7.5" style="width:90px;background:transparent;border:0;border-bottom:1px solid var(--line);color:var(--ivory);font-family:var(--display);font-size:28px;padding:6px 0;outline:none" />
+            <span style="color:var(--ivory-dim);font-size:12px;letter-spacing:.2em;text-transform:uppercase">hours</span>
+            <button class="btn" id="saveSleep" style="min-height:38px;padding:9px 16px;margin-left:auto">Log</button>
+          </div>
+          <div id="sleepNote" style="font-size:12px;color:var(--ivory-dim);margin-top:8px"></div>
+        </div>
+        <div class="card">
+          <div class="eyebrow" style="margin-bottom:8px">Reminders</div>
+          <div class="row"><label>Daily routine nudge</label><div class="switch" id="remDaily"></div></div>
+          <div class="row"><label>Weekly re-scan</label><div class="switch" id="remWeekly"></div></div>
+          <div class="row" style="border:0"><label>Nudge time</label><input id="remTime" type="time" value="20:00" style="background:transparent;border:1px solid var(--line);border-radius:8px;color:var(--ivory);padding:6px 8px;font-family:var(--sans)"/></div>
+          <div id="remNote" style="font-size:11px;color:var(--ivory-dim);margin-top:6px"></div>
+        </div>
+      </div>
+
+      <div class="card gold" style="margin-top:14px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
+        <div>
+          <div class="eyebrow" style="margin-bottom:6px">Best photo</div>
+          <h3 style="font-family:var(--display);font-size:22px;margin:0;font-weight:500">Pick your best profile picture</h3>
+          <p class="lede" style="font-size:13px;margin:4px 0 0">Add a few photos — Chisel scores each on-device (lighting, symmetry, smile) and ranks the strongest. No raters, nothing uploaded.</p>
+        </div>
+        <button class="btn solid" id="openPicker">Rank my photos</button>
+        <input id="pickerFiles" type="file" accept="image/*" multiple style="display:none"/>
+      </div>
+
+      <div style="margin-top:14px" class="card">
         <div class="eyebrow">Tonight's intention</div>
         <input id="intention" placeholder="I am becoming…" style="width:100%;background:transparent;border:0;border-bottom:1px solid var(--line);color:var(--ivory);font-family:var(--display);font-size:22px;padding:10px 0;outline:none" />
       </div>
@@ -359,10 +397,12 @@
         <h3 class="display" style="font-size:28px;margin:8px 0 0">Ready when you are.</h3>
         <p class="lede" style="margin:8px auto 0">Center your face in good light. Hold still for one second.</p>
         <div class="btn-row" style="margin-top:18px">
-          <button class="btn solid" id="openAnalyze">Open Camera</button>
+          <button class="btn solid" id="openAnalyze">Quick scan</button>
+          <button class="btn" id="openDeep">Deep scan</button>
           <button class="btn" id="openTrain">Jawline training</button>
           <button class="btn ghost" id="hintAnalyze">How scoring works</button>
         </div>
+        <p class="lede" style="font-size:12px;margin:12px auto 0">Quick scan reads ~10 frames in ~3s. <b class="gold">Deep scan</b> holds ~5s and pools ~40 frames for a higher-confidence median — best for tracking real change over time.</p>
       </div>
       <div id="scanHistory"></div>
     </section>
@@ -534,6 +574,8 @@
     <div class="scroller" id="beardChips"></div>
     <div class="lab">Hair colour</div>
     <div class="scroller" id="colorChips"></div>
+    <div class="lab">Eyewear</div>
+    <div class="scroller" id="glassChips"></div>
   </div>
   <div class="sheet" id="photorealSheet">
     <div class="compare">
@@ -564,7 +606,31 @@
     <p id="mProd">—</p>
     <div class="btn-row" style="margin-top:18px">
       <button class="btn" id="addPlan">Add to today's plan</button>
+      <button class="btn solid" id="measurePosture" style="display:none">Measure my posture</button>
     </div>
+    <div id="mShop"></div>
+  </div>
+</div>
+
+<!-- SCORING / METHOD MODAL -->
+<div class="modal" id="scoreModal">
+  <div class="panel">
+    <div class="x" id="scoreX">✕</div>
+    <div class="eyebrow">Method</div>
+    <h3>How the score is calculated</h3>
+    <p class="lede">Chisel is a <b>measurement tool, not a beauty rank</b>. Every number is computed on your device from a 468-point face mesh (Google MediaPipe) and pixel colour science — nothing is sent to a server, and no result says you're "attractive" or not.</p>
+    <div id="scoreBody"></div>
+  </div>
+</div>
+
+<!-- BEST-PHOTO PICKER MODAL -->
+<div class="modal" id="pickerModal">
+  <div class="panel">
+    <div class="x" id="pickerX">✕</div>
+    <div class="eyebrow">Best photo</div>
+    <h3>Your photos, ranked</h3>
+    <p class="lede">Scored on-device — lighting, sharpness, framing, straight-on angle and expression. Nothing is uploaded.</p>
+    <div id="pickerBody"></div>
   </div>
 </div>
 
@@ -655,37 +721,46 @@ function renderHome(){
   $('#todayDate').textContent = new Date().toLocaleDateString(undefined,{weekday:'long',month:'short',day:'numeric'});
   const cat = store.get('homeCat','confidence');
   $('#homeAffirm').textContent = pickAffirm(cat);
-  const s = store.get('streak',{count:0,last:null});
+  const s = store.get('streak',{count:0,last:null,freezes:0});
   $('#streakNum').textContent = s.count;
-  $('#streakSub').textContent = s.last ? ('Last session: '+s.last) : 'Begin a session to start your streak.';
+  const fz = (s.freezes||0)>0 ? ' · ❄ '+s.freezes+' freeze'+(s.freezes>1?'s':'') : '';
+  $('#streakSub').textContent = (s.last ? ('Last session: '+s.last) : 'Begin a session to start your streak.')+fz;
   const sc = store.get('lastScore', null);
   $('#scoreNum').textContent = sc==null ? '—' : sc;
   const intent = store.get('intention',''); $('#intention').value = intent;
+  if(typeof renderBadges==='function') renderBadges();
+  if(typeof renderSleep==='function') renderSleep();
 }
 $('#newAffirm').addEventListener('click',()=>{ $('#homeAffirm').textContent = pickAffirm(store.get('homeCat','confidence')); bumpStreak() });
 $('#speakAffirm').addEventListener('click',()=>{ speak($('#homeAffirm').textContent) });
 $('#intention').addEventListener('change',e=>{ store.set('intention', e.target.value); toast('Intention saved') });
 function bumpStreak(){
-  const s = store.get('streak',{count:0,last:null});
+  const s = store.get('streak',{count:0,last:null,freezes:0});
   const today = new Date().toDateString();
   if(s.last===today) return;
   const yest = new Date(Date.now()-86400000).toDateString();
-  s.count = (s.last===yest)?s.count+1:1;
+  const twoAgo = new Date(Date.now()-2*86400000).toDateString();
+  if(s.last===yest){ s.count++; }
+  else if(s.last===twoAgo && (s.freezes||0)>0){ s.freezes--; s.count++; toast('Streak freeze used — streak saved'); }  // forgive one missed day
+  else { s.count=1; }
   s.last = today;
+  if(s.count>0 && s.count%7===0 && (s.freezes||0)<3){ s.freezes=(s.freezes||0)+1; toast('Earned a streak freeze ❄'); }  // one freeze per 7-day run, cap 3
   store.set('streak',s); renderHome();
 }
 
 /* ---------- Camera / FaceDetector ---------- */
 const cam = $('#cam'), cv = $('#overlay'), ctx = cv.getContext('2d');
 let stream=null, facing='user', detLoop=null, manualSnap=null;
-let scanMode=false, _lockAt=0, _miss=0;        // auto-capture state
+let scanMode=false, deepScan=false, postureMode=false, _lockAt=0, _miss=0;        // auto-capture state (deepScan = longer, more frames)
 let trainMode=false, _tr=null;                  // jawline-training state
-let styleMode=false, styleHair=0, styleBeard=0, _styleHairCol=null, _styleHairColLock=null; // hair/beard try-on
+let styleMode=false, styleHair=0, styleBeard=0, styleGlass=0, _styleHairCol=null, _styleHairColLock=null; // hair/beard/eyewear try-on
 let styleGender='men', styleView='match', _faceShape=null;     // gender + match/all + detected shape
 let _shapeBuf=[], _shapeT=0;                                    // frontal-frame buffer for shape voting
 let devMetrics=false, _devT=0;                                  // live shape-ratio validation overlay
 let _burst=[], _lastSample=0;                   // rolling buffer of measured frames (median → stable scores)
 const COUNT_MS=2600;                            // hold-still countdown before auto-capture
+const DEEP_MS=5200;                             // deep scan holds ~2× as long → ~40 frames for a higher-confidence median
+const BURST_MAX=14, BURST_MAX_DEEP=40;          // rolling-buffer caps (standard vs deep)
 
 async function openCam(){
   $('#camwrap').classList.add('on');
@@ -714,7 +789,7 @@ function closeCam(){
   $('#affirmOverlay').style.display='none';
   $('#camSheet').style.display='none';
   $('#scanGuide').style.display='none';
-  scanMode=false; trainMode=false; _tr=null; _lockAt=0; _miss=0;
+  scanMode=false; deepScan=false; postureMode=false; _postureBuf=null; trainMode=false; _tr=null; _lockAt=0; _miss=0;
   styleMode=false; const sb=$('#styleBar'); if(sb) sb.style.display='none';
   const dr=$('#devReadout'); if(dr) dr.style.display='none';
   const th=$('.tap-hint'); if(th) th.style.display='';
@@ -813,16 +888,17 @@ function collectFrame(d){     // sample ~7–8 frames/sec into the rolling burst
   if(now-_lastSample<130) return;
   _lastSample=now;
   try{ _burst.push(measureFrame(d)); }catch(e){ console.warn('measure',e); }
-  while(_burst.length>14) _burst.shift();
+  while(_burst.length>(deepScan?BURST_MAX_DEEP:BURST_MAX)) _burst.shift();
 }
 function autoCapture(d){
   const q=quickPose(d);
   if(!q.frontal){ _lockAt=0; setGuideMsg('', q.msg); return; }
   if(_lockAt===0) _lockAt=performance.now();
   const held=performance.now()-_lockAt;
-  if(held<COUNT_MS){
-    const remain=Math.min(3,Math.max(1,Math.ceil((COUNT_MS-held)/1000)));
-    setGuideMsg(String(remain),'HOLD STILL — KEEP LOOKING');
+  const hold=deepScan?DEEP_MS:COUNT_MS;
+  if(held<hold){
+    const remain=Math.max(1,Math.ceil((hold-held)/1000));
+    setGuideMsg(String(remain), deepScan?'DEEP SCAN — HOLD STILL':'HOLD STILL — KEEP LOOKING');
   } else {
     _lockAt=0; setGuideMsg('✓','CAPTURED'); finalizeScan();
   }
@@ -935,6 +1011,17 @@ const HAIR_COLORS=[
   {name:'Ash blonde',    rgb:[176,166,140]},
   {name:'Grey',          rgb:[150,148,146]},
   {name:'Platinum',      rgb:[210,206,200]},
+];
+/* Eyewear try-on (on-device overlay, same anchor-to-mesh approach as hair/beard).
+   shape: how the lens outline is drawn; frame: rim colour; tint: lens fill alpha. */
+const GLASS_STYLES=[
+  {id:'none',      name:'None'},
+  {id:'rect',      name:'Rectangle', shape:'rect',  frame:[28,26,24], rim:0.18, tint:0.06},
+  {id:'round',     name:'Round',     shape:'round', frame:[40,34,28], rim:0.16, tint:0.06},
+  {id:'wayf',      name:'Wayfarer',  shape:'wayf',  frame:[20,20,22], rim:0.22, tint:0.10},
+  {id:'aviator',   name:'Aviator',   shape:'aviator',frame:[120,110,90],rim:0.16, tint:0.12},
+  {id:'clubmaster',name:'Browline',  shape:'brow',  frame:[36,28,22], rim:0.20, tint:0.08},
+  {id:'sun',       name:'Sunglasses',shape:'wayf',  frame:[16,16,18], rim:0.24, tint:0.62},
 ];
 /* Barbering/styling guidance: balance the face — add height/length where it's
    short, add width/fringe where it's narrow or the forehead is broad. */
@@ -1058,6 +1145,7 @@ function drawStyle(d,R){
   const fH=Math.hypot(P(10).x-P(152).x, P(10).y-P(152).y)||1;
   drawBeard(P,col,fH);
   drawHair(P,col,fH);
+  drawGlasses(P,fH);
   ctx.restore();
 }
 function drawBeard(P,col,fH){
@@ -1122,6 +1210,44 @@ function drawHair(P,col,fH){
   for(let n=0;n<base.length;n++){ const p=P(base[n]), q=dome[n]; ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y); ctx.stroke(); }
   ctx.restore();
 }
+/* Eyewear overlay — anchored to the eye landmarks so it tracks head movement.
+   One lens is drawn per eye (outer/inner corner + brow + cheek), then a bridge
+   and temples. Sunglasses use a dark tint; clear frames a faint glass sheen. */
+function drawGlasses(P,fH){
+  const st=GLASS_STYLES[styleGlass]; if(!st||st.id==='none') return;
+  const rim=st.frame, lw=fH*0.028;
+  // eye anchors: outer, inner corners + top/bottom of each eye
+  const eyes=[{o:P(33),i:P(133),t:P(159),b:P(145)},{o:P(263),i:P(362),t:P(386),b:P(374)}];
+  const lens=(e,left)=>{
+    const cx=(e.o.x+e.i.x)/2, cy=(e.t.y+e.b.y)/2;
+    const w=Math.hypot(e.o.x-e.i.x,e.o.y-e.i.y)*1.32, h=w*0.62;
+    ctx.save(); ctx.translate(cx,cy);
+    const ang=Math.atan2(e.i.y-e.o.y, e.i.x-e.o.x); ctx.rotate(ang*(left?1:1));
+    ctx.beginPath();
+    if(st.shape==='round'||st.shape==='aviator'){ ctx.ellipse(0,st.shape==='aviator'?h*0.12:0, w*0.6, h*0.62, 0,0,7); }
+    else if(st.shape==='wayf'||st.shape==='brow'){ // trapezoid-ish rounded rect
+      const rw=w*0.6, rh=h*0.6, r=rh*0.35;
+      ctx.moveTo(-rw+r,-rh); ctx.lineTo(rw-r,-rh); ctx.quadraticCurveTo(rw,-rh,rw,-rh+r);
+      ctx.lineTo(rw*0.86,rh-r); ctx.quadraticCurveTo(rw*0.8,rh,rw*0.7,rh); ctx.lineTo(-rw*0.7,rh);
+      ctx.quadraticCurveTo(-rw*0.8,rh,-rw*0.86,rh-r); ctx.lineTo(-rw,-rh+r); ctx.quadraticCurveTo(-rw,-rh,-rw+r,-rh);
+    } else { const rw=w*0.6, rh=h*0.58, r=rh*0.3; // rectangle
+      ctx.moveTo(-rw+r,-rh); ctx.arcTo(rw,-rh,rw,rh,r); ctx.arcTo(rw,rh,-rw,rh,r); ctx.arcTo(-rw,rh,-rw,-rh,r); ctx.arcTo(-rw,-rh,rw,-rh,r); }
+    ctx.closePath();
+    if(st.tint>0){ ctx.fillStyle=rgbStr(rim, st.tint); ctx.fill(); }
+    ctx.lineWidth=lw; ctx.strokeStyle=rgbStr(rim, Math.min(1,st.rim*4)); ctx.stroke();
+    if(st.shape==='brow'){ ctx.lineWidth=lw*1.8; ctx.beginPath(); ctx.moveTo(-w*0.6,-h*0.5); ctx.lineTo(w*0.6,-h*0.5); ctx.stroke(); }
+    ctx.restore();
+  };
+  ctx.save();
+  lens(eyes[0],false); lens(eyes[1],true);
+  // bridge
+  ctx.strokeStyle=rgbStr(rim, Math.min(1,st.rim*4)); ctx.lineWidth=lw;
+  ctx.beginPath(); ctx.moveTo(P(133).x,P(133).y-fH*0.01); ctx.lineTo(P(362).x,P(362).y-fH*0.01); ctx.stroke();
+  // temples out to the ears
+  ctx.beginPath(); ctx.moveTo(P(33).x,P(33).y); ctx.lineTo(P(127).x,P(127).y-fH*0.02);
+  ctx.moveTo(P(263).x,P(263).y); ctx.lineTo(P(356).x,P(356).y-fH*0.02); ctx.stroke();
+  ctx.restore();
+}
 /* ---- match engine: rank styles & colours to the detected face + skin ---- */
 function curHairList(){ return styleGender==='women'?HAIR_WOMEN:HAIR_MEN; }
 function userTone(){
@@ -1179,6 +1305,9 @@ function renderStyleChips(){
       cc.appendChild(b); });
     if(mc===null){ const note=document.createElement('button'); note.className='sc info'; note.textContent='Scan in Analyze for colour match'; cc.appendChild(note); }
   }
+  const gc=$('#glassChips'); if(gc){ gc.innerHTML='';
+    GLASS_STYLES.forEach((s,i)=>{ gc.appendChild(chipBtn(s.name, i===styleGlass, false, ()=>{ styleGlass=i; renderStyleChips(); })); });
+  }
 }
 function snapStyle(){
   try{
@@ -1200,6 +1329,27 @@ function capturePhotorealSource(){
   o.drawImage(cam,R.ox,R.oy,R.vw*R.s,R.vh*R.s); o.restore();
   return out.toDataURL('image/jpeg',0.9);
 }
+/* ---------- Progress photos (before/after tracker) ---------- */
+function captureScanThumb(){
+  try{
+    const R=coverRect(); if(!R.cw) return null;
+    const tw=200, k=tw/R.cw, th=Math.round(R.ch*k);
+    const out=document.createElement('canvas'); out.width=tw; out.height=th;
+    const o=out.getContext('2d');
+    o.save(); if(facing==='user'){ o.translate(tw,0); o.scale(-1,1); }
+    o.drawImage(cam, R.ox*k, R.oy*k, R.vw*R.s*k, R.vh*R.s*k); o.restore();   // clean video only (no mesh overlay)
+    return out.toDataURL('image/jpeg',0.6);
+  }catch(e){ console.warn('thumb',e); return null; }
+}
+function savePhoto(url, overall, t){
+  if(!url) return;
+  let arr=store.get('photos',[]);
+  arr.push({t, url, overall});
+  while(arr.length>16) arr.shift();
+  try{ store.set('photos',arr); }
+  catch(e){ while(arr.length>4){ arr.shift(); try{ store.set('photos',arr); return; }catch(_){} } }   // localStorage quota → drop oldest
+}
+
 let _prBusy=false;
 async function renderPhotoreal(){
   if(_prBusy) return;
@@ -1264,7 +1414,7 @@ $('#prSave') && $('#prSave').addEventListener('click', async ()=>{
 function openStyle(){
   scanMode=false; trainMode=false; styleMode=true;
   styleGender='men'; styleView='match'; _faceShape=null; _shapeBuf=[]; _shapeT=0;
-  styleHair=2; styleBeard=1; _styleHairCol=null; _styleHairColLock=null;
+  styleHair=2; styleBeard=1; styleGlass=0; _styleHairCol=null; _styleHairColLock=null;
   renderStyleTop(); renderStyleChips();   // re-ranks once the face is read (drawStyle→applyMatches)
   $('#styleBar').style.display='flex';
   const h=$('.tap-hint'); if(h) h.style.display='none';   // styleBar owns the bottom
@@ -1275,6 +1425,7 @@ function openStyle(){
 
 function meshLoop(){
   if(!stream){ detLoop=null; return; }
+  if(postureMode){ postureStep(); detLoop=requestAnimationFrame(meshLoop); return; }
   const d = readLandmarks();
   if(styleMode) updateDevReadout(d);
   const inAffirm = $('#affirmOverlay').style.display==='flex';
@@ -1365,6 +1516,19 @@ function patch(xc,yc,r=3){
 }
 function avgColorPts(list){ let R=0,G=0,B=0; list.forEach(p=>{const c=patch(p.x,p.y);R+=c[0];G+=c[1];B+=c[2];}); const n=list.length||1; return [R/n,G/n,B/n]; }
 function evenness(list){ const ls=list.map(p=>lum(patchMed(p.x,p.y,3))); const m=ls.reduce((a,b)=>a+b,0)/ls.length; const sd=Math.sqrt(ls.reduce((a,b)=>a+(b-m)*(b-m),0)/ls.length); return Math.max(0,Math.min(100,100-sd*1.5)); }   // glare-rejected luminance dispersion
+/* Blemish / spot-density ESTIMATE (not a diagnosis). Samples many small skin
+   patches, then counts the ones that deviate from the region's own median —
+   darker than local skin (a spot/mark) OR redder than local skin (an inflamed
+   pimple). Specular pixels are already rejected inside patchMed. Self-relative
+   thresholds mean tone/lighting don't bias it; it reads texture, not colour. */
+function blemishRead(list){
+  const labs=list.map(p=>rgb2lab(patchMed(p.x,p.y,3)));
+  if(labs.length<8) return 0;
+  const Ls=labs.map(l=>l[0]).slice().sort((a,b)=>a-b), As=labs.map(l=>l[1]).slice().sort((a,b)=>a-b);
+  const medL=Ls[Ls.length>>1], medA=As[As.length>>1];
+  let spots=0; labs.forEach(l=>{ if(l[0]<medL-9 || l[1]>medA+4.5) spots++; });
+  return Math.max(0,Math.min(100,Math.round(spots/labs.length*160)));
+}
 function blendVal(blend,name){ if(!blend||!blend.categories) return 0; const c=blend.categories.find(x=>x.categoryName===name); return c?c.score:0; }
 
 /* ---------- Color science: dermatology-grade tone, redness, shine ---------- */
@@ -1514,6 +1678,12 @@ function measureFrame(d){
      an approximation/proxy — labelled as such in the report. */
   const gonial=(angleAt(P(FACE.GON_R),P(FACE.ZYG_R),chin)+angleAt(P(FACE.GON_L),P(FACE.ZYG_L),chin))/2;
 
+  /* Face-shape ratios (same landmark system as the try-on's shapeRatios, on the
+     roll-normalised points) so an Analyze scan can classify shape → beard/cut fit */
+  const _cheekS=D(P(234),P(454))||1;
+  const shLw=D(P(10),P(152))/_cheekS, shJc=D(P(172),P(397))/_cheekS, shFc=D(P(162),P(389))/_cheekS;
+  const shGon=(angleAt(P(172),P(234),P(152))+angleAt(P(397),P(454),P(152)))/2;
+
   /* Nose */
   const noseW=D(P(FACE.ALA_R),P(FACE.ALA_L)), noseL=Math.abs(subn.y-nasion.y)||1, nasalIdx=noseW/noseL;
   const noseScore=bell(nasalIdx,0.72,0.18);
@@ -1561,7 +1731,11 @@ function measureFrame(d){
   const cheekLum=lum(avgColorPts([PR(FACE.CHEEK_R),PR(FACE.CHEEK_L)]));
   const undLum=lum(avgColorPts([PR(FACE.UNDEYE_R),PR(FACE.UNDEYE_L),PR(231),PR(451)]));
   const undEyeDark=Math.round(clamp((cheekLum-undLum)/(cheekLum||1)*220,0,100));
-  const skinScore=Math.round(clamp(0.45*skinEven + 0.25*(100-redLevel) + 0.15*(100-Math.max(0,oilPct-50)*2) + 0.15*(100-undEyeDark),1,100));
+  /* blemish / breakout estimate — spread of skin patches across cheeks, forehead and chin */
+  const blemishPts=[FACE.CHEEK_R,FACE.CHEEK_L,205,425,50,280,116,345,117,346,118,347,101,330,36,266,FACE.FORE,9,10,107,336,67,297,108,337,69,299,151,201,421].map(PR);
+  const blemish=blemishRead(blemishPts);
+  /* skin score now carries a small clarity penalty for visible breakout */
+  const skinScore=Math.round(clamp(0.42*skinEven + 0.22*(100-redLevel) + 0.14*(100-Math.max(0,oilPct-50)*2) + 0.12*(100-undEyeDark) + 0.10*(100-blemish),1,100));
 
   /* hair (raw space) */
   const chinR=PR(FACE.CHIN), topR=PR(FACE.TOP), browR=PR(FACE.MIDBROW);
@@ -1594,8 +1768,8 @@ function measureFrame(d){
     symScore, asym, thirdsScore, t0:thirds[0], t1:thirds[1], t2:thirds[2],
     jawScore, jawTaper, fWHR, gonial, noseScore, nasalIdx,
     lipScore, lipFull, lipRatio, eyeScore, spacing, canthal, blink,
-    fullness, bloatRaw,
-    skinEven, aRed, redLevel, oilPct, undEyeDark, skinScore, wbOn,
+    fullness, bloatRaw, shLw, shJc, shFc, shGon,
+    skinEven, aRed, redLevel, oilPct, undEyeDark, blemish, skinScore, wbOn,
     skinL:skinLab[0], skinA:skinLab[1], skinB:skinLab[2], skinCol,
     hairCover, hairGloss, foreRatio, hairCol,
     teethScore, teethYellow, mouthOpen, lipCol, lipL:lipLab[0] };
@@ -1636,7 +1810,9 @@ function finalizeScan(){
   if(bloatBase==null && bloatRaw>0){ bloatBase=+bloatRaw.toFixed(4); store.set('bloatBase',bloatBase); bloatNote='baseline set — rescan tomorrow to track'; }
   const bloatIndex = bloatBase? Math.max(0,Math.min(100,Math.round(50+(bloatRaw-bloatBase)/bloatBase*350))) : 50;
   if(!bloatNote) bloatNote = bloatIndex>=66?'puffy vs your baseline':bloatIndex<=38?'lean vs your baseline':'near your baseline';
-  const skinEven=M('skinEven'), aRed=M('aRed'), redLevel=rnd(M('redLevel')), oilPct=rnd(M('oilPct')), undEyeDark=rnd(M('undEyeDark')), skinScore=rnd(M('skinScore'));
+  const skinEven=M('skinEven'), aRed=M('aRed'), redLevel=rnd(M('redLevel')), oilPct=rnd(M('oilPct')), undEyeDark=rnd(M('undEyeDark')), blemish=rnd(M('blemish')), skinScore=rnd(M('skinScore'));
+  const shape=classifyRatios({lw:M('shLw'), jc:M('shJc'), fc:M('shFc'), gon:M('shGon')});
+  const shapeConf = frames.filter(f=>f.frontal).length>=3;   // shape is only honest from frontal frames
   const skinLab=[M('skinL'),M('skinA'),M('skinB')], skinCol=Marr('skinCol',3);
   const ita=itaAngle(skinLab), tone=toneLabel(ita);
   const und=undertone(skinLab), wbOn=M('wbOn')>=0.5;
@@ -1651,7 +1827,13 @@ function finalizeScan(){
     const ty=teethF.map(f=>f.teethYellow).sort((a,b)=>a-b); teethYellow=ty[ty.length>>1];
     teethShade = teethScore>=80?'A1 · bright':teethScore>=62?'A2 · natural':teethScore>=44?'A3 · warm':teethScore>=28?'B3 · yellowed':'C/D · stained';
   }
-  const _qual=`${frames.length} frame${frames.length>1?'s':''}${usedFrontal?' · frontal-locked':''}${usedExp?' · exposure-checked':''}`;
+  /* Scan confidence: more usable frames + more quality filters passed = higher.
+     A deep scan targets ~32 frames vs ~10, so it can reach higher confidence. */
+  const _target = deepScan?32:10;
+  const _conf = Math.max(40, Math.min(99, Math.round(100*(
+    0.55*Math.min(1,frames.length/_target) + 0.20*(usedFrontal?1:0.4) +
+    0.12*(usedExp?1:0.5) + 0.08*(usedBlink?1:0.5) + 0.05*(shapeConf?1:0.4)))));
+  const _qual=`${deepScan?'Deep · ':''}${frames.length} frame${frames.length>1?'s':''}${usedFrontal?' · frontal-locked':''}${usedExp?' · exposure-checked':''} · ${_conf}% confidence`;
 
   /* ---------- Per-area report with science-backed remedies ---------- */
   const R=(t,txt)=>({t,txt});
@@ -1660,6 +1842,8 @@ function finalizeScan(){
   if(redLevel>55) skinRem.push(R('Moderate','Redness elevated — fragrance-free gentle cleanser, lukewarm water only, and a niacinamide 4–5% serum to calm the barrier. Persistent flushing across cheeks/nose → see a dermatologist (rosacea).'));
   if(oilPct>55) skinRem.push(R('Moderate','Shiny T-zone — gel cleanser AM/PM, salicylic acid (BHA) 2% 2–3×/week, oil-free moisturiser. Don\'t over-strip; it rebounds into more oil.'));
   if(oilPct<12) skinRem.push(R('Moderate','Reads dry/matte — add a ceramide moisturiser and a hyaluronic-acid serum on damp skin.'));
+  if(blemish>=45) skinRem.push(R('Strong','Breakout activity reads elevated — OTC benzoyl peroxide 2.5–5% or adapalene 0.1% (both RCT-backed, first-line for acne) applied nightly. Give it 8–12 weeks, don\'t pick, and use a non-comedogenic moisturiser. Widespread, painful or cystic spots → see a dermatologist. [acne RCT evidence]'));
+  else if(blemish>=22) skinRem.push(R('Moderate','A few blemishes detected — salicylic acid (BHA) 2% 2–3×/week clears pores, plus a light non-comedogenic moisturiser so skin doesn\'t over-compensate with oil.'));
   if(skinEven<60) skinRem.push(R('Strong','Uneven tone/texture — a nightly topical retinoid (start 2×/week, build up) is the best-evidenced fix. [Mukherjee 2006]'));
   if(undEyeDark>55) skinRem.push(R('Moderate','Dark under-eyes — prioritise 7–9h sleep, treat allergies, caffeine + vitamin-C eye serum. Much is genetic/structural — manage expectations.'));
   skinRem.push(R('Strong','Don\'t smoke and protect your sleep — both strongly drive skin aging. [Morita 2007; Oyetakin-White 2015]'));
@@ -1696,15 +1880,43 @@ function finalizeScan(){
   }
   bloatRem.push(R('Limited','Scan at the same time of day (ideally morning) — facial fluid shifts hour to hour, so consistent timing makes the trend honest.'));
 
+  /* ---------- Beard & haircut fit, from the detected face shape ---------- */
+  const shapeNm = shapeConf ? (SHAPE_NAME[shape]||shape) : null;
+  const BEARD_REC={
+    oval:'Heavy stubble to a short, tidy beard — balanced proportions carry almost any length. Keep the neckline clean and let it fill in.',
+    round:'Add length at the chin (short boxed beard, Van Dyke or goatee) and keep the cheeks tight — vertical shape slims a round face.',
+    square:'Stubble to a short beard following the jaw. Your angles are already strong, so don\'t bury them under bulk.',
+    oblong:'Fuller on the cheeks and sides, short at the chin — width balances a long face. Avoid pointed goatees that add length.',
+    heart:'A fuller beard adds welcome mass to a narrower chin and balances a wider forehead.',
+    diamond:'Build fullness along the lower jaw to widen a narrow jawline against prominent cheekbones.',
+    triangle:'Keep the sides light and neatly lined — you don\'t want to add width to an already-broad jaw.'
+  };
+  const beardRecTxt = shapeNm ? BEARD_REC[shape] : 'Face shape wasn\'t locked this scan — stay square to the camera and rescan. Heavy stubble to a short beard is the safe default for most faces.';
+  const recBeardId = shapeNm ? (BEARD_MATCH[shape]||[])[0] : null;
+  const recBeardNm = recBeardId ? (BEARD_STYLES.find(b=>b.id===recBeardId)||{}).name : '—';
+  const recHairIds = shapeNm ? ((HAIR_MATCH[shape]||{}).men||[]) : [];
+  const recHairTxt = recHairIds.length
+    ? ('Cuts that suit a '+shapeNm.toLowerCase()+' face: '+recHairIds.slice(0,4).map(id=>(HAIR_MEN.find(h=>h.id===id)||{}).name).filter(Boolean).join(', ')+'. Preview them live in Groom → Try-on.')
+    : 'Open Groom → Try-on to preview cuts and beards on your live face.';
+
   const areas=[
     {k:'Skin', ctrl:true, score:skinScore, swatch:hex(skinCol),
      status:`${tone[0]} tone · Fitzpatrick ${tone[1]} (approx) · ITA ${ita.toFixed(0)}° · ${und.label} undertone`,
-     metrics:[['Undertone',`${und.label} · h°ab ${und.hue.toFixed(0)}°`],['Evenness',`${Math.round(skinEven)}/100`],['Redness (a*)',`${aRed.toFixed(1)} · ${redLevel}/100`],['T-zone shine',`${oilPct}/100`],['Brightness (L*)',skinLab[0].toFixed(0)],['White balance',wbOn?'sclera-corrected':'as-shot'],['Under-eye shadow',`${undEyeDark}/100`]],
+     metrics:[['Undertone',`${und.label} · h°ab ${und.hue.toFixed(0)}°`],['Evenness',`${Math.round(skinEven)}/100`],['Blemish estimate',`${blemish}/100`],['Redness (a*)',`${aRed.toFixed(1)} · ${redLevel}/100`],['T-zone shine',`${oilPct}/100`],['Brightness (L*)',skinLab[0].toFixed(0)],['White balance',wbOn?'sclera-corrected':'as-shot'],['Under-eye shadow',`${undEyeDark}/100`]],
      rem:skinRem},
     {k:'Hair', ctrl:true, score:null, swatch: hairDetected?hex(hairCol):null,
      status: hairDetected? `Detected · gloss ${hairGloss}/100 · hairline ${foreRatio.toFixed(2)}` : 'Not clearly read — retake in even light',
      metrics:[['Coverage read',`${Math.round(hairCover*100)}%`],['Shine',`${hairGloss}/100`],['Forehead height',foreRatio.toFixed(2)]],
      rem:hairRem},
+    {k:'Beard & style', ctrl:true, score:null,
+     status: shapeNm ? `${shapeNm} face · recommended beard: ${recBeardNm}` : 'Stay frontal and rescan to lock your face shape',
+     metrics:[['Face shape', shapeNm||'not locked'],['Recommended beard', recBeardNm]],
+     rem:[
+       R('Moderate', beardRecTxt),
+       R('Limited', recHairTxt),
+       R('Moderate','Beard density itself is genetic / DHT-driven — topical minoxidil 5% has emerging RCT support for thickening patchy growth (give it 16+ weeks). It won\'t create hair where no follicles exist. [minoxidil-for-beard RCTs]'),
+       R('Strong','Whatever length you grow: define the neckline two fingers above the Adam\'s apple, and trim strays — never pluck (infection risk in the facial "danger triangle"). [ENT guidance]')
+     ]},
     {k:'Teeth', ctrl:true, score:teethScore,
      status: teethShade? `Shade ${teethShade}` : 'Smile to measure',
      metrics:[['Shade',teethShade||'—'],['Yellowness (b*)',teethScore!=null?teethYellow.toFixed(1):'—']],
@@ -1744,9 +1956,11 @@ function finalizeScan(){
 
   renderResults(overall, areas, {bloat:`${bloatIndex}/100 ${bloatTrend}`, quality:_qual});
   saveScan({ t:Date.now(), overall, sym:symScore, jaw:jawScore, gonial:+gonial.toFixed(0), nose:noseScore, lips:lipScore, eyes:eyeScore,
-    skin:skinScore, teeth:teethScore, hairGloss, redLevel, oilPct, ita:+ita.toFixed(1),
+    skin:skinScore, teeth:teethScore, hairGloss, redLevel, oilPct, blemish, shape:shapeConf?shape:null, sleep:(typeof sleepForToday==='function'?sleepForToday():null), ita:+ita.toFixed(1),
     undertone:und.label, hue:+und.hue.toFixed(1), wb:wbOn?1:0,
     bloat:bloatIndex, fullness:+fullness.toFixed(3), under:undEyeDark, skinHex:hex(skinCol), lipHex:hex(lipCol) });
+  savePhoto(captureScanThumb(), overall, Date.now());
+  if(deepScan) store.set('deepCount', (store.get('deepCount',0))+1);
   store.set('lastScore', overall); renderHome(); bumpStreak(); renderTimeline();
   _burst=[];
   $('#camSheet').style.display='block'; $('#camSheet').scrollTop=0;
@@ -1804,16 +2018,35 @@ function renderTimeline(){
     const bl = (typeof s.bloat==='number') ? s.bloat+'/100' : (s.fullness??'—');
     return `<div class="row"><label>${when}</label><span>bloat ${bl} · <span class="gold">${s.overall}</span></span></div>`;
   }).join('');
+  const photos=store.get('photos',[]);
+  let photoHtml='';
+  if(photos.length){
+    const first=photos[0], last=photos[photos.length-1];
+    const strip=photos.slice(-10).map(p=>`<img src="${p.url}" title="${new Date(p.t).toLocaleDateString()} · ${p.overall}/100" style="height:72px;border-radius:8px;border:1px solid var(--line);flex:0 0 auto"/>`).join('');
+    const compare = photos.length>=2 ? `
+      <div class="eyebrow" style="margin-top:16px">Before &rarr; now</div>
+      <div style="display:flex;gap:10px;margin-top:10px">
+        <div style="flex:1;text-align:center"><img src="${first.url}" style="width:100%;border-radius:10px;border:1px solid var(--line)"/><div style="font-size:10px;color:var(--ivory-dim);margin-top:6px;letter-spacing:.1em;text-transform:uppercase">${new Date(first.t).toLocaleDateString([], {month:'short',day:'numeric'})} · ${first.overall}</div></div>
+        <div style="flex:1;text-align:center"><img src="${last.url}" style="width:100%;border-radius:10px;border:1px solid var(--gold)"/><div style="font-size:10px;color:var(--gold);margin-top:6px;letter-spacing:.1em;text-transform:uppercase">${new Date(last.t).toLocaleDateString([], {month:'short',day:'numeric'})} · ${last.overall}</div></div>
+      </div>` : '';
+    photoHtml=`<div class="card" style="margin-top:14px">
+      <div class="eyebrow">Progress photos · ${photos.length}</div>
+      <div style="display:flex;gap:6px;overflow-x:auto;margin-top:12px;padding-bottom:4px">${strip}</div>
+      ${compare}
+      <p class="lede" style="font-size:11px;margin-top:12px">Snapshots stay on your device only. For a fair comparison, scan in similar light, distance and time of day each time.</p>
+    </div>`;
+  }
   el.innerHTML=`<div class="card" style="margin-top:18px">
     <div class="eyebrow">Your timeline · ${arr.length} scan${arr.length>1?'s':''}</div>
     <div style="display:flex;align-items:flex-end;gap:4px;height:74px;margin:14px 0 8px">${bars}</div>
-    <div>${rows}</div></div>`;
+    <div>${rows}</div></div>${photoHtml}`;
 }
 
-$('#openAnalyze').addEventListener('click', async ()=>{ scanMode=true; const h=$('.tap-hint'); if(h) h.textContent='Auto-scanning · or tap to capture now'; await openCam(); });
+$('#openAnalyze').addEventListener('click', async ()=>{ scanMode=true; deepScan=false; const h=$('.tap-hint'); if(h) h.textContent='Auto-scanning · or tap to capture now'; await openCam(); });
+$('#openDeep') && $('#openDeep').addEventListener('click', async ()=>{ scanMode=true; deepScan=true; const h=$('.tap-hint'); if(h) h.textContent='Deep scan · hold still ~5s'; await openCam(); $('#camMeta').textContent='Deep scan'; });
 $('#openTrain').addEventListener('click', openTrain);
 $('#openStyle') && $('#openStyle').addEventListener('click', openStyle);
-$('#hintAnalyze').addEventListener('click', ()=>{ openGroom('jawline') });
+$('#hintAnalyze').addEventListener('click', openScoring);
 $('#camSheet') && $('#camSheet').addEventListener('click', e=>e.stopPropagation());
 
 /* ---------- Affirm overlay ---------- */
@@ -1947,6 +2180,18 @@ function buildGroom(){
   });
   renderPlan();
 }
+/* Shop links — retailer searches, affiliate-tag-ready (set AFFILIATE_TAG once you
+   have an Amazon Associates / other program id; it's appended to every link). */
+const AFFILIATE_TAG='';   // e.g. 'chisel-20' — leave blank until approved
+function shopUrl(q){ const u='https://www.amazon.com/s?k='+encodeURIComponent(q); return AFFILIATE_TAG? u+'&tag='+AFFILIATE_TAG : u; }
+const SHOP={
+  jawline:[['Foam roller','foam roller muscle'],['Weighted vest','adjustable weighted vest'],['Standing desk converter','standing desk converter']],
+  nose:[['SPF 50 sunscreen','face sunscreen spf 50 matte'],['Cool-mist humidifier','cool mist humidifier bedroom'],['Saline nasal rinse','saline nasal rinse kit']],
+  lips:[['Beeswax lip balm','beeswax lip balm'],['SPF lip balm','spf 30 lip balm'],['Lip scrub','sugar lip scrub']],
+  neck:[['Lacrosse ball','lacrosse ball massage'],['Weighted vest','adjustable weighted vest'],['Pull-up bar','doorway pull up bar']],
+  facial:[['Beard trimmer','beard trimmer'],['Beard oil','jojoba argan beard oil'],['Minoxidil 5%','minoxidil 5 percent topical'],['Boar-hair brush','boar bristle beard brush']],
+  haircut:[['Matte clay','matte hair clay men'],['Sea salt spray','sea salt spray hair'],['Round brush','ceramic round brush']],
+};
 function openGroom(id){
   const it = GROOM.find(x=>x.id===id); if(!it) return;
   $('#mNum').textContent = it.num;
@@ -1955,11 +2200,83 @@ function openGroom(id){
   $('#mSci').textContent = it.sci;
   const ol = $('#mRoutine'); ol.innerHTML=''; it.routine.forEach(s=>{ const li=document.createElement('li'); li.textContent=s; ol.appendChild(li) });
   $('#mProd').textContent = it.prod;
+  const shop=SHOP[id]||[];
+  $('#mShop').innerHTML = shop.length ? ('<h4>Shop the routine</h4><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px">'
+    + shop.map(s=>`<a class="chip" href="${shopUrl(s[1])}" target="_blank" rel="noopener" style="text-decoration:none">${s[0]} ↗</a>`).join('')
+    + '</div><p style="font-size:10px;color:var(--ivory-dim);margin-top:8px">Opens a store search. Chisel may earn a small commission — it never changes the price.</p>') : '';
+  $('#measurePosture').style.display = id==='neck' ? '' : 'none';
+  $('#measurePosture').onclick = ()=>{ $('#modal').classList.remove('on'); startPosture(); };
   $('#addPlan').onclick = ()=>{ const p = store.get('plan',[]); if(!p.includes(id)) p.push(id); store.set('plan',p); toast('Added to today\'s plan'); renderPlan() };
   $('#modal').classList.add('on');
 }
 $('#modalX').addEventListener('click', ()=>$('#modal').classList.remove('on'));
 $('#modal').addEventListener('click', e=>{ if(e.target.id==='modal') $('#modal').classList.remove('on') });
+
+/* ---------- "How the score is calculated" + references ---------- */
+const REFERENCES=[
+  ['Alam 2018','Alam M, et al. Association of Facial Exercise With the Appearance of Aging. JAMA Dermatol. 2018;154(3):365–367.'],
+  ['Hughes 2013','Hughes MCB, et al. Sunscreen and prevention of skin aging: a randomized trial. Ann Intern Med. 2013;158(11):781–790.'],
+  ['Mukherjee 2006','Mukherjee S, et al. Retinoids in the treatment of skin aging. Clin Interv Aging. 2006;1(4):327–348.'],
+  ['Morita 2007','Morita A. Tobacco smoke causes premature skin aging. J Dermatol Sci. 2007;48(3):169–175.'],
+  ['Oyetakin-White 2015','Oyetakin-White P, et al. Does poor sleep quality affect skin ageing? Clin Exp Dermatol. 2015;40(1):17–22.'],
+  ['Acne RCTs','Multiple RCTs & guideline reviews: topical benzoyl peroxide and adapalene are first-line for mild–moderate acne (e.g. AAD acne guidelines).'],
+  ['Minoxidil beard','Randomized evidence that topical minoxidil increases beard/facial-hair density (e.g. Ingprasert et al.) — emerging.'],
+  ['Cochrane whitening','Systematic-review/Cochrane evidence that peroxide-based agents effectively whiten teeth.'],
+  ['ENT nasal hair','Clinical/ENT guidance: trim rather than pluck nasal hair (infection risk in the facial "danger triangle").'],
+  ['Cervical RCT','RCT/systematic-review evidence that cervical-retraction & deep-neck-flexor exercises improve forward-head posture (craniovertebral angle).'],
+  ['Rhodes 2006','Rhodes G. The evolutionary psychology of facial beauty. Annu Rev Psychol. 2006;57:199–226.'],
+  ['Lerner 2014','Facial-attractiveness literature on jaw definition as a masculine cue.'],
+  ['Pallanch 2015','Pallanch & Larson. Facial proportion / nasal analysis ("rule of thirds").'],
+  ['Swift 2012','Image-consulting / barbering analysis of haircuts and perceived face structure.'],
+  ['Chardon 1991','Chardon A, Cler I, Charveron M. ITA° skin-colour classification. Int J Cosmet Sci. 1991;13:191.'],
+  ['Del Bino 2013','Del Bino S, Bernerd F. Skin-colour groups by ITA°. Br J Dermatol. 2013;169(s3):33.'],
+  ['Osto 2022','Osto M, et al. ITA° ↔ Fitzpatrick correlation is imperfect — treat the Fitzpatrick map as approximate.'],
+  ['Shafer 1985','Shafer SA. Using colour to separate reflection components. Color Res Appl. 1985;10:210 (specular-highlight rejection).'],
+  ['Buchsbaum 1980','Buchsbaum G. A spatial processor model for colour perception. J Franklin Inst. 1980;310:1 (grey-world white balance).'],
+  ['Neff 2003','Neff KD. Self-compassion. Self and Identity. 2003;2(2):85–101 (self-compassion reduces appearance anxiety).'],
+];
+function openScoring(){
+  const ref = REFERENCES.map(r=>`<li><b class="gold">${r[0]}</b> — ${r[1]}</li>`).join('');
+  $('#scoreBody').innerHTML = `
+    <h4>1 · The capture (not one photo)</h4>
+    <p>A scan pools many live frames, then takes the <b>median</b> of each measurement — the standard robust defence against a single bad frame (a blink, glare, a head tilt). Frames are filtered first: only <b>frontal</b> poses count, then <b>exposure-checked</b> and <b>open-eye</b> frames when enough are available.</p>
+    <ul><li><b>Quick scan</b> — ~10 frames over ~3s.</li>
+    <li><b>Deep scan</b> — holds ~5s and pools ~40 frames, so the median is steadier and <b>confidence</b> is higher. Use it for tracking change over time.</li></ul>
+    <p>Each result shows a <b>confidence %</b> from how many usable frames were captured and how many quality filters passed.</p>
+
+    <h4>2 · Geometry scores (jaw, nose, lips, eyes, symmetry, thirds)</h4>
+    <p>Landmarks are first rotated to level your eyes, so head tilt can't distort widths or lengths. Each proportion is scored on a <b>bell curve</b> around a published reference value — closer to the reference reads higher, and the falloff is gradual, not pass/fail. These are geometric proxies from a 2D selfie, not calibrated clinical measurements. [Rhodes 2006, Pallanch 2015]</p>
+    <ul><li><b>Symmetry</b> — average left-vs-right deviation of paired landmarks, ÷ face width.</li>
+    <li><b>Thirds</b> — how evenly the face divides into brow / mid / lower thirds.</li>
+    <li><b>Jaw</b> — jaw-to-cheek taper, plus fWHR and an approximate frontal gonial angle (the true gonial angle is a side-profile measure — labelled as a proxy).</li>
+    <li><b>Face shape</b> — a majority vote across frames of a width-hierarchy classifier, driving your beard/haircut fit.</li></ul>
+
+    <h4>3 · Skin, hair &amp; teeth (colour science)</h4>
+    <p>Colour is read from pooled pixels with specular (glare/oil) pixels rejected [Shafer 1985], and white-balanced off a neutral reference like the sclera when one is visible [Buchsbaum 1980]. All of these are <b>estimates</b>, not diagnoses.</p>
+    <ul><li><b>Tone</b> — ITA° depth [Chardon 1991], mapped approximately to Fitzpatrick [Del Bino 2013, Osto 2022]; undertone from CIELAB hue.</li>
+    <li><b>Evenness / redness / T-zone shine / under-eye</b> — luminance & a*-channel reads across skin regions.</li>
+    <li><b>Blemish estimate</b> — counts skin patches that deviate from your own local median (darker = a mark, redder = inflammation). Self-relative, so tone & lighting don't bias it.</li>
+    <li><b>Skin score</b> ≈ 0.42·evenness + 0.22·(100−redness) + 0.14·(shine term) + 0.12·(100−under-eye) + 0.10·(100−blemish).</li>
+    <li><b>Bloat / fullness</b> — lower-face width:height vs <b>your own first scan</b> (50 = baseline), never an absolute figure.</li></ul>
+
+    <h4>4 · Overall "harmony"</h4>
+    <p>The single number is just the <b>average of seven per-area scores</b> (symmetry, thirds, jaw, nose, lips, eyes, skin). It's a snapshot to track against yourself over time — <b>not</b> a rank against other people, and not a medical or "attractiveness" score.</p>
+
+    <h4>5 · Evidence grades on every fix</h4>
+    <p>Each recommendation is tagged so you know how much to trust it:</p>
+    <ul><li><b class="gold">Strong</b> — RCT or systematic-review evidence.</li>
+    <li><b class="gold">Moderate</b> — supportive but weaker/observational evidence.</li>
+    <li><b class="gold">Limited</b> — plausible, thin evidence.</li>
+    <li><b class="gold">Myth</b> — commonly claimed, no controlled evidence (we say so).</li></ul>
+
+    <h4>References</h4>
+    <ol style="font-size:12.5px">${ref}</ol>
+    <p style="font-size:11px;margin-top:12px">Cosmetic &amp; educational — not medical advice. For persistent skin, hair or dental concerns, see a dermatologist or dentist.</p>`;
+  $('#scoreModal').classList.add('on');
+}
+$('#scoreX').addEventListener('click', ()=>$('#scoreModal').classList.remove('on'));
+$('#scoreModal').addEventListener('click', e=>{ if(e.target.id==='scoreModal') $('#scoreModal').classList.remove('on') });
+
 function renderPlan(){
   const wrap = $('#planList'); const plan = store.get('plan',[]);
   if(!plan.length){ wrap.innerHTML = '<p class="lede" style="font-size:13px;margin:6px 0 0">Open a grooming card above and tap "Add to today\'s plan" to build a routine.</p>'; return }
@@ -1999,8 +2316,250 @@ async function runDiag(){
 $('#testCam').addEventListener('click', async ()=>{ scanMode=false; await openCam(); $('#camMeta').textContent='Test mode' });
 $('#refreshDiag').addEventListener('click', runDiag);
 
+/* ================= Growth & retention features ================= */
+
+/* ---------- Milestones / badges (progress-only, never a leaderboard) ---------- */
+const BADGES=[
+  {id:'first', name:'First look', glyph:'◉', hint:'Complete your first scan',       got:st=>st.scans>=1},
+  {id:'week',  name:'7-day streak', glyph:'✦', hint:'Use Chisel 7 days running',    got:st=>st.streak>=7},
+  {id:'month', name:'30-day streak', glyph:'◆', hint:'30 days of showing up',       got:st=>st.streak>=30},
+  {id:'ten',   name:'Ten scans', glyph:'▣', hint:'Log 10 scans',                    got:st=>st.scans>=10},
+  {id:'pics',  name:'Before & after', glyph:'▤', hint:'Keep 2+ progress photos',    got:st=>st.photos>=2},
+  {id:'deep',  name:'Deep focus', glyph:'◎', hint:'Run a deep scan',                got:st=>st.deep>=1},
+];
+function badgeState(){
+  const scans=store.get('scans',[]), s=store.get('streak',{count:0}), photos=store.get('photos',[]);
+  return { scans:scans.length, streak:s.count||0, photos:photos.length, deep:store.get('deepCount',0) };
+}
+function renderBadges(){
+  const el=$('#milestones'); if(!el) return; const st=badgeState();
+  el.innerHTML=BADGES.map(b=>{ const on=b.got(st);
+    return `<div class="card" style="text-align:center;opacity:${on?1:.5}">
+      <div style="font-size:30px;color:${on?'var(--gold)':'var(--ivory-dim)'}">${b.glyph}</div>
+      <div style="font-family:var(--display);font-size:18px;margin-top:6px">${b.name}</div>
+      <div style="font-size:11px;color:var(--ivory-dim);margin-top:4px">${on?'Unlocked':b.hint}</div></div>`;
+  }).join('');
+}
+
+/* ---------- Shareable progress card (Web Share + download fallback) ---------- */
+function buildShareCard(){
+  const c=document.createElement('canvas'); c.width=1080; c.height=1080; const x=c.getContext('2d');
+  x.fillStyle='#0A0A0B'; x.fillRect(0,0,1080,1080);
+  const g=x.createRadialGradient(780,120,40,780,120,900); g.addColorStop(0,'rgba(201,168,106,.20)'); g.addColorStop(1,'rgba(10,10,11,0)'); x.fillStyle=g; x.fillRect(0,0,1080,1080);
+  const s=store.get('streak',{count:0}), sc=store.get('lastScore',null), scans=store.get('scans',[]);
+  const withSkin=scans.filter(v=>typeof v.skin==='number');
+  const gain=withSkin.length>=2 ? withSkin[withSkin.length-1].skin-withSkin[0].skin : null;
+  x.textAlign='center';
+  x.fillStyle='#F2EDE4'; x.font='700 46px Georgia,serif'; x.fillText('CHISEL', 540, 155);
+  x.fillStyle='#C9A86A'; x.font='500 24px Inter,Arial,sans-serif'; x.fillText('S C U L P T   Y O U R   B E S T   S E L F', 540, 205);
+  x.fillStyle='#E2C58A'; x.font='700 260px Georgia,serif'; x.fillText(String(s.count||0), 540, 615);
+  x.fillStyle='#F2EDE4'; x.font='500 40px Inter,Arial,sans-serif'; x.fillText('DAY STREAK', 540, 690);
+  const line=[]; if(sc!=null) line.push('Harmony '+sc); if(gain!=null && gain>0) line.push('Skin +'+Math.round(gain));
+  x.fillStyle='#C9C2B4'; x.font='400 34px Inter,Arial,sans-serif'; x.fillText(line.join('    ·    ')||'Evidence-based self-improvement', 540, 820);
+  x.strokeStyle='rgba(201,168,106,.45)'; x.lineWidth=2; x.beginPath(); x.moveTo(360,880); x.lineTo(720,880); x.stroke();
+  x.fillStyle='#C9A86A'; x.font='italic 500 30px Georgia,serif'; x.fillText('Progress, not a rating.', 540, 955);
+  return c;
+}
+function shareProgress(){
+  const c=buildShareCard();
+  c.toBlob(async (blob)=>{
+    if(!blob){ toast('Couldn\'t build card'); return; }
+    const file=new File([blob],'chisel-progress.png',{type:'image/png'});
+    try{
+      if(navigator.canShare && navigator.canShare({files:[file]})){
+        await navigator.share({files:[file], title:'My Chisel progress', text:'Sculpting my best self with Chisel.'});
+        return;
+      }
+    }catch(e){ if(e && e.name==='AbortError') return; console.warn('share',e); }
+    const url=URL.createObjectURL(blob), a=document.createElement('a'); a.href=url; a.download='chisel-progress.png';
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    toast('Progress card saved');
+  },'image/png');
+}
+$('#shareProgress') && $('#shareProgress').addEventListener('click', shareProgress);
+
+/* ---------- Sleep log (manual; auto Health-Connect sync = future) ---------- */
+function sleepKey(){ return new Date().toDateString(); }
+function sleepForToday(){ const m=store.get('sleepLog',{}); const v=m[sleepKey()]; return (typeof v==='number')?v:null; }
+function saveSleep(){
+  const v=parseFloat($('#sleepHrs').value);
+  if(isNaN(v)||v<0||v>14){ toast('Enter hours (0–14)'); return; }
+  const m=store.get('sleepLog',{}); m[sleepKey()]=v; store.set('sleepLog',m); renderSleep(); toast('Sleep logged');
+}
+function renderSleep(){
+  const el=$('#sleepNote'); if(!el) return; const v=sleepForToday();
+  if(v==null){ el.textContent='Not logged today.'; return; }
+  if($('#sleepHrs')) $('#sleepHrs').value=v;
+  el.innerHTML = v>=7
+    ? `<span style="color:#7CC79A">${v}h logged — good recovery window.</span>`
+    : `<span style="color:#E59A9A">${v}h logged — short sleep tracks with under-eye shadow and duller skin. [Oyetakin-White 2015]</span>`;
+}
+$('#saveSleep') && $('#saveSleep').addEventListener('click', saveSleep);
+
+/* ---------- Reminders (Capacitor LocalNotifications; no-op in browser) ---------- */
+function notifPlugin(){ return (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications) || null; }
+async function scheduleReminders(){
+  const p=store.get('reminders',{daily:false,weekly:false,time:'20:00'}), note=$('#remNote');
+  const LN=notifPlugin();
+  if(!LN){ if(note) note.textContent='Reminders activate on the installed app (not this preview).'; return; }
+  try{
+    const perm=await LN.requestPermissions();
+    if(perm && perm.display && perm.display!=='granted'){ if(note) note.textContent='Allow notifications to enable reminders.'; return; }
+    await LN.cancel({notifications:[{id:101},{id:102}]});
+    const [hh,mm]=(p.time||'20:00').split(':').map(Number), list=[];
+    if(p.daily)  list.push({id:101, title:'Chisel', body:'Two minutes on your routine — morning and night is the whole game.', schedule:{on:{hour:hh,minute:mm}, repeats:true}});
+    if(p.weekly) list.push({id:102, title:'Chisel', body:'Time for your weekly re-scan — track the trend.', schedule:{on:{weekday:1,hour:hh,minute:mm}, repeats:true}});
+    if(list.length) await LN.schedule({notifications:list});
+    if(note) note.textContent = list.length? 'Reminders on.' : 'Reminders off.';
+  }catch(e){ console.warn('reminders',e); if(note) note.textContent='Couldn\'t set reminders.'; }
+}
+function initReminders(){
+  const p=store.get('reminders',{daily:false,weekly:false,time:'20:00'});
+  const d=$('#remDaily'), w=$('#remWeekly'), t=$('#remTime'), note=$('#remNote');
+  if(d) d.classList.toggle('on',!!p.daily);
+  if(w) w.classList.toggle('on',!!p.weekly);
+  if(t) t.value=p.time||'20:00';
+  const save=()=>{ store.set('reminders',{daily:d&&d.classList.contains('on'), weekly:w&&w.classList.contains('on'), time:(t&&t.value)||'20:00'}); scheduleReminders(); };
+  if(d) d.addEventListener('click', e=>{ e.currentTarget.classList.toggle('on'); save(); });
+  if(w) w.addEventListener('click', e=>{ e.currentTarget.classList.toggle('on'); save(); });
+  if(t) t.addEventListener('change', save);
+  if(note && !isCap) note.textContent='Reminders activate on the installed app.';
+}
+
+/* ---------- Posture measurement (MediaPipe Pose, side-on craniovertebral angle) ---------- */
+let _pose=null, _poseP=null;
+async function loadPose(){
+  const BASE="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.20";
+  const MODEL="https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task";
+  const m=await import(BASE+"/vision_bundle.mjs");
+  const fileset=await m.FilesetResolver.forVisionTasks(BASE+"/wasm");
+  const opts=d=>({baseOptions:{modelAssetPath:MODEL,delegate:d}, runningMode:"VIDEO", numPoses:1});
+  try{ _pose=await m.PoseLandmarker.createFromOptions(fileset,opts("GPU")); }
+  catch(e){ _pose=await m.PoseLandmarker.createFromOptions(fileset,opts("CPU")); }
+  return true;
+}
+function poseReady(){ if(!_poseP) _poseP=loadPose().then(()=>true).catch(e=>{ console.warn('pose load',e); return false; }); return _poseP; }
+async function startPosture(){
+  postureMode=true; scanMode=false; trainMode=false; styleMode=false; _postureBuf=[];
+  const th=$('.tap-hint'); if(th) th.style.display='none';
+  $('#scanGuide').style.display='flex'; setGuideMsg('','TURN SIDE-ON TO THE CAMERA');
+  await openCam(); $('#camMeta').textContent='Posture'; poseReady();
+}
+function postureCVA(lm){
+  let best=null;
+  [[7,11],[8,12]].forEach(([e,s])=>{ const ear=lm[e], sh=lm[s]; if(!ear||!sh) return;
+    const vis=Math.min(ear.visibility==null?1:ear.visibility, sh.visibility==null?1:sh.visibility);
+    if(!best||vis>best.vis) best={ear,sh,vis}; });
+  if(!best||best.vis<0.5) return null;
+  const dx=Math.abs(best.ear.x-best.sh.x), dy=best.sh.y-best.ear.y;   // ear above shoulder → dy>0
+  return { cva:Math.atan2(dy,dx)*180/Math.PI, ear:best.ear, sh:best.sh };
+}
+function postureStep(){
+  if(!_pose){ setGuideMsg('','LOADING POSTURE ENGINE…'); return; }
+  let t=performance.now(); if(t<=_lastTs) t=_lastTs+1; _lastTs=t;
+  let res; try{ res=_pose.detectForVideo(cam,t); }catch(e){ return; }
+  ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,cv.width,cv.height);
+  const lm=res && res.landmarks && res.landmarks[0];
+  if(!lm){ setGuideMsg('','STAND BACK — SHOW HEAD & SHOULDERS'); return; }
+  const m=postureCVA(lm);
+  if(!m){ setGuideMsg('','TURN SIDE-ON — EAR & SHOULDER VISIBLE'); return; }
+  const R=coverRect();
+  const toPx=p=>{ let X=p.x*R.vw*R.s+R.ox; const Y=p.y*R.vh*R.s+R.oy; if(facing==='user') X=R.cw-X; return {x:X,y:Y}; };
+  const e=toPx(m.ear), sh=toPx(m.sh);
+  ctx.strokeStyle='rgba(226,197,138,.9)'; ctx.lineWidth=4; ctx.beginPath(); ctx.moveTo(e.x,e.y); ctx.lineTo(sh.x,sh.y); ctx.stroke();
+  ctx.fillStyle='#E2C58A'; [e,sh].forEach(p=>{ ctx.beginPath(); ctx.arc(p.x,p.y,6,0,7); ctx.fill(); });
+  _postureBuf.push(m.cva);
+  const need=40; setGuideMsg(String(Math.max(1,Math.ceil((need-_postureBuf.length)/8))),'HOLD — MEASURING POSTURE');
+  if(_postureBuf.length>=need) finalizePosture();
+}
+function finalizePosture(){
+  const a=(_postureBuf||[]).slice().sort((x,y)=>x-y); if(!a.length){ postureMode=false; return; }
+  const cva=Math.round(a[a.length>>1]); postureMode=false;
+  let rating,note;
+  if(cva>=50){ rating='Upright'; note='Good craniovertebral angle — keep it.'; }
+  else if(cva>=45){ rating='Mild forward-head'; note='A little forward — the routine below closes the gap.'; }
+  else { rating='Forward-head posture'; note='Your head sits forward of your shoulders — high-value to fix.'; }
+  const s=store.get('posture',[]); s.push({t:Date.now(),cva}); while(s.length>60) s.shift(); store.set('posture',s);
+  $('#scanGuide').style.display='none';
+  $('#camSheet').style.display='block'; $('#camSheet').scrollTop=0; $('#camMeta').textContent='Posture measured';
+  $('#camSheet').innerHTML=`
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:8px">
+      <button class="btn ghost" style="min-height:36px;padding:8px 14px" onclick="startPosture()">Measure again</button>
+      <button class="btn solid" style="min-height:36px;padding:8px 14px" onclick="closeCam()">Done</button>
+    </div>
+    <h3>Posture · <span class="gold">${cva}°</span> <span style="font-size:13px;color:var(--ivory-dim)">craniovertebral angle</span></h3>
+    <p><b>${rating}.</b> ${note} A larger angle means your ear sits back over your shoulder (upright); a smaller angle is forward-head. Measured side-on from your ear and shoulder.</p>
+    <div style="margin-top:10px"><div class="mrow"><span>Your angle</span><b>${cva}°</b></div><div class="mrow"><span>Healthy range</span><b>≈ 50°+</b></div></div>
+    <p style="font-size:12px;margin-top:10px"><i style="color:#7CC79A">Moderate–Strong</i> — chin tucks & deep-neck-flexor work improve forward-head posture in RCTs. Chin tucks 3×15 daily; set screens at eye level. [Cervical RCT]</p>
+    <p style="font-size:11px;margin-top:8px;color:var(--ivory-dim)">Estimate from a 2D side view — not a clinical measurement. Measure at the same distance each time.</p>`;
+}
+
+/* ---------- Best-photo picker (on-device, IMAGE-mode landmarker) ---------- */
+let _imgKit=null, _imgKitP=null;
+async function loadImageKit(){
+  const BASE="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.20";
+  const MODEL="https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task";
+  const m=await import(BASE+"/vision_bundle.mjs");
+  const fileset=await m.FilesetResolver.forVisionTasks(BASE+"/wasm");
+  _imgKit=await m.FaceLandmarker.createFromOptions(fileset,{baseOptions:{modelAssetPath:MODEL,delegate:"CPU"}, runningMode:"IMAGE", numFaces:1, outputFaceBlendshapes:true});
+  return _imgKit;
+}
+function imgKitReady(){ if(!_imgKitP) _imgKitP=loadImageKit().catch(e=>{ console.warn('imgkit',e); return null; }); return _imgKitP; }
+async function scorePhoto(img){
+  const kit=await imgKitReady(); if(!kit) return {score:0, reason:'Engine offline'};
+  let res; try{ res=kit.detect(img); }catch(e){ return {score:0, reason:'Couldn\'t read'}; }
+  if(!res||!res.faceLandmarks||!res.faceLandmarks.length) return {score:0, reason:'No face detected'};
+  const pts=res.faceLandmarks[0], blend=res.faceBlendshapes&&res.faceBlendshapes[0];
+  const bv=n=>{ if(!blend||!blend.categories) return 0; const c=blend.categories.find(c=>c.categoryName===n); return c?c.score:0; };
+  const W=Math.min(320, img.naturalWidth||img.width||320), H=Math.round((img.naturalHeight||img.height||W)*W/(img.naturalWidth||img.width||W));
+  const cc=document.createElement('canvas'); cc.width=W; cc.height=H; const c2=cc.getContext('2d',{willReadFrequently:true}); c2.drawImage(img,0,0,W,H);
+  const dat=c2.getImageData(0,0,W,H).data; let sum=0; for(let i=0;i<dat.length;i+=4) sum+=0.2126*dat[i]+0.7152*dat[i+1]+0.0722*dat[i+2];
+  const meanL=sum/(W*H);
+  let sh=0,cnt=0; for(let y=1;y<H;y+=3){ for(let x=1;x<W;x++){ const i=(y*W+x)*4, j=(y*W+x-1)*4; sh+=Math.abs(dat[i]-dat[j]); cnt++; } }
+  const sharp=sh/(cnt||1);
+  const eR=pts[33], eL=pts[263]; const roll=Math.abs(Math.atan2(eL.y-eR.y,eL.x-eR.x)*180/Math.PI);
+  const faceW=Math.abs(pts[234].x-pts[454].x), fill=faceW/0.55;
+  const smile=(bv('mouthSmileLeft')+bv('mouthSmileRight'))/2;
+  const eyesOpen=1-Math.min(1,(bv('eyeBlinkLeft')+bv('eyeBlinkRight')));
+  const sFrontal=Math.max(0,1-roll/18), sLight=Math.max(0,1-Math.abs(meanL-135)/95), sSharp=Math.max(0,Math.min(1,(sharp-6)/22));
+  const sFill=fill<0.4?fill/0.4:(fill>1?Math.max(0,1-(fill-1)):1), sSmile=Math.min(1,smile*1.4);
+  const score=Math.round(100*(0.24*sFrontal+0.22*sLight+0.20*sSharp+0.16*sFill+0.10*eyesOpen+0.08*sSmile));
+  const tips=[];
+  if(sFrontal<0.6) tips.push('angled — face the camera more');
+  if(sLight<0.6) tips.push(meanL<110?'a bit dark':'a bit bright');
+  if(sSharp<0.5) tips.push('slightly soft');
+  if(eyesOpen<0.7) tips.push('eyes half-closed');
+  if(sSmile>0.5) tips.push('genuine smile');
+  return {score, reason: tips.slice(0,2).join(', ')||'clean, well-lit, straight-on'};
+}
+$('#openPicker') && $('#openPicker').addEventListener('click', ()=>$('#pickerFiles').click());
+$('#pickerFiles') && $('#pickerFiles').addEventListener('change', async (e)=>{
+  const files=[...e.target.files].slice(0,6); e.target.value='';
+  if(!files.length) return;
+  $('#pickerBody').innerHTML='<p class="lede">Scoring your photos on-device…</p>';
+  $('#pickerModal').classList.add('on');
+  const results=[];
+  for(const f of files){
+    try{
+      const url=URL.createObjectURL(f);
+      const img=await new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=url; });
+      const r=await scorePhoto(img); results.push({url, score:r.score, reason:r.reason});
+    }catch(e){ console.warn('pick',e); }
+  }
+  results.sort((a,b)=>b.score-a.score);
+  $('#pickerBody').innerHTML = results.map((r,i)=>`
+    <div style="display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)">
+      <img src="${r.url}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid ${i===0?'var(--gold)':'var(--line)'}"/>
+      <div style="flex:1"><div style="font-family:var(--display);font-size:18px">${i===0?'★ Best pick':'#'+(i+1)} · <span class="gold">${r.score}</span></div>
+      <div style="font-size:12px;color:var(--ivory-dim)">${r.reason}</div></div>
+    </div>`).join('') + '<p style="font-size:11px;margin-top:12px;color:var(--ivory-dim)">Scored on lighting, sharpness, framing, straight-on angle and a genuine expression — all on your device. Nothing is uploaded.</p>';
+});
+$('#pickerX') && $('#pickerX').addEventListener('click', ()=>$('#pickerModal').classList.remove('on'));
+$('#pickerModal') && $('#pickerModal').addEventListener('click', e=>{ if(e.target.id==='pickerModal') $('#pickerModal').classList.remove('on'); });
+
 /* ---------- Boot ---------- */
 buildGroom();
+initReminders();
 renderTimeline();
 go(location.hash.slice(1) || 'home');
 setTimeout(()=>{ $('#boot').classList.add('gone'); setTimeout(()=>$('#boot').remove(),900) }, 1300);
