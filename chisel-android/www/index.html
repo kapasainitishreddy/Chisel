@@ -483,6 +483,19 @@
         </div>
         <button class="btn solid" id="openStyle">Open Try-on</button>
       </div>
+      <div class="card gold" style="margin-bottom:18px">
+        <div class="eyebrow" style="margin-bottom:6px">Makeup studio</div>
+        <h3 style="font-family:var(--display);font-size:24px;margin:0;font-weight:500">Try on, get suggestions, track your looks</h3>
+        <p class="lede" style="font-size:13px;margin:4px 0 12px">Virtual makeup on your live face, shade suggestions from your undertone and face shape, and a coach that gives guidance — never a score.</p>
+        <p style="font-family:var(--display);font-style:italic;font-size:17px;color:var(--gold);margin:0 0 14px">Makeup is just a layer for confidence and charm. You're beautiful regardless — this is play, not a fix.</p>
+        <div class="btn-row">
+          <button class="btn solid" id="openMakeupTry">Makeup try-on</button>
+          <button class="btn" id="openSuggest">My suggestions</button>
+          <button class="btn" id="openCoach">Check my look</button>
+          <button class="btn ghost" id="openRoutine">My routine</button>
+        </div>
+        <div id="makeupPhotos"></div>
+      </div>
       <div class="groom-grid" id="groomGrid"></div>
 
       <div class="card" style="margin-top:24px">
@@ -576,6 +589,8 @@
     <div class="scroller" id="colorChips"></div>
     <div class="lab">Eyewear</div>
     <div class="scroller" id="glassChips"></div>
+    <div class="lab" id="makeupLab">Makeup</div>
+    <div class="scroller" id="makeupChips"></div>
   </div>
   <div class="sheet" id="photorealSheet">
     <div class="compare">
@@ -653,6 +668,45 @@
     <div class="btn-row" style="margin-top:18px">
       <button class="btn solid" id="idSave">Save</button>
     </div>
+  </div>
+</div>
+
+<!-- MAKEUP SUGGESTIONS MODAL -->
+<div class="modal" id="suggestModal">
+  <div class="panel">
+    <div class="x" id="suggestX">✕</div>
+    <div class="eyebrow">Makeup suggestions</div>
+    <h3>Shades that suit you</h3>
+    <div id="suggestBody"></div>
+  </div>
+</div>
+
+<!-- MAKEUP COACH MODAL -->
+<div class="modal" id="coachModal">
+  <div class="panel">
+    <div class="x" id="coachX">✕</div>
+    <div class="eyebrow">Makeup coach</div>
+    <h3>How your look reads</h3>
+    <div id="coachBody"><p class="lede">Open the camera to check your current look.</p></div>
+    <div class="btn-row" style="margin-top:16px"><button class="btn solid" id="coachScan">Check with camera</button></div>
+  </div>
+</div>
+
+<!-- CUSTOM ROUTINE MODAL -->
+<div class="modal" id="routineModal">
+  <div class="panel">
+    <div class="x" id="routineX">✕</div>
+    <div class="eyebrow">My routine</div>
+    <h3>Build your default look</h3>
+    <p class="lede">Prefer your own colours? Set them here and they become your "My routine" look in the try-on. Nothing here leaves your device.</p>
+    <div style="display:grid;gap:14px;margin-top:16px">
+      <label class="row" style="border:0"><span>Lip colour</span><input type="color" id="rLip" value="#be6e69" style="width:56px;height:34px;background:none;border:1px solid var(--line);border-radius:8px"/></label>
+      <label class="row" style="border:0"><span>Blush</span><input type="color" id="rBlush" value="#de9187" style="width:56px;height:34px;background:none;border:1px solid var(--line);border-radius:8px"/></label>
+      <label class="row" style="border:0"><span>Eyeshadow</span><input type="color" id="rShadow" value="#c3a096" style="width:56px;height:34px;background:none;border:1px solid var(--line);border-radius:8px"/></label>
+      <label class="row"><span>Eyeliner</span><div class="switch on" id="rLiner"></div></label>
+      <label class="row" style="border:0"><span>Brow tint</span><input type="range" id="rBrow" min="0" max="35" value="20" style="width:140px"/></label>
+    </div>
+    <div class="btn-row" style="margin-top:18px"><button class="btn solid" id="routineSave">Save as my routine</button></div>
   </div>
 </div>
 
@@ -802,8 +856,9 @@ const cam = $('#cam'), cv = $('#overlay'), ctx = cv.getContext('2d');
 let stream=null, facing='user', detLoop=null, manualSnap=null;
 let scanMode=false, deepScan=false, postureMode=false, _lockAt=0, _miss=0;        // auto-capture state (deepScan = longer, more frames)
 let trainMode=false, _tr=null;                  // jawline-training state
-let styleMode=false, styleHair=0, styleBeard=0, styleGlass=0, _styleHairCol=null, _styleHairColLock=null; // hair/beard/eyewear try-on
+let styleMode=false, styleHair=0, styleBeard=0, styleGlass=0, styleMakeup=0, _styleHairCol=null, _styleHairColLock=null; // hair/beard/eyewear/makeup try-on
 let styleGender='men', styleView='match', _faceShape=null;     // gender + match/all + detected shape
+let _openMakeup=false;                                          // when true, try-on opens with makeup preset active
 let _shapeBuf=[], _shapeT=0;                                    // frontal-frame buffer for shape voting
 let devMetrics=false, _devT=0;                                  // live shape-ratio validation overlay
 let _burst=[], _lastSample=0;                   // rolling buffer of measured frames (median → stable scores)
@@ -838,7 +893,7 @@ function closeCam(){
   $('#affirmOverlay').style.display='none';
   $('#camSheet').style.display='none';
   $('#scanGuide').style.display='none';
-  scanMode=false; deepScan=false; postureMode=false; _postureBuf=null; trainMode=false; _tr=null; _lockAt=0; _miss=0;
+  scanMode=false; deepScan=false; postureMode=false; _postureBuf=null; coachMode=false; _coachBuf=null; trainMode=false; _tr=null; _lockAt=0; _miss=0;
   styleMode=false; const sb=$('#styleBar'); if(sb) sb.style.display='none';
   const dr=$('#devReadout'); if(dr) dr.style.display='none';
   const th=$('.tap-hint'); if(th) th.style.display='';
@@ -1072,6 +1127,20 @@ const GLASS_STYLES=[
   {id:'clubmaster',name:'Browline',  shape:'brow',  frame:[36,28,22], rim:0.20, tint:0.08},
   {id:'sun',       name:'Sunglasses',shape:'wayf',  frame:[16,16,18], rim:0.24, tint:0.62},
 ];
+/* Virtual makeup looks (on-device overlay on the face mesh). Colours are soft,
+   multiplied onto the skin. lip/blush/shadow are RGB; liner/brow are on/off tints.
+   'custom' is filled from the user's saved routine (store 'makeupCustom'). */
+const MAKEUP_LOOKS=[
+  {id:'none',     name:'Bare'},
+  {id:'natural',  name:'Natural',  lip:[190,120,110], blush:[220,150,140], shadow:[200,170,150], liner:false, brow:0.16},
+  {id:'everyday', name:'Everyday', lip:[195,95,95],   blush:[224,140,130], shadow:[188,150,140], liner:true,  brow:0.22},
+  {id:'warm',     name:'Warm glow',lip:[200,110,80],  blush:[230,150,110], shadow:[205,160,120], liner:true,  brow:0.20},
+  {id:'cool',     name:'Cool rose',lip:[190,90,120],  blush:[220,140,155], shadow:[185,160,180], liner:true,  brow:0.20},
+  {id:'glam',     name:'Glam',     lip:[170,40,55],    blush:[210,120,120], shadow:[150,110,120], liner:true,  brow:0.28},
+  {id:'bold',     name:'Bold',     lip:[130,25,45],    blush:[205,110,110], shadow:[120,90,110],  liner:true,  brow:0.30},
+  {id:'custom',   name:'My routine'},
+];
+function makeupLook(){ const l=MAKEUP_LOOKS[styleMakeup]; if(l&&l.id==='custom') return Object.assign({id:'custom',name:'My routine'}, store.get('makeupCustom',{lip:[190,110,105],blush:[222,145,135],shadow:[195,160,150],liner:true,brow:0.2})); return l; }
 /* Barbering/styling guidance: balance the face — add height/length where it's
    short, add width/fringe where it's narrow or the forehead is broad. */
 const HAIR_MATCH={
@@ -1192,6 +1261,7 @@ function drawStyle(d,R){
   ctx.translate(R.ox,R.oy); ctx.scale(R.s,R.s);
   const P=i=>({x:pts[i].x*w, y:pts[i].y*h});
   const fH=Math.hypot(P(10).x-P(152).x, P(10).y-P(152).y)||1;
+  drawMakeup(P,fH);
   drawBeard(P,col,fH);
   drawHair(P,col,fH);
   drawGlasses(P,fH);
@@ -1297,6 +1367,36 @@ function drawGlasses(P,fH){
   ctx.moveTo(P(263).x,P(263).y); ctx.lineTo(P(356).x,P(356).y-fH*0.02); ctx.stroke();
   ctx.restore();
 }
+/* Virtual makeup overlay — soft, multiplied colour anchored to face landmarks. */
+const LIP_OUT=[61,185,40,39,37,0,267,269,270,409,291,375,321,405,314,17,84,181,91,146];
+const LIP_IN=[78,95,88,178,87,14,317,402,318,324,308,415,310,311,312,13,82,81,80,191];
+const EYE_R_UP=[33,246,161,160,159,158,157,173,133];   // right eye upper lash line
+const EYE_L_UP=[263,466,388,387,386,385,384,398,362];  // left eye upper lash line
+const BROW_R=[70,63,105,66,107,55,65,52,53,46];
+const BROW_L=[300,293,334,296,336,285,295,282,283,276];
+function drawMakeup(P,fH){
+  const m=makeupLook(); if(!m||m.id==='none') return;
+  const fill=(idx,col,a,blend)=>{ ctx.save(); ctx.globalCompositeOperation=blend||'multiply'; ctx.fillStyle=rgbStr(col,a); pathPts(P,idx); ctx.fill(); ctx.restore(); };
+  // lips: outer fill minus inner mouth
+  if(m.lip){ ctx.save(); ctx.globalCompositeOperation='multiply'; ctx.fillStyle=rgbStr(m.lip,0.55);
+    pathPts(P,LIP_OUT); ctx.fill(); ctx.globalCompositeOperation='destination-out'; pathPts(P,LIP_IN); ctx.fill(); ctx.restore(); }
+  // blush: soft radial on each cheek
+  if(m.blush){ [ [50,205], [280,425] ].forEach(([a,b])=>{ const c={x:(P(a).x+P(b).x)/2,y:(P(a).y+P(b).y)/2}; const r=fH*0.17;
+    const g=ctx.createRadialGradient(c.x,c.y,0,c.x,c.y,r); g.addColorStop(0,rgbStr(m.blush,0.34)); g.addColorStop(1,rgbStr(m.blush,0));
+    ctx.save(); ctx.globalCompositeOperation='multiply'; ctx.fillStyle=g; ctx.beginPath(); ctx.arc(c.x,c.y,r,0,7); ctx.fill(); ctx.restore(); }); }
+  // eyeshadow: soft band above each upper lash line
+  if(m.shadow){ [EYE_R_UP,EYE_L_UP].forEach(line=>{
+    const up={x:(P(10).x-P(152).x)/fH, y:(P(10).y-P(152).y)/fH}, lift=fH*0.05;
+    ctx.save(); ctx.globalCompositeOperation='multiply'; ctx.fillStyle=rgbStr(m.shadow,0.3);
+    ctx.beginPath(); line.forEach((i,n)=>{ const p=P(i); n?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y); });
+    for(let n=line.length-1;n>=0;n--){ const p=P(line[n]); ctx.lineTo(p.x+up.x*lift, p.y+up.y*lift); }
+    ctx.closePath(); ctx.fill(); ctx.restore(); }); }
+  // eyeliner: thin dark stroke on the upper lash line
+  if(m.liner){ [EYE_R_UP,EYE_L_UP].forEach(line=>{ ctx.save(); ctx.strokeStyle='rgba(20,16,18,.8)'; ctx.lineWidth=fH*0.012; ctx.lineJoin='round'; ctx.lineCap='round';
+    ctx.beginPath(); line.forEach((i,n)=>{ const p=P(i); n?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y); }); ctx.stroke(); ctx.restore(); }); }
+  // brow tint: darken the brow shape
+  if(m.brow){ [BROW_R,BROW_L].forEach(b=>fill(b,[60,44,36],m.brow,'multiply')); }
+}
 /* ---- match engine: rank styles & colours to the detected face + skin ---- */
 function curHairList(){ return styleGender==='women'?HAIR_WOMEN:HAIR_MEN; }
 function userTone(){
@@ -1357,6 +1457,10 @@ function renderStyleChips(){
   const gc=$('#glassChips'); if(gc){ gc.innerHTML='';
     GLASS_STYLES.forEach((s,i)=>{ gc.appendChild(chipBtn(s.name, i===styleGlass, false, ()=>{ styleGlass=i; renderStyleChips(); })); });
   }
+  const mk=$('#makeupChips'); if(mk){ mk.innerHTML='';
+    MAKEUP_LOOKS.forEach((s,i)=>{ if(s.id==='custom' && !store.get('makeupCustom',null)) return;   // hide custom until saved
+      mk.appendChild(chipBtn(s.name, i===styleMakeup, false, ()=>{ styleMakeup=i; renderStyleChips(); })); });
+  }
 }
 function snapStyle(){
   try{
@@ -1367,7 +1471,8 @@ function snapStyle(){
     o.drawImage(cv,0,0,R.cw,R.ch);                               // overlay (mirror already baked in)
     const url=out.toDataURL('image/jpeg',0.92), a=document.createElement('a');
     a.href=url; a.download='chisel-look-'+Date.now()+'.jpg'; document.body.appendChild(a); a.click(); a.remove();
-    toast('Snapshot saved');
+    if(styleMakeup>0){ try{ saveMakeupPhoto(true); }catch(e){} toast('Saved — and added to your looks'); }
+    else toast('Snapshot saved');
   }catch(e){ console.warn('snap',e); toast('Couldn\'t save snapshot'); }
 }
 let _prLastResult=null, _prBeforeUrl=null;
@@ -1463,7 +1568,7 @@ $('#prSave') && $('#prSave').addEventListener('click', async ()=>{
 function openStyle(){
   scanMode=false; trainMode=false; styleMode=true;
   styleGender = (typeof identityGender==='function' && identityGender()==='female') ? 'women' : 'men'; styleView='match'; _faceShape=null; _shapeBuf=[]; _shapeT=0;
-  styleHair=2; styleBeard=1; styleGlass=0; _styleHairCol=null; _styleHairColLock=null;
+  styleHair=2; styleBeard=1; styleGlass=0; styleMakeup=(typeof _openMakeup!=='undefined'&&_openMakeup)?(MAKEUP_LOOKS.findIndex(l=>l.id==='everyday')):0; _openMakeup=false; _styleHairCol=null; _styleHairColLock=null;
   renderStyleTop(); renderStyleChips();   // re-ranks once the face is read (drawStyle→applyMatches)
   $('#styleBar').style.display='flex';
   const h=$('.tap-hint'); if(h) h.style.display='none';   // styleBar owns the bottom
@@ -1475,6 +1580,7 @@ function openStyle(){
 function meshLoop(){
   if(!stream){ detLoop=null; return; }
   if(postureMode){ postureStep(); detLoop=requestAnimationFrame(meshLoop); return; }
+  if(coachMode){ coachStep(); detLoop=requestAnimationFrame(meshLoop); return; }
   const d = readLandmarks();
   if(styleMode) updateDevReadout(d);
   const inAffirm = $('#affirmOverlay').style.display==='flex';
@@ -1752,6 +1858,11 @@ function measureFrame(d){
   const tiltL=Math.atan2(P(FACE.EI_L).y-P(FACE.EO_L).y, Math.abs(P(FACE.EO_L).x-P(FACE.EI_L).x))*180/Math.PI;
   const canthal=(tiltR+tiltL)/2, eyeScore=Math.round((bell(spacing,1.0,0.18)+bell(canthal,5,7))/2);
 
+  /* Brows — arch height above the eye and left/right balance (for brow styling) */
+  const browRy=Math.min(P(105).y,P(52).y,P(66).y), browLy=Math.min(P(334).y,P(282).y,P(296).y);
+  const browArchR=(P(159).y-browRy)/faceH, browArchL=(P(386).y-browLy)/faceH;
+  const browAsym=Math.abs(browArchR-browArchL);
+
   /* Bloat / fullness — width:height of three lower-face spans. Water retention
      widens cheeks + lower face faster than it lengthens it, so a rise in this
      ratio against your own baseline tracks puffiness/bloat. */
@@ -1816,7 +1927,7 @@ function measureFrame(d){
   return { frontal, yaw, rollDeg, qLum:cheekLum, faceFill,
     symScore, asym, thirdsScore, t0:thirds[0], t1:thirds[1], t2:thirds[2],
     jawScore, jawTaper, fWHR, gonial, noseScore, nasalIdx,
-    lipScore, lipFull, lipRatio, eyeScore, spacing, canthal, blink,
+    lipScore, lipFull, lipRatio, eyeScore, spacing, canthal, blink, browArchR, browArchL, browAsym,
     fullness, bloatRaw, shLw, shJc, shFc, shGon,
     skinEven, aRed, redLevel, oilPct, undEyeDark, blemish, skinScore, wbOn,
     skinL:skinLab[0], skinA:skinLab[1], skinB:skinLab[2], skinCol,
@@ -1851,6 +1962,7 @@ function finalizeScan(){
   const noseScore=rnd(M('noseScore')), nasalIdx=M('nasalIdx');
   const lipScore=rnd(M('lipScore')), lipFull=M('lipFull'), lipRatio=M('lipRatio');
   const eyeScore=rnd(M('eyeScore')), spacing=M('spacing'), canthal=M('canthal');
+  const browArch=(M('browArchR')+M('browArchL'))/2, browAsym=M('browAsym');
   const fullness=M('fullness'), bloatRaw=M('bloatRaw');
   /* Bloat index = your fullness vs your own baseline (first scan). 50 = baseline,
      higher = more retention/puffiness, lower = leaner. Self-relative on purpose:
@@ -1896,6 +2008,7 @@ function finalizeScan(){
   if(skinEven<60) skinRem.push(R('Strong','Uneven tone/texture — a nightly topical retinoid (start 2×/week, build up) is the best-evidenced fix. [Mukherjee 2006]'));
   if(undEyeDark>55) skinRem.push(R('Moderate','Dark under-eyes — prioritise 7–9h sleep, treat allergies, caffeine + vitamin-C eye serum. Much is genetic/structural — manage expectations.'));
   skinRem.push(R('Strong','Don\'t smoke and protect your sleep — both strongly drive skin aging. [Morita 2007; Oyetakin-White 2015]'));
+  if(identityGender()==='female'){ const fb={Warm:'a golden / yellow-based',Cool:'a pink / rosy-based',Neutral:'a neutral / beige',Olive:'a neutral-green-based'}[und.label]||'a neutral'; skinRem.push(R('Limited',`Foundation match: ${fb} foundation suits your ${und.label.toLowerCase()} undertone — swatch along the jaw and blend onto the neck so it disappears. Full shade & colour picks in Groom → Makeup. [undertone colour-matching]`)); }
   skinRem.push(R('Limited',`Undertone reads ${und.label.toLowerCase()} (CIELAB hue ${und.hue.toFixed(0)}°)${wbOn?', white-balanced off your sclera':' — uncorrected lighting, retake in even light for a truer read'}. This is a styling cue, not a health metric: ${und.label==='Warm'?'gold jewellery and warm/earthy clothing tones tend to flatter.':und.label==='Cool'?'silver jewellery and cool/jewel tones tend to flatter.':und.label==='Olive'?'muted, earthy and teal/olive tones tend to flatter.':'you have flexible range — both metals and most tones work.'}`));
 
   const hairRem=[];
@@ -2018,6 +2131,17 @@ function finalizeScan(){
      metrics:[['Asymmetry',(asym*100).toFixed(1)+'%'],['Thirds balance',`${thirdsScore}/100`]],
      rem:[R('Limited','Mild asymmetry is universal and largely structural; even posture and balanced chewing help only marginally.')]}
   ];
+
+  /* Brows — a measured module for female identity (arch + L/R balance) */
+  if(identityGender()==='female'){
+    const asymPct=(browAsym*100), evenTxt = asymPct>2.2 ? R('Moderate',`Brows sit at slightly different heights (${asymPct.toFixed(1)}% apart) — map both to the cleaner arch when shaping, and even the tails with light pencil strokes.`) : R('Limited','Brows read even left-to-right — nice balance.');
+    const browShapeTxt = shapeNm && MK_BROW_SHAPE[shape] ? R('Limited','For your '+shapeNm.toLowerCase()+' face, '+MK_BROW_SHAPE[shape]+' [face-shape balancing]') : R('Limited','Follow your natural arch; fill sparse spots rather than redrawing.');
+    const browArea={k:'Brows', ctrl:true, score:null,
+      status:`Arch ${(browArch*100).toFixed(1)}% of face · L/R diff ${asymPct.toFixed(1)}%`,
+      metrics:[['Arch height',(browArch*100).toFixed(1)+'%'],['L/R symmetry',asymPct.toFixed(1)+'% diff']],
+      rem:[ evenTxt, browShapeTxt, R('Strong','Avoid over-plucking — repeated plucking thins brows permanently. Tint or a brow gel adds fullness without commitment.') ]};
+    areas.splice(3,0,browArea);
+  }
 
   /* Overall harmony */
   const core=[symScore,thirdsScore,jawScore,noseScore,lipScore,eyeScore,skinScore];
@@ -2630,6 +2754,152 @@ $('#pickerFiles') && $('#pickerFiles').addEventListener('change', async (e)=>{
 $('#pickerX') && $('#pickerX').addEventListener('click', ()=>$('#pickerModal').classList.remove('on'));
 $('#pickerModal') && $('#pickerModal').addEventListener('click', e=>{ if(e.target.id==='pickerModal') $('#pickerModal').classList.remove('on'); });
 
+/* ================= Makeup: suggestor, coach, custom routine, tracker ================= */
+let coachMode=false, _coachBuf=null;
+function lastScan(){ const a=store.get('scans',[]); return a.length? a[a.length-1] : null; }
+function hex2rgb(h){ h=(h||'').replace('#',''); return [parseInt(h.slice(0,2),16)||0, parseInt(h.slice(2,4),16)||0, parseInt(h.slice(4,6),16)||0]; }
+const MK_SUGGEST={
+  Warm:{found:'a golden / yellow-based foundation (pink bases can look grey on you)', lip:'coral, peach, warm nude, brick and warm reds', blush:'peach, coral, warm apricot', shadow:'bronze, copper, gold, warm brown'},
+  Cool:{found:'a pink / rosy-based foundation (very yellow bases can look sallow)', lip:'berry, rose, mauve and blue-based reds', blush:'cool pink, soft rose', shadow:'taupe, plum, mauve, cool grey-brown'},
+  Neutral:{found:'a neutral / beige-based foundation — most shades work', lip:'rosy nude, soft berry, true red', blush:'soft rose, warm pink', shadow:'taupe, soft bronze, neutral brown'},
+  Olive:{found:'a neutral-to-golden foundation with a green/neutral base (avoid pink — it clashes)', lip:'brick, terracotta, warm berry', blush:'warm rose, muted coral', shadow:'olive, bronze, warm taupe'}
+};
+const MK_BLUSH_PLACE={
+  round:'sweep blush high on the cheekbones and back toward the temple to add length.',
+  oblong:'keep blush horizontal across the apples to add width, not more length.',
+  square:'apply blush in soft rounds on the apples to soften the angles.',
+  heart:'place blush just below the apples and blend outward to balance a wider forehead.',
+  diamond:'blush on the apples blended toward the ears softens prominent cheekbones.',
+  triangle:'lift blush onto the upper cheekbones to draw the eye up from a wider jaw.',
+  oval:'blush on the apples blended up toward the temples — your balanced shape carries most placements.'
+};
+const MK_BROW_SHAPE={
+  round:'a higher, more defined arch adds length and structure.',
+  oblong:'keep brows flatter and more horizontal — a high arch lengthens the face further.',
+  square:'a soft, rounded arch balances a strong jaw.',
+  heart:'a rounded, softly-arched brow balances a wider forehead and narrower chin.',
+  diamond:'a soft, curved brow offsets angular cheekbones.',
+  triangle:'a defined arch draws attention upward, balancing a wider jaw.',
+  oval:'follow your natural arch — most shapes suit you.'
+};
+const MK_COMPASSION='<p style="font-family:var(--display);font-style:italic;font-size:18px;color:var(--gold);margin:0 0 14px">Makeup is a layer for confidence and charm — you\'re beautiful with or without it. This is play, not a fix. [Neff 2003]</p>';
+function openSuggest(){
+  const body=$('#suggestBody'), s=lastScan();
+  if(!s || !s.undertone){ body.innerHTML=MK_COMPASSION+'<p class="lede">Run an Analyze scan first so I can read your undertone and face shape — then every suggestion is tailored to you, with the reasoning shown.</p>'; $('#suggestModal').classList.add('on'); return; }
+  const u=s.undertone, sh=s.shape, S=MK_SUGGEST[u]||MK_SUGGEST.Neutral;
+  const place=sh?MK_BLUSH_PLACE[sh]:null, brow=sh?MK_BROW_SHAPE[sh]:null;
+  body.innerHTML=MK_COMPASSION+`
+    <p class="lede" style="margin-bottom:12px">From your last scan: <b class="gold">${u} undertone</b>${sh?` · <b class="gold">${SHAPE_NAME[sh]||sh} face</b>`:''}. Here's each pick and <i>why</i>.</p>
+    <h4>Foundation</h4><p>Match ${S.found}. <span style="color:var(--ivory-dim)">Swatch along the jaw and blend onto the neck — the right shade disappears. [undertone colour-matching]</span></p>
+    <h4>Lips</h4><p>${S.lip}. <span style="color:var(--ivory-dim)">Same-undertone colour families read most flattering. [colour theory]</span></p>
+    <h4>Blush</h4><p>Shades: ${S.blush}.${place?' <b>Placement:</b> '+place:''} <span style="color:var(--ivory-dim)">[face-shape balancing]</span></p>
+    <h4>Eyeshadow</h4><p>${S.shadow}.</p>
+    ${brow?`<h4>Brows</h4><p>${brow} <span style="color:var(--ivory-dim)">[face-shape balancing]</span></p>`:''}
+    <div class="btn-row" style="margin-top:16px"><button class="btn solid" onclick="$('#suggestModal').classList.remove('on'); _openMakeup=true; openStyle();">Try a look</button></div>
+    <p style="font-size:11px;margin-top:12px;color:var(--ivory-dim)">Suggestions from colour theory and face-shape balancing — styling guidance, not rules. Don't like a pick? Set your own in "My routine". Wear what makes you feel good.</p>`;
+  $('#suggestModal').classList.add('on');
+}
+function openCoach(){ $('#coachBody').innerHTML='<p class="lede">I\'ll read how evenly your base sits and whether it matches your neck, then give guidance — never a score.</p>'; $('#coachModal').classList.add('on'); }
+async function startCoach(){
+  $('#coachModal').classList.remove('on');
+  coachMode=true; scanMode=false; deepScan=false; postureMode=false; styleMode=false; _coachBuf=[];
+  const th=$('.tap-hint'); if(th) th.style.display='none';
+  $('#scanGuide').style.display='flex'; setGuideMsg('','LOOK STRAIGHT — CHECKING YOUR LOOK');
+  await openCam(); $('#camMeta').textContent='Makeup coach';
+}
+function coachStep(){
+  if(!faceKitReady){ setGuideMsg('','LOADING…'); return; }
+  const d=readLandmarks();
+  ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,cv.width,cv.height);
+  if(!d){ setGuideMsg('','CENTER YOUR FACE'); return; }
+  const q=poseGate(d.pts,d.mat); if(!q.frontal){ setGuideMsg('',q.msg); return; }
+  const vw=cam.videoWidth||1280, vh=cam.videoHeight||720;
+  _off.width=vw; _off.height=vh; _octx.drawImage(cam,0,0,vw,vh);
+  const PR=i=>({x:d.pts[i].x*vw,y:d.pts[i].y*vh});
+  const faceL=rgb2lab(medColorPts([FACE.CHEEK_R,FACE.CHEEK_L,FACE.FORE,205,425,50,280].map(PR)))[0];
+  const chin=PR(152), top=PR(10); const dn={x:chin.x-top.x,y:chin.y-top.y}; const dl=Math.hypot(dn.x,dn.y)||1; dn.x/=dl; dn.y/=dl;
+  const neckPt={x:chin.x+dn.x*dl*0.30, y:chin.y+dn.y*dl*0.30};
+  const neckL=rgb2lab(patchMed(neckPt.x,neckPt.y,4))[0];
+  const even=evenness([FACE.CHEEK_R,FACE.CHEEK_L,FACE.FORE,205,425,108,337].map(PR));
+  _coachBuf.push({faceL,neckL,even});
+  setGuideMsg(String(Math.max(1,Math.ceil((18-_coachBuf.length)/6))),'HOLD — CHECKING YOUR LOOK');
+  if(_coachBuf.length>=18) finalizeCoach();
+}
+function finalizeCoach(){
+  coachMode=false;
+  const med=k=>{ const a=_coachBuf.map(x=>x[k]).sort((p,q)=>p-q); return a[a.length>>1]; };
+  const dL=med('faceL')-med('neckL'), even=Math.round(med('even'));
+  const tips=[];
+  if(dL>6) tips.push(['Foundation','Your face reads lighter than your neck — go one step warmer/deeper and blend down past the jaw so the line disappears.']);
+  else if(dL<-6) tips.push(['Foundation','Your face reads darker than your neck — lighten a step, or carry a little product onto the neck to bridge it.']);
+  else tips.push(['Foundation','Your base matches your neck well — nicely blended.']);
+  if(even<62) tips.push(['Evenness','Coverage looks a little uneven — press (don\'t drag) with a damp sponge, and set only where you\'re shiny.']);
+  else tips.push(['Evenness','Application reads smooth and even.']);
+  const sh=(lastScan()||{}).shape;
+  if(sh && MK_BLUSH_PLACE[sh]) tips.push(['Placement','For your '+(SHAPE_NAME[sh]||sh).toLowerCase()+' face, '+MK_BLUSH_PLACE[sh]]);
+  $('#scanGuide').style.display='none';
+  $('#camSheet').style.display='block'; $('#camSheet').scrollTop=0; $('#camMeta').textContent='Makeup coach';
+  $('#camSheet').innerHTML=`
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:8px">
+      <button class="btn ghost" style="min-height:36px;padding:8px 14px" onclick="startCoach()">Check again</button>
+      <button class="btn solid" style="min-height:36px;padding:8px 14px" onclick="closeCam()">Done</button></div>
+    <h3>Your look, coached</h3>
+    <p style="font-family:var(--display);font-style:italic;color:var(--gold);margin:0 0 8px">You look great — this is fine-tuning, not fixing.</p>
+    ${tips.map(t=>`<div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)"><b style="color:var(--gold-bright);font-size:13px">${t[0]}</b><div style="color:var(--ivory-dim);font-size:12.5px;margin-top:2px;line-height:1.5">${t[1]}</div></div>`).join('')}
+    <p style="font-size:11px;margin-top:10px;color:var(--ivory-dim)">Guidance only — no score. Read from your base-vs-neck tone and coverage evenness, on-device.</p>`;
+}
+function openRoutine(){
+  const c=store.get('makeupCustom',null);
+  if(c){ if(c.lip) $('#rLip').value=hex(c.lip); if(c.blush) $('#rBlush').value=hex(c.blush); if(c.shadow) $('#rShadow').value=hex(c.shadow);
+    $('#rLiner').classList.toggle('on', c.liner!==false); if($('#rBrow')) $('#rBrow').value=Math.round((c.brow||0.2)*100); }
+  $('#routineModal').classList.add('on');
+}
+function captureLookThumb(){
+  try{ const R=coverRect(); if(!R.cw) return null; const tw=200,k=tw/R.cw,th=Math.round(R.ch*k);
+    const out=document.createElement('canvas'); out.width=tw; out.height=th; const o=out.getContext('2d');
+    o.save(); if(facing==='user'){ o.translate(tw,0); o.scale(-1,1); } o.drawImage(cam,R.ox*k,R.oy*k,R.vw*R.s*k,R.vh*R.s*k); o.restore();
+    o.drawImage(cv,0,0,tw,th);   // include the makeup overlay
+    return out.toDataURL('image/jpeg',0.6);
+  }catch(e){ console.warn('lookthumb',e); return null; }
+}
+function saveMakeupPhoto(silent){
+  const url=captureLookThumb(); if(!url) return;
+  let a=store.get('makeupPhotos',[]); a.push({t:Date.now(), url, look:(makeupLook()||{}).name||''});
+  while(a.length>16) a.shift();
+  try{ store.set('makeupPhotos',a); }catch(e){ while(a.length>4){ a.shift(); try{ store.set('makeupPhotos',a); break; }catch(_){} } }
+  renderMakeupPhotos(); if(!silent) toast('Look saved to your gallery');
+}
+function renderMakeupPhotos(){
+  const el=$('#makeupPhotos'); if(!el) return; const a=store.get('makeupPhotos',[]);
+  if(!a.length){ el.innerHTML=''; return; }
+  el.innerHTML='<div class="eyebrow" style="margin:16px 0 8px">Your looks · '+a.length+'</div>'
+    +'<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px">'
+    + a.slice().reverse().map(p=>`<div style="flex:0 0 auto;text-align:center"><img src="${p.url}" style="height:84px;border-radius:8px;border:1px solid var(--line)"/><div style="font-size:9px;color:var(--ivory-dim);margin-top:3px">${p.look?p.look+' · ':''}${new Date(p.t).toLocaleDateString([], {month:'short',day:'numeric'})}</div></div>`).join('')
+    + '</div><p style="font-size:11px;color:var(--ivory-dim);margin-top:8px">Saved on your device only, with dates — snap a look in the try-on (◉) to add it. Track how your looks evolve.</p>';
+}
+if(typeof REFERENCES!=='undefined'){
+  REFERENCES.push(['Colour theory','Undertone-based colour matching (warm / cool / neutral / olive) — standard cosmetic colour theory for foundation, lip and blush families.']);
+  REFERENCES.push(['Face-shape balancing','Image-consulting practice: blush, brow and contour placement chosen to balance the face\'s proportions.']);
+}
+/* wiring */
+$('#openMakeupTry') && $('#openMakeupTry').addEventListener('click', ()=>{ _openMakeup=true; openStyle(); });
+$('#openSuggest') && $('#openSuggest').addEventListener('click', openSuggest);
+$('#openCoach') && $('#openCoach').addEventListener('click', openCoach);
+$('#openRoutine') && $('#openRoutine').addEventListener('click', openRoutine);
+$('#coachScan') && $('#coachScan').addEventListener('click', startCoach);
+$('#suggestX') && $('#suggestX').addEventListener('click', ()=>$('#suggestModal').classList.remove('on'));
+$('#suggestModal') && $('#suggestModal').addEventListener('click', e=>{ if(e.target.id==='suggestModal') $('#suggestModal').classList.remove('on'); });
+$('#coachX') && $('#coachX').addEventListener('click', ()=>$('#coachModal').classList.remove('on'));
+$('#coachModal') && $('#coachModal').addEventListener('click', e=>{ if(e.target.id==='coachModal') $('#coachModal').classList.remove('on'); });
+$('#routineX') && $('#routineX').addEventListener('click', ()=>$('#routineModal').classList.remove('on'));
+$('#routineModal') && $('#routineModal').addEventListener('click', e=>{ if(e.target.id==='routineModal') $('#routineModal').classList.remove('on'); });
+$('#rLiner') && $('#rLiner').addEventListener('click', e=>e.currentTarget.classList.toggle('on'));
+$('#routineSave') && $('#routineSave').addEventListener('click', ()=>{
+  const look={ lip:hex2rgb($('#rLip').value), blush:hex2rgb($('#rBlush').value), shadow:hex2rgb($('#rShadow').value), liner:$('#rLiner').classList.contains('on'), brow:(+$('#rBrow').value||20)/100 };
+  store.set('makeupCustom',look); $('#routineModal').classList.remove('on'); toast('Saved as My routine');
+  styleMakeup=MAKEUP_LOOKS.findIndex(l=>l.id==='custom'); if(styleMode) renderStyleChips();
+});
+
 /* ---------- Identity UI ---------- */
 let _idSel=null;
 function openIdentity(){
@@ -2665,6 +2935,7 @@ buildGroom();
 initReminders();
 applyIdentity();
 renderTimeline();
+renderMakeupPhotos();
 if(!identityChosen()) setTimeout(openIdentity, 1700);   // first-run identity picker
 go(location.hash.slice(1) || 'home');
 setTimeout(()=>{ $('#boot').classList.add('gone'); setTimeout(()=>$('#boot').remove(),900) }, 1300);
