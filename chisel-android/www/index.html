@@ -593,6 +593,7 @@
     <div class="photorealRow" style="display:flex;align-items:center;gap:10px">
       <button class="photoreal-btn" id="photorealBtn">✦ Make it photoreal</button>
       <span class="photoreal-note" id="photorealNote"></span>
+      <button class="sc" id="goPremiumBtn" style="margin-left:auto">Go Premium</button>
     </div>
     <div class="lab" id="hairLab">Hairstyle</div>
     <div class="scroller" id="hairChips"></div>
@@ -751,6 +752,21 @@
   <div class="panel">
     <div class="x" id="programX">✕</div>
     <div id="programBody"></div>
+  </div>
+</div>
+
+<!-- PAYWALL MODAL -->
+<div class="modal" id="paywall">
+  <div class="panel">
+    <div class="x" id="paywallX">✕</div>
+    <div class="eyebrow">Go Premium</div>
+    <h3>Photoreal, unlocked.</h3>
+    <p class="lede">Try everything for 3 days, then keep going if it's for you. The whole on-device app — scans, try-on, makeup, tracking — stays free forever; Premium covers the photoreal cloud renders.</p>
+    <div id="paywallOfferings" style="margin:18px 0;display:flex;flex-direction:column;gap:14px">
+      <p class="lede" id="paywallLoading">Loading offers…</p>
+    </div>
+    <button class="btn ghost" id="paywallRestore" style="width:100%">Restore purchases</button>
+    <p style="font-size:10px;color:var(--ivory-dim);margin-top:10px">Billed through Google Play. Cancel anytime in Play Store → Subscriptions.</p>
   </div>
 </div>
 
@@ -1565,19 +1581,20 @@ async function renderPhotoreal(){
   btn.disabled = true; const origText = btn.textContent; btn.textContent = 'Rendering… (~10s)';
   if(retryBtn) retryBtn.disabled = true;
   try{
+    const rcUserId = await rcUserIdIfEntitled();
     const res = await fetch(RENDER_FN_URL, {
       method:'POST',
       headers:{ 'Content-Type':'application/json', 'apikey':RENDER_ANON_KEY },
-      body: JSON.stringify({ image, deviceId: deviceId(), hairId, beardId, colorName: colorName||'match', gender: styleGender })
+      body: JSON.stringify({ image, deviceId: deviceId(), rcUserId, hairId, beardId, colorName: colorName||'match', gender: styleGender })
     });
     const data = await res.json();
     if(!res.ok){
-      if(data.error==='rate_limited') toast('You\'ve hit today\'s render limit — back tomorrow');
+      if(data.showPaywall || data.error==='free_limit_reached' || data.error==='rate_limited'){ closePhotorealResult(); openPaywall(); }
       else toast('Couldn\'t render that one — try again');
       return;
     }
     _prLastResult = data.imageUrl;
-    $('#photorealNote').textContent = data.remaining+' left today';
+    $('#photorealNote').textContent = (data.remaining>=0) ? (data.remaining+' left today') : 'Premium';
     showPhotorealResult(_prBeforeUrl, _prLastResult);
   }catch(e){
     console.warn('renderPhotoreal', e); toast('Couldn\'t render that one — try again');
@@ -3169,6 +3186,61 @@ $('#openExport') && $('#openExport').addEventListener('click', openExport);
 $('#exportShare') && $('#exportShare').addEventListener('click', exportShare);
 $('#exportX') && $('#exportX').addEventListener('click', ()=>$('#exportModal').classList.remove('on'));
 $('#exportModal') && $('#exportModal').addEventListener('click', e=>{ if(e.target.id==='exportModal') $('#exportModal').classList.remove('on'); });
+
+/* ================= Paywall (RevenueCat + Google Play Billing) ================= */
+/* Fill these two from your RevenueCat dashboard (see PLAY_STORE.md / paywall plan).
+   Until RC_API_KEY is set + the native SDK is installed, the app stays free-tier
+   and the paywall shows a friendly "store unavailable" message — nothing breaks. */
+const RC_API_KEY = '';                 // RevenueCat PUBLIC Android SDK key — safe to embed client-side
+const RC_ENTITLEMENT_ID = 'premium';   // the entitlement id you create in RevenueCat
+let _rc=null, rcReady=false;
+function rcPlugin(){ return (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Purchases) || null; }
+async function initRevenueCat(){
+  const P=rcPlugin();
+  if(!P || !RC_API_KEY) return;   // no native bridge (browser) or not configured yet
+  try{ await P.configure({ apiKey: RC_API_KEY, appUserID: deviceId() }); _rc=P; rcReady=true; }
+  catch(e){ console.warn('RevenueCat init failed', e); }
+}
+async function rcUserIdIfEntitled(){
+  if(!rcReady || !_rc) return undefined;
+  try{
+    const r=await _rc.getCustomerInfo(); const info=(r&&r.customerInfo)||r||{};
+    const active=info.entitlements && info.entitlements.active && info.entitlements.active[RC_ENTITLEMENT_ID];
+    return active ? deviceId() : undefined;   // appUserID was set to deviceId() at configure()
+  }catch(e){ console.warn('rcUserIdIfEntitled', e); return undefined; }
+}
+function openPaywall(){ $('#paywall').classList.add('on'); renderOfferings(); }
+function closePaywall(){ $('#paywall').classList.remove('on'); }
+async function renderOfferings(){
+  const el=$('#paywallOfferings');
+  if(!rcReady || !_rc){ el.innerHTML='<p class="lede">The store isn\'t available here — it activates in the installed app. You still get free photoreal renders daily.</p>'; return; }
+  try{
+    const off=await _rc.getOfferings(); const cur=(off&&off.current)||off||{}; const pkgs=(cur&&cur.availablePackages)||[];
+    if(!pkgs.length){ el.innerHTML='<p class="lede">No offers available right now.</p>'; return; }
+    el.innerHTML='';
+    pkgs.forEach(pkg=>{
+      const prod=pkg.product||pkg.storeProduct||{}, price=prod.priceString||prod.price_string||'', title=prod.title||pkg.identifier||'Plan';
+      const card=document.createElement('div'); card.className='card gold';
+      card.innerHTML=`<div class="eyebrow">${title}</div><div style="font-family:var(--display);font-size:26px;margin:6px 0">${price}</div><button class="btn solid" style="width:100%">Choose</button>`;
+      card.querySelector('button').addEventListener('click', ()=>purchase(pkg));
+      el.appendChild(card);
+    });
+  }catch(e){ console.warn('renderOfferings', e); el.innerHTML='<p class="lede">Couldn\'t load offers — try again shortly.</p>'; }
+}
+async function purchase(pkg){
+  if(!rcReady || !_rc){ toast('Store unavailable here'); return; }
+  try{ await _rc.purchasePackage({ aPackage: pkg }); toast('You\'re in — enjoy Premium'); closePaywall(); }
+  catch(e){ if(e && (e.userCancelled||e.code==='PURCHASE_CANCELLED')) return; console.warn('purchase', e); toast('Purchase didn\'t go through — try again'); }
+}
+$('#goPremiumBtn') && $('#goPremiumBtn').addEventListener('click', openPaywall);
+$('#paywallX') && $('#paywallX').addEventListener('click', closePaywall);
+$('#paywall') && $('#paywall').addEventListener('click', e=>{ if(e.target.id==='paywall') closePaywall(); });
+$('#paywallRestore') && $('#paywallRestore').addEventListener('click', async ()=>{
+  if(!rcReady || !_rc){ toast('Store unavailable here'); return; }
+  try{ await _rc.restorePurchases(); toast('Purchases restored'); closePaywall(); }
+  catch(e){ console.warn('restore', e); toast('Couldn\'t restore — try again'); }
+});
+initRevenueCat();
 
 /* ---------- Boot ---------- */
 buildGroom();

@@ -169,8 +169,13 @@ Paste your hosted URL from step C.
 - **API 36:** From **31 Aug 2026**, new apps and updates must target **API 36**.
   You're on 35 (valid now). Bumping to 36 needs a small AGP/SDK bump — do it
   before your first update after that date.
-- **RevenueCat/Play Billing:** the paywall backend exists; the in-app purchase
-  UI and Play Console subscription product setup are still to be wired (see
-  `docs/superpowers/plans/2026-07-18-paywall-credits.md`). You can launch free-first and add billing later.
+- **RevenueCat/Play Billing:** the paywall **backend and in-app UI are now wired**
+  (paywall screen, purchase + restore, "Go Premium" entry, free-limit → paywall
+  routing). To turn it on you must, in the dashboards (can't be automated):
+  1. **Play Console** → create a subscription with a 3-day $0.99 intro + $6.99/mo (or $39.99/yr) base plan; put the app in a testing track.
+  2. **RevenueCat** → link the Play product to an entitlement named `premium`, copy the **public Android SDK key**.
+  3. In `chisel-android/www/index.html`, set `const RC_API_KEY = '...'` (near the paywall block) to that key; run `npm install` + `npx cap sync android`.
+  4. Point RevenueCat's webhook at the deployed `rc-webhook` function and set `RC_WEBHOOK_SECRET`.
+  Until `RC_API_KEY` is set, the app stays free-tier and the paywall shows a friendly "store unavailable" message — safe to launch free-first.
 - **Security hardening (optional):** enable R8 (`minifyEnabled true`) after
   testing, and run **MobSF** on the final AAB (see the security checklist).
