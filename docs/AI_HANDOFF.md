@@ -4,7 +4,7 @@
 - **Timestamp:** 2026-07-26 23:43 UTC
 - **Updated by:** Claude Code
 - **Current branch:** `main`
-- **Latest relevant commit:** `2a3780e` (Wire paywall UI) — a checkpoint commit is added at the end of this session (see Work Completed).
+- **Latest relevant commit:** `fba0da5` (chore: checkpoint app progress for Codex handoff) — contains the handoff system + this session's app changes.
 - **Working tree status:** clean except untracked `.claude/` (local tooling, not committed).
 
 ## Application Summary
