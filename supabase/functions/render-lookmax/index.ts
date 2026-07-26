@@ -38,7 +38,8 @@ const COLOR_NAMES: Record<string, string> = {
   "Ash blonde": "ash blonde", Grey: "grey", Platinum: "platinum blonde",
 };
 
-const RATE_LIMIT_PER_DAY = 5;
+const RATE_LIMIT_PER_DAY = 2;    // free tier (was 5) — paid tiers cover heavier use
+const MONTHLY_SOFT_CAP = 60;     // subscribed tier soft cap (not shown to the user)
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -47,10 +48,55 @@ const CORS = {
 interface RenderRequest {
   image?: string;
   deviceId?: string;
+  rcUserId?: string;
   hairId?: string;
   beardId?: string;
   colorName?: string;
   gender?: string;
+}
+
+// Returns { allowed:true, consume } when a paid entitlement covers this request,
+// or { allowed:false } to fall through to the free-tier device cap. consume() is
+// only called after a successful render (mirrors the free-tier increment-on-success).
+async function checkEntitlement(
+  supabase: ReturnType<typeof createClient>,
+  rcUserId: string | undefined,
+): Promise<{ allowed: boolean; consume?: () => Promise<void> }> {
+  if (!rcUserId) return { allowed: false };
+  const { data, error } = await supabase
+    .from("entitlements")
+    .select("tier, trial_credits_remaining, subscription_active_until, monthly_render_count")
+    .eq("id", rcUserId)
+    .maybeSingle();
+  if (error) { console.error("Entitlement check failed", error); return { allowed: false }; } // fail closed to free tier
+  if (!data) return { allowed: false };
+
+  if (data.tier === "trial" && (data.trial_credits_remaining ?? 0) > 0) {
+    return {
+      allowed: true,
+      consume: async () => {
+        await supabase.from("entitlements")
+          .update({ trial_credits_remaining: (data.trial_credits_remaining ?? 0) - 1 })
+          .eq("id", rcUserId);
+      },
+    };
+  }
+  if (
+    data.tier === "subscribed" &&
+    data.subscription_active_until &&
+    new Date(data.subscription_active_until) > new Date() &&
+    (data.monthly_render_count ?? 0) < MONTHLY_SOFT_CAP
+  ) {
+    return {
+      allowed: true,
+      consume: async () => {
+        await supabase.from("entitlements")
+          .update({ monthly_render_count: (data.monthly_render_count ?? 0) + 1 })
+          .eq("id", rcUserId);
+      },
+    };
+  }
+  return { allowed: false };
 }
 
 Deno.serve(async (req: Request) => {
@@ -66,7 +112,7 @@ Deno.serve(async (req: Request) => {
     return new Response(JSON.stringify({ error: "Invalid JSON body" }), { status: 400, headers: CORS });
   }
 
-  const { image, deviceId, hairId, beardId, colorName, gender } = body;
+  const { image, deviceId, rcUserId, hairId, beardId, colorName, gender } = body;
   if (!image || !deviceId || !hairId || !colorName || !gender) {
     return new Response(JSON.stringify({ error: "Missing required field" }), { status: 400, headers: CORS });
   }
@@ -86,6 +132,9 @@ Deno.serve(async (req: Request) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
 
+  // Paid entitlement takes precedence over the free device cap.
+  const entitlement = await checkEntitlement(supabase, rcUserId);
+
   const today = new Date().toISOString().slice(0, 10);
   const { data: existing, error: rateLimitError } = await supabase
     .from("render_counts")
@@ -103,8 +152,9 @@ Deno.serve(async (req: Request) => {
   }
 
   const used = existing?.count ?? 0;
-  if (used >= RATE_LIMIT_PER_DAY) {
-    return new Response(JSON.stringify({ error: "rate_limited", remaining: 0 }), { status: 429, headers: CORS });
+  if (!entitlement.allowed && used >= RATE_LIMIT_PER_DAY) {
+    // Distinct code + flag so the client routes to the paywall, not a dead toast.
+    return new Response(JSON.stringify({ error: "free_limit_reached", remaining: 0, showPaywall: true }), { status: 429, headers: CORS });
   }
 
   const hairDesc = hairNames[hairId];
@@ -182,14 +232,21 @@ Deno.serve(async (req: Request) => {
     return new Response(JSON.stringify({ error: "render_timeout" }), { status: 504, headers: CORS });
   }
 
-  await supabase.from("render_counts").upsert(
-    { device_id: deviceId, day: today, count: used + 1 },
-    { onConflict: "device_id,day" },
-  );
+  let remaining: number;
+  if (entitlement.allowed && entitlement.consume) {
+    await entitlement.consume();
+    remaining = -1;   // paid tier: client doesn't need an exact free-tier count
+  } else {
+    await supabase.from("render_counts").upsert(
+      { device_id: deviceId, day: today, count: used + 1 },
+      { onConflict: "device_id,day" },
+    );
+    remaining = RATE_LIMIT_PER_DAY - used - 1;
+  }
 
   const outputUrl = Array.isArray(prediction.output) ? prediction.output[0] : prediction.output;
   return new Response(
-    JSON.stringify({ imageUrl: outputUrl, remaining: RATE_LIMIT_PER_DAY - used - 1 }),
+    JSON.stringify({ imageUrl: outputUrl, remaining }),
     { headers: { ...CORS, "Content-Type": "application/json" } },
   );
 });

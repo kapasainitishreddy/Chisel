@@ -47,6 +47,11 @@
   #boot .bar::after{content:"";position:absolute;left:0;top:0;height:100%;width:0;background:linear-gradient(90deg,transparent,var(--gold),transparent);animation:boot 1.4s var(--ease) forwards}
   @keyframes boot{to{width:100%}}
 
+  /* Camera consent (one-time prominent disclosure) */
+  #camConsent{position:fixed;inset:0;z-index:600;background:rgba(10,10,11,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:24px}
+  #camConsent.on{display:flex}
+  #camConsent .cc-panel{max-width:440px;width:100%;text-align:center;background:linear-gradient(180deg,#15151a,#0c0c0e);border:1px solid var(--line);border-radius:20px;padding:32px 26px}
+
   /* Layout */
   .app{height:100%;display:grid;grid-template-columns:240px 1fr}
   @media (max-width:760px){.app{grid-template-columns:1fr;grid-template-rows:1fr 64px}main.view{grid-row:1}nav.tabs{grid-row:2}}
@@ -560,8 +565,30 @@
           <p>If you'd rather skip the install, run <code style="color:var(--gold)">npx serve</code> in <b>chisel-android/www</b> and open the URL on your phone. Tap Chrome menu → <b>Add to Home screen</b> for a fullscreen, installable PWA.</p>
         </div>
       </div>
+
+      <div class="card" style="margin-top:18px">
+        <div class="eyebrow">Privacy &amp; data</div>
+        <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:500">Your data stays on this device</h3>
+        <p style="color:var(--ivory-dim);font-size:13px;line-height:1.6">Scans, photos, streaks, routines and settings are stored only on your phone — no account, no ads, no tracking. The only time anything leaves the device is an optional photoreal render. <a href="https://kapasainitishreddy.github.io/Chisel/privacy-policy.html" target="_blank" rel="noopener" style="color:var(--gold)">Read the privacy policy ↗</a></p>
+        <div class="btn-row" style="margin-top:14px">
+          <button class="btn ghost" id="wipeData">Clear all my data</button>
+        </div>
+      </div>
     </section>
   </main>
+</div>
+
+<!-- CAMERA CONSENT (one-time, before first camera use) -->
+<div id="camConsent">
+  <div class="cc-panel">
+    <div style="font-size:44px;color:var(--gold)">◉</div>
+    <h3 style="font-family:var(--display);font-size:26px;margin:12px 0 6px;font-weight:500">Camera access</h3>
+    <p style="color:var(--ivory-dim);line-height:1.6;font-size:14px">Chisel uses your front camera for on-device facial analysis, affirmations, try-on and makeup. <b>The video is processed live on your phone and is never uploaded</b> (the only exception is if you choose the optional photoreal render). You can allow it now, and Android will also ask once.</p>
+    <div class="btn-row" style="margin-top:20px;justify-content:center">
+      <button class="btn solid" id="camConsentOk">Allow camera</button>
+      <button class="btn ghost" id="camConsentNo">Not now</button>
+    </div>
+  </div>
 </div>
 
 <!-- CAMERA OVERLAY -->
@@ -928,7 +955,20 @@ const COUNT_MS=2600;                            // hold-still countdown before a
 const DEEP_MS=5200;                             // deep scan holds ~2× as long → ~40 frames for a higher-confidence median
 const BURST_MAX=14, BURST_MAX_DEEP=40;          // rolling-buffer caps (standard vs deep)
 
+function cameraConsented(){ return store.get('cameraConsent', false); }
+function ensureCameraConsent(){
+  return new Promise(resolve=>{
+    if(cameraConsented()){ resolve(true); return; }
+    const el=$('#camConsent'); if(!el){ resolve(true); return; }
+    el.classList.add('on');
+    const ok=$('#camConsentOk'), no=$('#camConsentNo');
+    const done=(v)=>{ el.classList.remove('on'); ok.onclick=null; no.onclick=null; resolve(v); };
+    ok.onclick=()=>{ store.set('cameraConsent',true); done(true); };
+    no.onclick=()=>done(false);
+  });
+}
 async function openCam(){
+  if(!await ensureCameraConsent()){ toast('Camera stays off until you allow it'); return; }
   $('#camwrap').classList.add('on');
   try{
     stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:facing, width:{ideal:1280}, height:{ideal:720} }, audio:false });
@@ -2652,6 +2692,14 @@ async function runDiag(){
 }
 $('#testCam').addEventListener('click', async ()=>{ scanMode=false; await openCam(); $('#camMeta').textContent='Test mode' });
 $('#refreshDiag').addEventListener('click', runDiag);
+/* In-app data deletion (Play requirement + privacy) — wipes all local data */
+function wipeAllData(){
+  if(!confirm('Delete all Chisel data on this device? This removes your scans, photos, streak, routines and settings. This can\'t be undone.')) return;
+  try{ Object.keys(localStorage).filter(k=>k.indexOf('chisel:')===0).forEach(k=>localStorage.removeItem(k)); }catch(e){ console.warn('wipe',e); }
+  toast('All your local data was cleared');
+  setTimeout(()=>location.reload(), 900);
+}
+$('#wipeData') && $('#wipeData').addEventListener('click', wipeAllData);
 
 /* ================= Growth & retention features ================= */
 
