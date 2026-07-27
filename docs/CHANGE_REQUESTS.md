@@ -42,6 +42,14 @@ _None._
 > identity system, growth features, Play-prep, paywall UI) are recorded in Git
 > history (`git log`) and reflected in `docs/FEATURE_MATRIX.md`.
 
+- **CR-005 — Accessibility & spacing polish.** Added visible keyboard focus
+  (`:focus-visible` gold ring), removed tap-highlight flash, text-overflow guards
+  on headings, tighter mobile button spacing, and `role`/`aria-label` on the
+  icon-only camera controls (flip/capture).
+  - Affected features: all screens (a11y), FM-13/15/17 camera controls.
+  - Files: `chisel-android/www/index.html` (CSS focus block; camFlip/camShot attrs).
+  - Verification: Node syntax — PASS; `:focus-visible` + aria present (grep). 2026-07-26.
+
 ## Rejected or Superseded
 
 - **CR-R01 — Beauty / makeup "rater" (0–10 score).** Rejected after research

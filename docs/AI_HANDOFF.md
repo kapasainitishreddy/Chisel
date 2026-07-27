@@ -62,6 +62,8 @@ Percentages are evidence-based estimates (no automated tests exist to measure pr
 ## Current Work in Progress
 _None mid-flight._ All edits this session are complete, verified (syntax/sandbox), and left in a non-broken state. If resuming, start at "Next Task".
 
+**Latest micro-session (a11y/polish):** Added `:focus-visible` keyboard focus, tap-highlight removal, heading text-overflow guards, tighter mobile button spacing, and `role`/`aria-label` on the icon-only camera flip/capture controls (CR-005). Verified: `index.html` syntax PASS. This was a CSS/HTML-only pass — no logic changed; all features intact. Note: "check all features working" could only be verified by Node syntax+sandbox here, **not on a device** — on-device QA of the camera/scan flows remains an open testing gap (see TEST_STATUS.md).
+
 ## Next Task
 - **Task ID:** APP-P0-001
 - **Priority:** P0 (build correctness — an AAB built now ships a stale app).

@@ -255,6 +255,15 @@
   @media (max-width:760px){#toast{bottom:80px}}
 
   @media (prefers-reduced-motion:reduce){*{animation-duration:.001s !important;transition-duration:.001s !important}}
+
+  /* Accessibility & polish: visible keyboard focus, comfortable tap targets, no text overflow */
+  :focus-visible{outline:2px solid var(--gold-bright);outline-offset:2px;border-radius:6px}
+  button:focus:not(:focus-visible){outline:none}
+  button,a,.chip,.sc,.camctrl,[data-go],[data-route]{-webkit-tap-highlight-color:transparent}
+  h1.display,h2.section,.modal h3{overflow-wrap:break-word}
+  .lede{max-width:64ch}
+  input,select,textarea{font-family:inherit}
+  @media (max-width:760px){ .btn-row{gap:8px} .btn{padding:11px 16px} }
 </style>
 </head>
 <body>
@@ -601,8 +610,8 @@
     <div style="width:44px"></div>
   </div>
   <div class="controls">
-    <div class="camctrl" id="camFlip" title="flip">⟲</div>
-    <div class="camctrl" id="camShot" title="snapshot">◉</div>
+    <div class="camctrl" id="camFlip" title="Flip camera" role="button" aria-label="Flip camera">⟲</div>
+    <div class="camctrl" id="camShot" title="Capture" role="button" aria-label="Capture">◉</div>
   </div>
   <div class="affirm-overlay" id="affirmOverlay" style="display:none">
     <div class="card">
