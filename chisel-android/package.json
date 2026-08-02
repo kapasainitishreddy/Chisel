@@ -5,6 +5,8 @@
   "main": "www/index.html",
   "scripts": {
     "build": "echo Chisel is a static HTML app - www is the build output. && exit 0",
+    "test": "node --test tests/*.test.cjs",
+    "test:enhancements": "node --test tests/enhancements-core.test.cjs tests/enhancements-ui.test.cjs tests/native-integration.test.cjs",
     "sync": "cap sync android",
     "open": "cap open android",
     "android": "cap run android",
