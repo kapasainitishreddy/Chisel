@@ -26,10 +26,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: npm
-          cache-dependency-path: chisel-android/package-lock.json
-      - name: Install declared dependencies
-        run: npm ci
       - name: Check enhancement syntax
         run: |
           node --check www/chisel-enhancements-core.js
