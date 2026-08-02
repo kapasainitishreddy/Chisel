@@ -26,9 +26,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Check enhancement syntax
+      - name: Check JavaScript syntax
         run: |
           node --check www/chisel-enhancements-core.js
           node --check www/chisel-enhancements.js
+          node --check www/chisel-precision-stats.js
+          node --check www/chisel-precision-protocol.js
+          node --check www/chisel-precision-core.js
+          node --check www/chisel-precision-face.js
+          node --check www/chisel-precision-body.js
+          node --check www/chisel-precision-ui.js
+          node --check www/chisel-precision.js
       - name: Run automated tests
         run: npm test
