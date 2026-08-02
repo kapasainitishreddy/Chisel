@@ -1,0 +1,38 @@
+name: Chisel Tests
+
+on:
+  push:
+    paths:
+      - 'chisel-android/**'
+      - '.github/workflows/chisel-tests.yml'
+  pull_request:
+    paths:
+      - 'chisel-android/**'
+      - '.github/workflows/chisel-tests.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  enhancements:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: chisel-android
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: chisel-android/package-lock.json
+      - name: Install declared dependencies
+        run: npm ci
+      - name: Check enhancement syntax
+        run: |
+          node --check www/chisel-enhancements-core.js
+          node --check www/chisel-enhancements.js
+      - name: Run automated tests
+        run: npm test
