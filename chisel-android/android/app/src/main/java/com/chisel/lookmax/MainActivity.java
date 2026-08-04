@@ -17,12 +17,12 @@ public class MainActivity extends BridgeActivity {
         "function js(src,done){var q='script[data-chisel-asset=\\\"'+src+'\\\"]',e=document.querySelector(q);" +
         "if(e){if(done)done();return;}var s=document.createElement('script');s.src=src;s.setAttribute('data-chisel-asset',src);" +
         "s.onload=function(){if(done)done();};s.onerror=fail;host.appendChild(s);}" +
-        "css('chisel-enhancements.css?v=20260801');css('chisel-precision.css?v=20260802');" +
+        "css('chisel-enhancements.css?v=20260801');css('chisel-precision.css?v=20260802');css('chisel-premium.css?v=20260803');" +
         "js('chisel-enhancements-core.js?v=20260801',function(){js('chisel-enhancements.js?v=20260801',function(){" +
         "js('chisel-precision-stats.js?v=20260802',function(){js('chisel-precision-protocol.js?v=20260802',function(){" +
         "js('chisel-precision-core.js?v=20260802',function(){js('chisel-precision-face.js?v=20260802',function(){" +
         "js('chisel-precision-body.js?v=20260802',function(){js('chisel-precision-ui.js?v=20260802',function(){" +
-        "js('chisel-precision.js?v=20260802');});});});});});});});});" +
+        "js('chisel-precision.js?v=20260802',function(){js('chisel-premium.js?v=20260803');});});});});});});});});});" +
         "})();";
 
     @Override
@@ -32,7 +32,7 @@ public class MainActivity extends BridgeActivity {
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         injectChiselLabs();
     }

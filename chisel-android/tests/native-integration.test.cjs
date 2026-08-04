@@ -20,6 +20,14 @@ test('MainActivity injects Chisel Labs assets in dependency order with an idempo
   assert.ok(core < ui, 'core must load before UI');
 });
 
+test('synced Android app shell exactly matches the canonical www index', () => {
+  assert.equal(
+    hash('www/index.html'),
+    hash('android/app/src/main/assets/public/index.html'),
+    'index.html differs between www and Android assets'
+  );
+});
+
 test('synced Android enhancement assets exactly match the canonical www copies', () => {
   for (const file of ['chisel-enhancements-core.js', 'chisel-enhancements.js', 'chisel-enhancements.css']) {
     assert.equal(
