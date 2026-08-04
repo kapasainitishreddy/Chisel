@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
+const vm = require('node:vm');
 
 const root = path.resolve(__dirname, '..');
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
@@ -42,8 +43,9 @@ test('premium CSS enforces mobile hierarchy, accessibility and restrained motion
   assert.match(css, /\.chx-concierge/);
 });
 
-test('premium behavior simplifies navigation and builds a guided, privacy-first experience', () => {
+test('premium behavior parses, simplifies navigation and builds a guided privacy-first experience', () => {
   const js = read('www/chisel-premium.js');
+  assert.doesNotThrow(() => new vm.Script(js, { filename: 'chisel-premium.js' }));
   assert.match(js, /PRIMARY_ROUTES\s*=\s*\['home',\s*'analyze',\s*'groom',\s*'connect'\]/);
   assert.match(js, /function simplifyMobileNavigation/);
   assert.match(js, /function buildTrustStrip/);
