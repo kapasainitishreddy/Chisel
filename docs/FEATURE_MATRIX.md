@@ -1,48 +1,82 @@
-# Feature Matrix
+# Chisel Feature Matrix
 
-Status legend: **Verified complete** · **Implemented but unverified** (code present + Node syntax/sandbox verified, not exercised on a device here) · **Partial** · **UI only** · **Mocked** · **Broken** · **Missing** · **Externally blocked** · **Not required**.
+_Last updated: 2026-08-08_
 
-> All web features live in `chisel-android/www/index.html` unless noted. "Unverified" = camera/MediaPipe/rendering/build were not run in this environment (no device, no JDK, `file://` preview unavailable). Nothing below is known-broken.
+Status legend:
 
-| Feature ID | Feature | Required | Status | UI | Logic | Persistence | Tested | Relevant Files | Remaining Work |
-|---|---|---|---|---|---|---|---|---|---|
-| FM-01 | Screen router + 6 tabs | Yes | Implemented but unverified | Yes | Yes | n/a | Sandbox + seen rendering | `index.html` `go()` | Device pass |
-| FM-02 | On-device facial scan (mesh, burst, Quick/Deep) | Yes | Implemented but unverified | Yes | Yes | localStorage `scans` | Sandbox only | `measureFrame`, `finalizeScan`, `meshLoop` | On-device accuracy validation |
-| FM-03 | Cheekbones module (malar 3D, mid-face) | Yes | Implemented but unverified | Yes | Yes | in scan record | Sandbox | `measureFrame`, areas | Device validation of z-depth |
-| FM-04 | Angles & profile (nasofrontal/labial/mento/chin) | Yes | Implemented but unverified | Yes | Yes | in scan record | Sandbox | `ang3`, areas | Device validation |
-| FM-05 | Skin scan (ITA°, undertone, evenness, redness, blemish, under-eye) | Yes | Implemented but unverified | Yes | Yes | in scan record | Sandbox | `rgb2lab`, `blemishRead`, skin area | Device validation |
-| FM-06 | Teeth / lips / eyes / symmetry / bloat | Yes | Implemented but unverified | Yes | Yes | scan record | Sandbox | `finalizeScan` areas | Device validation |
-| FM-07 | Controllable-potential figure | Yes | Implemented but unverified | Yes | Yes | `lastPotential` | Sandbox | `finalizeScan`, `renderResults` | — |
-| FM-08 | Jawline training (guided reps) | Yes | Implemented but unverified | Yes | Yes | n/a | Sandbox | `JAW_TRAIN`, `trainStep` | Device |
-| FM-09 | Affirmations (gendered banks) + mirror | Yes | Implemented but unverified | Yes | Yes | `homeCat` | Sandbox + seen | `AFFIRM*`, `buildPool` | — |
-| FM-10 | Meditation (orb, TTS, hum) | Yes | Implemented but unverified | Yes | Yes | n/a | Sandbox | `SCRIPTS`, `startMed` | Device (audio/TTS) |
-| FM-11 | Grooming cards + shoppable links | Yes | Implemented but unverified | Yes | Yes | `plan` | Sandbox | `GROOM`, `SHOP`, `openGroom` | Affiliate tag (optional) |
-| FM-12 | Today's plan check-off + adherence % | Yes | Implemented but unverified | Yes | Yes | `routineDone` | Sandbox | `renderPlan`, `adherence7` | — |
-| FM-13 | Try-on: hair/beard | Yes | Implemented but unverified | Yes | Yes | n/a | Sandbox | `drawHair`, `drawBeard` | Device |
-| FM-14 | Try-on: eyewear | Yes | Implemented but unverified | Yes | Yes | n/a | Sandbox | `GLASS_STYLES`, `drawGlasses` | Device |
-| FM-15 | Try-on: makeup + custom routine | Yes | Implemented but unverified | Yes | Yes | `makeupCustom` | Sandbox | `MAKEUP_LOOKS`, `drawMakeup` | Device |
-| FM-16 | Makeup suggestor (undertone+shape, cited) | Yes | Implemented but unverified | Yes | Yes | reads `scans` | Sandbox | `openSuggest`, `MK_*` | Device |
-| FM-17 | Makeup coach (non-numeric) | Yes | Implemented but unverified | Yes | Yes | n/a | Sandbox | `coachStep`, `finalizeCoach` | Device |
-| FM-18 | Makeup look gallery | Yes | Implemented but unverified | Yes | Yes | `makeupPhotos` | Sandbox | `saveMakeupPhoto` | Device |
-| FM-19 | Posture (MediaPipe Pose CVA) | Yes | Implemented but unverified | Yes | Yes | `posture` | Sandbox | `startPosture`, `postureStep` | Device |
-| FM-20 | Photo tracker + before/after slider | Yes | Implemented but unverified | Yes | Yes | `photos` | Sandbox | `savePhoto`, `wireBASlider` | Device |
-| FM-21 | Best-photo picker (IMAGE landmarker) | Yes | Implemented but unverified | Yes | Yes | n/a | Sandbox | `loadImageKit`, `scorePhoto` | Device |
-| FM-22 | Identity system (M/F/NB/custom) | Yes | Implemented but unverified | Yes | Yes | `identity` | Sandbox | `identity*`, `applyIdentity` | — |
-| FM-23 | Gamification (streak, freeze, badges) | Yes | Implemented but unverified | Yes | Yes | `streak`, `deepCount` | Sandbox | `bumpStreak`, `BADGES` | — |
-| FM-24 | Share progress card | Yes | Implemented but unverified | Yes | Yes | n/a | Sandbox | `buildShareCard`, `shareProgress` | Device (Web Share) |
-| FM-25 | 30-day programs | Yes | Implemented but unverified | Yes | Yes | `program` | Sandbox | `PROGRAMS`, `openProgram` | — |
-| FM-26 | Water/sodium logging → bloat | Yes | Implemented but unverified | Yes | Yes | `hydration` | Sandbox | `saveHydration`, bloat rem | — |
-| FM-27 | Barber/derm export sheet | Yes | Implemented but unverified | Yes | Yes | reads `scans` | Sandbox | `openExport`, `exportShare` | Device (share) |
-| FM-28 | Reminders (local notifications) | Yes | Externally blocked | Yes | Yes | `reminders` | Sandbox | `initReminders`, `scheduleReminders` | `npm install`+`cap sync`; POST_NOTIFICATIONS UX |
-| FM-29 | Paywall UI (offerings/purchase/restore) | Yes | Externally blocked | Yes | Yes | via SDK | Sandbox | `initRevenueCat`, `openPaywall` | `RC_API_KEY`, Play/RC setup, plugin sync |
-| FM-30 | Paywall backend entitlement enforcement | Yes | Partial | n/a | Yes (source) | `entitlements` table | Not run (no Deno) | `supabase/functions/render-lookmax/index.ts` | Deploy (source updated, undeployed) |
-| FM-31 | Photoreal render (hair/beard) | Yes | Implemented but unverified | Yes | Yes | `render_counts` | Sandbox (client) | `renderPhotoreal`, `render-lookmax` | Device + live render |
-| FM-32 | "Future you" preview | No | Partial (client filter) | Yes | Yes | reads `photos` | Sandbox | `openFuture` | Real photoreal render = P3 |
-| FM-33 | Camera prominent disclosure | Yes (Play) | Implemented but unverified | Yes | Yes | `cameraConsent` | Sandbox | `ensureCameraConsent`, `#camConsent` | Device |
-| FM-34 | In-app data deletion | Yes (Play) | Implemented but unverified | Yes | Yes | clears localStorage | Sandbox | `wipeAllData`, `#wipeData` | Device |
-| FM-35 | Public web funnel (`tools.html`) | No | Implemented but unverified | Yes | Yes | none | Syntax | `www/tools.html` | Hosting |
-| FM-36 | Privacy policy page | Yes (Play) | Verified complete | Yes | n/a | n/a | Renders | `docs/privacy-policy.html` | Host + link in Console |
-| FM-37 | Store graphics (feature + screenshots) | Yes (Play) | Partial (representations) | Yes | n/a | n/a | Rendered | (artifact, not in repo) | Real device captures |
-| FM-38 | Automated tests / CI | Yes | Missing | n/a | n/a | n/a | None | — | Add smoke test + Actions |
-| FM-39 | Android release signing config | Yes | Implemented but unverified | n/a | Yes | n/a | Config only | `app/build.gradle`, `.gitignore` | Build with real keystore |
-| FM-40 | iOS platform | No | Missing | — | — | — | — | — | Deferred (needs Mac) |
+- **Automated verified** — source/syntax/behavior or integration is covered by the current test suite.
+- **Build verified** — Android CI compiles the packaged app on the configured SDK/Gradle stack.
+- **Implemented, device validation required** — real camera/audio/Web Share/MediaPipe behavior still needs representative Android-device QA.
+- **Configuration pending** — implementation seam exists but production credentials/product/dashboard configuration is still required.
+- **Partial / illustrative** — intentionally not presented as a fully predictive or production-backed result.
+
+> Chisel does not treat automated software tests as proof of medical, laboratory, anthropometric, dental, dermatology, or body-composition accuracy. Camera-derived measurements are photographic estimates and within-user tracking signals.
+
+| ID | Feature | Current status | User value / remaining gate |
+|---|---|---|---|
+| FM-01 | Premium mobile shell + navigation | Automated verified; device QA required | Onyx premium hierarchy, simplified primary destinations, contextual tools |
+| FM-02 | First-run concierge | Automated verified; device QA required | Explains privacy, confidence and baseline flow before camera use |
+| FM-03 | Camera prominent disclosure | Implemented; device QA required | Camera purpose shown before use |
+| FM-04 | Quick face scan | Implemented; device accuracy QA required | Fast on-device photographic appearance measurements |
+| FM-05 | Deep face scan | Implemented; device accuracy QA required | Larger frame pool for stronger normal baseline |
+| FM-06 | Precision Face & Skin | Automated verified; device accuracy QA required | 7–12 matched-photo consensus, outlier rejection, uncertainty |
+| FM-07 | Precision capture-quality gate | Automated verified | Fails closed on poor capture rather than forcing a result |
+| FM-08 | Actionable retry guidance | Automated verified | Lighting, blur, distance, head angle, glare, segmentation, limbs, occlusion guidance |
+| FM-09 | Precision Condition Match | Automated verified | Checks camera/framing/light and optional method/view/orientation/distance metadata |
+| FM-10 | Uncertainty-aware progress | Automated verified | Meaningful change must exceed combined measurement uncertainty |
+| FM-11 | Face structure / symmetry proxies | Implemented; device accuracy QA required | Neutral ratios/geometry, not attractiveness ranking |
+| FM-12 | Cheekbone / mid-face metrics | Implemented; device accuracy QA required | Photographic proportion tracking |
+| FM-13 | Jaw metrics / gonial angle | Implemented; device accuracy QA required | Photographic geometry, not bone-change prediction |
+| FM-14 | Profile-angle tools | Implemented; device accuracy QA required | Nasofrontal/nasolabial/mento/chin-related photographic angles |
+| FM-15 | Skin appearance analysis | Implemented; device/color QA required | Visible undertone/ITA, evenness, redness, blemish and under-eye estimates |
+| FM-16 | Teeth-region brightness | Implemented; device/color QA required | Within-user photographic trend, not dental shade/health diagnosis |
+| FM-17 | Lips / eye spacing / canthal / brow metrics | Implemented; device accuracy QA required | Neutral photographic ratios/angles |
+| FM-18 | Facial fullness/bloat proxy | Implemented; device QA required | Trend context only; not fluid-retention diagnosis |
+| FM-19 | Expression Calibration | Automated verified; device QA required | Neutral/open-mouth remapping to reduce expression-driven geometry error |
+| FM-20 | Skin Recovery Lab | Automated verified; device QA required | Conservative routine direction and professional-escalation language |
+| FM-21 | Lips & Color Lab | Automated verified; device/color QA required | Local shade matching, sampling and stain preview |
+| FM-22 | Neck Care Lab | Automated verified; device QA required | Visible skin/posture/shaving context without diagnosis |
+| FM-23 | Body & Waist Lab | Automated verified; device accuracy QA required | Pose + silhouette ratios and bounded illustrative preview |
+| FM-24 | Precision Body / front+side fusion | Automated verified; device accuracy QA required | Multi-photo front/side consensus and segmentation quality gates |
+| FM-25 | Optional waist tape calibration | Automated verified; device workflow QA required | Converts personal photo trend to a relative calibrated waist trend |
+| FM-26 | Posture analysis | Implemented; device accuracy QA required | Pose/CVA/neck-angle photographic proxies |
+| FM-27 | Jaw/neck guided training | Implemented; device QA required | Guided reps/form without adult-bone reshaping claims |
+| FM-28 | Grooming cards + evidence direction | Implemented | Controllable grooming actions and optional shopping links |
+| FM-29 | Today's plan + check-off | Implemented | Local routine and adherence tracking |
+| FM-30 | 30-day programs | Implemented | Structured local improvement programs |
+| FM-31 | Hydration/sodium context | Implemented | Adds context to fullness/bloat tracking |
+| FM-32 | Local reminders | Configuration/device QA pending | Local Notifications dependency is declared; Android permission/scheduling must be release-tested |
+| FM-33 | Hair/beard local try-on | Implemented; device QA required | Landmark-based style exploration |
+| FM-34 | Eyewear try-on | Implemented; device QA required | Landmark-positioned eyewear concepts |
+| FM-35 | Makeup try-on + custom routine | Implemented; device QA required | Local style overlay and saved routine |
+| FM-36 | Makeup suggestor | Implemented; device QA required | Undertone/shape-aware style guidance with evidence context |
+| FM-37 | Makeup coach | Implemented; device QA required | Non-numeric application guidance |
+| FM-38 | Makeup look gallery | Implemented; device QA required | Local saved-look history |
+| FM-39 | Photo tracker + before/after slider | Implemented; device QA required | Local visual history and comparison |
+| FM-40 | Best-photo picker | Implemented; device QA required | Image-quality selection rather than attractiveness ranking |
+| FM-41 | Identity personalization | Implemented | Male/female/non-binary/custom personalization where relevant |
+| FM-42 | Affirmations + mirror | Implemented | Daily mindset/affirmation experience |
+| FM-43 | Meditation / visualization | Implemented; device audio QA required | Orb, scripts, TTS/audio where available |
+| FM-44 | Streaks / freeze / badges | Implemented | Rewards routine consistency rather than compulsive scanning |
+| FM-45 | Shareable progress card | Implemented; Android share QA required | Progress-oriented sharing without public beauty score |
+| FM-46 | Barber/skincare discussion export | Implemented; Android share QA required | Discussion brief with scan/style context |
+| FM-47 | Local data deletion | Implemented | Clears local Chisel data from inside the app |
+| FM-48 | Privacy policy page | Implemented | Must be hosted and linked in Play Console |
+| FM-49 | Photoreal hair/beard render | Client/server source present; production config/live QA pending | Optional cloud render with separate privacy/data-safety implications |
+| FM-50 | Future-you preview | Partial / illustrative | Current local visualization is not a guaranteed prediction |
+| FM-51 | Paywall UI + purchase/restore seam | Implemented; production config pending | Requires Play products + RevenueCat key/entitlement + live billing QA |
+| FM-52 | Server entitlement enforcement | Partial / deploy pending | Supabase function source exists; production deployment/config required |
+| FM-53 | Premium Pro product definition | Product spec committed | Precision Lab Pro, Progress Intelligence, Adaptive Protocols, Looks Studio Pro, Professional Export, Private Vault Plus |
+| FM-54 | Automated tests / CI | Automated verified | Current suite covers enhancements, precision, native asset sync and premium UX |
+| FM-55 | Capacitor Android sync integrity | Automated verified | Canonical `www` app/feature assets are checked against packaged Android copies |
+| FM-56 | Android release signing config | Implemented | Real upload keystore/passwords remain developer-owned and gitignored |
+| FM-57 | Android API 36 target | Configured; build CI gate | compile/target 36, AGP 8.10, Gradle 8.11.1 |
+| FM-58 | Android privacy hardening | Configured | Broad OS backup disabled; cleartext HTTP disabled |
+| FM-59 | Play Store listing/policy work | Manual/config pending | Store graphics, hosted policy URL, Data Safety/content/health declarations, testing tracks |
+| FM-60 | iOS | Deferred | Android-first release; iOS remains a separate platform project |
+
+## Product truth
+
+Chisel is feature-complete enough for a serious Android release candidate. The remaining distinction is **software implementation versus empirical device validation**: camera/MediaPipe features must still be tested across representative phones, lighting, skin tones, facial hair/glasses, body framing and repeated same-condition captures before describing their numeric accuracy more strongly than photographic estimates.
+
+See `USER_GUIDE.md` for the end-user flow, `PREMIUM_FEATURES.md` for the Free/Pro boundary, and `PLAY_STORE.md` for publishing steps.
