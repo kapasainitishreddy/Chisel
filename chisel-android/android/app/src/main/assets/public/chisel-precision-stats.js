@@ -55,10 +55,16 @@
   }
   function compatibleSetup(a = {}, b = {}) {
     const sameKind = a.kind === b.kind, sameCamera = !a.camera || !b.camera || a.camera === b.camera;
+    const sameMethod = !a.methodVersion || !b.methodVersion || a.methodVersion === b.methodVersion;
+    const sameView = !a.view || !b.view || a.view === b.view;
+    const sameOrientation = !a.orientation || !b.orientation || a.orientation === b.orientation;
     const aspectDiff = Math.abs((Number(a.aspect) || 0) - (Number(b.aspect) || 0)); const fillDiff = Math.abs((Number(a.fill) || 0) - (Number(b.fill) || 0)); const lightDiff = Math.abs((Number(a.brightness) || 0) - (Number(b.brightness) || 0));
-    const compatible = sameKind && sameCamera && aspectDiff <= .08 && fillDiff <= .055 && lightDiff <= 18; const reasons = [];
-    if (!sameKind) reasons.push('different scan type'); if (!sameCamera) reasons.push('different camera'); if (aspectDiff > .08) reasons.push('different framing'); if (fillDiff > .055) reasons.push('different distance'); if (lightDiff > 18) reasons.push('different lighting');
-    return { compatible, reasons };
+    const distanceA = Number(a.distanceCm), distanceB = Number(b.distanceCm); const distanceComparable = !Number.isFinite(distanceA) || !Number.isFinite(distanceB) || Math.abs(distanceA-distanceB)/Math.max(Math.abs(distanceA),Math.abs(distanceB),1) <= .12;
+    const strictCompatible = sameKind && sameCamera && sameMethod && sameView && sameOrientation && aspectDiff <= .08 && fillDiff <= .055 && lightDiff <= 18 && distanceComparable;
+    const usable = sameKind && sameCamera && sameMethod && sameView && sameOrientation && aspectDiff <= .11 && fillDiff <= .075 && lightDiff <= 26 && (!Number.isFinite(distanceA) || !Number.isFinite(distanceB) || Math.abs(distanceA-distanceB)/Math.max(Math.abs(distanceA),Math.abs(distanceB),1) <= .18);
+    const reasons = [];
+    if (!sameKind) reasons.push('different scan type'); if (!sameCamera) reasons.push('different camera'); if (!sameMethod) reasons.push('different measurement method'); if (!sameView) reasons.push('different view'); if (!sameOrientation) reasons.push('different orientation'); if (aspectDiff > .08) reasons.push('different framing'); if (fillDiff > .055) reasons.push('different distance/framing'); if (lightDiff > 18) reasons.push('different lighting'); if (!distanceComparable) reasons.push('different camera distance');
+    return { compatible: strictCompatible, label: strictCompatible ? 'matched' : usable ? 'usable' : 'not-comparable', reasons };
   }
   function compareTrackedMetric(previous = {}, current = {}, options = {}) {
     if (!finite(previous.value) || !finite(current.value)) return { meaningful: false, reason: 'missing-value' };
