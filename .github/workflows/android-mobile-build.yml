@@ -75,3 +75,6 @@ jobs:
           path: |
             chisel-android/android/app/build/outputs/apk/debug/app-debug.apk
             chisel-android/android/app/build/outputs/bundle/release/app-release.aab
+            chisel-android/package-lock.json
+            chisel-android/android/capacitor.settings.gradle
+            chisel-android/android/app/capacitor.build.gradle
