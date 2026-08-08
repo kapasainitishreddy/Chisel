@@ -1,68 +1,146 @@
-# Release Status
+# Chisel Release Status
 
-_Last updated: 2026-07-26 (Claude Code)_
+_Last updated: 2026-08-08_
+
+## Current verdict
+
+**Android release candidate.** Chisel's automated product suite is green and the Android 16/API 36 CI pipeline has successfully synchronized Capacitor, run the automated suite, built a debug APK, and built a release AAB. Camera/MediaPipe measurement correctness still requires representative real-device repeatability validation before stronger empirical accuracy claims are made.
 
 ## Identity
-- **Package / application ID:** `com.chisel.lookmax` (fixed after first Play upload — do not change)
-- **App name:** Chisel
-- **Version name:** `1.0.0`
-- **Version code:** `1` (increment for every upload after the first)
 
-## SDK / build config
-- **Minimum SDK:** 23
-- **Target SDK:** 35
-- **Compile SDK:** 35
-- **Android Gradle Plugin:** 8.6.0
-- **Gradle:** 8.7
-- **Files:** `chisel-android/android/variables.gradle`, `chisel-android/android/build.gradle`, `chisel-android/android/gradle/wrapper/gradle-wrapper.properties`
-- **Note:** API **36** becomes mandatory 2026-08-31 (APP-P2-004).
+- Package/application ID: `com.chisel.lookmax` (do not change after first Play upload)
+- App name: Chisel
+- Version name: `1.0.0`
+- Version code: `1` (increment after the first Play upload)
 
-## Permissions (AndroidManifest)
-- `android.permission.INTERNET`
-- `android.permission.CAMERA` (feature `camera`/`camera.front` marked `required=false`)
-- `POST_NOTIFICATIONS` — **not yet present**; will be added when
-  `@capacitor/local-notifications` is installed and `cap sync` runs (APP-P0-001 / APP-P2-005).
+## Android build stack
 
-## Signing
-- **Status:** Release `signingConfig` wired in `app/build.gradle`, reading a
-  gitignored `keystore.properties` via `rootProject.file(...)`. Build is unsigned
-  until that file + keystore exist.
-- **Keystore status:** **Not created** (developer action). `keystore.properties`,
-  `*.jks`, `*.keystore` are gitignored; template at
-  `chisel-android/android/keystore.properties.example`. No secrets in the repo.
+- Minimum SDK: 23
+- Compile SDK: 36
+- Target SDK: 36
+- Android Gradle Plugin: 8.10.0
+- Gradle: 8.11.1
+- Java: 17
+- Capacitor Android: 6.1.2
 
-## Build status
-- **Debug build:** not run this session (needs JDK 17 + SDK 35).
-- **Release build:** not run (needs keystore + JDK/SDK).
-- **AAB status:** **not generated.**
-- **AAB path (when built):** `chisel-android/android/app/build/outputs/bundle/release/app-release.aab`
-- **AAB file size:** n/a (not built)
-- **AAB checksum:** n/a (not built)
+Primary files:
 
-> ⚠️ **Before building:** `chisel-android/android/app/src/main/assets/public/index.html`
-> is **stale** (≠ `chisel-android/www/index.html`). Run `npm install` + `npx cap sync android`
-> first or the AAB ships an outdated app (APP-P0-001).
+- `chisel-android/android/variables.gradle`
+- `chisel-android/android/build.gradle`
+- `chisel-android/android/gradle/wrapper/gradle-wrapper.properties`
+- `.github/workflows/android-mobile-build.yml`
 
-## Play Store assets & policy
-- **Store graphics:** feature graphic + 5 screenshots drafted as brand-accurate
-  representations (delivered as a Claude artifact, not in the repo). Replace with
-  real device captures (APP-P3-004).
-- **Privacy policy:** `docs/privacy-policy.html` written and accurate. Status:
-  **needs hosting** (GitHub Pages → `https://kapasainitishreddy.github.io/Chisel/privacy-policy.html`) and linking in Console.
-- **Data safety:** answers documented in `PLAY_STORE.md` (Photos = collected/shared-ephemeral for photoreal; Device ID = collected/not-shared; encrypted in transit; deletion on request). Not yet submitted.
-- **Content rating:** questionnaire not completed. Suggested 17+.
-- **Health declaration:** required (wellness wording); app already states "cosmetic & educational — not medical advice."
+## Verification
 
-## Monetization
-- Paywall UI wired in client (inert until `RC_API_KEY` set + plugin synced).
-- `render-lookmax` entitlement enforcement: **source updated, deploy pending** (APP-P1-001).
-- Google Play subscription product + RevenueCat entitlement `premium`: **not configured** (APP-P1-004).
+### Automated tests
 
-## Remaining manual Play Console work
-1. Create app record (package `com.chisel.lookmax`), pricing (free), countries.
-2. Host + link privacy policy; complete Data safety, content rating, target audience, health declaration, camera-permission declaration.
-3. Upload signed AAB to Internal testing; run closed test (12 testers/14 days if dev account created after 2023-11-13).
-4. (Optional now) configure the subscription + RevenueCat for billing.
-5. Production release with staged rollout.
+Latest verified synchronized product suite: **39/39 passing**.
 
-See `PLAY_STORE.md` for the full step-by-step.
+Coverage includes:
+
+- enhancement core/UI
+- native integration and Android asset synchronization
+- Precision consensus/outlier behavior
+- actionable capture-failure guidance
+- uncertainty-aware change detection
+- condition/method/view/distance matching
+- Precision result trust language
+- local-only Precision image processing checks
+- premium mobile UX expectations
+
+### Android CI
+
+A verified API-36 mobile run completed these gates successfully:
+
+1. Node 22 + Java 17 setup
+2. Android 36 platform/build-tools installation
+3. dependency install
+4. `npx cap sync android`
+5. synchronized app-shell verification
+6. automated tests
+7. `assembleDebug`
+8. `bundleRelease`
+9. build-artifact upload
+
+The verified CI artifact contained approximately:
+
+- debug APK: 8.8 MB
+- release AAB: 6.5 MB
+
+The CI release AAB is a compile/release-bundle verification artifact. It is **not the final signed Play upload** because the private upload keystore is intentionally not stored in GitHub.
+
+## Release signing
+
+Release signing is wired in `chisel-android/android/app/build.gradle` and reads developer-owned values from gitignored `android/keystore.properties`.
+
+Still required before Play upload:
+
+1. Create/back up `chisel-upload.jks`.
+2. Create the gitignored `keystore.properties`.
+3. Build the signed release AAB locally or in a secret-backed release workflow.
+4. Keep the upload key/passwords outside the repository and backed up securely.
+
+See `PLAY_STORE.md` for exact commands.
+
+## Android privacy hardening
+
+The current manifest:
+
+- requests only Internet + Camera for the core shell
+- marks camera hardware optional for install filtering
+- sets `android:allowBackup="false"`
+- sets `android:usesCleartextTraffic="false"`
+- uses a non-exported FileProvider
+
+Core Precision image processing remains local-only in the checked implementation; optional photoreal rendering is a separate opt-in cloud path and must be disclosed/configured accordingly.
+
+## Product status
+
+See `FEATURE_MATRIX.md` for the detailed feature truth. In summary:
+
+- Premium Onyx mobile shell: implemented
+- Quick/Deep scanning: implemented; representative device/accuracy QA still required
+- Precision Face/Skin: implemented with multi-photo consensus, outlier rejection and within-batch uncertainty
+- Precision Body/Posture: implemented with front/side fusion and segmentation gates
+- Actionable capture correction: implemented/tested
+- Condition Match / uncertainty-aware progress: implemented/tested
+- Chisel Labs modules: implemented; device validation required
+- Grooming/routine/programs: implemented
+- Local try-ons: implemented; device validation required
+- Progress/photo/share/export tools: implemented; Android share QA required
+- Local reminders: dependency/configuration + device permission QA required
+- Photoreal cloud render: implementation seam exists; production provider/server configuration + live QA required
+- Paywall purchase/restore seam: implemented; production Google Play/RevenueCat configuration required
+- iOS: deferred
+
+## Premium production status
+
+The approved Free/Pro boundary is documented in `PREMIUM_FEATURES.md`.
+
+Production paid access is **not yet considered live** until all of these are completed:
+
+- Google Play subscription/base-plan creation
+- RevenueCat `premium` entitlement/product mapping
+- public Android RevenueCat SDK key configuration
+- live purchase/restore/grace/expiry testing on a Play test track
+- server entitlement/webhook deployment and secret configuration where used
+- cloud-render quota/cost validation
+
+Chisel may safely ship free-first while paid infrastructure is completed, provided the UI does not imply unavailable paid functions are already active.
+
+## Play Store work still outside source control
+
+- Host and verify the privacy-policy URL.
+- Capture final real-device screenshots and feature graphic.
+- Complete Data Safety, content rating, target audience, health/wellness, ads and app-access declarations accurately.
+- Create the app in Play Console with package `com.chisel.lookmax`.
+- Upload the signed AAB to Internal testing first.
+- Run any closed-testing requirement that applies to the developer account.
+- Test camera permission, denial/recovery, scans, offline core behavior, share/export, purchase/restore (if enabled), notifications (if enabled), process restart and data deletion.
+- Use staged rollout for production.
+
+## Empirical accuracy gate
+
+Software tests prove implementation behavior; they do not prove that camera measurements equal ground truth. Before marketing Chisel as highly accurate, validate repeated same-condition scans and reference measurements across representative Android devices, camera distances, lighting, skin tones, facial hair, glasses, face shapes and body-framing conditions.
+
+Chisel should continue to reject weak captures and describe uncertain deltas as within normal variation or not comparable instead of forcing a number.
