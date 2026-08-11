@@ -34,7 +34,7 @@ Primary files:
 
 ### Automated tests
 
-Latest verified synchronized product suite: **50/50 passing**.
+Latest verified synchronized product suite: **57/57 passing**.
 
 Latest native-sync/build verification: `npm install` + `npx cap sync android` + `npm test` + `./gradlew.bat assembleDebug` were run successfully.
 
@@ -133,6 +133,22 @@ Production paid access is **not yet considered live** until all of these are com
 - cloud-render quota/cost validation
 
 Chisel may safely ship free-first while paid infrastructure is completed, provided the UI does not imply unavailable paid functions are already active.
+
+## 2026-08-11 mobile corrective build
+
+- Canonical web assets are synced into Android and guarded by checksum tests.
+- Debug APK builds and installs successfully on `R3CW10Y67TT`.
+- Five primary tabs fit directly above Samsung system navigation; Settings no longer
+  competes as a sixth primary destination.
+- Analyze is jaw-first, keeps Quick Scan and AR Coach visible, and avoids harmony/
+  attractiveness ranking language.
+- Live AR jaw/cheek guides are high contrast and were verified with MediaPipe on-device.
+- Facial-hair rendering is deterministic/inclusive, and the phone try-on tray uses
+  fitted three-column controls ending at the system-navigation boundary.
+- Automated status: **57/57 tests pass**; `assembleDebug` passes.
+
+This validates software behavior and one-device layout. It does not establish
+population-level facial measurement accuracy; APP-P2-007 remains the empirical gate.
 
 ## Play Store work still outside source control
 

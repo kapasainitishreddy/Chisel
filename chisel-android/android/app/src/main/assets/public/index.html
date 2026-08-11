@@ -54,7 +54,7 @@
 
   /* Layout */
   .app{height:100%;display:grid;grid-template-columns:240px 1fr}
-  @media (max-width:760px){.app{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) calc(72px + env(safe-area-inset-bottom,0px))}main.view{grid-row:1}nav.tabs{grid-row:2}}
+  @media (max-width:760px){.app{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) 72px}main.view{grid-row:1}nav.tabs{grid-row:2}}
 
   nav.rail{background:linear-gradient(180deg,var(--graphite),#0d0d0f);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:24px 16px;position:relative}
   nav.rail .logo{font-family:var(--display);font-size:34px;line-height:1;letter-spacing:.03em;background:linear-gradient(180deg,var(--ivory),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;padding:8px 4px 18px;border-bottom:1px solid var(--line)}
@@ -68,11 +68,11 @@
   nav.rail .footer b{color:var(--gold)}
 
   nav.tabs{display:none;background:linear-gradient(180deg,var(--graphite),#0d0d0f);border-top:1px solid var(--line);position:relative}
-  @media (max-width:760px){nav.rail{display:none}nav.tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));align-items:stretch;padding:4px 2px env(safe-area-inset-bottom,0px)}}
+  @media (max-width:760px){nav.rail{display:none}nav.tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-items:stretch;padding:4px 2px}}
   nav.tabs a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:60px;padding:5px 1px;color:var(--ivory-dim);text-decoration:none;font-size:8px;font-weight:600;letter-spacing:.04em;text-transform:none;white-space:nowrap;position:relative;z-index:1}
   nav.tabs a .ico{font-size:16px;line-height:1}
   nav.tabs a.active{color:var(--onyx)}
-  nav.tabs .pill{position:absolute;top:4px;left:2px;height:calc(100% - 8px - env(safe-area-inset-bottom,0px));width:calc((100% - 4px)/6);background:linear-gradient(180deg,var(--gold),var(--gold-bright));border-radius:12px;transition:transform .35s var(--ease-out)}
+  nav.tabs .pill{position:absolute;top:4px;left:2px;height:calc(100% - 8px);width:calc((100% - 4px)/5);background:linear-gradient(180deg,var(--gold),var(--gold-bright));border-radius:12px;transition:transform .35s var(--ease-out)}
 
   main.view{overflow-y:auto;overflow-x:hidden;padding:32px 40px 80px;position:relative;scroll-behavior:smooth}
   @media (max-width:760px){main.view{padding:20px 16px 24px}}
@@ -107,6 +107,15 @@
   .btn.solid::before{display:none}
   .btn.ghost{border-color:rgba(255,255,255,.18);color:var(--ivory-dim)}
   .btn-row{display:flex;flex-wrap:wrap;gap:10px}
+  .analyze-start{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center}
+  .analyze-primary{margin-top:16px;justify-content:center;width:100%}
+  .analyze-primary .btn{flex:1;max-width:260px}
+  .scan-more{width:100%;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+  .scan-more>summary{list-style:none;cursor:pointer;color:var(--ivory-dim);font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase}
+  .scan-more>summary::-webkit-details-marker{display:none}
+  .scan-more>summary::after{content:' +';color:var(--gold)}
+  .scan-more[open]>summary::after{content:' −'}
+  .scan-more .btn-row{justify-content:center;margin-top:12px}
   .chip{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;min-height:32px;border:1px solid var(--line);border-radius:999px;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--ivory-dim);cursor:pointer;background:transparent;transition:.25s var(--ease)}
   .chip.on{background:var(--gold);color:var(--onyx);border-color:var(--gold)}
   .chip:hover{color:var(--ivory)}
@@ -165,6 +174,20 @@
   #styleBar .photoreal-btn{flex:0 0 auto;padding:8px 16px;min-height:36px;border:0;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--gold-bright));color:var(--onyx);font-size:11px;font-weight:600;letter-spacing:.08em;white-space:nowrap;cursor:pointer}
   #styleBar .photoreal-btn:disabled{opacity:.5;cursor:default}
   #styleBar .photoreal-note{font-size:10px;color:var(--ivory-dim);padding:0 2px}
+  @media (max-width:560px){
+    #styleBar{max-height:62vh;overflow-y:auto;bottom:max(env(safe-area-inset-bottom),48px);overscroll-behavior:contain;padding:12px;background:linear-gradient(180deg,rgba(10,10,11,.84),rgba(10,10,11,.97) 24%)}
+    #styleBar .style-top{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible}
+    #styleBar .style-top .seg{width:100%;min-width:0}
+    #styleBar .style-top .seg .sc{flex:1;min-width:0;padding:8px 5px;white-space:normal;line-height:1.15}
+    #styleBar .style-top>.info{grid-column:1/-1;min-height:24px;padding:3px 6px;text-align:left}
+    #styleBar .style-top>.sc:last-child{display:none}
+    #styleBar .fit-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible}
+    #styleBar .fit-grid .sc{min-width:0;width:100%;padding:8px 5px;white-space:normal;line-height:1.15}
+    #styleBar #colorChips{display:flex;flex-wrap:wrap;overflow:visible}
+    #styleBar .photorealRow{display:grid!important;grid-template-columns:minmax(0,1fr) auto;gap:7px!important}
+    #styleBar .photoreal-btn{grid-column:1/-1;width:100%}
+    #styleBar #goPremiumBtn{margin-left:0!important}
+  }
 
   #photorealSheet{display:none;flex-direction:column;gap:14px;align-items:center}
   #photorealSheet .compare{display:flex;gap:10px;width:100%}
@@ -295,7 +318,7 @@
   h1.display,h2.section,.modal h3{overflow-wrap:break-word}
   .lede{max-width:64ch}
   input,select,textarea{font-family:inherit}
-  @media (max-width:760px){ .btn-row{gap:8px} .btn{padding:11px 16px} }
+  @media (max-width:760px){ .btn-row{gap:8px} .btn{padding:11px 16px} .analyze-screen>.lede{font-size:14px;line-height:1.5}.analyze-start{padding:20px 16px}.analyze-primary{flex-direction:column}.analyze-primary .btn{width:100%;max-width:none} }
 </style>
 </head>
 <body>
@@ -317,7 +340,6 @@
       <a href="#affirm" data-route="affirm"><span class="ico">✦</span> Affirm</a>
       <a href="#meditate" data-route="meditate"><span class="ico">◯</span> Meditate</a>
       <a href="#groom" data-route="groom"><span class="ico">▣</span> Groom</a>
-      <a href="#connect" data-route="connect"><span class="ico">⤓</span> Connect</a>
     </div>
     <div class="footer">Build <b id="buildTag">1.0.0</b></div>
   </nav>
@@ -329,7 +351,6 @@
     <a href="#affirm" data-route="affirm"><span class="ico" aria-hidden="true">✦</span><span>Affirm</span></a>
     <a href="#meditate" data-route="meditate"><span class="ico" aria-hidden="true">◯</span><span>Meditate</span></a>
     <a href="#groom" data-route="groom"><span class="ico" aria-hidden="true">▣</span><span>Groom</span></a>
-    <a href="#connect" data-route="connect"><span class="ico" aria-hidden="true">⤓</span><span>Connect</span></a>
   </nav>
 
   <main class="view" id="view">
@@ -345,6 +366,7 @@
             <button class="btn solid" data-go="analyze">Start Analysis</button>
             <button class="btn" data-go="affirm">Affirm Out Loud</button>
             <button class="btn ghost" data-go="meditate">Visualize</button>
+            <button class="btn ghost" id="openSettings" data-go="connect">Settings</button>
           </div>
         </div>
         <div>
@@ -365,8 +387,8 @@
             </div>
           </div>
           <div class="card" style="padding:24px;margin-top:14px">
-            <div class="eyebrow" style="margin-bottom:8px">Lookmax Score</div>
-            <div style="display:flex;align-items:baseline;gap:10px"><b id="scoreNum" style="font-family:var(--display);font-size:48px;color:var(--gold)">—</b><small style="color:var(--ivory-dim);font-size:11px;letter-spacing:.2em;text-transform:uppercase">Last analysis</small></div>
+            <div class="eyebrow" style="margin-bottom:8px">Latest face scan</div>
+            <div style="display:flex;align-items:baseline;gap:10px"><b id="scoreNum" style="font-family:var(--display);font-size:48px;color:var(--gold)">—</b><small style="color:var(--ivory-dim);font-size:11px;letter-spacing:.2em;text-transform:uppercase">Tracking signal</small></div>
           </div>
         </div>
       </div>
@@ -377,7 +399,7 @@
           <div class="card" data-go="analyze" style="cursor:pointer">
             <div style="font-size:32px">◉</div>
             <h3 style="font-family:var(--display);font-size:24px;margin:8px 0 0;font-weight:500">Analyze</h3>
-            <p class="lede" style="font-size:13px;margin:4px 0 0">Map your jawline, nose, lips, brows, cheekbones and hairline against the golden ratio.</p>
+            <p class="lede" style="font-size:13px;margin:4px 0 0">Map your jawline, cheekbones and symmetry, then compare trends under similar capture conditions.</p>
           </div>
           <div class="card" data-go="affirm" style="cursor:pointer">
             <div style="font-size:32px">✦</div>
@@ -443,25 +465,28 @@
     </section>
 
     <!-- ANALYZE -->
-    <section class="screen" data-screen="analyze">
+    <section class="screen analyze-screen" data-screen="analyze">
       <div class="eyebrow">Facial Analysis</div>
-      <h2 class="section">Look at yourself. <span class="gold">Measure what matters.</span></h2>
-      <p class="lede" style="margin-bottom:18px">A real <b>468-point face mesh</b> runs on-device (Google MediaPipe). It reads symmetry, jaw, nose, lips and eyes, plus a <b>dermatology-grade skin scan</b> (Fitzpatrick tone via ITA°, CIELAB undertone, white-balanced off the sclera, glare-rejected median sampling, redness, T-zone shine, evenness, under-eye), a <b>hair</b> check and a <b>teeth shade</b> read — each paired with a science-backed remedy and its evidence strength, then tracked over time.</p>
-      <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;text-align:center;min-height:240px">
-        <div style="font-size:54px;color:var(--gold)">◉</div>
-        <h3 class="display" style="font-size:28px;margin:8px 0 0">Ready when you are.</h3>
-        <p class="lede" style="margin:8px auto 0">Center your face in good light. Hold still for one second.</p>
-        <div class="btn-row" style="margin-top:18px">
+      <h2 class="section">See your structure. <span class="gold">Start with the jaw.</span></h2>
+      <p class="lede" style="margin-bottom:14px">A private, on-device face mesh maps your jawline, cheekbones and symmetry first, then adds skin, hair and teeth guidance.</p>
+      <div class="card analyze-start">
+        <div style="font-size:38px;color:var(--gold)">◉</div>
+        <h3 class="display" style="font-size:24px;margin:4px 0 0">Ready when you are.</h3>
+        <p class="lede" style="font-size:13px;margin:5px auto 0">Face forward in even light. Keep your jaw relaxed.</p>
+        <div class="btn-row analyze-primary">
           <button class="btn solid" id="openAnalyze">Quick scan</button>
-          <button class="btn" id="openDeep">Deep scan</button>
           <button class="btn" id="openTrain">AR Jaw &amp; Cheek Coach</button>
-          <button class="btn ghost" id="hintAnalyze">How scoring works</button>
         </div>
-        <div class="btn-row" style="margin-top:10px;justify-content:center">
-          <button class="btn ghost" id="openFuture">Preview future you</button>
-          <button class="btn ghost" id="openExport">Export for barber / derm</button>
-        </div>
-        <p class="lede" style="font-size:12px;margin:12px auto 0">Quick scan reads ~10 frames in ~3s. <b class="gold">Deep scan</b> holds ~5s and pools ~40 frames for a higher-confidence median — best for tracking real change over time.</p>
+        <details class="scan-more">
+          <summary>More scan options</summary>
+          <div class="btn-row">
+            <button class="btn" id="openDeep">Deep scan</button>
+            <button class="btn ghost" id="hintAnalyze">How analysis works</button>
+            <button class="btn ghost" id="openFuture">Preview future you</button>
+            <button class="btn ghost" id="openExport">Export for barber / derm</button>
+          </div>
+          <p class="lede" style="font-size:12px;margin:10px auto 0">Deep scan pools more frames for steadier progress tracking. All analysis stays on this device.</p>
+        </details>
       </div>
       <div id="scanHistory"></div>
     </section>
@@ -537,8 +562,8 @@
       <div class="card gold" style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px">
         <div>
           <div class="eyebrow" style="margin-bottom:6px">Live try-on</div>
-          <h3 style="font-family:var(--display);font-size:24px;margin:0;font-weight:500">Hair, beard &amp; moustache mirror</h3>
-          <p class="lede" style="font-size:13px;margin:4px 0 0">Preview cuts and beard styles on your live face, on-device. Pick a shape, tune the colour, snap a look.</p>
+          <h3 style="font-family:var(--display);font-size:24px;margin:0;font-weight:500">Hair &amp; facial hair mirror</h3>
+          <p class="lede" style="font-size:13px;margin:4px 0 0">Preview cuts and facial-hair styles on your live face, on-device. Pick a shape, tune the colour, snap a look.</p>
         </div>
         <button class="btn solid" id="openStyle">Open Try-on</button>
       </div>
@@ -563,10 +588,10 @@
       </div>
     </section>
 
-    <!-- CONNECT -->
+    <!-- SETTINGS -->
     <section class="screen" data-screen="connect">
-      <div class="eyebrow">Your device</div>
-      <h2 class="section">Private progress, <span class="gold">in your pocket.</span></h2>
+      <div class="eyebrow">Settings</div>
+      <h2 class="section">Your app. <span class="gold">Your control.</span></h2>
       <p class="lede" style="margin-bottom:18px">Chisel is ready to use on this phone. Your scans, routines and progress stay here unless you explicitly choose an optional photoreal render.</p>
 
       <div class="card" style="margin-bottom:14px">
@@ -674,22 +699,22 @@
   <div id="devReadout"></div>
   <div class="tap-hint">Tap anywhere to advance</div>
   <div id="styleBar">
-    <div class="scroller" id="styleTop"></div>
+    <div class="scroller style-top" id="styleTop"></div>
     <div class="photorealRow" style="display:flex;align-items:center;gap:10px">
       <button class="photoreal-btn" id="photorealBtn">✦ Make it photoreal</button>
       <span class="photoreal-note" id="photorealNote"></span>
       <button class="sc" id="goPremiumBtn" style="margin-left:auto">Go Premium</button>
     </div>
     <div class="lab" id="hairLab">Hairstyle</div>
-    <div class="scroller" id="hairChips"></div>
-    <div class="lab" id="beardLab">Beard &amp; moustache</div>
-    <div class="scroller" id="beardChips"></div>
+    <div class="scroller fit-grid" id="hairChips"></div>
+    <div class="lab" id="beardLab">Facial hair</div>
+    <div class="scroller fit-grid" id="beardChips"></div>
     <div class="lab">Hair colour</div>
-    <div class="scroller" id="colorChips"></div>
+    <div class="scroller fit-grid" id="colorChips"></div>
     <div class="lab">Eyewear</div>
-    <div class="scroller" id="glassChips"></div>
+    <div class="scroller fit-grid" id="glassChips"></div>
     <div class="lab" id="makeupLab">Makeup</div>
-    <div class="scroller" id="makeupChips"></div>
+    <div class="scroller fit-grid" id="makeupChips"></div>
   </div>
   <div class="sheet" id="photorealSheet">
     <div class="compare">
@@ -952,6 +977,7 @@ $('#buildTag').textContent = '1.0.0 · ' + (isCap?('native · '+platform):'web')
 
 /* ---------- Routing ---------- */
 const routes = ['home','analyze','affirm','meditate','groom','connect'];
+const primaryRoutes = ['home','analyze','affirm','meditate','groom'];
 function go(route){
   if(!routes.includes(route)) route='home';
   stopCameraForUI();
@@ -960,8 +986,9 @@ function go(route){
   if(route==='home') renderHome();
   if(route==='connect') runDiag();
   // move mobile pill
-  const idx = routes.indexOf(route);
-  const pill = $('#tabPill'); if(pill) pill.style.transform = `translateX(${idx*100}%)`;
+  const idx = primaryRoutes.indexOf(route);
+  const pill = $('#tabPill');
+  if(pill){ pill.style.opacity=idx<0?'0':'1'; if(idx>=0) pill.style.transform = `translateX(${idx*100}%)`; }
   location.hash = '#'+route;
 }
 window.addEventListener('hashchange', ()=>go(location.hash.slice(1)));
@@ -1343,13 +1370,13 @@ const HAIR_WOMEN=[
 ];
 const BEARD_STYLES=[
   {id:'none',    name:'Clean'},
-  {id:'stubble', name:'Stubble',  region:'full',     alpha:0.34, speckle:true},
-  {id:'short',   name:'Short',    region:'full',     alpha:0.62, speckle:false},
-  {id:'full',    name:'Full',     region:'full',     alpha:0.82, speckle:false},
-  {id:'goatee',  name:'Goatee',   region:'goatee',   alpha:0.80, speckle:false},
-  {id:'vandyke', name:'Van Dyke', region:'vandyke',  alpha:0.80, speckle:false},
-  {id:'mous',    name:'Moustache',region:'mous',     alpha:0.84, speckle:false},
-  {id:'chin',    name:'Chinstrap',region:'chinstrap',alpha:0.78, speckle:false},
+  {id:'stubble', name:'Soft stubble', region:'full',      base:0.035, alpha:0.34, density:180, length:0.008},
+  {id:'short',   name:'Short beard',  region:'full',      base:0.075, alpha:0.42, density:260, length:0.014},
+  {id:'full',    name:'Full beard',   region:'full',      base:0.13,  alpha:0.52, density:390, length:0.025},
+  {id:'goatee',  name:'Goatee',       region:'goatee',    base:0.09,  alpha:0.50, density:180, length:0.019},
+  {id:'vandyke', name:'Van Dyke',     region:'vandyke',   base:0.08,  alpha:0.50, density:205, length:0.021},
+  {id:'mous',    name:'Moustache',    region:'mous',      base:0.08,  alpha:0.50, density:120, length:0.016},
+  {id:'chin',    name:'Jawline beard',region:'chinstrap', base:0.055, alpha:0.46, density:190, length:0.014},
 ];
 const HAIR_COLORS=[
   {id:'match', name:'Match', rgb:null},
@@ -1518,25 +1545,38 @@ function drawStyle(d,R){
   ctx.restore();
 }
 function drawBeard(P,col,fH){
-  if(styleGender==='women') return;
   const st=BEARD_STYLES[styleBeard]; if(!st||st.id==='none') return;
-  const dark=col.map(v=>v*0.7);
-  ctx.save(); ctx.fillStyle=rgbStr(dark,st.alpha);
-  ctx.shadowColor=rgbStr(dark,st.alpha); ctx.shadowBlur=fH*0.05;
-  if(st.region==='full'){
-    pathPts(P,BEARD_FULL); ctx.fill();
-    ctx.shadowBlur=0; ctx.globalCompositeOperation='destination-out'; pathPts(P,LIP_RING); ctx.fill(); ctx.globalCompositeOperation='source-over';
-  } else if(st.region==='goatee'||st.region==='vandyke'){ pathPts(P,MOUS); ctx.fill(); pathPts(P,CHIN_PATCH); ctx.fill(); }
-  else if(st.region==='mous'){ pathPts(P,MOUS); ctx.fill(); }
-  else if(st.region==='chinstrap'){ ctx.shadowBlur=0; ctx.strokeStyle=rgbStr(dark,st.alpha); ctx.lineWidth=fH*0.05; ctx.lineJoin='round'; ctx.beginPath(); JAW_LOW.forEach((i,n)=>{const p=P(i); n?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y);}); ctx.stroke(); }
-  if(st.speckle){
-    ctx.shadowBlur=0; ctx.save(); pathPts(P,BEARD_FULL); ctx.clip();
-    pathPts(P,LIP_RING); ctx.globalCompositeOperation='destination-out'; ctx.fill(); ctx.globalCompositeOperation='source-over';
-    ctx.fillStyle=rgbStr(dark,0.55);
-    const lx=P(234).x, rx=P(454).x, ty=P(2).y, by=P(152).y, dot=fH*0.006;
-    for(let k=0;k<460;k++){ ctx.fillRect(lx+Math.random()*(rx-lx), ty+Math.random()*(by-ty), dot, dot); }
+  const dark=col.map(v=>Math.max(8,v*0.58));
+  const seed=n=>{const x=Math.sin(n*12.9898+78.233)*43758.5453;return x-Math.floor(x);};
+  const paintRegion=(indices,count,seedOffset=0)=>{
+    const region=indices.map(P), xs=region.map(p=>p.x), ys=region.map(p=>p.y);
+    const lx=Math.min(...xs),rx=Math.max(...xs),ty=Math.min(...ys),by=Math.max(...ys);
+    ctx.save();pathPts(P,indices);ctx.clip();
+    ctx.fillStyle=rgbStr(dark,st.base);pathPts(P,indices);ctx.fill();
+    ctx.strokeStyle=rgbStr(dark,st.alpha);ctx.lineWidth=Math.max(0.75,fH*0.0028);ctx.lineCap='round';
+    for(let k=0;k<count;k++){
+      const key=k+seedOffset, x=lx+seed(key*4+1)*(rx-lx), y=ty+seed(key*4+2)*(by-ty);
+      const len=fH*st.length*(0.58+seed(key*4+3)*0.72), lean=(seed(key*4+4)-0.5)*0.55;
+      ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+Math.sin(lean)*len,y+Math.cos(lean)*len);ctx.stroke();
+    }
     ctx.restore();
+  };
+  ctx.save();
+  if(st.region==='full') paintRegion(BEARD_FULL,st.density);
+  else if(st.region==='goatee'||st.region==='vandyke'){
+    paintRegion(MOUS,Math.round(st.density*0.42),500);
+    paintRegion(CHIN_PATCH,Math.round(st.density*0.58),900);
+  } else if(st.region==='mous') paintRegion(MOUS,st.density,1200);
+  else if(st.region==='chinstrap'){
+    ctx.strokeStyle=rgbStr(dark,st.base+0.1);ctx.lineWidth=fH*0.035;ctx.lineJoin='round';ctx.lineCap='round';
+    ctx.beginPath();JAW_LOW.forEach((i,n)=>{const p=P(i);n?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y);});ctx.stroke();
+    ctx.strokeStyle=rgbStr(dark,st.alpha);ctx.lineWidth=Math.max(0.75,fH*0.0028);
+    JAW_LOW.slice(0,-1).forEach((idx,segment)=>{const a=P(idx),b=P(JAW_LOW[segment+1]);
+      for(let j=1;j<=8;j++){const t=j/9,p={x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t},len=fH*st.length*(0.6+seed(segment*32+j)*0.6);
+        ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x+(seed(segment*48+j)-0.5)*len*0.35,p.y+len);ctx.stroke();}
+    });
   }
+  ctx.globalCompositeOperation='destination-out';pathPts(P,LIP_RING);ctx.fill();ctx.globalCompositeOperation='source-over';
   ctx.restore();
 }
 function hairDef(){ return (styleGender==='women'?HAIR_WOMEN:HAIR_MEN)[styleHair]; }
@@ -1660,7 +1700,7 @@ function applyMatches(){
   if(!_faceShape) return;
   const hl=curHairList(), mh=matchHairIds();
   const ti=hl.findIndex(s=>s.id===mh[0]); if(ti>0) styleHair=ti;
-  if(styleGender==='men'){ const mb=matchBeardIds(); const bi=BEARD_STYLES.findIndex(s=>s.id===mb[0]); if(bi>0) styleBeard=bi; }
+  const mb=matchBeardIds(); const bi=BEARD_STYLES.findIndex(s=>s.id===mb[0]); if(bi>0) styleBeard=bi;
   renderStyleTop(); renderStyleChips();
 }
 function chipBtn(label, on, match, fn){
@@ -1669,7 +1709,7 @@ function chipBtn(label, on, match, fn){
 function renderStyleTop(){
   const t=$('#styleTop'); if(!t) return; t.innerHTML='';
   const seg=document.createElement('div'); seg.className='seg';
-  ['men','women'].forEach(g=>{ seg.appendChild(chipBtn(g==='men'?'Men':'Women', styleGender===g, false, ()=>{ if(styleGender===g) return; styleGender=g; styleHair=1; if(_faceShape) applyMatches(); else { renderStyleTop(); renderStyleChips(); } })); });
+  ['men','women'].forEach(g=>{ seg.appendChild(chipBtn(g==='men'?'Short styles':'Long styles', styleGender===g, false, ()=>{ if(styleGender===g) return; styleGender=g; styleHair=1; if(_faceShape) applyMatches(); else { renderStyleTop(); renderStyleChips(); } })); });
   t.appendChild(seg);
   const seg2=document.createElement('div'); seg2.className='seg';
   [['match','Best matches'],['all','All']].forEach(([v,l])=>{ seg2.appendChild(chipBtn(l, styleView===v, false, ()=>{ styleView=v; renderStyleChips(); })); });
@@ -1687,12 +1727,12 @@ function renderStyleChips(){
     hl.forEach((s,i)=>{ const m=mh.includes(s.id); if(matchOnly && s.id!=='none' && _faceShape && !m) return;
       hc.appendChild(chipBtn(s.name, i===styleHair, m, ()=>{ styleHair=i; renderStyleChips(); })); });
   }
-  const bl=$('#beardLab'), bc=$('#beardChips'), women=styleGender==='women';
-  if(bl) bl.style.display=women?'none':'';
-  if(bc){ bc.style.display=women?'none':''; bc.innerHTML='';
-    if(!women){ const mb=matchBeardIds();
-      BEARD_STYLES.forEach((s,i)=>{ const m=mb.includes(s.id); if(matchOnly && s.id!=='none' && _faceShape && !m) return;
-        bc.appendChild(chipBtn(s.name, i===styleBeard, m, ()=>{ styleBeard=i; renderStyleChips(); })); }); }
+  const bl=$('#beardLab'), bc=$('#beardChips');
+  if(bl) bl.style.display='';
+  if(bc){ bc.style.display=''; bc.innerHTML='';
+    const mb=matchBeardIds();
+    BEARD_STYLES.forEach((s,i)=>{ const m=mb.includes(s.id); if(matchOnly && s.id!=='none' && _faceShape && !m) return;
+      bc.appendChild(chipBtn(s.name, i===styleBeard, m, ()=>{ styleBeard=i; renderStyleChips(); })); });
   }
   const cc=$('#colorChips'); if(cc){ cc.innerHTML=''; const mc=matchColorNames();
     HAIR_COLORS.forEach(c=>{ const m=!!(mc&&c.rgb&&mc.includes(c.name)); if(matchOnly && c.rgb && mc && !m) return;
@@ -1761,7 +1801,7 @@ async function renderPhotoreal(){
   if(!navigator.onLine){ toast('Needs internet'); return; }
   const hl=curHairList(), hairId=hl[styleHair]&&hl[styleHair].id;
   if(!hairId){ toast('Pick a style first'); return; }
-  const beardId = styleGender==='men' ? (BEARD_STYLES[styleBeard]&&BEARD_STYLES[styleBeard].id) : undefined;
+  const beardId = BEARD_STYLES[styleBeard]&&BEARD_STYLES[styleBeard].id;
   const colorName = _styleHairColLock ? (HAIR_COLORS.find(c=>c.rgb&&hex(c.rgb)===hex(_styleHairColLock))||{}).name : 'match';
   const image = capturePhotorealSource();
   _prBeforeUrl = image;
@@ -1892,20 +1932,39 @@ function drawMesh(d){
   ctx.fillStyle='rgba(226,197,138,0.9)';
   [FACE.CHIN,FACE.NTIP,FACE.ZYG_R,FACE.ZYG_L,FACE.GON_R,FACE.GON_L].forEach(i=>{const p=pts[i];if(p){ctx.beginPath();ctx.arc(p.x*w,p.y*h,2.4*sc*2,0,7);ctx.fill();}});
   ctx.restore();
+  drawScanStructureGuide(d,R);
   _scan=(_scan+0.01)%1; const sy=_scan*R.ch;
   const g=ctx.createLinearGradient(0,sy-36,0,sy+36);
   g.addColorStop(0,'rgba(201,168,106,0)'); g.addColorStop(.5,'rgba(226,197,138,0.22)'); g.addColorStop(1,'rgba(201,168,106,0)');
   ctx.fillStyle=g; ctx.fillRect(0,sy-36,R.cw,72);
 }
+function drawScanStructureGuide(d,R){
+  const pts=d.pts,w=R.vw,h=R.vh,halo='rgba(0,0,0,.82)',gold='rgba(242,204,126,.98)';
+  const strokePath=(indices,width,foreground=gold)=>{
+    const path=()=>{ctx.beginPath();indices.forEach((i,n)=>{const p=pts[i];if(!p)return;n?ctx.lineTo(p.x*w,p.y*h):ctx.moveTo(p.x*w,p.y*h);});};
+    path();ctx.strokeStyle=halo;ctx.lineWidth=(width+5)/R.s;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();
+    path();ctx.strokeStyle=foreground;ctx.lineWidth=width/R.s;ctx.stroke();
+  };
+  ctx.save();
+  if(facing==='user'){ctx.translate(R.cw,0);ctx.scale(-1,1);}
+  ctx.translate(R.ox,R.oy);ctx.scale(R.s,R.s);
+  strokePath(JAW_LOW,4.8);
+  strokePath([234,50,101,205,61],2.8,'rgba(226,197,138,.88)');
+  strokePath([454,280,330,425,291],2.8,'rgba(226,197,138,.88)');
+  ctx.restore();
+}
 function drawARCoachGuide(d,R){
   const pts=d.pts,w=R.vw,h=R.vh,locked=!!(_arForm&&_arForm.accepted);
   const color=locked?'rgba(124,199,154,.96)':'rgba(226,197,138,.96)';
   const soft=locked?'rgba(124,199,154,.24)':'rgba(226,197,138,.24)';
+  const halo='rgba(0,0,0,.84)';
   const P=i=>({x:pts[i].x*w,y:pts[i].y*h});
   const line=(indices,width=4)=>{
     ctx.beginPath();
     indices.forEach((i,n)=>{const p=P(i);n?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y);});
-    ctx.strokeStyle=color;ctx.lineWidth=width/R.s;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();
+    ctx.strokeStyle=halo;ctx.lineWidth=(width+5)/R.s;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();
+    ctx.beginPath();indices.forEach((i,n)=>{const p=P(i);n?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y);});
+    ctx.strokeStyle=color;ctx.lineWidth=width/R.s;ctx.stroke();
   };
   ctx.save();
   if(facing==='user'){ctx.translate(R.cw,0);ctx.scale(-1,1);}
@@ -2392,6 +2451,18 @@ function finalizeScan(){
     : R('Limited','A defined jawline comes from lower facial fat and good posture — not bone structure, which you can\'t train.');
 
   const areas=[
+    {k:'Jaw', priority:true, ctrl:true, score:jawScore,
+     status:`Taper ${jawTaper.toFixed(2)} · gonial ~${gonial.toFixed(0)}° (frontal proxy)`,
+     metrics:[['Taper (jaw/cheek)',jawTaper.toFixed(2)],['fWHR',fWHR.toFixed(2)],['Gonial angle ~',gonial.toFixed(0)+'°']],
+     rem:[jawFrame,R('Strong','Lower body-fat is the biggest lever on a visible jawline. [facial-adiposity research]'),R('Moderate','Firm gum/chewing loads the masseter. [mastication studies]'),R('Moderate','Run Analyze → AR Jaw & Cheek Coach for gentle chin-tuck and neck-alignment form guidance.'),R('Myth','"Mewing" has no controlled evidence of changing bone.')]},
+    {k:'Cheekbones', priority:true, ctrl:false, score:cheekScore,
+     status:`Mid-face ratio ${midfaceRatio.toFixed(2)} · projection ${(malarProm*100).toFixed(1)}`,
+     metrics:[['Mid-face ratio',midfaceRatio.toFixed(2)],['Malar projection',`${(malarProm*100).toFixed(1)} (3D)`],['Cheek : jaw width',(jawTaper>0?(1/jawTaper).toFixed(2):'—')]],
+     rem:[R('Limited','Cheekbone height and projection are bone-set — not trainable. Lower body-fat sharpens the hollow beneath them and reveals the bone. [facial-adiposity research]'),R('Limited','Contour one shade deeper under the cheekbone + highlight on top visually lifts and projects the malar — a styling cue, reversible.'),R('Myth','"Face-pull"/suction tools don\'t reshape cheekbone.')]},
+    {k:'Symmetry', priority:true, ctrl:false, score:symScore,
+     status:`Deviation ${(asym*100).toFixed(1)}% · thirds ${(thirds[0]*100).toFixed(0)}/${(thirds[1]*100).toFixed(0)}/${(thirds[2]*100).toFixed(0)}`,
+     metrics:[['Asymmetry',(asym*100).toFixed(1)+'%'],['Thirds balance',`${thirdsScore}/100`]],
+     rem:[R('Limited','Mild asymmetry is universal and largely structural; even posture and balanced chewing help only marginally.')]},
     {k:'Skin', ctrl:true, score:skinScore, swatch:hex(skinCol),
      status:`${tone[0]} tone · Fitzpatrick ${tone[1]} (approx) · ITA ${ita.toFixed(0)}° · ${und.label} undertone`,
      metrics:[['Undertone',`${und.label} · h°ab ${und.hue.toFixed(0)}°`],['Evenness',`${Math.round(skinEven)}/100`],['Blemish estimate',`${blemish}/100`],['Redness (a*)',`${aRed.toFixed(1)} · ${redLevel}/100`],['T-zone shine',`${oilPct}/100`],['Brightness (L*)',skinLab[0].toFixed(0)],['White balance',wbOn?'sclera-corrected':'as-shot'],['Under-eye shadow',`${undEyeDark}/100`]],
@@ -2413,14 +2484,6 @@ function finalizeScan(){
      status:`${bloatIndex}/100 · ${bloatNote}`,
      metrics:[['Index (50 = baseline)',`${bloatIndex}/100`],['Fullness ratio',bloatRaw.toFixed(3)],['vs baseline',bloatBase?(bloatRaw>=bloatBase?'+':'')+(((bloatRaw-bloatBase)/bloatBase)*100).toFixed(1)+'%':'—']],
      rem:bloatRem},
-    {k:'Jaw', ctrl:true, score:jawScore,
-     status:`Taper ${jawTaper.toFixed(2)} · gonial ~${gonial.toFixed(0)}° (frontal proxy)`,
-     metrics:[['Taper (jaw/cheek)',jawTaper.toFixed(2)],['fWHR',fWHR.toFixed(2)],['Gonial angle ~',gonial.toFixed(0)+'°']],
-     rem:[jawFrame,R('Strong','Lower body-fat is the biggest lever on a visible jawline. [facial-adiposity research]'),R('Moderate','Firm gum/chewing loads the masseter. [mastication studies]'),R('Moderate','Run Analyze → AR Jaw & Cheek Coach for gentle chin-tuck and neck-alignment form guidance.'),R('Myth','"Mewing" has no controlled evidence of changing bone.')]},
-    {k:'Cheekbones', ctrl:false, score:cheekScore,
-     status:`Mid-face ratio ${midfaceRatio.toFixed(2)} · projection ${(malarProm*100).toFixed(1)}`,
-     metrics:[['Mid-face ratio',midfaceRatio.toFixed(2)],['Malar projection',`${(malarProm*100).toFixed(1)} (3D)`],['Cheek : jaw width',(jawTaper>0?(1/jawTaper).toFixed(2):'—')]],
-     rem:[R('Limited','Cheekbone height and projection are bone-set — not trainable. Lower body-fat sharpens the hollow beneath them and reveals the bone. [facial-adiposity research]'),R('Limited','Contour one shade deeper under the cheekbone + highlight on top visually lifts and projects the malar — a styling cue, reversible.'),R('Myth','"Face-pull"/suction tools don\'t reshape cheekbone.')]},
     {k:'Angles & profile', ctrl:false, score:null,
      status:`Gonial ~${gonial.toFixed(0)}° · nasofrontal ~${nasofrontal.toFixed(0)}° · nasolabial ~${nasolabial.toFixed(0)}°`,
      metrics:[['Gonial (jaw)',gonial.toFixed(0)+'°'],['Canthal tilt',canthal.toFixed(1)+'°'],['Nasofrontal',nasofrontal.toFixed(0)+'° (3D)'],['Nasolabial',nasolabial.toFixed(0)+'° (3D)'],['Mentolabial',mentolabial.toFixed(0)+'° (3D)'],['Chin projection',chinProj.toFixed(1)+' (3D)']],
@@ -2432,11 +2495,7 @@ function finalizeScan(){
     {k:'Eyes', ctrl:false, score:eyeScore,
      status:`Spacing ${spacing.toFixed(2)} · canthal tilt ${canthal.toFixed(1)}°`,
      metrics:[['Spacing',spacing.toFixed(2)],['Canthal tilt',canthal.toFixed(1)+'°']],
-     rem:[R('Moderate','Sleep + lower salt reduce eye puffiness; the bone-set tilt itself isn\'t trainable.')]},
-    {k:'Symmetry', ctrl:false, score:symScore,
-     status:`Deviation ${(asym*100).toFixed(1)}% · thirds ${(thirds[0]*100).toFixed(0)}/${(thirds[1]*100).toFixed(0)}/${(thirds[2]*100).toFixed(0)}`,
-     metrics:[['Asymmetry',(asym*100).toFixed(1)+'%'],['Thirds balance',`${thirdsScore}/100`]],
-     rem:[R('Limited','Mild asymmetry is universal and largely structural; even posture and balanced chewing help only marginally.')]}
+     rem:[R('Moderate','Sleep + lower salt reduce eye puffiness; the bone-set tilt itself isn\'t trainable.')]}
   ];
 
   /* Brows — a measured module for female identity (arch + L/R balance) */
@@ -2496,31 +2555,39 @@ function renderResults(overall, areas, extra){
     #camSheet .mrow b{color:var(--ivory);font-weight:500}
     #camSheet .rem{font-size:12px;color:var(--ivory);line-height:1.55;margin:8px 0 0;display:flex;flex-wrap:wrap}
     #camSheet .rem span{flex:1;min-width:62%}
+    #camSheet .jaw-focus{border:1px solid rgba(201,168,106,.5);border-radius:14px;padding:14px 16px;margin:12px 0;background:rgba(201,168,106,.08)}
+    #camSheet .jaw-focus .ey{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold)}
+    #camSheet .jaw-focus .top{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-top:5px}
+    #camSheet .jaw-focus .top b{font-family:var(--display);font-size:22px;font-weight:500}
+    #camSheet .jaw-focus .top span{color:var(--gold-bright);font-family:var(--display);font-size:18px;white-space:nowrap}
+    #camSheet .jaw-focus p{margin:5px 0 0;font-size:12px;color:var(--ivory-dim);line-height:1.45}
   </style>`;
   const blocks=areas.map(a=>{
     const sc = a.score!=null? `<span class="sc">${a.score}</span>` : (a.ctrl?`<span class="sc" style="font-size:11px;color:var(--ivory-dim)">guided</span>`:'');
     const dot = a.swatch? `<span class="cdot" style="background:${a.swatch}"></span>`:'';
     const mets=(a.metrics||[]).map(m=>`<div class="mrow"><span>${m[0]}</span><b>${m[1]}</b></div>`).join('');
     const rems=(a.rem||[]).map(r=>`<div class="rem"><i class="ev ev-${r.t.toLowerCase().split(' ')[0]}">${r.t}</i><span>${r.txt}</span></div>`).join('');
-    return `<details class="area"${a.ctrl?' open':''}><summary>${dot}<span class="nm">${a.k}${a.ctrl?' ▲':''}</span>${sc}</summary>
+    return `<details class="area"${a.priority?' open':''}><summary>${dot}<span class="nm">${a.k}${a.ctrl?' ▲':''}</span>${sc}</summary>
       <div class="st">${a.status}</div>
       <div style="margin-top:8px">${mets}</div>
       <div style="margin-top:6px">${rems}</div></details>`;
   }).join('');
+  const jaw=areas.find(a=>a.k==='Jaw');
+  const jawFocus=jaw ? `<div class="jaw-focus">
+    <div class="ey">Jawline first</div>
+    <div class="top"><b>Jaw structure</b><span>${jaw.score}/100 signal</span></div>
+    <p>${jaw.status}. This is a photographic estimate, so use repeated scans in similar light to track change.</p>
+  </div>` : '';
   $('#camSheet').innerHTML = evCss + `
     <div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:8px">
       <button class="btn ghost" style="min-height:36px;padding:8px 14px" onclick="rescan()">Scan again</button>
       <button class="btn solid" style="min-height:36px;padding:8px 14px" onclick="closeCam()">Done</button>
     </div>
-    <h3>Analysis · <span class="gold">${overall}</span><span style="font-size:13px;color:var(--ivory-dim)">/100 harmony</span></h3>
-    <p>On-device 468-point mesh + pixel skin/teeth/hair reads. These are <b>measurements &amp; cosmetic guidance — not a beauty rank or medical diagnosis</b>. ▲ marks what you can change; tap a card for the science.</p>
-    ${extra.potential ? `<div style="border:1px solid rgba(201,168,106,.4);border-radius:12px;padding:14px 16px;margin:12px 0 4px;background:linear-gradient(90deg,rgba(201,168,106,.09),transparent)">
-      <div style="font-size:9px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Your controllable potential</div>
-      <div style="display:flex;align-items:baseline;gap:8px"><b style="font-family:var(--display);font-size:34px;color:var(--gold-bright)">+${extra.potential.gain}</b><span style="color:var(--ivory-dim);font-size:12px">reachable · ${extra.potential.now} → ${extra.potential.ceil}</span></div>
-      <div style="font-size:12px;color:var(--ivory-dim);margin-top:4px">Not a rank of you — the realistic headroom on what you <i>can</i> change (skin, teeth, leanness). Structure is fixed; effort goes here.</div>
-    </div>` : ''}
-    <div class="mrow" style="margin-top:8px"><span>Bloat / fullness</span><b>${extra.bloat}</b></div>
-    <div class="mrow"><span>Scan quality</span><b>${extra.quality||'—'}</b></div>
+    <h3>Face analysis</h3>
+    <p>On-device 468-point mesh + pixel reads. These are <b>photographic estimates and cosmetic guidance—not a beauty rank or diagnosis</b>. Use the same light and angle when comparing scans.</p>
+    <div class="mrow" style="margin-top:8px"><span>Scan quality</span><b>${extra.quality||'—'}</b></div>
+    <div class="mrow"><span>Facial fullness</span><b>${extra.bloat}</b></div>
+    ${jawFocus}
     ${blocks}
     <p style="font-size:11px;margin-top:12px;color:var(--ivory-dim)">Estimates from facial-proportion &amp; colour science. For persistent skin, hair or dental concerns, see a dermatologist or dentist. Saved to your timeline.</p>`;
 }

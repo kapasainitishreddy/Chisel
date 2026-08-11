@@ -24,11 +24,12 @@ test('synced Android app shell exactly matches the canonical www index', () => {
   );
 });
 
-test('canonical mobile navigation uses compact glyph-and-label tabs', () => {
+test('canonical mobile navigation uses five compact primary tabs', () => {
   const html = read('www/index.html');
   const tabs = html.match(/<nav class="tabs" id="bottomTabs">([\s\S]*?)<\/nav>/);
   assert.ok(tabs, 'bottom tab navigation is missing');
-  assert.equal((tabs[1].match(/class="ico"/g) || []).length, 6, 'every mobile route needs a glyph');
+  assert.equal((tabs[1].match(/class="ico"/g) || []).length, 5, 'every primary mobile route needs a glyph');
+  assert.doesNotMatch(tabs[1], /data-go="connect"/, 'Settings must not compete with primary tasks');
   assert.match(html, /nav\.tabs a \.ico\{font-size:16px;line-height:1\}/);
   assert.match(html, /nav\.tabs a\{[\s\S]*?letter-spacing:\.04em[\s\S]*?text-transform:none/);
 });

@@ -12,7 +12,7 @@
 - Added Jawline posture, Cheek lift, and Full face sessions. The on-device face mesh renders a clean jaw contour, cheek paths/targets, and center line with gold “find form” and green “form locked” states.
 - Hold timers pause when the face is off-angle, uncentered, the mouth/jaw is not relaxed, or cheek movement is uneven/out of range. Completion is tracked locally under `chisel:arCoachSessions`; no score, upload, account, or new permission was added.
 - Safety/evidence copy says exercises do not reshape adult facial bones or spot-reduce fat, grades cheek work Limited and posture awareness Moderate, and tells users to stop for pain/clicking/locking/dizziness/numbness/discomfort.
-- Verified 2026-08-11: `npx cap sync android`, `npm test` (**50/50**), `gradlew.bat assembleDebug`, APK upgrade-install and live physical-device AR check on `R3CW10Y67TT`; crash buffer empty.
+- Verified 2026-08-11: `npx cap sync android`, full Node suite (**57/57**), `gradlew.bat assembleDebug`, APK upgrade-install and live physical-device UI/AR checks on `R3CW10Y67TT`.
 - Relevant source: `chisel-android/www/chisel-ar-coach-core.js`, `chisel-android/www/index.html`, `chisel-android/tests/ar-coach-core.test.cjs`, `chisel-android/tests/ar-coach-ui.test.cjs`.
 
 ## Application Summary
@@ -67,6 +67,17 @@ Percentages are evidence-based estimates (no automated tests exist to measure pr
 
 (Commit hashes recorded in the checkpoint commit at session end; see `git log`.)
 
+**Latest mobile UX / analysis correction (2026-08-11):** Replaced the six-tab
+phone bar with five primary tabs and moved the former Connect content to a Home
+Settings action; removed duplicate bottom-inset ownership; made Analyze jaw-first
+with Quick Scan and AR Coach above secondary options; replaced harmony/rank language
+with photographic tracking language; made Jaw/Cheek/Symmetry the first result cards;
+added high-contrast jaw/cheek guides; rebuilt facial-hair try-on as deterministic,
+inclusive low-alpha hair strokes; and converted phone try-on controls to a fitted,
+scrollable three-column tray above Samsung system navigation. Verified with 57/57
+Node tests, Capacitor sync, Android debug build, install, UI-tree bounds, live camera,
+live AR jaw session and privacy-cleaned screenshots on `R3CW10Y67TT`.
+
 ## Current Work in Progress
 _None mid-flight._ All edits this session are complete, verified (syntax/sandbox), and left in a non-broken state. If resuming, start at "Next Task".
 
@@ -87,23 +98,18 @@ The tab now shows only device, camera-control and privacy content. Verified with
 **Latest micro-session (a11y/polish):** Added `:focus-visible` keyboard focus, tap-highlight removal, heading text-overflow guards, tighter mobile button spacing, and `role`/`aria-label` on the icon-only camera flip/capture controls (CR-005). Verified: `index.html` syntax PASS. This was a CSS/HTML-only pass — no logic changed; all features intact. Note: "check all features working" could only be verified by Node syntax+sandbox here, **not on a device** — on-device QA of the camera/scan flows remains an open testing gap (see TEST_STATUS.md).
 
 ## Next Task
-- **Task ID:** APP-P0-001
-- **Priority:** P0 (build correctness — an AAB built now ships a stale app).
-- **Objective:** Install the new deps and sync so the Android project contains the current web app and the native plugins.
-- **Relevant files:** `chisel-android/package.json`, `chisel-android/package-lock.json`, `chisel-android/android/**` (generated).
-- **Acceptance criteria:** `npm install` completes; `npx cap sync android` completes and registers `@revenuecat/purchases-capacitor` + `@capacitor/local-notifications`; `chisel-android/android/app/src/main/assets/public/index.html` checksum equals `chisel-android/www/index.html`; `POST_NOTIFICATIONS` present in the merged manifest.
-- **Verification commands:**
-  ```
-  cd chisel-android && npm install
-  npx cap sync android
-  # then compare:
-  sha1sum www/index.html android/app/src/main/assets/public/index.html   # must match
-  ```
-  (Requires network + local Node; the Android build additionally needs JDK 17 + SDK 35.)
+- **Task ID:** APP-P2-007
+- **Priority:** P2 (empirical accuracy and repeatability).
+- **Objective:** Build and run a repeatability/calibration protocol for Quick and
+  Deep scans across controlled lighting, distance, expression, facial hair and eyewear.
+- **Acceptance criteria:** repeated same-condition scans report variance; weak or
+  incompatible captures fail closed; claims remain "photographic estimate" until
+  compared with reference measurements across representative devices and people.
 
 ## Prioritized Remaining Tasks
 ### P0 — Crashes, build failures, data loss, security
-- **APP-P0-001** — Android web assets are **stale** (synced copy ≠ `www/index.html`) and new plugins not synced. A release build ships an outdated app without reminders/billing native code. Fix: `npm install` + `npx cap sync android` + rebuild. _(This is "Next Task".)_
+- **APP-P0-001** — ✅ Complete. Android web assets and all five Capacitor plugins
+  are synced; native integration tests enforce canonical asset equality.
 
 ### P1 — Missing core functionality
 - **APP-P1-001** — Paywall **entitlement enforcement not deployed.** Deployed `render-lookmax` still returns `rate_limited` at 5/day and ignores `rcUserId`. Source updated this session (2/day + `entitlements` check + `free_limit_reached`); **must be deployed** to Supabase project `wnzbmmhtdchdqjnskwlo`. Blocked on Supabase access.
@@ -126,20 +132,21 @@ The tab now shows only device, camera-control and privacy content. Verified with
 
 ## Known Bugs
 - **BUG-001** — Severity: Medium (functional gap, not a crash). Repro: on a fresh device, exhaust free photoreal renders. Expected: paywall appears due to entitlement logic. Actual: server returns `rate_limited` at 5/day; client routes it to the paywall (graceful) but no entitlement is actually checked/decremented. Suspected cause: `render-lookmax` deployment predates the entitlement branch. Files: `supabase/functions/render-lookmax/index.ts` (source now updated, undeployed). Status: source fixed, **deploy pending** (APP-P1-001).
-- **BUG-002** — Severity: Medium (build correctness). Repro: `gradlew bundleRelease` without running `cap sync` first. Expected: AAB contains current app. Actual: AAB contains stale `index.html`. Files: `chisel-android/android/app/src/main/assets/public/`. Status: open (APP-P0-001).
-- **NOTE (not a bug):** camera/MediaPipe/build paths are unverified in this environment (no device, no JDK). Not known-broken — just unproven here.
+- **BUG-002** — Closed 2026-08-11. Canonical and packaged `index.html` match;
+  the sync-integrity regression test passes after `npx cap sync android`.
+- **NOTE (not a bug):** camera/MediaPipe/build paths are now verified on one
+  Samsung handset. Population/device accuracy remains an empirical testing gap.
 
 ## Commands and Results
 | Command | Last run | Result |
 |---|---|---|
-| Dependency installation (`npm install`) | Not run this session | Deps declared in package.json; `node_modules`/`package-lock` do **not** contain revenuecat/local-notifications yet → APP-P0-001 |
+| Dependency installation | 2026-08-11 | Installed; sync found Camera, Local Notifications, Splash Screen, Status Bar and RevenueCat |
 | Type check | N/A | No TypeScript in web app |
 | Lint | N/A | None configured |
-| Unit tests | N/A | No framework |
-| Integration tests | N/A | No framework |
+| Node regression/integration tests | 2026-08-11 | **PASS — 57/57** |
 | Web syntax + sandbox check of `index.html` | 2026-07-26 | **PASS** — both `<script>` blocks parse; all functions define at load (see TEST_STATUS.md) |
 | Development build (`npm run build`) | N/A | No-op echo (static app) |
-| Android debug build | Not run | Needs JDK 17 + SDK 35 (absent here) |
+| Android debug build | 2026-08-11 | **PASS** — `gradlew.bat assembleDebug`; APK installed on `R3CW10Y67TT` |
 | Android release build / AAB | Not run | Needs keystore + JDK/SDK (developer machine) |
 
 ## External Blockers
@@ -171,7 +178,7 @@ The tab now shows only device, camera-control and privacy content. Verified with
 3. Read `AGENTS.md`, this file, `FEATURE_MATRIX.md`, `CHANGE_REQUESTS.md`, `TEST_STATUS.md`, `RELEASE_STATUS.md`.
 4. Verify the latest recorded test result: run the Node syntax+sandbox snippet from `TEST_STATUS.md`; it must PASS before you build on top.
 5. If "Current Work in Progress" lists an in-flight task, resume it. (Currently none.)
-6. Otherwise start "Next Task" = **APP-P0-001** (install + `cap sync`).
+6. Otherwise start "Next Task" = **APP-P2-007** (scan repeatability/calibration protocol).
 7. Modify actual source files (`chisel-android/www/index.html` etc.), not just docs.
 8. Run verification (syntax+sandbox for web; the real build if you have JDK/SDK).
 9. Update this file (Work Completed, Next Task), `FEATURE_MATRIX.md`, `TEST_STATUS.md`, `RELEASE_STATUS.md`, and `CHANGE_REQUESTS.md` if applicable. Then commit.

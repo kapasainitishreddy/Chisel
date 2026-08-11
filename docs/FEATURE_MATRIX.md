@@ -14,19 +14,19 @@ Status legend:
 
 | ID | Feature | Current status | User value / remaining gate |
 |---|---|---|---|
-| FM-01 | Main mobile shell + navigation | Automated + physical-device verified | Canonical onyx/gold UI with six glyph-and-label tabs; no native UI injection can overlay controls |
+| FM-01 | Main mobile shell + navigation | Automated + physical-device verified | Five primary glyph-and-label tabs fit directly above Samsung system navigation; Settings is a Home action and no native UI injection can overlay controls |
 | FM-02 | First-run concierge | Automated verified; device QA required | Explains privacy, confidence and baseline flow before camera use |
 | FM-03 | Camera prominent disclosure | Implemented; device QA required | Camera purpose shown before use |
-| FM-04 | Quick face scan | Implemented; device accuracy QA required | Fast on-device photographic appearance measurements |
+| FM-04 | Quick face scan | Automated + single-device flow verified; accuracy QA required | Jaw-first on-device photographic estimates with visible primary action and quality context |
 | FM-05 | Deep face scan | Implemented; device accuracy QA required | Larger frame pool for stronger normal baseline |
 | FM-06 | Precision Face & Skin | Automated verified; device accuracy QA required | 7–12 matched-photo consensus, outlier rejection, uncertainty |
 | FM-07 | Precision capture-quality gate | Automated verified | Fails closed on poor capture rather than forcing a result |
 | FM-08 | Actionable retry guidance | Automated verified | Lighting, blur, distance, head angle, glare, segmentation, limbs, occlusion guidance |
 | FM-09 | Precision Condition Match | Automated verified | Checks camera/framing/light and optional method/view/orientation/distance metadata |
 | FM-10 | Uncertainty-aware progress | Automated verified | Meaningful change must exceed combined measurement uncertainty |
-| FM-11 | Face structure / symmetry proxies | Implemented; device accuracy QA required | Neutral ratios/geometry, not attractiveness ranking |
+| FM-11 | Face structure / symmetry proxies | Automated + single-device rendering verified; accuracy QA required | Jaw/cheek/symmetry-first hierarchy and tracking language, not attractiveness ranking |
 | FM-12 | Cheekbone / mid-face metrics | Implemented; device accuracy QA required | Photographic proportion tracking |
-| FM-13 | Jaw metrics / gonial angle | Implemented; device accuracy QA required | Photographic geometry, not bone-change prediction |
+| FM-13 | Jaw metrics / gonial angle | Automated + physical overlay verified; accuracy QA required | High-contrast jaw contour plus photographic geometry, not bone-change prediction |
 | FM-14 | Profile-angle tools | Implemented; device accuracy QA required | Nasofrontal/nasolabial/mento/chin-related photographic angles |
 | FM-15 | Skin appearance analysis | Implemented; device/color QA required | Visible undertone/ITA, evenness, redness, blemish and under-eye estimates |
 | FM-16 | Teeth-region brightness | Implemented; device/color QA required | Within-user photographic trend, not dental shade/health diagnosis |
@@ -46,7 +46,7 @@ Status legend:
 | FM-30 | 30-day programs | Implemented | Structured local improvement programs |
 | FM-31 | Hydration/sodium context | Implemented | Adds context to fullness/bloat tracking |
 | FM-32 | Local reminders | Configuration/device QA pending | Local Notifications dependency is declared; Android permission/scheduling must be release-tested |
-| FM-33 | Hair/beard local try-on | Implemented; device QA required | Landmark-based style exploration |
+| FM-33 | Hair/facial-hair local try-on | Automated + physical-device layout verified; realism QA required | Inclusive deterministic facial-hair strokes and a fitted, scrollable phone control grid above system navigation |
 | FM-34 | Eyewear try-on | Implemented; device QA required | Landmark-positioned eyewear concepts |
 | FM-35 | Makeup try-on + custom routine | Implemented; device QA required | Local style overlay and saved routine |
 | FM-36 | Makeup suggestor | Implemented; device QA required | Undertone/shape-aware style guidance with evidence context |

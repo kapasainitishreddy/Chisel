@@ -140,6 +140,23 @@ _None._
     android`, `gradlew.bat assembleDebug`, APK installed on `R3CW10Y67TT`, live
     Cheek lift camera/landmark/HUD check, empty crash buffer. 2026-08-11.
 
+- **CR-014 -- Phone navigation, jaw-first analysis and inclusive facial-hair correction.**
+  Replaced the cramped six-tab bar with five primary tabs plus Home Settings;
+  removed duplicate bottom-safe-area spacing; shortened Analyze so Quick Scan and
+  AR Coach stay visible; moved Jaw/Cheek/Symmetry to the top of results; removed
+  harmony/rank framing; added high-contrast jaw/cheek scan guides; replaced the
+  opaque/flickering gender-gated beard overlay with deterministic low-alpha facial-
+  hair strokes; and converted try-on options to a fitted, vertically scrollable
+  three-column tray above Samsung system navigation.
+  - Affected features: FM-01, FM-04, FM-11, FM-13, FM-27, FM-33.
+  - Files: `chisel-android/www/index.html`, synchronized Android `index.html`,
+    `chisel-android/tests/mobile-ux-regression.test.cjs`, native integration tests,
+    release/handoff documentation.
+  - Verification: focused TDD regression suite (**7/7**), full Node suite (**57/57**),
+    `npx cap sync android`, `gradlew.bat assembleDebug`, final APK installed on
+    `R3CW10Y67TT`, UI-tree bounds and live-camera AR checks. Temporary face/camera
+    screenshots were deleted after inspection. 2026-08-11.
+
 ## Rejected or Superseded
 
 - **CR-R01 — Beauty / makeup "rater" (0–10 score).** Rejected after research

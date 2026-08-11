@@ -29,14 +29,14 @@ logic, and mobile UI regressions. Jest/Vitest/Playwright are not configured.
   all functions define at load in the stubbed-DOM sandbox (including this session's
   camera-consent and data-wipe additions).
 - **`capacitor.config.json`:** parses; `webContentsDebuggingEnabled: false` confirmed.
-- **Automated suite (`npm test`):** **PASS** -- **50/50** tests.
+- **Automated suite (`node --test tests/*.test.cjs`):** **PASS** -- **57/57** tests.
 - **Capacitor sync:** `npx cap sync android` passed and Android assets were re-synced to match `www/index.html`.
-- **On-device shell/UI check:** fresh debug APK installed and launched on device
-  `R3CW10Y67TT`; Home and Analyze were captured on-screen. No Labs launcher,
-  injected Precision shell, or legacy Premium shell was present; the six main
-  tabs fit the handset with glyphs and labels.
-- **On-device AR coach check:** Analyze → AR Jaw & Cheek Coach → Cheek lift ran
-  with the real front camera and MediaPipe landmarks. Jaw contour, cheek paths,
+- **On-device shell/UI check:** final debug APK installed and launched on device
+  `R3CW10Y67TT`; five primary tabs end exactly at the Samsung navigation boundary
+  (`y=2196`), Settings is a Home action, and Analyze keeps Quick Scan + AR Coach
+  visible above the app bar. No Labs/Precision/Premium injection was present.
+- **On-device AR coach check:** Analyze → AR Jaw & Cheek Coach → Jawline posture ran
+  with the real front camera and MediaPipe landmarks. High-contrast jaw contour, cheek paths,
   target dots, center line, correction banner, evidence label, rep/progress HUD
   and Stop control all rendered within the phone viewport. Android's crash
   buffer was empty after the run.
@@ -62,12 +62,21 @@ logic, and mobile UI regressions. Jest/Vitest/Playwright are not configured.
 
 ## Regression tests added
 - Native activity must not inject legacy Labs/Premium/Precision UI.
-- Canonical mobile navigation must retain six compact glyph-and-label tabs.
+- Canonical mobile navigation must retain five compact primary tabs with Settings outside the tab bar.
+- Mobile safe-area ownership is singular; the try-on sheet ends above Android system navigation.
+- Analyze keeps Quick Scan and AR Coach visible while secondary options collapse.
+- Facial-hair controls remain inclusive/deterministic and fit a three-column phone grid.
+- Jaw/Cheek/Symmetry lead scan results; harmony/rank language is absent.
 - AR coach catalog excludes forceful jaw jut/clench movements and retains safety/evidence copy.
 - AR form holds fail closed on missing/poor landmarks and reset when form is lost.
 - AR session picker/HUD/core engine must be present, mobile-safe and syntax-valid.
 
 ## Emulator / device validation
+- **Physical Android corrective UX validation performed:** `R3CW10Y67TT`, 2026-08-11.
+  Final APK install, five-tab/system-nav bounds, Home Settings, jaw-first Analyze,
+  Quick Scan flow, AR Jawline posture, visible jaw/cheek guides, facial-hair option
+  grid and scrollable try-on tray were checked. Temporary camera screenshots were
+  deleted locally and from the device after visual inspection.
 - **Physical Android AR validation performed:** `R3CW10Y67TT`, 2026-08-11.
   Upgrade install, Home → Analyze → AR session picker → live Cheek lift camera
   flow, screenshots, UI-tree inspection and crash-buffer check passed. This
@@ -78,7 +87,7 @@ logic, and mobile UI regressions. Jest/Vitest/Playwright are not configured.
   logcat checks passed. This was not a full camera or accuracy-validation pass.
 
 ## Current release blockers (testing-related)
-- No automated smoke test guarding the single-file app against regressions (APP-P2-001).
-- No full on-device validation of core scan/camera flows (repro steps for final
-  camera UX verification still require your side to run and confirm on physical phone).
-- Play internal-testing pass not yet run (needs a built AAB → APP-P0-001, keystore).
+- No browser-rendered end-to-end smoke test; current coverage is Node source/logic,
+  native asset integrity, Android build, UI-tree and focused physical-device QA.
+- No representative empirical scan repeatability/ground-truth validation (APP-P2-007).
+- Play internal-testing pass not yet run (requires a signed AAB and developer keystore).
