@@ -54,7 +54,7 @@
 
   /* Layout */
   .app{height:100%;display:grid;grid-template-columns:240px 1fr}
-  @media (max-width:760px){.app{grid-template-columns:1fr;grid-template-rows:1fr 64px}main.view{grid-row:1}nav.tabs{grid-row:2}}
+  @media (max-width:760px){.app{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) calc(72px + env(safe-area-inset-bottom,0px))}main.view{grid-row:1}nav.tabs{grid-row:2}}
 
   nav.rail{background:linear-gradient(180deg,var(--graphite),#0d0d0f);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:24px 16px;position:relative}
   nav.rail .logo{font-family:var(--display);font-size:34px;line-height:1;letter-spacing:.03em;background:linear-gradient(180deg,var(--ivory),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;padding:8px 4px 18px;border-bottom:1px solid var(--line)}
@@ -68,10 +68,11 @@
   nav.rail .footer b{color:var(--gold)}
 
   nav.tabs{display:none;background:linear-gradient(180deg,var(--graphite),#0d0d0f);border-top:1px solid var(--line);position:relative}
-  @media (max-width:760px){nav.rail{display:none}nav.tabs{display:grid;grid-template-columns:repeat(6,1fr);align-items:center}}
-  nav.tabs a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:44px;color:var(--ivory-dim);text-decoration:none;font-size:9px;letter-spacing:.2em;text-transform:uppercase;position:relative;z-index:1}
+  @media (max-width:760px){nav.rail{display:none}nav.tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));align-items:stretch;padding:4px 2px env(safe-area-inset-bottom,0px)}}
+  nav.tabs a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:60px;padding:5px 1px;color:var(--ivory-dim);text-decoration:none;font-size:8px;font-weight:600;letter-spacing:.04em;text-transform:none;white-space:nowrap;position:relative;z-index:1}
+  nav.tabs a .ico{font-size:16px;line-height:1}
   nav.tabs a.active{color:var(--onyx)}
-  nav.tabs .pill{position:absolute;top:6px;left:0;height:calc(100% - 12px);width:calc(100%/6);background:linear-gradient(180deg,var(--gold),var(--gold-bright));border-radius:10px;transition:transform .35s var(--ease-out)}
+  nav.tabs .pill{position:absolute;top:4px;left:2px;height:calc(100% - 8px - env(safe-area-inset-bottom,0px));width:calc((100% - 4px)/6);background:linear-gradient(180deg,var(--gold),var(--gold-bright));border-radius:12px;transition:transform .35s var(--ease-out)}
 
   main.view{overflow-y:auto;overflow-x:hidden;padding:32px 40px 80px;position:relative;scroll-behavior:smooth}
   @media (max-width:760px){main.view{padding:20px 16px 24px}}
@@ -192,6 +193,37 @@
   #scanGuide .sg-big{font-family:var(--display);font-size:64px;line-height:1;color:var(--gold-bright);text-shadow:0 2px 24px rgba(0,0,0,.75);min-height:10px}
   #scanGuide .sg-sub{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.92);text-shadow:0 1px 10px rgba(0,0,0,.85);background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.14);padding:8px 16px;border-radius:999px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 
+  /* AR jaw + cheek coach */
+  .ar-coach-modal .panel{position:relative;padding:28px 20px calc(24px + env(safe-area-inset-bottom,0px))}
+  .ar-coach-intro{margin:8px 0 18px;max-width:58ch}
+  .ar-session-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .ar-session{min-height:48px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:10px;padding:15px;border:1px solid rgba(201,168,106,.28);border-radius:14px;background:rgba(255,255,255,.025);color:var(--ivory);text-align:left;cursor:pointer}
+  .ar-session:active{transform:scale(.985)}
+  .ar-session strong{font-family:var(--display);font-size:21px;font-weight:500;line-height:1.05}
+  .ar-session span{font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold)}
+  .ar-safety{margin-top:14px;padding:14px;border-left:2px solid var(--gold);background:rgba(201,168,106,.06);border-radius:0 10px 10px 0}
+  .ar-safety b{display:block;margin-bottom:4px;color:var(--ivory);font-size:10px;letter-spacing:.22em;text-transform:uppercase}
+  .ar-evidence{margin-top:12px;font-size:11px;color:var(--ivory-dim)}
+  .ar-coach-hud{position:absolute;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:12;padding:15px 15px 13px;border:1px solid rgba(201,168,106,.42);border-radius:18px;background:rgba(10,10,12,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 18px 50px rgba(0,0,0,.35);color:var(--ivory)}
+  .ar-coach-hud[hidden]{display:none!important}
+  .ar-hud-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+  .ar-hud-title{font-family:var(--display);font-size:23px;line-height:1.05}
+  .ar-hud-evidence{flex:0 0 auto;padding:5px 8px;border:1px solid rgba(201,168,106,.35);border-radius:999px;color:var(--gold-bright);font-size:8px;letter-spacing:.16em;text-transform:uppercase}
+  .ar-hud-cue{margin-top:7px;color:rgba(242,237,228,.82);font-size:12px;line-height:1.45}
+  .ar-hud-status{display:flex;justify-content:space-between;gap:10px;margin-top:11px;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--ivory-dim)}
+  .ar-hud-progress{height:3px;margin-top:7px;overflow:hidden;border-radius:99px;background:rgba(255,255,255,.12)}
+  .ar-hud-progress i{display:block;width:0;height:100%;border-radius:inherit;background:var(--gold);transition:width .2s linear,background-color .2s}
+  .ar-coach-hud.locked{border-color:rgba(124,199,154,.7)}
+  .ar-coach-hud.locked .ar-hud-progress i{background:#7CC79A}
+  .ar-stop{width:100%;min-height:48px;margin-top:12px;border:1px solid rgba(255,255,255,.18);border-radius:12px;background:rgba(255,255,255,.04);color:var(--ivory);font:600 10px var(--sans);letter-spacing:.24em;text-transform:uppercase;cursor:pointer}
+  @media (max-width:560px){
+    .ar-session-grid{grid-template-columns:1fr}
+    .ar-session{min-height:66px;flex-direction:row;align-items:center}
+    .ar-coach-modal .panel{max-height:92vh}
+    .ar-coach-hud{left:10px;right:10px;padding:13px;bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+    .ar-hud-title{font-size:21px}
+  }
+
   /* Meditate */
   .orb-stage{position:relative;height:60vh;display:grid;place-items:center;margin-top:24px}
   .orb{width:220px;height:220px;border-radius:50%;background:radial-gradient(circle at 35% 30%, rgba(201,168,106,.9), rgba(62,107,90,.4) 55%, transparent 70%);box-shadow:0 0 120px 20px rgba(62,107,90,.35), inset 0 0 80px rgba(255,255,255,.15);animation:breathe 16s ease-in-out infinite;position:relative}
@@ -292,12 +324,12 @@
 
   <nav class="tabs" id="bottomTabs">
     <span class="pill" id="tabPill"></span>
-    <a href="#home" data-route="home">Home</a>
-    <a href="#analyze" data-route="analyze">Analyze</a>
-    <a href="#affirm" data-route="affirm">Affirm</a>
-    <a href="#meditate" data-route="meditate">Meditate</a>
-    <a href="#groom" data-route="groom">Groom</a>
-    <a href="#connect" data-route="connect">Connect</a>
+    <a href="#home" data-route="home"><span class="ico" aria-hidden="true">◇</span><span>Home</span></a>
+    <a href="#analyze" data-route="analyze"><span class="ico" aria-hidden="true">◉</span><span>Analyze</span></a>
+    <a href="#affirm" data-route="affirm"><span class="ico" aria-hidden="true">✦</span><span>Affirm</span></a>
+    <a href="#meditate" data-route="meditate"><span class="ico" aria-hidden="true">◯</span><span>Meditate</span></a>
+    <a href="#groom" data-route="groom"><span class="ico" aria-hidden="true">▣</span><span>Groom</span></a>
+    <a href="#connect" data-route="connect"><span class="ico" aria-hidden="true">⤓</span><span>Connect</span></a>
   </nav>
 
   <main class="view" id="view">
@@ -422,7 +454,7 @@
         <div class="btn-row" style="margin-top:18px">
           <button class="btn solid" id="openAnalyze">Quick scan</button>
           <button class="btn" id="openDeep">Deep scan</button>
-          <button class="btn" id="openTrain">Jawline training</button>
+          <button class="btn" id="openTrain">AR Jaw &amp; Cheek Coach</button>
           <button class="btn ghost" id="hintAnalyze">How scoring works</button>
         </div>
         <div class="btn-row" style="margin-top:10px;justify-content:center">
@@ -533,9 +565,9 @@
 
     <!-- CONNECT -->
     <section class="screen" data-screen="connect">
-      <div class="eyebrow">Connect your phone</div>
-      <h2 class="section">From your PC to <span class="gold">your pocket.</span></h2>
-      <p class="lede" style="margin-bottom:18px">USB debugging is on, so we're almost there. Follow the three steps below and Chisel will live on your phone in under a minute.</p>
+      <div class="eyebrow">Your device</div>
+      <h2 class="section">Private progress, <span class="gold">in your pocket.</span></h2>
+      <p class="lede" style="margin-bottom:18px">Chisel is ready to use on this phone. Your scans, routines and progress stay here unless you explicitly choose an optional photoreal render.</p>
 
       <div class="card" style="margin-bottom:14px">
         <div class="diag">
@@ -555,23 +587,13 @@
       <div class="grid g-2">
         <div class="card">
           <div class="eyebrow">Step 1</div>
-          <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:500">Plug in & set USB mode</h3>
-          <p>Connect the phone to this PC. On the phone, pull down the notification shade and tap the USB notification. Choose <b>PTP (Camera)</b> or <b>File transfer / MTP</b>. Charging-only mode will not be detected by Android Studio.</p>
+          <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:500">You stay in control</h3>
+          <p>Chisel asks before it opens your camera. You can change that permission whenever you want in Android Settings.</p>
         </div>
         <div class="card">
-          <div class="eyebrow">Step 2</div>
-          <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:500">Verify USB debugging</h3>
-          <p>Settings → Developer options → confirm <b>USB debugging</b> is on. The first time you plug in, the phone will pop a "Allow USB debugging" prompt — tap <b>Allow</b>. You can also check the box to always allow from this computer.</p>
-        </div>
-        <div class="card">
-          <div class="eyebrow">Step 3</div>
-          <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:500">Sideload the APK</h3>
-          <p>From the <b>chisel-android</b> folder on this PC, run the included <code style="color:var(--gold)">deploy.bat</code> (Windows) or <code style="color:var(--gold)">deploy.sh</code> (Mac/Linux). It will build the APK and push it to your phone over USB. The icon appears in your launcher as <b>Chisel</b>.</p>
-        </div>
-        <div class="card">
-          <div class="eyebrow">Alternative</div>
-          <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:500">Just use it in the browser</h3>
-          <p>If you'd rather skip the install, run <code style="color:var(--gold)">npx serve</code> in <b>chisel-android/www</b> and open the URL on your phone. Tap Chrome menu → <b>Add to Home screen</b> for a fullscreen, installable PWA.</p>
+          <div class="eyebrow">Support</div>
+          <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:500">Everything essential is on-device</h3>
+          <p>No account, no ads, and no tracking. Your core experience works directly on this phone.</p>
         </div>
       </div>
 
@@ -585,6 +607,23 @@
       </div>
     </section>
   </main>
+</div>
+
+<!-- AR JAW + CHEEK COACH -->
+<div class="modal ar-coach-modal" id="arCoachModal" role="dialog" aria-modal="true" aria-labelledby="arCoachTitle">
+  <div class="panel">
+    <button class="x" id="arCoachX" type="button" aria-label="Close AR coach">✕</button>
+    <div class="eyebrow">Live AR form coach</div>
+    <h3 id="arCoachTitle">Jaw &amp; cheek coach</h3>
+    <p class="ar-coach-intro">Pick a short session. Chisel follows your face on-device, shows exactly where to move, and pauses each hold when your form drifts.</p>
+    <div class="ar-session-grid" aria-label="AR coaching sessions">
+      <button class="ar-session" type="button" data-ar-session="jaw"><strong>Jawline posture</strong><span>3 min · Moderate</span></button>
+      <button class="ar-session" type="button" data-ar-session="cheek"><strong>Cheek lift</strong><span>3 min · Limited</span></button>
+      <button class="ar-session" type="button" data-ar-session="full"><strong>Full face</strong><span>6 min · Mixed</span></button>
+    </div>
+    <div class="ar-safety"><b>Comfort first</b>This does not reshape adult facial bones or spot-reduce fat. Keep your jaw relaxed. Stop for pain, clicking, locking, dizziness, numbness, or discomfort.</div>
+    <div class="ar-evidence">Evidence: Limited for cheek exercises; Moderate for posture awareness. AR improves guidance, not biological results.</div>
+  </div>
 </div>
 
 <!-- CAMERA CONSENT (one-time, before first camera use) -->
@@ -622,6 +661,16 @@
     </div>
   </div>
   <div id="scanGuide"><div class="sg-big" id="sgBig"></div><div class="sg-sub" id="sgSub"></div></div>
+  <section class="ar-coach-hud" id="arCoachHud" hidden aria-live="polite">
+    <div class="ar-hud-top">
+      <div class="ar-hud-title" id="arCoachExercise">Find your form</div>
+      <div class="ar-hud-evidence" id="arCoachEvidence">Evidence</div>
+    </div>
+    <div class="ar-hud-cue" id="arCoachCue">Center your face and keep your jaw loose.</div>
+    <div class="ar-hud-status"><span id="arCoachRep">Rep 1 of 1</span><span id="arCoachHold">Finding form</span></div>
+    <div class="ar-hud-progress" aria-hidden="true"><i id="arCoachProgress"></i></div>
+    <button class="ar-stop" id="arCoachStop" aria-label="Stop AR coaching" type="button">Stop session</button>
+  </section>
   <div id="devReadout"></div>
   <div class="tap-hint">Tap anywhere to advance</div>
   <div id="styleBar">
@@ -797,7 +846,7 @@
     <div class="x" id="paywallX">✕</div>
     <div class="eyebrow">Go Premium</div>
     <h3>Photoreal, unlocked.</h3>
-    <p class="lede">Try everything for 3 days, then keep going if it's for you. The whole on-device app — scans, try-on, makeup, tracking — stays free forever; Premium covers the photoreal cloud renders.</p>
+    <p class="lede">The whole on-device app — scans, try-on, routine, tracking, reminders, exports — stays free. Premium unlocks more photoreal cloud renders after your daily free allowance.</p>
     <div id="paywallOfferings" style="margin:18px 0;display:flex;flex-direction:column;gap:14px">
       <p class="lede" id="paywallLoading">Loading offers…</p>
     </div>
@@ -837,6 +886,7 @@
   })();
 </script>
 
+<script src="chisel-ar-coach-core.js"></script>
 <script>
 /* ---------- Utilities ---------- */
 const $ = (s,r=document)=>r.querySelector(s);
@@ -851,6 +901,50 @@ function deviceId(){
   return id;
 }
 
+function isCamOpen(){ return $('#camwrap').classList.contains('on'); }
+function resetCamModeFlags(){
+  scanMode=false; deepScan=false; postureMode=false; _postureBuf=null;
+  coachMode=false; _coachBuf=null; trainMode=false; _arState=null; _arForm=null;
+  styleMode=false; styleHair=0; styleBeard=0; styleGlass=0; styleMakeup=0;
+  styleGender='men'; styleView='match'; _faceShape=null; _shapeBuf=[]; _shapeT=0;
+  _lockAt=0; _miss=0; _snapTO=null; manualSnap=false; _scan=0;
+  const th=$('.tap-hint'); if(th) th.style.display='';
+  const sg=$('#scanGuide'); if(sg) sg.style.display='none';
+  const csg=$('#camSheet'); if(csg) csg.style.display='none';
+  const sb=$('#styleBar'); if(sb) sb.style.display='none';
+  const dr=$('#devReadout'); if(dr) dr.style.display='none';
+  const pr=$('#photorealSheet'); if(pr) pr.style.display='none';
+  const ao=$('#affirmOverlay'); if(ao) ao.style.display='none';
+  const ah=$('#arCoachHud'); if(ah){ ah.hidden=true; ah.classList.remove('locked'); }
+}
+function hideCameraOverlays(){
+  const w=$('#camwrap');
+  if(w) w.classList.remove('on');
+  $('#affirmOverlay') && ($('#affirmOverlay').style.display='none');
+  $('#camSheet') && ($('#camSheet').style.display='none');
+  $('#scanGuide') && ($('#scanGuide').style.display='none');
+  $('#styleBar') && ($('#styleBar').style.display='none');
+  $('#devReadout') && ($('#devReadout').style.display='none');
+  $('#photorealSheet') && ($('#photorealSheet').style.display='none');
+  $('#camConsent') && ($('#camConsent').classList.remove('on'));
+  const ah=$('#arCoachHud'); if(ah) ah.hidden=true;
+}
+function setCamMode(mode='idle'){
+  camMode = mode || 'idle';
+  resetCamModeFlags();
+  if(mode === 'scan') { scanMode=true; deepScan=false; }
+  else if(mode === 'deep') { scanMode=true; deepScan=true; }
+  else if(mode === 'train') { trainMode=true; }
+  else if(mode === 'style') { styleMode=true; }
+  else if(mode === 'posture') { postureMode=true; }
+  else if(mode === 'coach') { coachMode=true; }
+  else if(mode === 'idle' || mode === 'test' || mode === 'affirm'){ /* mode-only states */ }
+}
+function stopCameraForUI(){
+  // Hard-stop path: clear every camera-owned mode and UI, even if class state is stale.
+  closeCam();
+}
+
 /* ---------- Native / Capacitor detection ---------- */
 const isCap = !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 const platform = (window.Capacitor && window.Capacitor.getPlatform) ? window.Capacitor.getPlatform() : 'web';
@@ -860,6 +954,7 @@ $('#buildTag').textContent = '1.0.0 · ' + (isCap?('native · '+platform):'web')
 const routes = ['home','analyze','affirm','meditate','groom','connect'];
 function go(route){
   if(!routes.includes(route)) route='home';
+  stopCameraForUI();
   $$('.screen').forEach(s=>s.classList.toggle('active', s.dataset.screen===route));
   $$('[data-route]').forEach(a=>a.classList.toggle('active', a.dataset.route===route));
   if(route==='home') renderHome();
@@ -870,6 +965,8 @@ function go(route){
   location.hash = '#'+route;
 }
 window.addEventListener('hashchange', ()=>go(location.hash.slice(1)));
+window.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden') stopCameraForUI(); });
+window.addEventListener('pagehide', stopCameraForUI);
 document.addEventListener('click', e=>{
   const a = e.target.closest('[data-go]'); if(a){ go(a.dataset.go); return }
   const r = e.target.closest('[data-route]'); if(r){ go(r.dataset.route); e.preventDefault(); return }
@@ -953,15 +1050,17 @@ function bumpStreak(){
 const cam = $('#cam'), cv = $('#overlay'), ctx = cv.getContext('2d');
 let stream=null, facing='user', detLoop=null, manualSnap=null;
 let scanMode=false, deepScan=false, postureMode=false, _lockAt=0, _miss=0;        // auto-capture state (deepScan = longer, more frames)
-let trainMode=false, _tr=null;                  // jawline-training state
+let trainMode=false, _arState=null, _arForm=null, _arEvent=''; // AR coach state
 let styleMode=false, styleHair=0, styleBeard=0, styleGlass=0, styleMakeup=0, _styleHairCol=null, _styleHairColLock=null; // hair/beard/eyewear/makeup try-on
 let styleGender='men', styleView='match', _faceShape=null;     // gender + match/all + detected shape
 let _openMakeup=false;                                          // when true, try-on opens with makeup preset active
 let _shapeBuf=[], _shapeT=0;                                    // frontal-frame buffer for shape voting
 let devMetrics=false, _devT=0;                                  // live shape-ratio validation overlay
 let _burst=[], _lastSample=0;                   // rolling buffer of measured frames (median → stable scores)
+let camMode='idle';
 const COUNT_MS=2600;                            // hold-still countdown before auto-capture
 const DEEP_MS=5200;                             // deep scan holds ~2× as long → ~40 frames for a higher-confidence median
+const SCAN_TIMEOUT_MS = 18000;                  // fail-safe: avoid stale scans blocking UI if landmarks never lock
 const BURST_MAX=14, BURST_MAX_DEEP=40;          // rolling-buffer caps (standard vs deep)
 
 function cameraConsented(){ return store.get('cameraConsent', false); }
@@ -977,6 +1076,7 @@ function ensureCameraConsent(){
   });
 }
 async function openCam(){
+  if(isCamOpen()) stopCameraForUI();
   if(!await ensureCameraConsent()){ toast('Camera stays off until you allow it'); return; }
   $('#camwrap').classList.add('on');
   try{
@@ -984,30 +1084,46 @@ async function openCam(){
     cam.srcObject = stream; cam.classList.toggle('mirror', facing==='user'); await cam.play();
   }catch(err){
     toast('Camera blocked: '+err.message, 3000); console.warn(err);
+    closeCam();
+    return;
   }
   sizeCanvas();
   $('#camMeta').textContent = 'Loading face engine…';
   faceKitReady = window.faceKit ? await window.faceKit.ready() : false;
   _lockAt=0; _miss=0;
   if(faceKitReady){
-    $('#camMeta').textContent = styleMode ? 'Style try-on' : (trainMode ? JAW_TRAIN[0].name : (scanMode ? 'Auto-scan' : 'Live'));
+    const arEx=trainMode && window.ChiselARCoach ? window.ChiselARCoach.currentExercise(_arState) : null;
+    $('#camMeta').textContent = styleMode ? 'Style try-on' : (arEx ? arEx.name : (scanMode ? 'Auto-scan' : 'Live'));
     if(scanMode) setGuideMsg('', 'CENTER YOUR FACE IN THE OVAL');
-    if(trainMode) setGuideMsg('', 'CENTER YOUR FACE — JAW TRAINING');
+    if(trainMode) setGuideMsg('', 'CENTER YOUR FACE · KEEP YOUR JAW LOOSE');
   }
   else { const e=window.faceKit&&window.faceKit.error; const msg='Engine: '+(e?String(e.message||e):'no module'); $('#camMeta').textContent='Face engine offline'; toast(msg, 12000); }
   if(detLoop) cancelAnimationFrame(detLoop);
   detLoop = requestAnimationFrame(meshLoop);
+  if(scanMode) setScanWatch();
   runDiag();
 }
+function shouldShowScanGuide(){
+  const inAffirm = $('#affirmOverlay').style.display==='flex';
+  const sheetUp = $('#camSheet').style.display==='block';
+  const scanningMode = camMode==='scan' || camMode==='deep' || camMode==='train';
+  return (scanMode || trainMode) && !inAffirm && !sheetUp && !styleMode && !postureMode && !coachMode && scanningMode;
+}
+function clearScanWatch(){ if(_scanWatch){ clearTimeout(_scanWatch); _scanWatch=null; } }
+function setScanWatch(){
+  clearScanWatch();
+  _scanWatch = setTimeout(()=>{
+    if(!isCamOpen() || !scanMode) return;
+    setGuideMsg('', 'SCAN TIMED OUT');
+    toast('Scan timed out â€” check lighting and hold still, then try again', 2800);
+    closeCam();
+  }, deepScan ? SCAN_TIMEOUT_MS + 6000 : SCAN_TIMEOUT_MS);
+}
 function closeCam(){
-  $('#camwrap').classList.remove('on');
-  $('#affirmOverlay').style.display='none';
-  $('#camSheet').style.display='none';
-  $('#scanGuide').style.display='none';
-  scanMode=false; deepScan=false; postureMode=false; _postureBuf=null; coachMode=false; _coachBuf=null; trainMode=false; _tr=null; _lockAt=0; _miss=0;
-  styleMode=false; const sb=$('#styleBar'); if(sb) sb.style.display='none';
-  const dr=$('#devReadout'); if(dr) dr.style.display='none';
-  const th=$('.tap-hint'); if(th) th.style.display='';
+  hideCameraOverlays();
+  resetCamModeFlags();
+  camMode = 'idle';
+  clearScanWatch();
   if(detLoop) cancelAnimationFrame(detLoop); detLoop=null;
   if(stream) stream.getTracks().forEach(t=>t.stop()); stream=null;
   if(ctx){ ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,cv.width,cv.height); }
@@ -1033,6 +1149,7 @@ window.addEventListener('resize', sizeCanvas);
 $('#camBack').addEventListener('click', closeCam);
 $('#camFlip').addEventListener('click', async ()=>{ facing = facing==='user'?'environment':'user'; closeCam(); await openCam() });
 let _snapTO=null;
+let _scanWatch=null;
 $('#camShot').addEventListener('click', ()=>{
   if(styleMode){ snapStyle(); return; }
   if(trainMode) return;
@@ -1118,64 +1235,86 @@ function autoCapture(d){
     _lockAt=0; setGuideMsg('✓','CAPTURED'); finalizeScan();
   }
 }
-/* ---------- Jawline training: guided reps with live form-checking ---------- */
-/* Posture/clench moves gate on a real frontal-pose lock; the jaw-opener gates on
-   a measured mouth-open ratio. The hold timer only counts down while your form
-   holds, so the camera actually coaches the rep instead of just running a clock. */
-const JAW_TRAIN=[
-  {name:'Chin tucks',   reps:5, hold:5, check:'frontal', cue:'Pull your chin straight back — make a double chin. Hold.'},
-  {name:'Jaw jut',      reps:5, hold:6, check:'frontal', cue:'Push your lower jaw forward, feel the stretch under the chin. Hold.'},
-  {name:'Jaw opener',   reps:5, hold:5, check:'open',    cue:'Open wide, tongue on the roof of your mouth, slow. Hold at the top.'},
-  {name:'Clench & hold',reps:6, hold:5, check:'frontal', cue:'Bite down firm — feel the masseter at the jaw angle. Hold.'},
-];
-const JAW_TIPS=['Shoulders down, spine tall.','Breathe through your nose.','Slow and controlled beats fast and sloppy.','Lower body-fat is the #1 lever on a visible jawline.'];
-function jawGeom(d){
-  const pts=d.pts, vw=cam.videoWidth||1280, vh=cam.videoHeight||720;
-  const P=i=>({x:pts[i].x*vw, y:pts[i].y*vh});
-  const q=quickPose(d);                                  // {frontal,msg} — roll+yaw check
-  const mw=Math.hypot(P(61).x-P(291).x, P(61).y-P(291).y)||1;
-  const open=Math.hypot(P(13).x-P(14).x, P(13).y-P(14).y)/mw;   // lip gap / mouth width
-  return { frontal:q.frontal, msg:q.msg, open };
+/* ---------- AR jaw + cheek coach: safe, live, on-device form guidance ---------- */
+const AR_COACH=window.ChiselARCoach;
+function openTrain(){
+  if(!AR_COACH){ toast('AR coach could not load'); return; }
+  $('#arCoachModal').classList.add('on');
+}
+function closeARCoachPicker(){ $('#arCoachModal').classList.remove('on'); }
+async function startARCoach(sessionId){
+  closeARCoachPicker();
+  setCamMode('train');
+  _arState=AR_COACH.createState(sessionId,performance.now());
+  _arForm={accepted:false,correction:'Center your face in the guide',tone:'find'};
+  _arEvent='start';
+  const hud=$('#arCoachHud'); hud.hidden=false; hud.classList.remove('locked');
+  const h=$('.tap-hint'); if(h) h.style.display='none';
+  renderARCoachHud(performance.now());
+  await openCam();
+}
+function arCoachProgress(ex,now){
+  if(!_arState||!ex) return 0;
+  const repBase=_arState.rep/ex.reps;
+  const held=_arState.holdStartedAt ? Math.min(1,(now-_arState.holdStartedAt)/(ex.hold*1000)) : 0;
+  return Math.max(0,Math.min(1,repBase+held/ex.reps));
+}
+function renderARCoachHud(now){
+  const hud=$('#arCoachHud'); if(!hud||!_arState) return;
+  const ex=AR_COACH.currentExercise(_arState); if(!ex) return;
+  const resting=_arState.restUntil && now<_arState.restUntil;
+  const locked=!!(_arForm&&_arForm.accepted&&!resting);
+  hud.hidden=false; hud.classList.toggle('locked',locked);
+  $('#arCoachExercise').textContent=ex.name;
+  $('#arCoachEvidence').textContent=ex.evidence+' evidence';
+  $('#arCoachCue').textContent=resting ? 'Release gently, breathe, and prepare for the next rep.' : (locked ? ex.cue : ((_arForm&&_arForm.correction)||ex.safety));
+  $('#arCoachRep').textContent=`Rep ${Math.min(ex.reps,_arState.rep+1)} of ${ex.reps} · ${_arState.exerciseIndex+1}/${_arState.exerciseIds.length}`;
+  let status='Finding form';
+  if(resting) status='Reset';
+  else if(locked&&_arState.holdStartedAt) status='Hold '+Math.max(1,Math.ceil(ex.hold-(now-_arState.holdStartedAt)/1000))+'s';
+  else if(locked) status='Form locked';
+  $('#arCoachHold').textContent=status;
+  $('#arCoachProgress').style.width=Math.round(arCoachProgress(ex,now)*100)+'%';
+  $('#camMeta').textContent=`${ex.name} · AR coach`;
 }
 function trainStep(d){
-  if(!_tr) return;
-  const now=performance.now(), ex=JAW_TRAIN[_tr.ex];
-  $('#camMeta').textContent = `${ex.name} · ex ${_tr.ex+1}/${JAW_TRAIN.length}`;
-  if(_tr.rest){                                          // brief relax between reps
-    const left=_tr.rest-now;
-    if(left>0){ setGuideMsg('•','Relax — next rep in '+Math.ceil(left/1000)); return; }
-    _tr.rest=0;
+  if(!_arState||!AR_COACH) return;
+  const now=performance.now(), before=_arState;
+  const signals=AR_COACH.signalsFromLandmarks(d.pts);
+  const pose=quickPose(d); signals.frontal=pose.frontal;
+  const ex=AR_COACH.currentExercise(before);
+  _arForm=AR_COACH.evaluateForm(ex,signals);
+  if(!_arForm.accepted&&pose.msg) _arForm.correction=pose.msg.toLowerCase().replace(/(^|\s)\S/g,c=>c.toUpperCase());
+  _arState=AR_COACH.advanceState(before,_arForm,now);
+  if(_arState.event!==_arEvent){
+    if(_arState.event==='rep'||_arState.event==='exercise'){ try{ navigator.vibrate&&navigator.vibrate(18); }catch{} }
+    _arEvent=_arState.event;
   }
-  const g=jawGeom(d);
-  const meets = ex.check==='open' ? (g.frontal && g.open>0.16) : g.frontal;
-  if(!meets){
-    _tr.t0=0;                                            // form broke → pause the hold
-    const corr = ex.check==='open' && g.frontal ? 'OPEN WIDER' : g.msg;
-    setGuideMsg('', `${ex.name} ${_tr.rep+1}/${ex.reps} — ${corr}`);
-    return;
-  }
-  if(_tr.t0===0) _tr.t0=now;
-  const held=(now-_tr.t0)/1000;
-  if(held<ex.hold){
-    setGuideMsg(String(Math.ceil(ex.hold-held)), `${ex.name} ${_tr.rep+1}/${ex.reps} · ${ex.cue}`);
-  } else {                                               // rep complete
-    _tr.rep++; _tr.t0=0;
-    if(_tr.rep>=ex.reps){
-      _tr.ex++; _tr.rep=0;
-      if(_tr.ex>=JAW_TRAIN.length){ finishTrain(); return; }
-    }
-    _tr.rest=now+1300;
-    setGuideMsg('✓', JAW_TIPS[Math.floor(Math.random()*JAW_TIPS.length)]);
-  }
+  if(_arState.completed){ finishTrain(); return; }
+  renderARCoachHud(now);
+  const current=AR_COACH.currentExercise(_arState);
+  if(_arState.restUntil&&now<_arState.restUntil) setGuideMsg('✓','BREATHE · NEXT REP');
+  else if(_arForm.accepted){
+    const left=_arState.holdStartedAt?Math.max(1,Math.ceil(current.hold-(now-_arState.holdStartedAt)/1000)):current.hold;
+    setGuideMsg(String(left),'FORM LOCKED · KEEP BREATHING');
+  } else setGuideMsg('',(_arForm.correction||'Center your face').toUpperCase());
 }
 function finishTrain(){
-  trainMode=false; _tr=null;
-  const n=(store.get('jawTrain',0))+1; store.set('jawTrain',n);
-  setGuideMsg('✓','Jaw session complete · '+n+' done');
-  bumpStreak(); toast('Jawline session complete 💪', 2600);
-  setTimeout(closeCam, 1700);
+  const sessionId=_arState&&_arState.sessionId||'full';
+  const sessions=store.get('arCoachSessions',{total:0,byType:{}});
+  sessions.total=(sessions.total||0)+1; sessions.byType=sessions.byType||{};
+  sessions.byType[sessionId]=(sessions.byType[sessionId]||0)+1; sessions.last=new Date().toISOString();
+  store.set('arCoachSessions',sessions);
+  trainMode=false; _arState=null; _arForm=null;
+  $('#arCoachHud').hidden=true;
+  setGuideMsg('✓','AR COACH SESSION COMPLETE');
+  bumpStreak(); toast('AR coaching session complete',2600);
+  setTimeout(closeCam,1700);
 }
-function openTrain(){ scanMode=false; trainMode=true; _tr={ex:0,rep:0,t0:0,rest:0}; const h=$('.tap-hint'); if(h) h.textContent='Follow the on-screen cues'; openCam(); }
+$('#arCoachX').addEventListener('click',closeARCoachPicker);
+$('#arCoachModal').addEventListener('click',e=>{ if(e.target===$('#arCoachModal')) closeARCoachPicker(); });
+$$('[data-ar-session]').forEach(button=>button.addEventListener('click',()=>startARCoach(button.dataset.arSession)));
+$('#arCoachStop').addEventListener('click',closeCam);
 
 /* ---------- Hair / beard / moustache try-on (on-device overlay) ----------
    Stylized preview, not photoreal: shapes are anchored to the live face mesh,
@@ -1643,7 +1782,7 @@ async function renderPhotoreal(){
       return;
     }
     _prLastResult = data.imageUrl;
-    $('#photorealNote').textContent = (data.remaining>=0) ? (data.remaining+' left today') : 'Premium';
+    $('#photorealNote').textContent = (data.remaining>=0) ? (`${data.remaining} photoreal render${data.remaining===1?'':'s'} left today`) : 'Premium';
     showPhotorealResult(_prBeforeUrl, _prLastResult);
   }catch(e){
     console.warn('renderPhotoreal', e); toast('Couldn\'t render that one — try again');
@@ -1678,14 +1817,14 @@ $('#prSave') && $('#prSave').addEventListener('click', async ()=>{
   }catch(e){ console.warn('prSave', e); toast('Couldn\'t save that image'); }
 });
 function openStyle(){
-  scanMode=false; trainMode=false; styleMode=true;
+  setCamMode('style');
   styleGender = (typeof identityGender==='function' && identityGender()==='female') ? 'women' : 'men'; styleView='match'; _faceShape=null; _shapeBuf=[]; _shapeT=0;
   styleHair=2; styleBeard=1; styleGlass=0; styleMakeup=(typeof _openMakeup!=='undefined'&&_openMakeup)?(MAKEUP_LOOKS.findIndex(l=>l.id==='everyday')):0; _openMakeup=false; _styleHairCol=null; _styleHairColLock=null;
   renderStyleTop(); renderStyleChips();   // re-ranks once the face is read (drawStyle→applyMatches)
   $('#styleBar').style.display='flex';
   const h=$('.tap-hint'); if(h) h.style.display='none';   // styleBar owns the bottom
   closePhotorealResult();
-  $('#photorealNote').textContent = 'Up to 5 today';
+    $('#photorealNote').textContent = 'Up to 2/day free';
   openCam();
 }
 
@@ -1697,7 +1836,7 @@ function meshLoop(){
   if(styleMode) updateDevReadout(d);
   const inAffirm = $('#affirmOverlay').style.display==='flex';
   const sheetUp = $('#camSheet').style.display==='block';
-  const active = (scanMode||trainMode) && !inAffirm && !sheetUp;
+  const active = shouldShowScanGuide();
   $('#scanGuide').style.display = active ? 'flex' : 'none';
   if(manualSnap) $('#camMeta').textContent = 'Capturing… face '+(d?'LOCKED':'NOT FOUND');
   if(d){
@@ -1723,6 +1862,7 @@ function meshLoop(){
 function rescan(){
   $('#camSheet').style.display='none';
   _lockAt=0; _miss=0; _burst=[];
+  if(scanMode) setScanWatch();
   setGuideMsg('','CENTER YOUR FACE IN THE OVAL');
 }
 function drawConn(list,pts,w,h,color,width){
@@ -1734,6 +1874,7 @@ function drawMesh(d){
   const pts=d.pts, R=coverRect(), w=R.vw, h=R.vh;
   ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,R.cw,R.ch);
   if(styleMode){ drawStyle(d,R); return; }
+  if(trainMode){ drawARCoachGuide(d,R); return; }
   ctx.save();
   if(facing==='user'){ ctx.translate(R.cw,0); ctx.scale(-1,1); }
   ctx.translate(R.ox,R.oy); ctx.scale(R.s,R.s);   // draw in video-pixel space, cover-mapped
@@ -1755,6 +1896,28 @@ function drawMesh(d){
   const g=ctx.createLinearGradient(0,sy-36,0,sy+36);
   g.addColorStop(0,'rgba(201,168,106,0)'); g.addColorStop(.5,'rgba(226,197,138,0.22)'); g.addColorStop(1,'rgba(201,168,106,0)');
   ctx.fillStyle=g; ctx.fillRect(0,sy-36,R.cw,72);
+}
+function drawARCoachGuide(d,R){
+  const pts=d.pts,w=R.vw,h=R.vh,locked=!!(_arForm&&_arForm.accepted);
+  const color=locked?'rgba(124,199,154,.96)':'rgba(226,197,138,.96)';
+  const soft=locked?'rgba(124,199,154,.24)':'rgba(226,197,138,.24)';
+  const P=i=>({x:pts[i].x*w,y:pts[i].y*h});
+  const line=(indices,width=4)=>{
+    ctx.beginPath();
+    indices.forEach((i,n)=>{const p=P(i);n?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y);});
+    ctx.strokeStyle=color;ctx.lineWidth=width/R.s;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();
+  };
+  ctx.save();
+  if(facing==='user'){ctx.translate(R.cw,0);ctx.scale(-1,1);}
+  ctx.translate(R.ox,R.oy);ctx.scale(R.s,R.s);
+  ctx.shadowColor=soft;ctx.shadowBlur=18/R.s;
+  line([234,93,132,58,172,136,150,149,176,152,400,378,379,365,397,288,361,323,454],5);
+  line([10,9,168,1,2,152],2);
+  line([234,50,101,205,61],3);
+  line([454,280,330,425,291],3);
+  ctx.fillStyle=color;
+  [61,291,50,280].forEach(i=>{const p=P(i);ctx.beginPath();ctx.arc(p.x,p.y,5/R.s,0,Math.PI*2);ctx.fill();});
+  ctx.restore();
 }
 function drawGuide(){
   const w=cv.width,h=cv.height; ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,w,h);
@@ -2253,7 +2416,7 @@ function finalizeScan(){
     {k:'Jaw', ctrl:true, score:jawScore,
      status:`Taper ${jawTaper.toFixed(2)} · gonial ~${gonial.toFixed(0)}° (frontal proxy)`,
      metrics:[['Taper (jaw/cheek)',jawTaper.toFixed(2)],['fWHR',fWHR.toFixed(2)],['Gonial angle ~',gonial.toFixed(0)+'°']],
-     rem:[jawFrame,R('Strong','Lower body-fat is the biggest lever on a visible jawline. [facial-adiposity research]'),R('Moderate','Firm gum/chewing loads the masseter. [mastication studies]'),R('Moderate','Run Analyze → Jawline training: chin tucks, jaw jut, opener and clench, form-checked live.'),R('Myth','"Mewing" has no controlled evidence of changing bone.')]},
+     rem:[jawFrame,R('Strong','Lower body-fat is the biggest lever on a visible jawline. [facial-adiposity research]'),R('Moderate','Firm gum/chewing loads the masseter. [mastication studies]'),R('Moderate','Run Analyze → AR Jaw & Cheek Coach for gentle chin-tuck and neck-alignment form guidance.'),R('Myth','"Mewing" has no controlled evidence of changing bone.')]},
     {k:'Cheekbones', ctrl:false, score:cheekScore,
      status:`Mid-face ratio ${midfaceRatio.toFixed(2)} · projection ${(malarProm*100).toFixed(1)}`,
      metrics:[['Mid-face ratio',midfaceRatio.toFixed(2)],['Malar projection',`${(malarProm*100).toFixed(1)} (3D)`],['Cheek : jaw width',(jawTaper>0?(1/jawTaper).toFixed(2):'—')]],
@@ -2310,6 +2473,7 @@ function finalizeScan(){
   savePhoto(captureScanThumb(), overall, Date.now());
   if(deepScan) store.set('deepCount', (store.get('deepCount',0))+1);
   store.set('lastScore', overall); renderHome(); bumpStreak(); renderTimeline();
+  clearScanWatch();
   _burst=[];
   $('#camSheet').style.display='block'; $('#camSheet').scrollTop=0;
   $('#camMeta').textContent='Scanned · '+new Date().toLocaleTimeString();
@@ -2410,8 +2574,17 @@ function wireBASlider(){
   window.addEventListener('pointerup',()=>{ drag=false; });
 }
 
-$('#openAnalyze').addEventListener('click', async ()=>{ scanMode=true; deepScan=false; const h=$('.tap-hint'); if(h) h.textContent='Auto-scanning · or tap to capture now'; await openCam(); });
-$('#openDeep') && $('#openDeep').addEventListener('click', async ()=>{ scanMode=true; deepScan=true; const h=$('.tap-hint'); if(h) h.textContent='Deep scan · hold still ~5s'; await openCam(); $('#camMeta').textContent='Deep scan'; });
+$('#openAnalyze').addEventListener('click', async ()=>{
+  setCamMode('scan');
+  const h=$('.tap-hint'); if(h) h.textContent='Auto-scanning · or tap to capture now';
+  await openCam();
+});
+$('#openDeep') && $('#openDeep').addEventListener('click', async ()=>{
+  setCamMode('deep');
+  const h=$('.tap-hint'); if(h) h.textContent='Deep scan · hold still ~5s';
+  await openCam();
+  $('#camMeta').textContent='Deep scan';
+});
 $('#openTrain').addEventListener('click', openTrain);
 $('#openStyle') && $('#openStyle').addEventListener('click', openStyle);
 $('#hintAnalyze').addEventListener('click', openScoring);
@@ -2436,7 +2609,13 @@ function showAffirm(){
   renderAffirmPager();
 }
 function nextAffirm(){ idx=(idx+1)%pool.length; showAffirm() }
-$('#openAffirm').addEventListener('click', async ()=>{ scanMode=false; const h=$('.tap-hint'); if(h) h.textContent='Tap anywhere to advance'; await openCam(); $('#affirmOverlay').style.display='flex'; buildPool(); showAffirm() });
+$('#openAffirm').addEventListener('click', async ()=>{
+  setCamMode('affirm');
+  const h=$('.tap-hint'); if(h) h.textContent='Tap anywhere to advance';
+  await openCam();
+  $('#affirmOverlay').style.display='flex';
+  buildPool(); showAffirm();
+});
 $('#camwrap').addEventListener('click', e=>{
   if(trainMode||styleMode) return;
   if(e.target.closest('.affirm-overlay')||e.target.closest('.camctrl')||e.target.closest('.hud')||e.target.closest('.sheet')) return;
@@ -2699,7 +2878,10 @@ async function runDiag(){
     }catch{ $('#dCam').textContent='Error' }
   }
 }
-$('#testCam').addEventListener('click', async ()=>{ scanMode=false; await openCam(); $('#camMeta').textContent='Test mode' });
+$('#testCam').addEventListener('click', async ()=>{
+  setCamMode('test');
+  await openCam(); $('#camMeta').textContent='Test mode';
+});
 $('#refreshDiag').addEventListener('click', runDiag);
 /* In-app data deletion (Play requirement + privacy) — wipes all local data */
 function wipeAllData(){
@@ -2834,7 +3016,8 @@ async function loadPose(){
 }
 function poseReady(){ if(!_poseP) _poseP=loadPose().then(()=>true).catch(e=>{ console.warn('pose load',e); return false; }); return _poseP; }
 async function startPosture(){
-  postureMode=true; scanMode=false; trainMode=false; styleMode=false; _postureBuf=[];
+  setCamMode('posture');
+  _postureBuf=[];
   const th=$('.tap-hint'); if(th) th.style.display='none';
   $('#scanGuide').style.display='flex'; setGuideMsg('','TURN SIDE-ON TO THE CAMERA');
   await openCam(); $('#camMeta').textContent='Posture'; poseReady();
@@ -2999,7 +3182,8 @@ function openSuggest(){
 function openCoach(){ $('#coachBody').innerHTML='<p class="lede">I\'ll read how evenly your base sits and whether it matches your neck, then give guidance — never a score.</p>'; $('#coachModal').classList.add('on'); }
 async function startCoach(){
   $('#coachModal').classList.remove('on');
-  coachMode=true; scanMode=false; deepScan=false; postureMode=false; styleMode=false; _coachBuf=[];
+  setCamMode('coach');
+  _coachBuf=[];
   const th=$('.tap-hint'); if(th) th.style.display='none';
   $('#scanGuide').style.display='flex'; setGuideMsg('','LOOK STRAIGHT — CHECKING YOUR LOOK');
   await openCam(); $('#camMeta').textContent='Makeup coach';
@@ -3078,6 +3262,25 @@ if(typeof REFERENCES!=='undefined'){
   REFERENCES.push(['Colour theory','Undertone-based colour matching (warm / cool / neutral / olive) — standard cosmetic colour theory for foundation, lip and blush families.']);
   REFERENCES.push(['Face-shape balancing','Image-consulting practice: blush, brow and contour placement chosen to balance the face\'s proportions.']);
 }
+function bindAccessibleAction(el, cb){
+  if(!el) return;
+  if(!el.hasAttribute('role')) el.setAttribute('role','button');
+  if(!el.hasAttribute('tabindex')) el.setAttribute('tabindex','0');
+  if(!el.hasAttribute('aria-label')) el.setAttribute('aria-label', 'Activate');
+  el.addEventListener('keydown', e=>{
+    if(e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      cb();
+    }
+  });
+}
+function bindIconButtons(){
+  $$('.x, .camctrl').forEach(el=>{
+    if(!el.hasAttribute('aria-label') && /X$/.test((el.id||''))) el.setAttribute('aria-label','Close');
+    bindAccessibleAction(el, ()=>el.click());
+  });
+}
+
 /* wiring */
 $('#openMakeupTry') && $('#openMakeupTry').addEventListener('click', ()=>{ _openMakeup=true; openStyle(); });
 $('#openSuggest') && $('#openSuggest').addEventListener('click', openSuggest);
@@ -3243,6 +3446,7 @@ $('#openExport') && $('#openExport').addEventListener('click', openExport);
 $('#exportShare') && $('#exportShare').addEventListener('click', exportShare);
 $('#exportX') && $('#exportX').addEventListener('click', ()=>$('#exportModal').classList.remove('on'));
 $('#exportModal') && $('#exportModal').addEventListener('click', e=>{ if(e.target.id==='exportModal') $('#exportModal').classList.remove('on'); });
+bindIconButtons();
 
 /* ================= Paywall (RevenueCat + Google Play Billing) ================= */
 /* Fill these two from your RevenueCat dashboard (see PLAY_STORE.md / paywall plan).
@@ -3270,7 +3474,7 @@ function openPaywall(){ $('#paywall').classList.add('on'); renderOfferings(); }
 function closePaywall(){ $('#paywall').classList.remove('on'); }
 async function renderOfferings(){
   const el=$('#paywallOfferings');
-  if(!rcReady || !_rc){ el.innerHTML='<p class="lede">The store isn\'t available here — it activates in the installed app. You still get free photoreal renders daily.</p>'; return; }
+  if(!rcReady || !_rc){ el.innerHTML='<p class="lede">The store isn\'t available here — it activates in the installed app. Free photoreal renders stay limited by server allowance; premium unlocks additional renders.</p>'; return; }
   try{
     const off=await _rc.getOfferings(); const cur=(off&&off.current)||off||{}; const pkgs=(cur&&cur.availablePackages)||[];
     if(!pkgs.length){ el.innerHTML='<p class="lede">No offers available right now.</p>'; return; }

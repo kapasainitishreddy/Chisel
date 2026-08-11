@@ -1,10 +1,10 @@
 # Chisel Release Status
 
-_Last updated: 2026-08-08_
+_Last updated: 2026-08-11_
 
 ## Current verdict
 
-**Android release candidate.** Chisel's automated product suite is green and the Android 16/API 36 CI pipeline has successfully synchronized Capacitor, run the automated suite, built a debug APK, and built a release AAB. Camera/MediaPipe measurement correctness still requires representative real-device repeatability validation before stronger empirical accuracy claims are made.
+**Android release candidate.** Chisel's automated product suite is green and the Android build is synchronized. The canonical UI and AR jaw + cheek coach have been installed and exercised with the real camera on a physical handset, with the legacy native Labs/Precision/Premium injector disabled. Camera-derived measurement correctness still requires representative repeatability validation before stronger empirical accuracy claims are made.
 
 ## Identity
 
@@ -34,7 +34,9 @@ Primary files:
 
 ### Automated tests
 
-Latest verified synchronized product suite: **39/39 passing**.
+Latest verified synchronized product suite: **50/50 passing**.
+
+Latest native-sync/build verification: `npm install` + `npx cap sync android` + `npm test` + `./gradlew.bat assembleDebug` were run successfully.
 
 Coverage includes:
 
@@ -47,6 +49,9 @@ Coverage includes:
 - Precision result trust language
 - local-only Precision image processing checks
 - premium mobile UX expectations
+- AR jaw/cheek exercise safety and catalog behavior
+- form-gated AR hold/rep state behavior
+- AR picker/HUD mobile layout and bundled-engine integration
 
 ### Android CI
 
@@ -106,6 +111,7 @@ See `FEATURE_MATRIX.md` for the detailed feature truth. In summary:
 - Condition Match / uncertainty-aware progress: implemented/tested
 - Chisel Labs modules: implemented; device validation required
 - Grooming/routine/programs: implemented
+- AR jaw + cheek coach: implemented, automated tested, debug-built and live-camera checked on a physical handset
 - Local try-ons: implemented; device validation required
 - Progress/photo/share/export tools: implemented; Android share QA required
 - Local reminders: dependency/configuration + device permission QA required

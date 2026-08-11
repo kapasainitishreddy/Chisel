@@ -8,16 +8,12 @@ const root = path.resolve(__dirname, '..');
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
 const hash = (p) => crypto.createHash('sha256').update(read(p)).digest('hex');
 
-test('MainActivity injects Chisel Labs assets in dependency order with an idempotent guard', () => {
+test('MainActivity leaves the canonical app shell unmodified after it loads', () => {
   const java = read('android/app/src/main/java/com/chisel/lookmax/MainActivity.java');
   assert.match(java, /onCreate/);
-  assert.match(java, /evaluateJavascript/);
-  assert.match(java, /__chiselLabsNativeInjected/);
-  const core = java.indexOf('chisel-enhancements-core.js');
-  const css = java.indexOf('chisel-enhancements.css');
-  const ui = java.indexOf('chisel-enhancements.js');
-  assert.ok(core >= 0 && css >= 0 && ui >= 0);
-  assert.ok(core < ui, 'core must load before UI');
+  assert.doesNotMatch(java, /evaluateJavascript/);
+  assert.doesNotMatch(java, /__chiselLabsNativeInjected/);
+  assert.doesNotMatch(java, /chisel-(enhancements|premium|precision)/);
 });
 
 test('synced Android app shell exactly matches the canonical www index', () => {
@@ -28,8 +24,25 @@ test('synced Android app shell exactly matches the canonical www index', () => {
   );
 });
 
+test('canonical mobile navigation uses compact glyph-and-label tabs', () => {
+  const html = read('www/index.html');
+  const tabs = html.match(/<nav class="tabs" id="bottomTabs">([\s\S]*?)<\/nav>/);
+  assert.ok(tabs, 'bottom tab navigation is missing');
+  assert.equal((tabs[1].match(/class="ico"/g) || []).length, 6, 'every mobile route needs a glyph');
+  assert.match(html, /nav\.tabs a \.ico\{font-size:16px;line-height:1\}/);
+  assert.match(html, /nav\.tabs a\{[\s\S]*?letter-spacing:\.04em[\s\S]*?text-transform:none/);
+});
+
+test('customer-facing Connect screen has no developer installation instructions', () => {
+  const html = read('www/index.html');
+  const connect = html.match(/<section class="screen" data-screen="connect">([\s\S]*?)<\/section>/);
+  assert.ok(connect, 'Connect screen is missing');
+  assert.doesNotMatch(connect[1], /USB debugging|Android Studio|Sideload the APK|deploy\.bat|npx serve/i);
+  assert.match(connect[1], /Your data stays on this device/i);
+});
+
 test('synced Android enhancement assets exactly match the canonical www copies', () => {
-  for (const file of ['chisel-enhancements-core.js', 'chisel-enhancements.js', 'chisel-enhancements.css']) {
+  for (const file of ['chisel-enhancements-core.js', 'chisel-enhancements.js', 'chisel-enhancements.css', 'chisel-ar-coach-core.js']) {
     assert.equal(
       hash(`www/${file}`),
       hash(`android/app/src/main/assets/public/${file}`),

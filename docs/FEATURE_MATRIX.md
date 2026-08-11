@@ -1,6 +1,6 @@
 # Chisel Feature Matrix
 
-_Last updated: 2026-08-08_
+_Last updated: 2026-08-09_
 
 Status legend:
 
@@ -14,7 +14,7 @@ Status legend:
 
 | ID | Feature | Current status | User value / remaining gate |
 |---|---|---|---|
-| FM-01 | Premium mobile shell + navigation | Automated verified; device QA required | Onyx premium hierarchy, simplified primary destinations, contextual tools |
+| FM-01 | Main mobile shell + navigation | Automated + physical-device verified | Canonical onyx/gold UI with six glyph-and-label tabs; no native UI injection can overlay controls |
 | FM-02 | First-run concierge | Automated verified; device QA required | Explains privacy, confidence and baseline flow before camera use |
 | FM-03 | Camera prominent disclosure | Implemented; device QA required | Camera purpose shown before use |
 | FM-04 | Quick face scan | Implemented; device accuracy QA required | Fast on-device photographic appearance measurements |
@@ -40,7 +40,7 @@ Status legend:
 | FM-24 | Precision Body / front+side fusion | Automated verified; device accuracy QA required | Multi-photo front/side consensus and segmentation quality gates |
 | FM-25 | Optional waist tape calibration | Automated verified; device workflow QA required | Converts personal photo trend to a relative calibrated waist trend |
 | FM-26 | Posture analysis | Implemented; device accuracy QA required | Pose/CVA/neck-angle photographic proxies |
-| FM-27 | Jaw/neck guided training | Implemented; device QA required | Guided reps/form without adult-bone reshaping claims |
+| FM-27 | AR jaw + cheek coach | Automated + physical-device verified | Jawline posture, cheek lift and full-face sessions with face-anchored AR guides, form-gated holds, local completion tracking, explicit evidence grades and no adult-bone reshaping claims |
 | FM-28 | Grooming cards + evidence direction | Implemented | Controllable grooming actions and optional shopping links |
 | FM-29 | Today's plan + check-off | Implemented | Local routine and adherence tracking |
 | FM-30 | 30-day programs | Implemented | Structured local improvement programs |
@@ -76,6 +76,10 @@ Status legend:
 | FM-60 | iOS | Deferred | Android-first release; iOS remains a separate platform project |
 
 ## Product truth
+
+The canonical `www/index.html` is the only active app shell. Legacy Labs,
+Precision and Premium shell assets may remain in source for parity/history, but
+the Android activity must not inject them over the canonical UI.
 
 Chisel is feature-complete enough for a serious Android release candidate. The remaining distinction is **software implementation versus empirical device validation**: camera/MediaPipe features must still be tested across representative phones, lighting, skin tones, facial hair/glasses, body framing and repeated same-condition captures before describing their numeric accuracy more strongly than photographic estimates.
 

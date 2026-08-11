@@ -1,11 +1,19 @@
 # AI Development Handoff
 
 ## Last Updated
-- **Timestamp:** 2026-07-26 23:43 UTC
-- **Updated by:** Claude Code
+- **Timestamp:** 2026-08-11
+- **Updated by:** Codex
 - **Current branch:** `main`
 - **Latest relevant commit:** `fba0da5` (chore: checkpoint app progress for Codex handoff) — contains the handoff system + this session's app changes.
 - **Working tree status:** clean except untracked `.claude/` (local tooling, not committed).
+
+## Latest verified update — AR jaw + cheek coach
+- Replaced the old jaw trainer (which included forceful jut/clench guidance) with an AR-only coach for gentle jawline posture and cheek-lift sessions.
+- Added Jawline posture, Cheek lift, and Full face sessions. The on-device face mesh renders a clean jaw contour, cheek paths/targets, and center line with gold “find form” and green “form locked” states.
+- Hold timers pause when the face is off-angle, uncentered, the mouth/jaw is not relaxed, or cheek movement is uneven/out of range. Completion is tracked locally under `chisel:arCoachSessions`; no score, upload, account, or new permission was added.
+- Safety/evidence copy says exercises do not reshape adult facial bones or spot-reduce fat, grades cheek work Limited and posture awareness Moderate, and tells users to stop for pain/clicking/locking/dizziness/numbness/discomfort.
+- Verified 2026-08-11: `npx cap sync android`, `npm test` (**50/50**), `gradlew.bat assembleDebug`, APK upgrade-install and live physical-device AR check on `R3CW10Y67TT`; crash buffer empty.
+- Relevant source: `chisel-android/www/chisel-ar-coach-core.js`, `chisel-android/www/index.html`, `chisel-android/tests/ar-coach-core.test.cjs`, `chisel-android/tests/ar-coach-ui.test.cjs`.
 
 ## Application Summary
 - **App name:** Chisel
@@ -61,6 +69,20 @@ Percentages are evidence-based estimates (no automated tests exist to measure pr
 
 ## Current Work in Progress
 _None mid-flight._ All edits this session are complete, verified (syntax/sandbox), and left in a non-broken state. If resuming, start at "Next Task".
+
+**Latest mobile-shell correction (2026-08-09):** The Android activity had been
+injecting legacy Labs, Precision and Premium assets after the canonical app
+loaded. That created a floating Labs control and overrode the intended phone UI.
+The injector was removed entirely; `MainActivity` now leaves the canonical
+`www/index.html` shell untouched. The six bottom tabs were changed to compact
+geometric glyphs plus labels with safe-area-aware sizing. Verified with `npm test`
+(40/40), `npx cap sync android`, `assembleDebug`, fresh physical install, Home →
+Analyze navigation, UI-tree inspection, screenshots and logcat on `R3CW10Y67TT`.
+
+**Latest Connect-screen correction (2026-08-09):** Removed the customer-visible
+USB debugging/Android Studio/APK sideload guide left from internal development.
+The tab now shows only device, camera-control and privacy content. Verified with
+`npm test` (41/41), sync/build, and installed on `R3CW10Y67TT`.
 
 **Latest micro-session (a11y/polish):** Added `:focus-visible` keyboard focus, tap-highlight removal, heading text-overflow guards, tighter mobile button spacing, and `role`/`aria-label` on the icon-only camera flip/capture controls (CR-005). Verified: `index.html` syntax PASS. This was a CSS/HTML-only pass — no logic changed; all features intact. Note: "check all features working" could only be verified by Node syntax+sandbox here, **not on a device** — on-device QA of the camera/scan flows remains an open testing gap (see TEST_STATUS.md).
 

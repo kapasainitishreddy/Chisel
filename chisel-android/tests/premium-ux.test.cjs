@@ -21,14 +21,11 @@ test('premium experience assets are synchronized into Android', () => {
   }
 });
 
-test('native loader injects premium CSS before premium behavior and compiles against Capacitor', () => {
+test('native activity does not inject the legacy premium shell over the canonical UI', () => {
   const java = read('android/app/src/main/java/com/chisel/lookmax/MainActivity.java');
-  const css = java.indexOf('chisel-premium.css');
-  const js = java.indexOf('chisel-premium.js');
-  assert.ok(css >= 0, 'premium CSS is not injected');
-  assert.ok(js >= 0, 'premium JS is not injected');
-  assert.ok(css < js, 'premium CSS must load before premium JS');
-  assert.match(java, /public void onResume\s*\(/, 'Capacitor 6 requires public onResume');
+  assert.doesNotMatch(java, /chisel-premium\.(css|js)/);
+  assert.doesNotMatch(java, /evaluateJavascript/);
+  assert.match(java, /extends BridgeActivity/);
 });
 
 test('premium CSS enforces mobile hierarchy, accessibility and restrained motion', () => {
