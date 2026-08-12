@@ -202,8 +202,8 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
         await addScript('chisel-enhancements.js');
         addCss('chisel-precision.css');
         for (const src of [
-          'chisel-precision-core.js', 'chisel-precision-stats.js',
-          'chisel-precision-protocol.js', 'chisel-precision-face.js',
+          'chisel-precision-stats.js', 'chisel-precision-protocol.js',
+          'chisel-precision-core.js', 'chisel-precision-face.js',
           'chisel-precision-body.js', 'chisel-precision-ui.js',
           'chisel-precision.js'
         ]) await addScript(src);
