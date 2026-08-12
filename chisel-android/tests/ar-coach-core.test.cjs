@@ -19,8 +19,8 @@ function faceFixture({ smile = false, asymmetric = false, open = 0.02 } = {}) {
   return points;
 }
 
-test('catalog offers jaw, cheek and full sessions without forceful jaw moves', () => {
-  assert.deepEqual(Object.keys(coach.SESSIONS), ['jaw', 'cheek', 'full']);
+test('catalog offers jaw cheek full and face yoga sessions without forceful jaw moves', () => {
+  for (const id of ['jaw','cheek','full','yoga']) assert.ok(coach.SESSIONS[id], `missing ${id} session`);
   const names = coach.EXERCISES.map((item) => item.name).join(' ');
   assert.doesNotMatch(names, /clench|jut/i);
   assert.ok(coach.EXERCISES.every((item) => item.evidence && item.safety));
@@ -46,6 +46,13 @@ test('symmetric cheek lift passes while asymmetric lift returns a correction', (
   const form = coach.evaluateForm(coach.exerciseById('cheek-raise'), uneven);
   assert.equal(form.accepted, false);
   assert.match(form.correction, /evenly/i);
+});
+
+test('jaw release requires a gentle opening and rejects excessive range', () => {
+  const closed = coach.signalsFromLandmarks(faceFixture({ open: 0.002 }));
+  assert.equal(coach.evaluateForm(coach.exerciseById('jaw-release'), closed).accepted, false);
+  const gentle = coach.signalsFromLandmarks(faceFixture({ open: 0.02 }));
+  assert.equal(coach.evaluateForm(coach.exerciseById('jaw-release'), gentle).accepted, true);
 });
 
 test('bad form resets the hold and accepted form completes only after hold duration', () => {
