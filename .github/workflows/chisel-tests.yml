@@ -28,6 +28,9 @@ jobs:
           node-version: '22'
       - name: Check JavaScript syntax
         run: |
+          node --check www/chisel-ar-coach-core.js
+          node --check www/chisel-beauty-studio.js
+          node --check www/chisel-tryon-runtime-fixes.js
           node --check www/chisel-enhancements-core.js
           node --check www/chisel-enhancements.js
           node --check www/chisel-precision-stats.js
@@ -37,5 +40,63 @@ jobs:
           node --check www/chisel-precision-body.js
           node --check www/chisel-precision-ui.js
           node --check www/chisel-precision.js
+          node --check www/chisel-scan-guard.js
+          node --check www/chisel-experience-polish.js
+          node --check www/chisel-product-polish.js
       - name: Run automated tests
         run: npm test
+      - name: Run AI-generated male and female portrait QA
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v ffmpeg >/dev/null || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+          CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$CHROME" ]; then
+            echo "Chrome/Chromium is required for portrait QA" >&2
+            exit 1
+          fi
+
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/chisel-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          sleep 1
+
+          for gender in male female; do
+            ffmpeg -hide_banner -loglevel error -y -loop 1 \
+              -i "tests/fixtures/portrait-${gender}.jpg" \
+              -vf "scale=640:800:force_original_aspect_ratio=decrease,pad=640:800:(ow-iw)/2:(oh-ih)/2:color=gray,format=yuv420p" \
+              -r 30 -t 60 -f yuv4mpegpipe "/tmp/chisel-${gender}.y4m"
+
+            "$CHROME" \
+              --headless=new \
+              --no-sandbox \
+              --disable-gpu \
+              --disable-dev-shm-usage \
+              --autoplay-policy=no-user-gesture-required \
+              --use-fake-ui-for-media-stream \
+              --use-fake-device-for-media-stream \
+              --use-file-for-fake-video-capture="/tmp/chisel-${gender}.y4m" \
+              --virtual-time-budget=60000 \
+              --dump-dom \
+              "http://127.0.0.1:4173/tests/portrait-qa.html?gender=${gender}" \
+              > "/tmp/chisel-${gender}-qa.html" 2> "/tmp/chisel-${gender}-chrome.log" || true
+
+            if ! grep -q 'data-status="pass"' "/tmp/chisel-${gender}-qa.html"; then
+              echo "===== ${gender} portrait QA FAILED =====" >&2
+              cat "/tmp/chisel-${gender}-qa.html" >&2 || true
+              echo "===== ${gender} Chrome log =====" >&2
+              cat "/tmp/chisel-${gender}-chrome.log" >&2 || true
+              echo "===== local HTTP log =====" >&2
+              cat /tmp/chisel-http.log >&2 || true
+              exit 1
+            fi
+
+            echo "${gender} portrait QA passed"
+            python3 - "/tmp/chisel-${gender}-qa.html" <<'PY'
+import html, re, sys
+text=open(sys.argv[1], encoding='utf-8').read()
+m=re.search(r'<pre id="qa-result">(.*?)</pre>', text, re.S)
+if m:
+    print(html.unescape(m.group(1)))
+PY
+          done

@@ -1,0 +1,73 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Chisel portrait QA</title></head>
+<body data-status="pending"><pre id="qa-result">pending</pre><iframe id="app" style="width:420px;height:840px;border:0"></iframe>
+<script>
+(async()=>{
+  const params=new URLSearchParams(location.search); const gender=params.get('gender')==='female'?'female':'male';
+  const result={gender, checks:{}, errors:[]}; const out=document.getElementById('qa-result');
+  const set=(name,value)=>{result.checks[name]=value;};
+  const finish=(ok,extra)=>{if(extra)Object.assign(result,extra);document.body.dataset.status=ok?'pass':'fail';out.textContent=JSON.stringify(result,null,2);};
+  const wait=(ms)=>new Promise(r=>setTimeout(r,ms));
+  const until=async(fn,ms=20000,step=250)=>{const t=Date.now();while(Date.now()-t<ms){try{const v=await fn();if(v)return v;}catch(_){}await wait(step);}return null;};
+  try{
+    localStorage.clear();
+    localStorage.setItem('chisel:identity',JSON.stringify({gender,label:null}));
+    localStorage.setItem('chisel:cameraConsent','true');
+    const frame=document.getElementById('app'); frame.src='../www/index.html?portraitQa='+gender;
+    await new Promise((resolve,reject)=>{frame.onload=resolve;setTimeout(()=>reject(new Error('app load timeout')),15000);});
+    const w=frame.contentWindow;
+    w.addEventListener('error',e=>result.errors.push('window:'+e.message));
+    const originalError=w.console.error.bind(w.console); w.console.error=(...a)=>{result.errors.push('console:'+a.map(String).join(' ')); originalError(...a);};
+    await wait(400);
+    try{ w.identitySet(gender,null); w.applyIdentity(); }catch(e){ result.errors.push('identity:'+e.message); }
+    set('identity', w.eval('identityGender()')===gender);
+    const kit=await Promise.race([w.faceKit.ready(),wait(22000).then(()=>false)]);
+    set('faceEngineReady',!!kit);
+    if(!kit) throw new Error('MediaPipe face engine did not initialize');
+    w.go('analyze'); w.setCamMode('scan'); await w.openCam();
+    const scan=await until(()=>{const a=JSON.parse(localStorage.getItem('chisel:scans')||'[]');return a.length?a[a.length-1]:null;},18000,300);
+    set('quickScanCompleted',!!scan);
+    if(!scan) throw new Error('Quick scan did not complete on generated portrait');
+    set('finiteCoreMetrics',['overall','sym','jaw','nose','lips','eyes','skin'].every(k=>Number.isFinite(Number(scan[k]))));
+    set('faceShapeResolved',typeof scan.shape==='string'&&scan.shape.length>0);
+    set('undertoneResolved',typeof scan.undertone==='string'&&scan.undertone.length>0);
+    const sheetText=w.document.getElementById('camSheet').innerText;
+    set('resultsRendered',/Jaw/.test(sheetText)&&/Skin/.test(sheetText)&&/Hair/.test(sheetText));
+    if(gender==='female') set('femaleBrowsResult',/Brows/.test(sheetText));
+    else set('maleGroomingResult',/beard|facial hair|groom/i.test(sheetText));
+
+    w.closeCam(); await wait(200); w.openStyle(); await wait(1300);
+    set('styleCameraOpened',w.document.getElementById('camwrap').classList.contains('on'));
+    set('cleanFacialHairDefault',w.eval('styleBeard')===0);
+    if(gender==='female'){
+      set('womenStyleMode',w.eval('styleGender')==='women');
+      set('womenHairLibraryExpanded',w.eval('HAIR_WOMEN.length')>=19);
+      set('beautyPreferencesVisible',getComputedStyle(w.document.getElementById('beautyHairPrefs')).display!=='none');
+      set('beautyGuideAvailable',!!w.document.getElementById('openBeautyGuide'));
+      set('adaptiveBlushLooks',w.eval('MAKEUP_LOOKS.filter(x=>x&&x.blushPlacement).length')>=7);
+      w.document.getElementById('openBeautyGuide').click(); await wait(200);
+      set('beautyGuideOpens',w.document.getElementById('beautyGuideModal').classList.contains('on'));
+    }else{
+      set('menStyleMode',w.eval('styleGender')==='men');
+      set('menHairLibraryPresent',w.eval('HAIR_MEN.length')>=8);
+      set('beardLibraryPresent',w.eval('BEARD_STYLES.length')>=8);
+    }
+    w.closeCam();
+
+    const routes=['home','analyze','affirm','meditate','groom','connect'];
+    set('primaryRoutes',routes.every(r=>{try{w.go(r);return !!w.document.querySelector('.screen.active[data-screen="'+r+'"]');}catch(e){result.errors.push('route '+r+':'+e.message);return false;}}));
+    w.go('analyze');
+    const modalChecks=[];
+    for(const id of ['openFuture','openExport']){const b=w.document.getElementById(id);if(!b){modalChecks.push(false);continue;}try{b.click();await wait(80);modalChecks.push(true);}catch(e){result.errors.push(id+':'+e.message);modalChecks.push(false);}}
+    set('analysisUtilityEntrypoints',modalChecks.every(Boolean));
+    set('arCoachLoaded',!!w.ChiselARCoach && Array.isArray(w.ChiselARCoach.EXERCISES));
+    try{w.openPaywall();await wait(150);set('paywallGraceful',w.document.getElementById('paywall').classList.contains('on')&&/store|premium|offer/i.test(w.document.getElementById('paywall').innerText));w.closePaywall();}catch(e){result.errors.push('paywall:'+e.message);set('paywallGraceful',false);}
+    set('programsPresent',!!w.document.getElementById('programs')&&!!w.document.getElementById('programModal'));
+    set('progressSharingPresent',!!w.document.getElementById('shareProgress'));
+    set('reminderControlsPresent',/remind/i.test(w.document.body.innerText));
+
+    const failed=Object.entries(result.checks).filter(([,v])=>v!==true).map(([k])=>k);
+    result.failed=failed; finish(failed.length===0 && result.errors.length===0);
+  }catch(e){result.errors.push(e&&e.stack?e.stack:String(e));finish(false);}
+})();
+</script></body></html>
