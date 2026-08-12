@@ -172,6 +172,12 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
       link.rel = 'stylesheet'; link.href = href; link.dataset.chiselRuntime = href;
       document.head.appendChild(link);
     };
+    if (!document.getElementById('chiselLauncherLayerFix')) {
+      const layerFix = document.createElement('style');
+      layerFix.id = 'chiselLauncherLayerFix';
+      layerFix.textContent = '.chl-launcher,.chp-launcher{z-index:180!important}';
+      document.head.appendChild(layerFix);
+    }
     const addScript = (src) => new Promise((resolve, reject) => {
       const prior = document.querySelector(`script[data-chisel-runtime="${src}"]`);
       if (prior) { if (prior.dataset.loaded === '1') resolve(); else prior.addEventListener('load', resolve, { once:true }); return; }
@@ -185,31 +191,18 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
       try {
         await addScript('chisel-beauty-studio.js');
         const fixStyleLabels = () => {
-          const first = document.querySelector('#styleTop .seg');
-          if (!first) return;
-          const buttons = first.querySelectorAll('button');
-          if (buttons[0]) { buttons[0].textContent = 'Men'; buttons[0].setAttribute('aria-label', 'Men hairstyles'); }
-          if (buttons[1]) { buttons[1].textContent = 'Women'; buttons[1].setAttribute('aria-label', 'Women hairstyles'); }
-        };
-        fixStyleLabels();
-        const styleTop = document.getElementById('styleTop');
-        if (styleTop && !styleTop.dataset.genderLabelObserver) {
-          styleTop.dataset.genderLabelObserver = '1';
-          new MutationObserver(fixStyleLabels).observe(styleTop, { childList:true, subtree:true });
-        }
-        addCss('chisel-enhancements.css');
-        await addScript('chisel-enhancements-core.js');
-        await addScript('chisel-enhancements.js');
-        addCss('chisel-precision.css');
-        for (const src of [
-          'chisel-precision-stats.js', 'chisel-precision-protocol.js',
-          'chisel-precision-core.js', 'chisel-precision-face.js',
-          'chisel-precision-body.js', 'chisel-precision-ui.js',
-          'chisel-precision.js'
-        ]) await addScript(src);
-      } catch (error) {
-        console.warn('[Chisel runtime] optional feature module failed to load', error);
-      }
-    })();
-  }, { once: true });
-}
+          const first = document.querySelectoŠ	ÈÜİ[UÜœÙYÉÊNÂˆYˆ
+Yš\œİ
+H™]\›ÂˆÛÛœİ]ÛœÈHš\œİœ]Y\TÙ[XİÜ[
+	Ø]Û‰ÊNÂˆYˆ
+]ÛœÖÌJHÈ]ÛœÖÌK^ÛÛ[H	ÓY[‰ÎÈ]ÛœÖÌKœÙ]]šX]J	Ø\šXK[X™[	Ë	ÓY[ˆZ\œİ[\ÉÊNÈBˆYˆ
+]ÛœÖÌWJHÈ]ÛœÖÌWK^ÛÛ[H	ÕÛÛY[‰ÎÈ]ÛœÖÌWKœÙ]]šX]J	Ø\šXK[X™[	Ë	ÕÛÛY[ˆZ\œİ[\ÉÊNÈBˆNÂˆš^İ[SX™[Ê
+NÂˆÛÛœİİ[UÜHØİ[Y[™Ù][[Y[RY
+	Üİ[UÜ	ÊNÂˆYˆ
+İ[UÜ	‰ˆ\İ[UÜ™]\Ù]™Ù[™\“X™[ØœÙ\™\ŠHÂˆİ[UÜ™]\Ù]™Ù[™\“X™[ØœÙ\™\ˆH	ÌIÎÂˆ™]È]]][Û“ØœÙ\™\Šš^İ[SX™[ÊK›ØœÙ\™Jİ[UÜÈÚ[\İYKİX™YNYHJNÂˆBˆYÜÜÊ	ØÚ\Ù[Y[š[˜Ù[Y[Ë˜ÜÜÉÊNÂˆ]ØZ]YØÜš\
+	ØÚ\Ù[Y[š[˜Ù[Y[ËXÛÜ™KšœÉÊNÂˆ]ØZ]YØÜš\
+	ØÚ\Ù[Y[š[˜Ù[Y[ËšœÉÊNÂˆYÜÜÊ	ØÚ\Ù[\™XÚ\Ú[Û‹˜ÜÜÉÊNÂˆ›Üˆ
+ÛÛœİÜ˜ÈÙˆÂˆ	ØÚ\Ù[\™XÚ\Ú[Û‹\İ]ËšœÉË	ØÚ\Ù[\™XÚ\Ú[Û‹\›İØÛÛšœÉËˆ	ØÚ\Ù[\™XÚ\Ú[Û‹XÛÜ™KšœÉË	ØÚ\Ù[\™XÚ\Ú[Û‹Y˜XÙKšœÉËˆ	ØÚ\Ù[\™XÚ\Ú[Û‹X›ÙKšœÉË	ØÚ\Ù[\™XÚ\Ú[Û‹]ZKšœÉËˆ	ØÚ\Ù[\™XÚ\Ú[Û‹šœÉÂˆJH]ØZ]YØÜš\
+Ü˜ÊNÂˆHØ]Ú
+\œ›ÜŠHÂˆÛÛœÛÛKØ\›Š	ÖĞÚ\Ù[[[YWHÜ[Û˜[™X]\™H[Ù[H˜Z[YÈØY	Ë\œ›ÜŠNÂˆBˆJJ
+NÂˆKÈÛ˜ÙNˆYHJNÂŸB

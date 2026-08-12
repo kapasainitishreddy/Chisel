@@ -16,9 +16,9 @@ test('feature runtime loads Beauty Studio, Chisel Labs, and Precision after the 
     'chisel-enhancements-core.js',
     'chisel-enhancements.js',
     'chisel-precision.css',
+    'chisel-precision-core.js',
     'chisel-precision-stats.js',
     'chisel-precision-protocol.js',
-    'chisel-precision-core.js',
     'chisel-precision-face.js',
     'chisel-precision-body.js',
     'chisel-precision-ui.js',
@@ -42,4 +42,9 @@ test('style gender switch is customer-facing Men / Women', () => {
 
 test('feature runtime is synchronized into the Android package assets', () => {
   assert.equal(hash('www/chisel-ar-coach-core.js'), hash('android/app/src/main/assets/public/chisel-ar-coach-core.js'), 'feature runtime differs between canonical www and Android assets');
+});
+
+test('floating Labs and Precision launchers stay below camera and modal layers', () => {
+  const js = read('www/chisel-ar-coach-core.js');
+  assert.match(js, /\.chl-launcher,\.chp-launcher\{z-index:180!important\}/);
 });
