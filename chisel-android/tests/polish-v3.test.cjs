@@ -5,7 +5,6 @@ const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
-
 function exists(p){ return fs.existsSync(path.join(root,p)); }
 
 test('scan guard exists and refuses weak captures instead of guessing', () => {
@@ -41,4 +40,12 @@ test('new polish runtimes are mirrored into Android packaged assets', () => {
     assert.ok(exists(`android/app/src/main/assets/public/${file}`),`${file} missing from Android package`);
     assert.equal(read(`www/${file}`),read(`android/app/src/main/assets/public/${file}`),`${file} differs between www and Android assets`);
   }
+});
+
+test('dynamic runtime explicitly boots scan guard and experience polish', () => {
+  const runtime=read('www/chisel-ar-coach-core.js');
+  assert.match(runtime,/chisel-scan-guard\.js/);
+  assert.match(runtime,/chisel-experience-polish\.js/);
+  assert.match(runtime,/ChiselScanGuard\.installBrowserGuard\(\)/,'scan guard must boot after dynamic script load');
+  assert.match(runtime,/ChiselExperiencePolish\.install\(\)/,'experience polish must boot after dynamic script load');
 });
