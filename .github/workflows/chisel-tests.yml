@@ -92,11 +92,5 @@ jobs:
             fi
 
             echo "${gender} portrait QA passed"
-            python3 - "/tmp/chisel-${gender}-qa.html" <<'PY'
-import html, re, sys
-text=open(sys.argv[1], encoding='utf-8').read()
-m=re.search(r'<pre id="qa-result">(.*?)</pre>', text, re.S)
-if m:
-    print(html.unescape(m.group(1)))
-PY
+            python3 -c 'import html,re,sys; t=open(sys.argv[1],encoding="utf-8").read(); m=re.search(r"<pre id=\"qa-result\">(.*?)</pre>",t,re.S); print(html.unescape(m.group(1)) if m else "")' "/tmp/chisel-${gender}-qa.html"
           done
