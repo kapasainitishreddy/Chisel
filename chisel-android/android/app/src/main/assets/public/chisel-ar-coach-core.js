@@ -5,7 +5,7 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
-  const SAFETY_COPY = 'This does not reshape adult facial bones or spot-reduce fat. Keep your jaw relaxed and never force the movement. Stop for pain, clicking, locking, dizziness, numbness, or discomfort.';
+  const SAFETY_COPY = 'This does not reshape adult facial bones or spot-reduce fat. Face Yoga is gentle movement and relaxation awareness. Keep your jaw relaxed and never force the movement. Stop for pain, clicking, locking, dizziness, numbness, or discomfort.';
 
   const EXERCISES = [
     {
@@ -27,13 +27,24 @@
       id: 'relaxed-smile', name: 'Relaxed smile', kind: 'smile', reps: 4, hold: 4, minLift: 0.055, maxLift: 0.30,
       evidence: 'Limited', cue: 'Hold a small, even smile. Keep your lips soft and teeth unclenched.',
       safety: 'Reduce the range if your jaw clicks or feels tired.'
+    },
+    {
+      id: 'brow-release', name: 'Brow lift and release', kind: 'align', reps: 3, hold: 4,
+      evidence: 'Limited', cue: 'Lift your brows gently, then soften your forehead while keeping your head still.',
+      safety: 'No forceful stretching. Keep the eyes relaxed and stop if you feel strain.'
+    },
+    {
+      id: 'jaw-release', name: 'Jaw release', kind: 'release', reps: 3, hold: 5,
+      evidence: 'Limited', cue: 'Let your lips part slightly and release jaw tension. Keep the movement small and comfortable.',
+      safety: 'Do not open wide or push through clicking, locking, or pain.'
     }
   ];
 
   const SESSIONS = {
     jaw: { id: 'jaw', title: 'Jawline posture', duration: '3 min', exerciseIds: ['chin-tuck', 'neck-length'] },
     cheek: { id: 'cheek', title: 'Cheek lift', duration: '3 min', exerciseIds: ['cheek-raise', 'relaxed-smile'] },
-    full: { id: 'full', title: 'Full face', duration: '6 min', exerciseIds: ['chin-tuck', 'neck-length', 'cheek-raise', 'relaxed-smile'] }
+    full: { id: 'full', title: 'Full face', duration: '6 min', exerciseIds: ['chin-tuck', 'neck-length', 'cheek-raise', 'relaxed-smile'] },
+    yoga: { id: 'yoga', title: 'Unisex Face Yoga', duration: '7 min', exerciseIds: ['brow-release', 'cheek-raise', 'jaw-release', 'neck-length'] }
   };
 
   const distance = (a, b) => Math.hypot((a.x || 0) - (b.x || 0), (a.y || 0) - (b.y || 0));
@@ -71,7 +82,10 @@
     if (signals.frontal === false) return { accepted: false, correction: 'Face the camera directly', tone: 'find' };
     if (signals.eyeTilt > 0.055) return { accepted: false, correction: 'Level your eyes', tone: 'find' };
     if (signals.centered > 0.08) return { accepted: false, correction: 'Center your face', tone: 'find' };
-    if (signals.mouthOpen > 0.16) return { accepted: false, correction: 'Relax your jaw and soften your mouth', tone: 'find' };
+    if (exercise.kind === 'release') {
+      if (signals.mouthOpen < 0.025) return { accepted: false, correction: 'Let your lips part slightly and soften the jaw', tone: 'find' };
+      if (signals.mouthOpen > 0.16) return { accepted: false, correction: 'Use a smaller jaw release - do not open wide', tone: 'find' };
+    } else if (signals.mouthOpen > 0.16) return { accepted: false, correction: 'Relax your jaw and soften your mouth', tone: 'find' };
     if (exercise.kind === 'smile') {
       if (signals.cornerAsymmetry > 0.08) return { accepted: false, correction: 'Lift both cheeks evenly', tone: 'find' };
       if (signals.cornerLift < exercise.minLift) return { accepted: false, correction: 'Lift your cheeks gently', tone: 'find' };
@@ -162,8 +176,7 @@
 });
 
 /* Feature runtime loader. index.html loads this small core early; this loader
-   activates the optional feature modules that ship in the APK without making
-   the main inline app depend on their implementation order. */
+   activates optional feature modules that ship in the APK. */
 if (typeof window !== 'undefined' && typeof document !== 'undefined') {
   window.addEventListener('load', () => {
     const addCss = (href) => {
@@ -213,6 +226,8 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
           'chisel-precision-body.js', 'chisel-precision-ui.js',
           'chisel-precision.js'
         ]) await addScript(src);
+        await addScript('chisel-scan-guard.js');
+        await addScript('chisel-experience-polish.js');
       } catch (error) {
         console.warn('[Chisel runtime] optional feature module failed to load', error);
       }
