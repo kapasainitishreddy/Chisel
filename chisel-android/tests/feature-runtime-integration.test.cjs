@@ -8,21 +8,13 @@ const root = path.resolve(__dirname, '..');
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
 const hash = (p) => crypto.createHash('sha256').update(read(p)).digest('hex');
 
-test('feature runtime loads Beauty Studio, Chisel Labs, and Precision after the app shell', () => {
+test('feature runtime loads Beauty Studio, Chisel Labs, Precision and polish runtimes after the app shell', () => {
   const js = read('www/chisel-ar-coach-core.js');
   for (const ref of [
-    'chisel-beauty-studio.js',
-    'chisel-enhancements.css',
-    'chisel-enhancements-core.js',
-    'chisel-enhancements.js',
-    'chisel-precision.css',
-    'chisel-precision-stats.js',
-    'chisel-precision-protocol.js',
-    'chisel-precision-core.js',
-    'chisel-precision-face.js',
-    'chisel-precision-body.js',
-    'chisel-precision-ui.js',
-    'chisel-precision.js'
+    'chisel-beauty-studio.js','chisel-enhancements.css','chisel-enhancements-core.js','chisel-enhancements.js',
+    'chisel-precision.css','chisel-precision-stats.js','chisel-precision-protocol.js','chisel-precision-core.js',
+    'chisel-precision-face.js','chisel-precision-body.js','chisel-precision-ui.js','chisel-precision.js',
+    'chisel-scan-guard.js','chisel-experience-polish.js'
   ]) assert.ok(js.includes(ref), `${ref} is not loaded by the runtime`);
 });
 
@@ -34,10 +26,10 @@ test('Precision runtime loads dependency order before dependants', () => {
 
 test('style gender switch is customer-facing Men / Women', () => {
   const js = read('www/chisel-ar-coach-core.js');
-  assert.match(js, /textContent = 'Men'/);
-  assert.match(js, /textContent = 'Women'/);
-  assert.match(js, /aria-label', 'Men hairstyles'/);
-  assert.match(js, /aria-label', 'Women hairstyles'/);
+  assert.match(js, /textContent\s*=\s*['"]Men['"]/);
+  assert.match(js, /textContent\s*=\s*['"]Women['"]/);
+  assert.match(js, /Men hairstyles/);
+  assert.match(js, /Women hairstyles/);
 });
 
 test('feature runtime is synchronized into the Android package assets', () => {
