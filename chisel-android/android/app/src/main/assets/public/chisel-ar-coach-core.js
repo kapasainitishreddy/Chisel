@@ -78,6 +78,7 @@ if(typeof window!=='undefined'&&typeof document!=='undefined'){
       for(const src of ['chisel-precision-stats.js','chisel-precision-protocol.js','chisel-precision-core.js','chisel-precision-face.js','chisel-precision-body.js','chisel-precision-ui.js','chisel-precision.js'])await addScript(src);
       await addScript('chisel-scan-guard.js');if(window.ChiselScanGuard)window.ChiselScanGuard.installBrowserGuard();
       await addScript('chisel-experience-polish.js');if(window.ChiselExperiencePolish)window.ChiselExperiencePolish.install();
+      await addScript('chisel-product-polish.js');if(window.ChiselProductPolish)window.ChiselProductPolish.install();
     }catch(error){console.warn('[Chisel runtime] optional feature module failed to load',error);}})();
   },{once:true});
 }
