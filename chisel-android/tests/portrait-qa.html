@@ -4,11 +4,38 @@
 <script>
 (async()=>{
   const params=new URLSearchParams(location.search); const gender=params.get('gender')==='female'?'female':'male';
-  const result={gender, checks:{}, errors:[]}; const out=document.getElementById('qa-result');
+  const result={gender, checks:{}, errors:[], browserConsoleErrors:[]}; const out=document.getElementById('qa-result');
   const set=(name,value)=>{result.checks[name]=value;};
   const finish=(ok,extra)=>{if(extra)Object.assign(result,extra);document.body.dataset.status=ok?'pass':'fail';out.textContent=JSON.stringify(result,null,2);};
   const wait=(ms)=>new Promise(r=>setTimeout(r,ms));
   const until=async(fn,ms=20000,step=250)=>{const t=Date.now();while(Date.now()-t<ms){try{const v=await fn();if(v)return v;}catch(_){}await wait(step);}return null;};
+  const scanDiagnostics=(w)=>{
+    try{return w.eval(`(()=>{
+      let d=null,pose=null,frame=null;
+      try{d=readLandmarks();}catch(e){}
+      try{pose=d?quickPose(d):null;}catch(e){}
+      try{const f=d?measureFrame(d):null; if(f) frame={frontal:f.frontal,qLum:f.qLum,faceFill:f.faceFill,rollDeg:f.rollDeg,yaw:f.yaw,blink:f.blink};}catch(e){}
+      const badge=document.getElementById('scanTrustBadge');
+      const guide=document.getElementById('scanGuide');
+      return {
+        camMode:typeof camMode==='undefined'?null:camMode,
+        scanMode:typeof scanMode==='undefined'?null:scanMode,
+        deepScan:typeof deepScan==='undefined'?null:deepScan,
+        activeGuide:typeof shouldShowScanGuide==='function'?shouldShowScanGuide():null,
+        streamActive:!!(stream&&stream.active),
+        videoReadyState:cam.readyState,
+        videoWidth:cam.videoWidth,
+        videoHeight:cam.videoHeight,
+        detected:!!d,
+        pose,
+        measuredFrame:frame,
+        burstLength:typeof _burst==='undefined'?null:_burst.length,
+        lockAt:typeof _lockAt==='undefined'?null:_lockAt,
+        guideText:guide?guide.innerText:null,
+        trustBadge:badge?badge.textContent:null
+      };
+    })()`);}catch(e){return {diagnosticError:e.message||String(e)};}
+  };
   try{
     localStorage.clear();
     localStorage.setItem('chisel:identity',JSON.stringify({gender,label:null}));
@@ -17,7 +44,7 @@
     await new Promise((resolve,reject)=>{frame.onload=resolve;setTimeout(()=>reject(new Error('app load timeout')),15000);});
     const w=frame.contentWindow;
     w.addEventListener('error',e=>result.errors.push('window:'+e.message));
-    const originalError=w.console.error.bind(w.console); w.console.error=(...a)=>{result.errors.push('console:'+a.map(String).join(' ')); originalError(...a);};
+    const originalError=w.console.error.bind(w.console); w.console.error=(...a)=>{result.browserConsoleErrors.push(a.map(String).join(' ')); originalError(...a);};
     await wait(400);
     try{ w.identitySet(gender,null); w.applyIdentity(); }catch(e){ result.errors.push('identity:'+e.message); }
     set('identity', w.eval('identityGender()')===gender);
@@ -27,7 +54,7 @@
     w.go('analyze'); w.setCamMode('scan'); await w.openCam();
     const scan=await until(()=>{const a=JSON.parse(localStorage.getItem('chisel:scans')||'[]');return a.length?a[a.length-1]:null;},18000,300);
     set('quickScanCompleted',!!scan);
-    if(!scan) throw new Error('Quick scan did not complete on generated portrait');
+    if(!scan){ result.scanDiagnostics=scanDiagnostics(w); throw new Error('Quick scan did not complete on generated portrait'); }
     set('finiteCoreMetrics',['overall','sym','jaw','nose','lips','eyes','skin'].every(k=>Number.isFinite(Number(scan[k]))));
     set('faceShapeResolved',typeof scan.shape==='string'&&scan.shape.length>0);
     set('undertoneResolved',typeof scan.undertone==='string'&&scan.undertone.length>0);
@@ -42,7 +69,7 @@
     if(gender==='female'){
       set('womenStyleMode',w.eval('styleGender')==='women');
       set('womenHairLibraryExpanded',w.eval('HAIR_WOMEN.length')>=19);
-      set('beautyPreferencesVisible',getComputedStyle(w.document.getElementById('beautyHairPrefs')).display!=='none');
+      set('beautyPreferencesVisible',w.getComputedStyle(w.document.getElementById('beautyHairPrefs')).display!=='none');
       set('beautyGuideAvailable',!!w.document.getElementById('openBeautyGuide'));
       set('adaptiveBlushLooks',w.eval('MAKEUP_LOOKS.filter(x=>x&&x.blushPlacement).length')>=7);
       w.document.getElementById('openBeautyGuide').click(); await wait(200);
