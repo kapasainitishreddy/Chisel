@@ -26,8 +26,10 @@ test('face yoga is a real unisex AR session with multiple movements', () => {
   for(const id of coach.SESSIONS.yoga.exerciseIds) assert.ok(coach.exerciseById(id),`Missing yoga exercise ${id}`);
 });
 
-test('try-on polish exposes direct men women beard and makeup entry points', () => {
+test('try-on polish parses and exposes direct men women beard and makeup entry points', () => {
   assert.ok(exists('www/chisel-experience-polish.js'), 'experience polish runtime is missing');
+  const experience = require(path.join(root,'www/chisel-experience-polish.js'));
+  assert.equal(typeof experience.install,'function');
   const js = read('www/chisel-experience-polish.js');
   for(const token of ['Men hair','Beard studio','Women hair','Makeup studio']) assert.match(js,new RegExp(token,'i'));
   assert.match(js,/styleBeard\s*=\s*0/,'generic try-on must open clean-shaven');
@@ -36,7 +38,7 @@ test('try-on polish exposes direct men women beard and makeup entry points', () 
 
 test('premium AR guide replaces debug mesh with a restrained face guide', () => {
   const js = read('www/chisel-experience-polish.js');
-  assert.match(js,/drawARCoachGuide\s*=\s*function/,'premium guide must replace the old debug-style AR overlay');
+  assert.match(js,/drawARCoachGuide\s*=\s*premium/,'premium guide must replace the old debug-style AR overlay');
   assert.match(js,/premiumJaw/,'premium jaw guide marker missing');
   assert.match(js,/cheekAnchors/,'premium cheek anchors missing');
   assert.doesNotMatch(js,/10,9,168,1,2,152/,'premium guide should not draw the old center-face debug line');
