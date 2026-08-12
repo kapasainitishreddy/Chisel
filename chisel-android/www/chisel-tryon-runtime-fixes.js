@@ -1,10 +1,40 @@
 (function(root,factory){
   const api=factory();
-  if(typeof module==='object'&&module.exports)module.exports=api;
-  else root.ChiselTryonRuntimeFixes=api;
+  if(typeof module==='object'&&module.exports) module.exports=api;
+  else {
+    root.ChiselTryonRuntimeFixes=api;
+    if(typeof window!=='undefined'&&typeof document!=='undefined'){
+      window.addEventListener('load',()=>setTimeout(api.install,0),{once:true});
+    }
+  }
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
+
+  function isDuplicateRoute(route,activeRoute,hash){
+    const target=String(route||'home');
+    return activeRoute===target && hash==='#'+target;
+  }
+
+  function installRouteGuard(){
+    if(typeof window==='undefined'||typeof document==='undefined'||typeof window.go!=='function') return false;
+    if(window.go.__chiselRouteGuard) return true;
+    const originalGo=window.go;
+    const wrappedGo=function(route){
+      const target=String(route||'home');
+      const active=document.querySelector('.screen.active');
+      const activeRoute=active&&active.dataset?active.dataset.screen:null;
+      if(isDuplicateRoute(target,activeRoute,window.location.hash)) return true;
+      return originalGo.apply(this,arguments);
+    };
+    wrappedGo.__chiselRouteGuard=true;
+    wrappedGo.__chiselOriginalGo=originalGo;
+    window.go=wrappedGo;
+    return true;
+  }
+
   function install(){
+    installRouteGuard();
+
     if(typeof renderStyleChips==='function'&&!renderStyleChips.__chiselTryonFix){
       const originalRender=renderStyleChips;
       const wrappedRender=function(){
@@ -52,5 +82,5 @@
     }
     return true;
   }
-  return{install};
+  return{install,isDuplicateRoute,installRouteGuard};
 });
