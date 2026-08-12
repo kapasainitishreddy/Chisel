@@ -161,14 +161,55 @@
   };
 });
 
-/* Beauty Studio is kept separate from the core camera/coach module. Load it only
-   in the browser after Chisel's main inline app script has created the try-on globals. */
+/* Feature runtime loader. index.html loads this small core early; this loader
+   activates the optional feature modules that ship in the APK without making
+   the main inline app depend on their implementation order. */
 if (typeof window !== 'undefined' && typeof document !== 'undefined') {
   window.addEventListener('load', () => {
-    if (document.querySelector('script[data-chisel-beauty-studio]')) return;
-    const script = document.createElement('script');
-    script.src = 'chisel-beauty-studio.js';
-    script.dataset.chiselBeautyStudio = '1';
-    document.body.appendChild(script);
+    const addCss = (href) => {
+      if (document.querySelector(`link[data-chisel-runtime="${href}"]`)) return;
+      const link = document.createElement('link');
+      link.rel = 'stylesheet'; link.href = href; link.dataset.chiselRuntime = href;
+      document.head.appendChild(link);
+    };
+    const addScript = (src) => new Promise((resolve, reject) => {
+      const prior = document.querySelector(`script[data-chisel-runtime="${src}"]`);
+      if (prior) { if (prior.dataset.loaded === '1') resolve(); else prior.addEventListener('load', resolve, { once:true }); return; }
+      const script = document.createElement('script');
+      script.src = src; script.dataset.chiselRuntime = src;
+      script.addEventListener('load', () => { script.dataset.loaded='1'; resolve(); }, { once:true });
+      script.addEventListener('error', () => reject(new Error(`Could not load ${src}`)), { once:true });
+      document.body.appendChild(script);
+    });
+    (async () => {
+      try {
+        await addScript('chisel-beauty-studio.js');
+        const fixStyleLabels = () => {
+          const first = document.querySelector('#styleTop .seg');
+          if (!first) return;
+          const buttons = first.querySelectorAll('button');
+          if (buttons[0]) { buttons[0].textContent = 'Men'; buttons[0].setAttribute('aria-label', 'Men hairstyles'); }
+          if (buttons[1]) { buttons[1].textContent = 'Women'; buttons[1].setAttribute('aria-label', 'Women hairstyles'); }
+        };
+        fixStyleLabels();
+        const styleTop = document.getElementById('styleTop');
+        if (styleTop && !styleTop.dataset.genderLabelObserver) {
+          styleTop.dataset.genderLabelObserver = '1';
+          new MutationObserver(fixStyleLabels).observe(styleTop, { childList:true, subtree:true });
+        }
+        addCss('chisel-enhancements.css');
+        await addScript('chisel-enhancements-core.js');
+        await addScript('chisel-enhancements.js');
+        addCss('chisel-precision.css');
+        for (const src of [
+          'chisel-precision-core.js', 'chisel-precision-stats.js',
+          'chisel-precision-protocol.js', 'chisel-precision-face.js',
+          'chisel-precision-body.js', 'chisel-precision-ui.js',
+          'chisel-precision.js'
+        ]) await addScript(src);
+      } catch (error) {
+        console.warn('[Chisel runtime] optional feature module failed to load', error);
+      }
+    })();
   }, { once: true });
 }
