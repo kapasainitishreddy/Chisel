@@ -48,7 +48,7 @@ jobs:
       - name: Run AI-generated male and female portrait QA
         shell: bash
         run: |
-          set -euo pipefail
+          set -uo pipefail
           command -v ffmpeg >/dev/null || (sudo apt-get update && sudo apt-get install -y ffmpeg)
           CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
           if [ -z "$CHROME" ]; then
@@ -56,10 +56,12 @@ jobs:
             exit 1
           fi
 
+          rm -f /tmp/chisel-*-qa.html /tmp/chisel-*-chrome.log /tmp/chisel-http.log
           python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/chisel-http.log 2>&1 &
           SERVER_PID=$!
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
           sleep 1
+          STATUS=0
 
           for gender in male female; do
             ffmpeg -hide_banner -loglevel error -y -loop 1 \
@@ -81,16 +83,34 @@ jobs:
               "http://127.0.0.1:4173/tests/portrait-qa.html?gender=${gender}" \
               > "/tmp/chisel-${gender}-qa.html" 2> "/tmp/chisel-${gender}-chrome.log" || true
 
-            if ! grep -q 'data-status="pass"' "/tmp/chisel-${gender}-qa.html"; then
-              echo "===== ${gender} portrait QA FAILED =====" >&2
-              cat "/tmp/chisel-${gender}-qa.html" >&2 || true
-              echo "===== ${gender} Chrome log =====" >&2
-              cat "/tmp/chisel-${gender}-chrome.log" >&2 || true
-              echo "===== local HTTP log =====" >&2
-              cat /tmp/chisel-http.log >&2 || true
-              exit 1
-            fi
+            echo "===== ${gender} portrait QA ====="
+            python3 -c 'import html,re,sys; t=open(sys.argv[1],encoding="utf-8").read(); m=re.search(r"<pre id=\"qa-result\">(.*?)</pre>",t,re.S); print(html.unescape(m.group(1)) if m else "QA result element missing")' "/tmp/chisel-${gender}-qa.html"
 
-            echo "${gender} portrait QA passed"
-            python3 -c 'import html,re,sys; t=open(sys.argv[1],encoding="utf-8").read(); m=re.search(r"<pre id=\"qa-result\">(.*?)</pre>",t,re.S); print(html.unescape(m.group(1)) if m else "")' "/tmp/chisel-${gender}-qa.html"
+            if ! grep -q 'data-status="pass"' "/tmp/chisel-${gender}-qa.html"; then
+              echo "${gender} portrait QA FAILED" >&2
+              STATUS=1
+            else
+              echo "${gender} portrait QA passed"
+            fi
           done
+
+          if [ "$STATUS" -ne 0 ]; then
+            echo "===== Chrome diagnostics =====" >&2
+            for f in /tmp/chisel-*-chrome.log; do echo "--- $f ---" >&2; cat "$f" >&2 || true; done
+            echo "===== local HTTP log =====" >&2
+            cat /tmp/chisel-http.log >&2 || true
+          fi
+          exit "$STATUS"
+      - name: Upload portrait QA diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: portrait-qa-diagnostics
+          path: |
+            /tmp/chisel-male-qa.html
+            /tmp/chisel-female-qa.html
+            /tmp/chisel-male-chrome.log
+            /tmp/chisel-female-chrome.log
+            /tmp/chisel-http.log
+          if-no-files-found: warn
+          retention-days: 7
