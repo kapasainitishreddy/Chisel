@@ -9,6 +9,7 @@
   const finish=(ok,extra)=>{if(extra)Object.assign(result,extra);document.body.dataset.status=ok?'pass':'fail';out.textContent=JSON.stringify(result,null,2);};
   const wait=(ms)=>new Promise(r=>setTimeout(r,ms));
   const until=async(fn,ms=20000,step=250)=>{const t=Date.now();while(Date.now()-t<ms){try{const v=await fn();if(v)return v;}catch(_){}await wait(step);}return null;};
+  const savedScan=()=>{const a=JSON.parse(localStorage.getItem('chisel:scans')||'[]');return a.length?a[a.length-1]:null;};
   const scanDiagnostics=(w)=>{
     try{return w.eval(`(()=>{
       let d=null,pose=null,frame=null;
@@ -22,6 +23,7 @@
         scanMode:typeof scanMode==='undefined'?null:scanMode,
         deepScan:typeof deepScan==='undefined'?null:deepScan,
         activeGuide:typeof shouldShowScanGuide==='function'?shouldShowScanGuide():null,
+        cameraWrapperOpen:typeof isCamOpen==='function'?isCamOpen():null,
         streamActive:!!(stream&&stream.active),
         videoReadyState:cam.readyState,
         videoWidth:cam.videoWidth,
@@ -52,7 +54,12 @@
     set('faceEngineReady',!!kit);
     if(!kit) throw new Error('MediaPipe face engine did not initialize');
     w.go('analyze'); w.setCamMode('scan'); await w.openCam();
-    const scan=await until(()=>{const a=JSON.parse(localStorage.getItem('chisel:scans')||'[]');return a.length?a[a.length-1]:null;},18000,300);
+
+    let scan=await until(savedScan,3500,250);
+    if(!scan) result.scanAt3_5s=scanDiagnostics(w);
+    if(!scan) scan=await until(savedScan,7000,250);
+    if(!scan) result.scanAt10_5s=scanDiagnostics(w);
+    if(!scan) scan=await until(savedScan,6000,250);
     set('quickScanCompleted',!!scan);
     if(!scan){ result.scanDiagnostics=scanDiagnostics(w); throw new Error('Quick scan did not complete on generated portrait'); }
     set('finiteCoreMetrics',['overall','sym','jaw','nose','lips','eyes','skin'].every(k=>Number.isFinite(Number(scan[k]))));
@@ -91,7 +98,7 @@
     try{w.openPaywall();await wait(150);set('paywallGraceful',w.document.getElementById('paywall').classList.contains('on')&&/store|premium|offer/i.test(w.document.getElementById('paywall').innerText));w.closePaywall();}catch(e){result.errors.push('paywall:'+e.message);set('paywallGraceful',false);}
     set('programsPresent',!!w.document.getElementById('programs')&&!!w.document.getElementById('programModal'));
     set('progressSharingPresent',!!w.document.getElementById('shareProgress'));
-    set('reminderControlsPresent',/remind/i.test(w.document.body.innerText));
+    set('reminderControlsPresent',!!w.document.getElementById('remDaily')&&!!w.document.getElementById('remWeekly')&&!!w.document.getElementById('remTime'));
 
     const failed=Object.entries(result.checks).filter(([,v])=>v!==true).map(([k])=>k);
     result.failed=failed; finish(failed.length===0 && result.errors.length===0);
