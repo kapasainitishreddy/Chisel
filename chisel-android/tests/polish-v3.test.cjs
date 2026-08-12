@@ -34,6 +34,14 @@ test('try-on polish exposes direct men women beard and makeup entry points', () 
   assert.match(js,/preview-only/,'try-on needs a compact preview state so the jaw remains visible');
 });
 
+test('premium AR guide replaces debug mesh with a restrained face guide', () => {
+  const js = read('www/chisel-experience-polish.js');
+  assert.match(js,/drawARCoachGuide\s*=\s*function/,'premium guide must replace the old debug-style AR overlay');
+  assert.match(js,/premiumJaw/,'premium jaw guide marker missing');
+  assert.match(js,/cheekAnchors/,'premium cheek anchors missing');
+  assert.doesNotMatch(js,/10,9,168,1,2,152/,'premium guide should not draw the old center-face debug line');
+});
+
 test('new polish runtimes are mirrored into Android packaged assets', () => {
   for(const file of ['chisel-scan-guard.js','chisel-experience-polish.js']){
     assert.ok(exists(`www/${file}`),`${file} missing from www`);
