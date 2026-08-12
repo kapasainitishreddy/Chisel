@@ -43,8 +43,11 @@ jobs:
           node --check www/chisel-scan-guard.js
           node --check www/chisel-experience-polish.js
           node --check www/chisel-product-polish.js
+          node --check tests/portrait-qa-runner.mjs
       - name: Run automated tests
         run: npm test
+      - name: Install portrait QA browser controller
+        run: npm install --no-save --package-lock=false puppeteer-core@24
       - name: Run AI-generated male and female portrait QA
         shell: bash
         run: |
@@ -55,8 +58,9 @@ jobs:
             echo "Chrome/Chromium is required for portrait QA" >&2
             exit 1
           fi
+          export CHROME
 
-          rm -f /tmp/chisel-*-qa.html /tmp/chisel-*-chrome.log /tmp/chisel-http.log
+          rm -f /tmp/chisel-*-qa.html /tmp/chisel-*-chrome.log /tmp/chisel-*-result.txt /tmp/chisel-http.log
           python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/chisel-http.log 2>&1 &
           SERVER_PID=$!
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
@@ -66,37 +70,15 @@ jobs:
           for gender in male female; do
             ffmpeg -hide_banner -loglevel error -y -loop 1 \
               -i "tests/fixtures/portrait-${gender}.jpg" \
-              -vf "scale=640:800:force_original_aspect_ratio=decrease,pad=640:800:(ow-iw)/2:(oh-ih)/2:color=gray,format=yuv420p" \
-              -r 30 -t 60 -f yuv4mpegpipe "/tmp/chisel-${gender}.y4m"
+              -vf "scale=320:400:force_original_aspect_ratio=decrease,pad=320:400:(ow-iw)/2:(oh-ih)/2:color=gray,format=yuv420p" \
+              -r 20 -t 25 -f yuv4mpegpipe "/tmp/chisel-${gender}.y4m"
 
-            "$CHROME" \
-              --headless=new \
-              --no-sandbox \
-              --disable-gpu \
-              --disable-dev-shm-usage \
-              --autoplay-policy=no-user-gesture-required \
-              --use-fake-ui-for-media-stream \
-              --use-fake-device-for-media-stream \
-              --use-file-for-fake-video-capture="/tmp/chisel-${gender}.y4m" \
-              --virtual-time-budget=60000 \
-              --dump-dom \
-              "http://127.0.0.1:4173/tests/portrait-qa.html?gender=${gender}" \
-              > "/tmp/chisel-${gender}-qa.html" 2> "/tmp/chisel-${gender}-chrome.log" || true
-
-            echo "===== ${gender} portrait QA ====="
-            python3 -c 'import html,re,sys; t=open(sys.argv[1],encoding="utf-8").read(); m=re.search(r"<pre id=\"qa-result\">(.*?)</pre>",t,re.S); print(html.unescape(m.group(1)) if m else "QA result element missing")' "/tmp/chisel-${gender}-qa.html"
-
-            if ! grep -q 'data-status="pass"' "/tmp/chisel-${gender}-qa.html"; then
-              echo "${gender} portrait QA FAILED" >&2
+            if ! node tests/portrait-qa-runner.mjs "$gender" "/tmp/chisel-${gender}.y4m" "http://127.0.0.1:4173"; then
               STATUS=1
-            else
-              echo "${gender} portrait QA passed"
             fi
           done
 
           if [ "$STATUS" -ne 0 ]; then
-            echo "===== Chrome diagnostics =====" >&2
-            for f in /tmp/chisel-*-chrome.log; do echo "--- $f ---" >&2; cat "$f" >&2 || true; done
             echo "===== local HTTP log =====" >&2
             cat /tmp/chisel-http.log >&2 || true
           fi
@@ -111,6 +93,8 @@ jobs:
             /tmp/chisel-female-qa.html
             /tmp/chisel-male-chrome.log
             /tmp/chisel-female-chrome.log
+            /tmp/chisel-male-result.txt
+            /tmp/chisel-female-result.txt
             /tmp/chisel-http.log
           if-no-files-found: warn
           retention-days: 7
