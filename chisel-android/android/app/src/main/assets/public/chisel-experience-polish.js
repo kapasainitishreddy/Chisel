@@ -23,6 +23,40 @@
       .cx-yoga-note{margin-top:10px;padding:10px 12px;border-radius:12px;background:rgba(124,199,154,.08);border:1px solid rgba(124,199,154,.2);font-size:10px;color:#C9C2B4;line-height:1.45}
     `;if(!document.getElementById(css.id))document.head.appendChild(css);
 
+    /* Replace the old debug-like face trace with a restrained AR guide. The
+       face remains visible; only the lower jaw arc and a few movement anchors
+       are drawn, switching from gold to green when form locks. */
+    try{
+      if(typeof drawARCoachGuide==='function'&&!drawARCoachGuide.__cxPremium){
+        const premium=function(d,R){
+          if(!d||!d.pts)return;
+          const pts=d.pts,w=R.vw,h=R.vh,locked=!!(_arForm&&_arForm.accepted);
+          const main=locked?'rgba(124,199,154,.96)':'rgba(226,197,138,.94)';
+          const glow=locked?'rgba(124,199,154,.20)':'rgba(226,197,138,.17)';
+          const P=i=>({x:pts[i].x*w,y:pts[i].y*h});
+          const premiumJaw=[234,93,132,58,172,136,150,149,176,152,400,378,379,365,397,288,361,323,454];
+          const cheekAnchors=[50,280];
+          ctx.save();
+          if(facing==='user'){ctx.translate(R.cw,0);ctx.scale(-1,1);}
+          ctx.translate(R.ox,R.oy);ctx.scale(R.s,R.s);
+          const jawPath=()=>{ctx.beginPath();premiumJaw.forEach((i,n)=>{const p=P(i);n?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y);});};
+          jawPath();ctx.strokeStyle='rgba(0,0,0,.42)';ctx.lineWidth=5.2/R.s;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();
+          jawPath();ctx.strokeStyle=main;ctx.lineWidth=1.9/R.s;ctx.stroke();
+          ctx.shadowColor=glow;ctx.shadowBlur=16/R.s;ctx.fillStyle=main;
+          [172,152,397].forEach(i=>{const p=P(i);ctx.beginPath();ctx.arc(p.x,p.y,3.4/R.s,0,Math.PI*2);ctx.fill();});
+          const ex=(typeof AR_COACH!=='undefined'&&typeof _arState!=='undefined'&&_arState)?AR_COACH.currentExercise(_arState):null;
+          if(ex&&ex.kind==='smile'){
+            cheekAnchors.forEach(i=>{const p=P(i);ctx.beginPath();ctx.arc(p.x,p.y,10/R.s,0,Math.PI*2);ctx.strokeStyle=glow;ctx.lineWidth=7/R.s;ctx.stroke();ctx.beginPath();ctx.arc(p.x,p.y,3/R.s,0,Math.PI*2);ctx.fill();});
+          }else{
+            const chin=P(152);ctx.beginPath();ctx.arc(chin.x,chin.y,9/R.s,0,Math.PI*2);ctx.strokeStyle=glow;ctx.lineWidth=6/R.s;ctx.stroke();
+          }
+          ctx.restore();
+        };
+        premium.__cxPremium=true;
+        drawARCoachGuide=premium;
+      }
+    }catch(e){console.warn('[Chisel premium AR guide]',e);}
+
     const styleBar=document.getElementById('styleBar');
     if(styleBar&&!document.getElementById('cxPreviewHead')){
       const head=document.createElement('div');head.id='cxPreviewHead';head.className='cx-preview-head';head.innerHTML='<div><div class="cx-preview-title">Live preview</div><div class="cx-preview-sub" id="cxStyleSummary">Choose a style, then preview your full face</div></div><button class="cx-preview-toggle" type="button">Preview face</button>';
@@ -33,32 +67,23 @@
     }
     function updateSummary(){
       const el=document.getElementById('cxStyleSummary');if(!el)return;
-      try{
-        const h=(styleGender==='women'?HAIR_WOMEN:HAIR_MEN)[styleHair];const b=BEARD_STYLES[styleBeard];
-        el.textContent=[h&&h.name,b&&b.id!=='none'?b.name:null].filter(Boolean).join(' + ')||'Clean preview';
-      }catch(e){el.textContent='Live style preview';}
+      try{const h=(styleGender==='women'?HAIR_WOMEN:HAIR_MEN)[styleHair];const b=BEARD_STYLES[styleBeard];el.textContent=[h&&h.name,b&&b.id!=='none'?b.name:null].filter(Boolean).join(' + ')||'Clean preview';}catch(e){el.textContent='Live style preview';}
     }
     function setClean(){try{styleBeard=0;renderStyleChips();updateSummary();}catch(e){}}
     const originalOpen=typeof openStyle==='function'?openStyle:null;
-    if(originalOpen&&!originalOpen.__cxWrapped){
-      const wrapped=function(){const r=originalOpen.apply(this,arguments);setTimeout(()=>{setClean();if(styleBar)styleBar.classList.remove('preview-only')},20);return r};wrapped.__cxWrapped=true;openStyle=wrapped;
-    }
+    if(originalOpen&&!originalOpen.__cxWrapped){const wrapped=function(){const r=originalOpen.apply(this,arguments);setTimeout(()=>{setClean();if(styleBar)styleBar.classList.remove('preview-only')},20);return r};wrapped.__cxWrapped=true;openStyle=wrapped;}
     function launch(mode){
-      if(typeof openStyle!=='function')return;
-      openStyle();
-      setTimeout(()=>{
-        try{
-          if(mode==='men'){styleGender='men';styleHair=2;styleBeard=0;}
-          if(mode==='beard'){styleGender='men';styleHair=0;styleBeard=Math.min(2,BEARD_STYLES.length-1);}
-          if(mode==='women'){styleGender='women';styleHair=Math.min(4,HAIR_WOMEN.length-1);styleBeard=0;}
-          if(mode==='makeup'){styleBeard=0;styleMakeup=Math.max(1,typeof MAKEUP_LOOKS!=='undefined'?MAKEUP_LOOKS.findIndex(x=>x.id==='natural'):1);}
-          renderStyleTop();renderStyleChips();if(styleBar){styleBar.classList.remove('preview-only');styleBar.scrollTop=0;}updateSummary();
-          const target=mode==='beard'?document.getElementById('beardLab'):mode==='makeup'?document.getElementById('makeupChips'):document.getElementById('hairLab');if(target&&target.scrollIntoView)target.scrollIntoView({block:'nearest'});
-        }catch(e){console.warn('[Chisel studio launch]',e)}
-      },80);
+      if(typeof openStyle!=='function')return;openStyle();
+      setTimeout(()=>{try{
+        if(mode==='men'){styleGender='men';styleHair=2;styleBeard=0;}
+        if(mode==='beard'){styleGender='men';styleHair=0;styleBeard=Math.min(2,BEARD_STYLES.length-1);}
+        if(mode==='women'){styleGender='women';styleHair=Math.min(4,HAIR_WOMEN.length-1);styleBeard=0;}
+        if(mode==='makeup'){styleBeard=0;styleMakeup=Math.max(1,typeof MAKEUP_LOOKS!=='undefined'?MAKEUP_LOOKS.findIndex(x=>x.id==='natural'):1);}
+        renderStyleTop();renderStyleChips();if(styleBar){styleBar.classList.remove('preview-only');styleBar.scrollTop=0;}updateSummary();
+        const target=mode==='beard'?document.getElementById('beardLab'):mode==='makeup'?document.getElementById('makeupChips'):document.getElementById('hairLab');if(target&&target.scrollIntoView)target.scrollIntoView({block:'nearest'});
+      }catch(e){console.warn('[Chisel studio launch]',e)}},80);
     }
-    const openBtn=document.getElementById('openStyle');
-    const host=openBtn&&openBtn.closest('.card');
+    const openBtn=document.getElementById('openStyle');const host=openBtn&&openBtn.closest('.card');
     if(host&&!document.getElementById('cxStudioCard')){
       const card=document.createElement('div');card.id='cxStudioCard';card.className='cx-studio-card';card.innerHTML='<h3 class="cx-studio-title">Try-on Studio</h3><p class="cx-studio-copy">Open exactly what you want. Pick a style, then Chisel collapses the controls so you can actually see the hair, beard or makeup on your full face.</p><div class="cx-studio-grid"><button class="cx-studio-btn" data-cx="men"><b>Men hair</b><small>Cuts + color</small></button><button class="cx-studio-btn" data-cx="beard"><b>Beard studio</b><small>Stubble, beard, goatee, moustache</small></button><button class="cx-studio-btn" data-cx="women"><b>Women hair</b><small>18 styles + texture filters</small></button><button class="cx-studio-btn" data-cx="makeup"><b>Makeup studio</b><small>Blush, lips, eyes + guide</small></button></div>';
       host.insertAdjacentElement('afterend',card);card.addEventListener('click',e=>{const b=e.target.closest('[data-cx]');if(b)launch(b.dataset.cx)});
