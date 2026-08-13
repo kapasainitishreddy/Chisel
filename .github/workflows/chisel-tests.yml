@@ -16,7 +16,7 @@ permissions:
 jobs:
   enhancements:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 3
     defaults:
       run:
         working-directory: chisel-android
@@ -47,9 +47,28 @@ jobs:
           node --check tests/portrait-qa-runner.mjs
       - name: Run automated tests
         run: npm test
+
+  portrait-qa:
+    needs: enhancements
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    strategy:
+      fail-fast: false
+      matrix:
+        gender: [male, female]
+    defaults:
+      run:
+        working-directory: chisel-android
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - name: Install portrait QA browser controller
         run: npm install --no-save --package-lock=false puppeteer-core@24
-      - name: Run AI-generated male and female portrait QA
+      - name: Run ${{ matrix.gender }} generated-portrait QA
         shell: bash
         run: |
           set -uo pipefail
@@ -60,44 +79,31 @@ jobs:
             exit 1
           fi
           export CHROME
+          gender="${{ matrix.gender }}"
 
-          rm -f /tmp/chisel-*-qa.html /tmp/chisel-*-chrome.log /tmp/chisel-*-result.txt /tmp/chisel-http.log
+          rm -f "/tmp/chisel-${gender}-qa.html" "/tmp/chisel-${gender}-chrome.log" "/tmp/chisel-${gender}-result.txt" /tmp/chisel-http.log
           python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/chisel-http.log 2>&1 &
           SERVER_PID=$!
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
           sleep 1
-          STATUS=0
 
-          for gender in male female; do
-            ffmpeg -hide_banner -loglevel error -y -loop 1 \
-              -i "tests/fixtures/portrait-${gender}.jpg" \
-              -vf "scale=320:400:force_original_aspect_ratio=decrease,pad=320:400:(ow-iw)/2:(oh-ih)/2:color=gray,format=yuv420p" \
-              -r 20 -t 25 -f yuv4mpegpipe "/tmp/chisel-${gender}.y4m"
+          ffmpeg -hide_banner -loglevel error -y -loop 1 \
+            -i "tests/fixtures/portrait-${gender}.jpg" \
+            -vf "scale=320:400:force_original_aspect_ratio=decrease,pad=320:400:(ow-iw)/2:(oh-ih)/2:color=gray,format=yuv420p" \
+            -r 20 -t 25 -f yuv4mpegpipe "/tmp/chisel-${gender}.y4m"
 
-            # A broken MediaPipe/browser teardown must fail with diagnostics instead of hanging CI forever.
-            if ! timeout --signal=TERM --kill-after=10s 95s \
-              node tests/portrait-qa-runner.mjs "$gender" "/tmp/chisel-${gender}.y4m" "http://127.0.0.1:4173"; then
-              STATUS=1
-            fi
-          done
-
-          if [ "$STATUS" -ne 0 ]; then
-            echo "===== local HTTP log =====" >&2
-            cat /tmp/chisel-http.log >&2 || true
-          fi
-          exit "$STATUS"
-      - name: Upload portrait QA diagnostics
+          # Bound both the browser controller and any orphaned MediaPipe/Chromium teardown.
+          timeout --signal=TERM --kill-after=10s 110s \
+            node tests/portrait-qa-runner.mjs "$gender" "/tmp/chisel-${gender}.y4m" "http://127.0.0.1:4173"
+      - name: Upload ${{ matrix.gender }} portrait QA diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: portrait-qa-diagnostics
+          name: portrait-qa-${{ matrix.gender }}
           path: |
-            /tmp/chisel-male-qa.html
-            /tmp/chisel-female-qa.html
-            /tmp/chisel-male-chrome.log
-            /tmp/chisel-female-chrome.log
-            /tmp/chisel-male-result.txt
-            /tmp/chisel-female-result.txt
+            /tmp/chisel-${{ matrix.gender }}-qa.html
+            /tmp/chisel-${{ matrix.gender }}-chrome.log
+            /tmp/chisel-${{ matrix.gender }}-result.txt
             /tmp/chisel-http.log
           if-no-files-found: warn
           retention-days: 7
