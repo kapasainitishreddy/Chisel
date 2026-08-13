@@ -78,8 +78,6 @@
 
       ctx.save();
       ctx.lineJoin='round';ctx.lineCap='round';
-
-      // A blurred under-layer feathers the synthetic edge into the camera image.
       ctx.save();
       ctx.filter=`blur(${Math.max(1.2,fH*.006)}px)`;
       silhouette();
@@ -94,7 +92,6 @@
       g.addColorStop(1,color(dark,.68));
       silhouette();ctx.fillStyle=g;ctx.shadowColor='rgba(0,0,0,.24)';ctx.shadowBlur=fH*.018;ctx.fill();ctx.shadowBlur=0;
 
-      // Deterministic curved strand groups. Unlike the old Math.random path, these do not flicker frame-to-frame.
       ctx.strokeStyle=color(mid,.22);ctx.lineWidth=Math.max(.65,fH*.0026);
       const strands=32;
       for(let k=0;k<strands;k++){
@@ -110,7 +107,6 @@
         ctx.beginPath();ctx.moveTo(sx,sy);ctx.quadraticCurveTo(cx,cy,ex,ey);ctx.stroke();
       }
 
-      // Long/bob styles get curved side fall instead of rectangular cheek panels.
       if(st.fall){
         const fall=Math.max(.20,Math.min(1.25,Number(st.fall)||.45));
         const flare=faceW*Math.max(.06,Math.min(.28,Number(st.flare)||.12));
@@ -138,7 +134,6 @@
         drawFall(-1);drawFall(1);
       }
 
-      // Texture cue for curls/coils/shags: subtle arcs on the crown instead of jagged polygon spikes.
       if(/curl|coil|shag|wolf|wave/.test(String(st.id))){
         ctx.strokeStyle=color(light,.18);ctx.lineWidth=Math.max(.7,fH*.0024);
         for(let n=0;n<15;n++){
