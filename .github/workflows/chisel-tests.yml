@@ -16,6 +16,7 @@ permissions:
 jobs:
   enhancements:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     defaults:
       run:
         working-directory: chisel-android
@@ -73,7 +74,9 @@ jobs:
               -vf "scale=320:400:force_original_aspect_ratio=decrease,pad=320:400:(ow-iw)/2:(oh-ih)/2:color=gray,format=yuv420p" \
               -r 20 -t 25 -f yuv4mpegpipe "/tmp/chisel-${gender}.y4m"
 
-            if ! node tests/portrait-qa-runner.mjs "$gender" "/tmp/chisel-${gender}.y4m" "http://127.0.0.1:4173"; then
+            # A broken MediaPipe/browser teardown must fail with diagnostics instead of hanging CI forever.
+            if ! timeout --signal=TERM --kill-after=10s 95s \
+              node tests/portrait-qa-runner.mjs "$gender" "/tmp/chisel-${gender}.y4m" "http://127.0.0.1:4173"; then
               STATUS=1
             fi
           done
