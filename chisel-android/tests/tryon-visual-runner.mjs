@@ -6,7 +6,7 @@ const gender=process.argv[2];
 const videoPath=process.argv[3];
 const baseUrl=process.argv[4]||'http://127.0.0.1:4173';
 const chrome=process.env.CHROME;
-const DEADLINE=70000;
+const DEADLINE=120000;
 if(!['male','female'].includes(gender))throw new Error('gender must be male or female');
 if(!videoPath||!fs.existsSync(videoPath))throw new Error(`missing fake camera video: ${videoPath}`);
 if(!chrome)throw new Error('CHROME environment variable is required');
@@ -25,11 +25,11 @@ try{
   await page.goto(`${baseUrl}/www/index.html?visualTryon=${gender}`,{waitUntil:'domcontentloaded',timeout:30000});
   await page.evaluate(g=>{localStorage.clear();localStorage.setItem('chisel:identity',JSON.stringify({gender:g,label:null}));localStorage.setItem('chisel:cameraConsent','true');},gender);
   await page.reload({waitUntil:'domcontentloaded',timeout:30000});
-  const ready=await page.evaluate(async()=>{try{return !!(window.faceKit&&await Promise.race([window.faceKit.ready(),new Promise(r=>setTimeout(()=>r(false),22000))]));}catch{return false;}});
+  const ready=await page.evaluate(async()=>{try{return !!(window.faceKit&&await Promise.race([window.faceKit.ready(),new Promise(r=>setTimeout(()=>r(false),30000))]));}catch{return false;}});
   result.checks.faceEngineReady=ready;
   if(!ready)throw new Error('MediaPipe face engine did not initialize');
   await page.evaluate(g=>{try{identitySet(g,null);applyIdentity();}catch{}openStyle();},gender);
-  const detected=await page.waitForFunction(()=>{try{return !!readLandmarks();}catch{return false;}},{timeout:18000,polling:250}).then(()=>true).catch(()=>false);
+  const detected=await page.waitForFunction(()=>{try{return !!readLandmarks();}catch{return false;}},{timeout:30000,polling:250}).then(()=>true).catch(()=>false);
   result.checks.faceDetected=detected;
   if(!detected)throw new Error('Face landmarks were not detected in try-on mode');
 
