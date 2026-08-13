@@ -5,6 +5,8 @@ const path=require('node:path');
 const root=path.resolve(__dirname,'..');
 const canonical=fs.readFileSync(path.join(root,'www/chisel-tryon-runtime-fixes.js'),'utf8');
 const packaged=fs.readFileSync(path.join(root,'android/app/src/main/assets/public/chisel-tryon-runtime-fixes.js'),'utf8');
+const workflow=fs.readFileSync(path.join(root,'..','.github','workflows','chisel-tests.yml'),'utf8');
+const visualRunner=fs.readFileSync(path.join(root,'tests','tryon-visual-runner.mjs'),'utf8');
 const api=require('../www/chisel-tryon-runtime-fixes.js');
 
 test('V4 try-on runtime is synchronized into Android',()=>{
@@ -36,4 +38,10 @@ test('men crop and quiff remain visually distinct',()=>{
   const quiff=api.styleVisualProfile({id:'quiff'},'men');
   assert.ok(quiff.frontLift>crop.frontLift*1.5);
   assert.notEqual(quiff.part,crop.part);
+});
+
+test('visual try-on QA has enough time for slower female MediaPipe startup',()=>{
+  assert.match(workflow,/tryon-visual-qa:[\s\S]*timeout-minutes:\s*4/);
+  assert.match(workflow,/timeout --signal=TERM --kill-after=10s 150s/);
+  assert.match(visualRunner,/const DEADLINE=120000/);
 });
