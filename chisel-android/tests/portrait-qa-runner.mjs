@@ -45,9 +45,10 @@ async function captureTryOns(page) {
 
   try {
     await frame.evaluate(() => {
+      document.querySelectorAll('.modal.on').forEach((el) => el.classList.remove('on'));
       const beautyGuide = document.getElementById('beautyGuideModal');
       if (beautyGuide) beautyGuide.classList.remove('on');
-      for (const id of ['camSheet','photorealSheet','paywall']) {
+      for (const id of ['camSheet','photorealSheet','paywall','futureModal','exportModal','programModal','scoreModal','pickerModal','idModal','suggestModal','coachModal','routineModal','arCoachModal']) {
         const el = document.getElementById(id);
         if (el) el.classList.remove('on');
       }
