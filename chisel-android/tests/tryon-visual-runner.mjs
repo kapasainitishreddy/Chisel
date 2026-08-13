@@ -25,17 +25,27 @@ try{
   await page.goto(`${baseUrl}/www/index.html?visualTryon=${gender}`,{waitUntil:'domcontentloaded',timeout:30000});
   await page.evaluate(g=>{localStorage.clear();localStorage.setItem('chisel:identity',JSON.stringify({gender:g,label:null}));localStorage.setItem('chisel:cameraConsent','true');},gender);
   await page.reload({waitUntil:'domcontentloaded',timeout:30000});
-  const ready=await page.evaluate(async()=>{try{return !!(window.faceKit&&await Promise.race([window.faceKit.ready(),new Promise(r=>setTimeout(()=>r(false),30000))]));}catch{return false;}});
+  const ready=await page.evaluate(async()=>{try{return !!(window.faceKit&&await Promise.race([window.faceKit.ready(),new Promise(r=>setTimeout(()=>r(false),22000))]));}catch{return false;}});
   result.checks.faceEngineReady=ready;
   if(!ready)throw new Error('MediaPipe face engine did not initialize');
   await page.evaluate(g=>{try{identitySet(g,null);applyIdentity();}catch{}openStyle();},gender);
-  const detected=await page.waitForFunction(()=>{try{return !!readLandmarks();}catch{return false;}},{timeout:30000,polling:250}).then(()=>true).catch(()=>false);
+  const detected=await page.waitForFunction(()=>{try{return !!readLandmarks();}catch{return false;}},{timeout:18000,polling:250}).then(()=>true).catch(()=>false);
   result.checks.faceDetected=detected;
   if(!detected)throw new Error('Face landmarks were not detected in try-on mode');
 
-  const cases=gender==='female'?
-    [{slug:'french-bob-bare',hair:'frenchbob',beard:'none',makeup:'none'},{slug:'butterfly-peach-lift',hair:'butterfly',beard:'none',makeup:'peachlift'},{slug:'defined-curls-draped-rose',hair:'curls',beard:'none',makeup:'drapedrose'}]:
-    [{slug:'quiff-clean',hair:'quiff',beard:'none',makeup:'none'},{slug:'crop-soft-stubble',hair:'crop',beard:'stubble',makeup:'none'},{slug:'flow-short-beard',hair:'mlong',beard:'short',makeup:'none'}];
+  const cases=gender==='female'
+    ?[
+      {slug:'french-bob-bare',hair:'frenchbob',beard:'none',makeup:'none'},
+      {slug:'butterfly-peach-lift',hair:'butterfly',beard:'none',makeup:'peachlift'},
+      {slug:'defined-curls-draped-rose',hair:'curls',beard:'none',makeup:'drapedrose'}
+    ]
+    :[
+      {slug:'quiff-clean',hair:'quiff',beard:'none',makeup:'none'},
+      {slug:'crop-clean',hair:'crop',beard:'none',makeup:'none'},
+      {slug:'flow-clean',hair:'mlong',beard:'none',makeup:'none'},
+      {slug:'crop-soft-stubble',hair:'crop',beard:'stubble',makeup:'none'},
+      {slug:'crop-short-beard',hair:'crop',beard:'short',makeup:'none'}
+    ];
 
   for(const item of cases){
     const requested=await page.evaluate(item=>{
@@ -48,7 +58,7 @@ try{
       const clickedMakeup=clickNamed('makeupChips',makeup&&makeup.name);
       return{hairId:item.hair,hairName:hair&&hair.name,beardId:item.beard,beardName:beard&&beard.name,makeupId:item.makeup,makeupName:makeup&&makeup.name,clickedHair,clickedBeard,clickedMakeup};
     },item);
-    await wait(900);
+    await wait(850);
     const evidence=await page.evaluate(()=>{
       const list=styleGender==='women'?HAIR_WOMEN:HAIR_MEN,hs=list[styleHair]||{},bs=BEARD_STYLES[styleBeard]||{},ms=MAKEUP_LOOKS[styleMakeup]||{};
       const c=document.getElementById('overlay'),summary=document.getElementById('cxStyleSummary')?.textContent||'';
@@ -62,11 +72,25 @@ try{
     const selectionStable=evidence.selected.hairId===item.hair&&evidence.selected.beardId===item.beard&&evidence.selected.makeupId===item.makeup;
     result.captures.push({slug:item.slug,file:path,requested,...evidence,expectedSummary:expected,selectionStable,summaryMatches:evidence.summary===expected,overlayVisible:evidence.visible>20});
   }
-  result.checks.threeRenders=result.captures.length===3;
+
+  const expectedCount=gender==='female'?3:5;
+  result.checks.allRenders=result.captures.length===expectedCount;
   result.checks.userSelectionsStable=result.captures.every(x=>x.selectionStable&&x.requested.clickedHair&&x.requested.clickedBeard&&x.requested.clickedMakeup);
   result.checks.summarySync=result.captures.every(x=>x.summaryMatches);
   result.checks.overlayVisible=result.captures.every(x=>x.overlayVisible);
-  result.checks.stylesDistinct=new Set(result.captures.map(x=>x.hash)).size===result.captures.length;
+
+  if(gender==='male'){
+    const hairSlugs=['quiff-clean','crop-clean','flow-clean'];
+    const beardSlugs=['crop-clean','crop-soft-stubble','crop-short-beard'];
+    const hair=result.captures.filter(x=>hairSlugs.includes(x.slug));
+    const beards=result.captures.filter(x=>beardSlugs.includes(x.slug));
+    result.checks.hairStylesDistinct=hair.length===3&&new Set(hair.map(x=>x.hash)).size===3;
+    result.checks.beardsDistinct=beards.length===3&&new Set(beards.map(x=>x.hash)).size===3;
+  }else{
+    result.checks.hairStylesDistinct=new Set(result.captures.map(x=>x.hash)).size===result.captures.length;
+    result.checks.beardsDistinct=true;
+  }
+
   if(!Object.values(result.checks).every(Boolean))throw new Error('One or more visual try-on checks failed');
 }catch(err){result.errors.push(err?.stack||err?.message||String(err));process.exitCode=1;}
 finally{
