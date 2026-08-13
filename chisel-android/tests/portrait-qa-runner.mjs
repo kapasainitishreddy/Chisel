@@ -45,6 +45,12 @@ async function captureTryOns(page) {
 
   try {
     await frame.evaluate(() => {
+      const beautyGuide = document.getElementById('beautyGuideModal');
+      if (beautyGuide) beautyGuide.classList.remove('on');
+      for (const id of ['camSheet','photorealSheet','paywall']) {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('on');
+      }
       try { closeCam(); } catch (_) {}
       try { openStyle(); } catch (err) { throw new Error(`openStyle: ${err?.message || err}`); }
     });
@@ -143,8 +149,6 @@ try {
   const status = await page.evaluate(() => document.body?.dataset?.status || 'missing').catch(() => 'missing');
   const resultText = await page.evaluate(() => document.getElementById('qa-result')?.textContent || 'qa-result missing').catch(() => 'qa-result unavailable');
 
-  // Capture the actual camera try-on renderer even when Quick Scan failed. This lets QA distinguish
-  // a scan-gate problem from a hairstyle/beard/makeup rendering problem.
   const tryonEvidence = await captureTryOns(page);
   log.push(`tryon-captures: ${JSON.stringify(tryonEvidence)}`);
 
