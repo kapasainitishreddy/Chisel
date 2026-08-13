@@ -73,6 +73,8 @@ if(typeof window!=='undefined'&&typeof document!=='undefined'){
     (async()=>{try{
       await addScript('chisel-beauty-studio.js');
       await addScript('chisel-tryon-runtime-fixes.js');if(window.ChiselTryonRuntimeFixes)window.ChiselTryonRuntimeFixes.install();
+      await addScript('chisel-tryon-hair-v5.js');if(window.ChiselTryonHairV5)window.ChiselTryonHairV5.install();
+      await addScript('chisel-beard-tuning-v5.js');if(window.ChiselBeardTuningV5)window.ChiselBeardTuningV5.install();
       const fixStyleLabels=()=>{const first=document.querySelector('#styleTop .seg');if(!first)return;const buttons=first.querySelectorAll('button');if(buttons[0]){if(buttons[0].textContent!=='Men')buttons[0].textContent='Men';buttons[0].setAttribute('aria-label','Men hairstyles');}if(buttons[1]){if(buttons[1].textContent!=='Women')buttons[1].textContent='Women';buttons[1].setAttribute('aria-label','Women hairstyles');}};
       fixStyleLabels();const styleTop=document.getElementById('styleTop');if(styleTop&&!styleTop.dataset.genderLabelObserver){styleTop.dataset.genderLabelObserver='1';new MutationObserver(fixStyleLabels).observe(styleTop,{childList:true,subtree:true});}
       addCss('chisel-enhancements.css');await addScript('chisel-enhancements-core.js');await addScript('chisel-enhancements.js');addCss('chisel-precision.css');
