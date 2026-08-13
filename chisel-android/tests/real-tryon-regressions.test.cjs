@@ -43,23 +43,19 @@ test('generic try-on starts clean and face matching preserves a user-selected be
     renderStyleChips(){},
     applyMatches(){ this.styleBeard = 5; },
     openStyle(){ this.styleBeard = 1; },
-    document:{getElementById(id){return nodes[id] || null;}},
+    document:{documentElement:{dataset:{}},addEventListener(){},getElementById(id){return nodes[id] || null;}},
     console
   };
   context.globalThis = context;
   vm.runInNewContext(fix, context);
   context.ChiselTryonRuntimeFixes.install();
-
   context.openStyle();
   assert.equal(context.styleBeard, 0, 'generic try-on must start clean');
-
   context.applyMatches();
   assert.equal(context.styleBeard, 0, 'face matching must not silently add a beard');
-
   context.styleBeard = 2;
   context.applyMatches();
   assert.equal(context.styleBeard, 2, 'an explicit beard choice must survive later face matching');
-
   context.styleGender = 'women';
   context.styleBeard = 2;
   context.applyMatches();
@@ -68,9 +64,10 @@ test('generic try-on starts clean and face matching preserves a user-selected be
   assert.equal(nodes.beardChips.style.display, 'none');
 });
 
-test('live preview summary follows the selected hair and beard state', () => {
+test('live preview summary follows the selected hair beard and makeup state', () => {
   assert.equal(fixes.previewSummary({id:'frenchbob',name:'French bob'},{id:'none',name:'Clean'}), 'French bob');
   assert.equal(fixes.previewSummary({id:'quiff',name:'Quiff'},{id:'short',name:'Short beard'}), 'Quiff + Short beard');
+  assert.equal(fixes.previewSummary({id:'butterfly',name:'Butterfly layers'},{id:'none',name:'Clean'},{id:'peachlift',name:'Peach lift'}), 'Butterfly layers + Peach lift');
 });
 
 test('women haircuts resolve to materially different visual geometry', () => {
@@ -84,11 +81,14 @@ test('women haircuts resolve to materially different visual geometry', () => {
 
 test('premium local hair keeps the real forehead visible instead of drawing an opaque helmet', () => {
   const profile = fixes.styleVisualProfile({id:'frenchbob',top:.32,side:.18,front:.22,jitter:.025,fall:.50,flare:.17},'women');
-  assert.ok(profile.hairlineLift >= .08, `hairlineLift=${profile.hairlineLift}`);
-  assert.ok(profile.baseOpacity <= .72, `baseOpacity=${profile.baseOpacity}`);
+  assert.ok(profile.hairlineLift >= .10, `hairlineLift=${profile.hairlineLift}`);
+  assert.ok(profile.massOpacity <= .08, `massOpacity=${profile.massOpacity}`);
+  assert.match(fix, /__chiselPremiumHairV3/);
+  assert.match(fix, /never a filled polygon/);
+  assert.doesNotMatch(fix.slice(fix.indexOf('const premium=function'), fix.indexOf('premium.__chiselPremiumHair')), /ctx\.fill\(/);
 });
 
-test('men crop and quiff keep distinct front/crown behavior', () => {
+test('men crop and quiff keep distinct front and crown behavior', () => {
   const crop = fixes.styleVisualProfile({id:'crop',top:.20,side:.10,front:.26,jitter:.01},'men');
   const quiff = fixes.styleVisualProfile({id:'quiff',top:.34,side:.10,front:.52,jitter:.015},'men');
   assert.ok(quiff.frontLift > crop.frontLift * 1.35);
