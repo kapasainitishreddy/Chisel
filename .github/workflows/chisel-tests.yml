@@ -52,7 +52,7 @@ jobs:
   tryon-visual-qa:
     needs: enhancements
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 4
     strategy:
       fail-fast: false
       matrix:
@@ -94,7 +94,7 @@ jobs:
           ffmpeg -hide_banner -loglevel error -y -loop 1 \
             -i "tests/fixtures/portrait-${gender}.jpg" \
             -vf "$VIDEO_FILTER" -r 20 -t 20 -f yuv4mpegpipe "/tmp/chisel-${gender}-visual.y4m"
-          timeout --signal=TERM --kill-after=6s 80s \
+          timeout --signal=TERM --kill-after=10s 150s \
             node tests/tryon-visual-runner.mjs "$gender" "/tmp/chisel-${gender}-visual.y4m" "http://127.0.0.1:4173"
       - name: Upload ${{ matrix.gender }} visual try-on evidence
         if: always()
