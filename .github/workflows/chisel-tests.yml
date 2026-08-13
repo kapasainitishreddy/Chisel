@@ -45,8 +45,64 @@ jobs:
           node --check www/chisel-experience-polish.js
           node --check www/chisel-product-polish.js
           node --check tests/portrait-qa-runner.mjs
+          node --check tests/tryon-visual-runner.mjs
       - name: Run automated tests
         run: npm test
+
+  tryon-visual-qa:
+    needs: enhancements
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    strategy:
+      fail-fast: false
+      matrix:
+        gender: [male, female]
+    defaults:
+      run:
+        working-directory: chisel-android
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install visual QA browser controller
+        run: npm install --no-save --package-lock=false puppeteer-core@24
+      - name: Render ${{ matrix.gender }} try-ons
+        shell: bash
+        run: |
+          set -uo pipefail
+          command -v ffmpeg >/dev/null || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+          CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$CHROME" ]; then
+            echo "Chrome/Chromium is required for visual try-on QA" >&2
+            exit 1
+          fi
+          export CHROME
+          gender="${{ matrix.gender }}"
+          rm -f "/tmp/chisel-${gender}-visual-tryon.json" /tmp/chisel-${gender}-visual-*.png /tmp/chisel-visual-http.log
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/chisel-visual-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          sleep 1
+          ffmpeg -hide_banner -loglevel error -y -loop 1 \
+            -i "tests/fixtures/portrait-${gender}.jpg" \
+            -vf "scale=320:400:force_original_aspect_ratio=decrease,pad=320:400:(ow-iw)/2:(oh-ih)/2:color=gray,format=yuv420p" \
+            -r 20 -t 20 -f yuv4mpegpipe "/tmp/chisel-${gender}-visual.y4m"
+          timeout --signal=TERM --kill-after=6s 80s \
+            node tests/tryon-visual-runner.mjs "$gender" "/tmp/chisel-${gender}-visual.y4m" "http://127.0.0.1:4173"
+      - name: Upload ${{ matrix.gender }} visual try-on evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-tryon-${{ matrix.gender }}
+          path: |
+            /tmp/chisel-${{ matrix.gender }}-visual-tryon.json
+            /tmp/chisel-${{ matrix.gender }}-visual-*.png
+            /tmp/chisel-visual-http.log
+          if-no-files-found: warn
+          retention-days: 7
 
   portrait-qa:
     needs: enhancements
