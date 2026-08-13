@@ -93,7 +93,7 @@ jobs:
           fi
           ffmpeg -hide_banner -loglevel error -y -loop 1 \
             -i "tests/fixtures/portrait-${gender}.jpg" \
-            -vf "$VIDEO_FILTER" -r 20 -t 20 -f yuv4mpegpipe "/tmp/chisel-${gender}-visual.y4m"
+            -vf "$VIDEO_FILTER" -r 20 -frames:v 60 -f yuv4mpegpipe "/tmp/chisel-${gender}-visual.y4m"
           timeout --signal=TERM --kill-after=10s 150s \
             node tests/tryon-visual-runner.mjs "$gender" "/tmp/chisel-${gender}-visual.y4m" "http://127.0.0.1:4173"
       - name: Upload ${{ matrix.gender }} visual try-on evidence
@@ -152,7 +152,7 @@ jobs:
           fi
           ffmpeg -hide_banner -loglevel error -y -loop 1 \
             -i "tests/fixtures/portrait-${gender}.jpg" \
-            -vf "$VIDEO_FILTER" -r 20 -t 25 -f yuv4mpegpipe "/tmp/chisel-${gender}.y4m"
+            -vf "$VIDEO_FILTER" -r 20 -frames:v 60 -f yuv4mpegpipe "/tmp/chisel-${gender}.y4m"
           timeout --signal=TERM --kill-after=10s 120s \
             node tests/portrait-qa-runner.mjs "$gender" "/tmp/chisel-${gender}.y4m" "http://127.0.0.1:4173"
       - name: Upload ${{ matrix.gender }} portrait QA diagnostics
