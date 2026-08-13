@@ -83,9 +83,10 @@ test('premium local hair keeps the real forehead visible instead of drawing an o
   const profile = fixes.styleVisualProfile({id:'frenchbob',top:.32,side:.18,front:.22,jitter:.025,fall:.50,flare:.17},'women');
   assert.ok(profile.hairlineLift >= .10, `hairlineLift=${profile.hairlineLift}`);
   assert.ok(profile.massOpacity <= .08, `massOpacity=${profile.massOpacity}`);
-  assert.match(fix, /__chiselPremiumHairV3/);
-  assert.match(fix, /never a filled polygon/);
-  assert.doesNotMatch(fix.slice(fix.indexOf('const premium=function'), fix.indexOf('premium.__chiselPremiumHair')), /ctx\.fill\(/);
+  assert.match(fix, /__chiselPremiumHairV4/);
+  assert.match(fix, /roots start inside the existing hair mass/);
+  const renderer = fix.slice(fix.indexOf('const premium=function'), fix.indexOf('premium.__chiselPremiumHair'));
+  assert.doesNotMatch(renderer, /ctx\.fill\(/);
 });
 
 test('men crop and quiff keep distinct front and crown behavior', () => {
