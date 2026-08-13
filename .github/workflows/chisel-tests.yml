@@ -81,7 +81,7 @@ jobs:
           export CHROME
           gender="${{ matrix.gender }}"
 
-          rm -f "/tmp/chisel-${gender}-qa.html" "/tmp/chisel-${gender}-chrome.log" "/tmp/chisel-${gender}-result.txt" /tmp/chisel-http.log
+          rm -f "/tmp/chisel-${gender}-qa.html" "/tmp/chisel-${gender}-chrome.log" "/tmp/chisel-${gender}-result.txt" "/tmp/chisel-${gender}-tryon-result.json" /tmp/chisel-http.log /tmp/chisel-${gender}-tryon-*.png
           python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/chisel-http.log 2>&1 &
           SERVER_PID=$!
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
@@ -92,8 +92,7 @@ jobs:
             -vf "scale=320:400:force_original_aspect_ratio=decrease,pad=320:400:(ow-iw)/2:(oh-ih)/2:color=gray,format=yuv420p" \
             -r 20 -t 25 -f yuv4mpegpipe "/tmp/chisel-${gender}.y4m"
 
-          # Bound both the browser controller and any orphaned MediaPipe/Chromium teardown.
-          timeout --signal=TERM --kill-after=10s 110s \
+          timeout --signal=TERM --kill-after=10s 120s \
             node tests/portrait-qa-runner.mjs "$gender" "/tmp/chisel-${gender}.y4m" "http://127.0.0.1:4173"
       - name: Upload ${{ matrix.gender }} portrait QA diagnostics
         if: always()
@@ -104,6 +103,8 @@ jobs:
             /tmp/chisel-${{ matrix.gender }}-qa.html
             /tmp/chisel-${{ matrix.gender }}-chrome.log
             /tmp/chisel-${{ matrix.gender }}-result.txt
+            /tmp/chisel-${{ matrix.gender }}-tryon-result.json
+            /tmp/chisel-${{ matrix.gender }}-tryon-*.png
             /tmp/chisel-http.log
           if-no-files-found: warn
           retention-days: 7
