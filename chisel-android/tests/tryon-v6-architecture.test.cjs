@@ -1,0 +1,53 @@
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const root=path.resolve(__dirname,'..');
+const read=p=>fs.readFileSync(path.join(root,p),'utf8');
+const hair=read('www/chisel-tryon-hair-v5.js');
+const beard=read('www/chisel-beard-tuning-v5.js');
+const backend=read('../supabase/functions/render-lookmax/index.ts');
+const hairPack=read('android/app/src/main/assets/public/chisel-tryon-hair-v5.js');
+const beardPack=read('android/app/src/main/assets/public/chisel-beard-tuning-v5.js');
+
+test('live hair uses separate silhouette families instead of one shared outer contour',()=>{
+  assert.match(hair,/SILHOUETTE_FAMILIES/);
+  for(const family of ['clipper','fringe-crop','swept-peak','pompadour','slick-back','curl-crown','flow','bob','long-layers','curtain','curl-mass','coil-mass','shag','braids','ponytail','bun','updo']){
+    assert.ok(hair.includes(`family:'${family}'`)||hair.includes(`family:\"${family}\"`),`missing family ${family}`);
+  }
+  assert.match(hair,/function styleBlueprint/);
+  assert.match(hair,/function drawFamily/);
+  assert.doesNotMatch(hair,/const outer=roots\.map/);
+});
+
+test('beards use explicit moustache cheek jaw chin and neckline zones',()=>{
+  assert.match(beard,/BEARD_BLUEPRINTS/);
+  assert.match(beard,/moustache:/);
+  assert.match(beard,/cheeks:/);
+  assert.match(beard,/jaw:/);
+  assert.match(beard,/chin:/);
+  assert.match(beard,/neckline:/);
+  assert.match(beard,/function beardBlueprint/);
+  assert.match(beard,/function paintZone/);
+});
+
+test('try-on UX clearly separates local Live Guide from realistic generation',()=>{
+  assert.match(hair,/Live Guide/);
+  assert.match(hair,/Generate realistic try-on/);
+  assert.match(hair,/approximate placement/);
+});
+
+test('photoreal backend supports every current women style without generic aliases',()=>{
+  for(const id of ['pixie','bixie','frenchbob','bob','lob','butterfly','curtain','layers','sleeklong','waves','curls','coils','shag','wolf','braids','pony','bun','updo']){
+    assert.match(backend,new RegExp(`\\b${id}:`),`backend missing ${id}`);
+  }
+  assert.match(backend,/preserve the exact same person/i);
+  assert.match(backend,/individual strand/i);
+  assert.match(backend,/wig-like/i);
+  assert.match(backend,/contact shadow/i);
+});
+
+test('new try-on renderers remain byte-identical in Android assets',()=>{
+  assert.equal(hairPack,hair);
+  assert.equal(beardPack,beard);
+});
