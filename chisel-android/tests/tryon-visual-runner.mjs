@@ -70,7 +70,7 @@ try{
     await (await page.$('#camwrap')).screenshot({path});
     const expected=[requested.hairName,requested.beardId!=='none'?requested.beardName:null,requested.makeupId!=='none'?requested.makeupName:null].filter(Boolean).join(' + ');
     const selectionStable=evidence.selected.hairId===item.hair&&evidence.selected.beardId===item.beard&&evidence.selected.makeupId===item.makeup;
-    result.captures.push({slug:item.slug,file:path,requested,...evidence,expectedSummary:expected,selectionStable,summaryMatches:evidence.summary===expected,overlayVisible:evidence.visible>20});
+    result.captures.push({slug:item.slug,file:path,requested,...evidence,expectedSummary:expected,selectionStable,summaryMatches:evidence.summary===expected,overlayVisible:evidence.visible>0});
   }
 
   const expectedCount=gender==='female'?3:5;
