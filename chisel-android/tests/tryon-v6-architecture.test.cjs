@@ -39,17 +39,26 @@ test('local guide never paints opaque geometric hair or beard masks over the fac
   assert.doesNotMatch(beard,/ctx\.filter=`blur\([^`]+`\);regionPath\(P,indices\);ctx\.fillStyle/);
 });
 
-test('live hair guide is intentionally sparse and avoids fan or stitch artifacts',()=>{
-  assert.match(hair,/const LIVE_GUIDE_STRANDS=10/);
-  assert.match(hair,/const SIDE_GUIDE_STRANDS=12/);
-  assert.match(hair,/const FRINGE_GUIDE_STRANDS=8/);
+test('live guide is outline-first rather than pretending to be rendered hair',()=>{
+  assert.match(hair,/const LIVE_GUIDE_STRANDS=0/);
+  assert.match(hair,/const SIDE_GUIDE_STRANDS=2/);
+  assert.match(hair,/const FRINGE_GUIDE_STRANDS=3/);
   assert.match(hair,/edge\.slice\(2,-2\)/);
+  assert.match(hair,/Live Style Guide/);
+  assert.match(hair,/Live placement guide/);
+});
+
+test('photoreal request bridge always sends the exact selected style',()=>{
+  assert.match(hair,/function installPhotorealRequestBridge/);
+  assert.match(hair,/requestedHairId/);
+  assert.match(hair,/requestedHairName/);
+  assert.match(hair,/LEGACY_HAIR_ALIAS/);
 });
 
 test('try-on UX clearly separates local Live Guide from realistic generation',()=>{
   assert.match(hair,/Live Guide/);
   assert.match(hair,/Generate realistic try-on/);
-  assert.match(hair,/approximate placement/);
+  assert.match(hair,/actual hairstyle\/beard result/);
 });
 
 test('photoreal backend supports every current women style without generic aliases',()=>{
