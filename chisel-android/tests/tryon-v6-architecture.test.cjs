@@ -48,8 +48,12 @@ test('live guide is outline-first rather than pretending to be rendered hair',()
   assert.match(hair,/Live placement guide/);
 });
 
-test('photoreal request bridge always sends the exact selected style',()=>{
+test('photoreal request bridge captures exact selection before any legacy alias wrapper',()=>{
   assert.match(hair,/function installPhotorealRequestBridge/);
+  assert.match(hair,/let pendingRequestedHair/);
+  assert.match(hair,/function captureExactSelection/);
+  assert.match(hair,/addEventListener\('click',captureExactSelection,true\)/);
+  assert.match(hair,/pendingRequestedHair\|\|currentHairSelection\(\)/);
   assert.match(hair,/requestedHairId/);
   assert.match(hair,/requestedHairName/);
   assert.match(hair,/LEGACY_HAIR_ALIAS/);
