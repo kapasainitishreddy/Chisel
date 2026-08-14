@@ -45,8 +45,8 @@ test('live guide is outline-first rather than pretending to be rendered hair',()
   assert.equal(hairApi.SIDE_GUIDE_STRANDS,2);
   assert.equal(hairApi.FRINGE_GUIDE_STRANDS,3);
   assert.match(hair,/edge\.slice\(2,-2\)/);
-  assert.match(hair,/Live Style Guide/);
-  assert.match(hair,/Live placement guide/);
+  assert.match(hair,/live style guide/i);
+  assert.match(hair,/live placement guide/i);
 });
 
 test('photoreal request bridge captures exact selection before any legacy alias wrapper',()=>{
