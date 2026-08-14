@@ -9,6 +9,7 @@ const beard=read('www/chisel-beard-tuning-v5.js');
 const backend=read('../supabase/functions/render-lookmax/index.ts');
 const hairPack=read('android/app/src/main/assets/public/chisel-tryon-hair-v5.js');
 const beardPack=read('android/app/src/main/assets/public/chisel-beard-tuning-v5.js');
+const hairApi=require('../www/chisel-tryon-hair-v5.js');
 
 test('live hair uses separate silhouette families instead of one shared outer contour',()=>{
   assert.match(hair,/SILHOUETTE_FAMILIES/);
@@ -40,9 +41,9 @@ test('local guide never paints opaque geometric hair or beard masks over the fac
 });
 
 test('live guide is outline-first rather than pretending to be rendered hair',()=>{
-  assert.match(hair,/const LIVE_GUIDE_STRANDS=0/);
-  assert.match(hair,/const SIDE_GUIDE_STRANDS=2/);
-  assert.match(hair,/const FRINGE_GUIDE_STRANDS=3/);
+  assert.equal(hairApi.LIVE_GUIDE_STRANDS,0);
+  assert.equal(hairApi.SIDE_GUIDE_STRANDS,2);
+  assert.equal(hairApi.FRINGE_GUIDE_STRANDS,3);
   assert.match(hair,/edge\.slice\(2,-2\)/);
   assert.match(hair,/Live Style Guide/);
   assert.match(hair,/Live placement guide/);
