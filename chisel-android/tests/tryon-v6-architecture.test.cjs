@@ -39,6 +39,13 @@ test('local guide never paints opaque geometric hair or beard masks over the fac
   assert.doesNotMatch(beard,/ctx\.filter=`blur\([^`]+`\);regionPath\(P,indices\);ctx\.fillStyle/);
 });
 
+test('live hair guide is intentionally sparse and avoids fan or stitch artifacts',()=>{
+  assert.match(hair,/const LIVE_GUIDE_STRANDS=10/);
+  assert.match(hair,/const SIDE_GUIDE_STRANDS=12/);
+  assert.match(hair,/const FRINGE_GUIDE_STRANDS=8/);
+  assert.match(hair,/edge\.slice\(2,-2\)/);
+});
+
 test('try-on UX clearly separates local Live Guide from realistic generation',()=>{
   assert.match(hair,/Live Guide/);
   assert.match(hair,/Generate realistic try-on/);
