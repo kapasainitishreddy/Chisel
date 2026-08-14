@@ -59,6 +59,12 @@ test('photoreal request bridge captures exact selection before any legacy alias 
   assert.match(hair,/LEGACY_HAIR_ALIAS/);
 });
 
+test('Live Guide copy cannot fight the existing Quick AR summary observer',()=>{
+  assert.doesNotMatch(hair,/new MutationObserver/);
+  assert.doesNotMatch(hair,/querySelector\('\.cx-preview-title'\)/);
+  assert.match(hair,/setTimeout\(syncExperienceCopy,220\)/);
+});
+
 test('try-on UX clearly separates local Live Guide from realistic generation',()=>{
   assert.match(hair,/Live Guide/);
   assert.match(hair,/Generate realistic try-on/);
