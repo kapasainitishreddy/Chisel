@@ -9,6 +9,8 @@ const beard=read('www/chisel-beard-tuning-v5.js');
 const backend=read('../supabase/functions/render-lookmax/index.ts');
 const hairPack=read('android/app/src/main/assets/public/chisel-tryon-hair-v5.js');
 const beardPack=read('android/app/src/main/assets/public/chisel-beard-tuning-v5.js');
+const loader=read('www/chisel-ar-coach-core.js');
+const visual=read('tests/tryon-visual-runner.mjs');
 const hairApi=require('../www/chisel-tryon-hair-v5.js');
 
 test('live hair uses separate silhouette families instead of one shared outer contour',()=>{
@@ -60,10 +62,17 @@ test('photoreal request bridge captures exact selection before any legacy alias 
   assert.match(hair,/LEGACY_HAIR_ALIAS/);
 });
 
-test('Live Guide copy cannot fight the existing Quick AR summary observer',()=>{
-  assert.doesNotMatch(hair,/new MutationObserver/);
-  assert.doesNotMatch(hair,/querySelector\('\.cx-preview-title'\)/);
-  assert.match(hair,/setTimeout\(syncExperienceCopy,220\)/);
+test('Live Guide label sync is event driven and loaded after the try-on renderers',()=>{
+  assert.match(loader,/chisel-style-guide-label\.js/);
+  assert.ok(fs.existsSync(path.join(root,'www/chisel-style-guide-label.js')));
+  const label=read('www/chisel-style-guide-label.js');
+  assert.match(label,/Live placement guide/);
+  assert.doesNotMatch(label,/MutationObserver/);
+});
+
+test('visual QA accepts an intentionally sparse guide but still requires visible output',()=>{
+  assert.match(visual,/overlayVisible:evidence\.visible>0/);
+  assert.doesNotMatch(visual,/overlayVisible:evidence\.visible>20/);
 });
 
 test('try-on UX clearly separates local Live Guide from realistic generation',()=>{
