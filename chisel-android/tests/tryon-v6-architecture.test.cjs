@@ -62,11 +62,13 @@ test('photoreal request bridge captures exact selection before any legacy alias 
   assert.match(hair,/LEGACY_HAIR_ALIAS/);
 });
 
-test('Live Guide label sync is event driven and loaded after the try-on renderers',()=>{
+test('Live Guide label sync is event driven and safely detaches the legacy summary observer',()=>{
   assert.match(loader,/chisel-style-guide-label\.js/);
   assert.ok(fs.existsSync(path.join(root,'www/chisel-style-guide-label.js')));
   const label=read('www/chisel-style-guide-label.js');
   assert.match(label,/Live placement guide/);
+  assert.match(label,/cloneNode\(true\)/);
+  assert.match(label,/replaceWith\(clone\)/);
   assert.doesNotMatch(label,/MutationObserver/);
 });
 
