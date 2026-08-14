@@ -31,6 +31,14 @@ test('beards use explicit moustache cheek jaw chin and neckline zones',()=>{
   assert.match(beard,/function paintZone/);
 });
 
+test('local guide never paints opaque geometric hair or beard masks over the face',()=>{
+  assert.match(hair,/HAIRLINE_LIFT/);
+  assert.match(hair,/function silhouetteStroke/);
+  assert.doesNotMatch(hair,/function fillBand/);
+  assert.match(beard,/follicle-only zones/);
+  assert.doesNotMatch(beard,/ctx\.filter=`blur\([^`]+`\);regionPath\(P,indices\);ctx\.fillStyle/);
+});
+
 test('try-on UX clearly separates local Live Guide from realistic generation',()=>{
   assert.match(hair,/Live Guide/);
   assert.match(hair,/Generate realistic try-on/);
