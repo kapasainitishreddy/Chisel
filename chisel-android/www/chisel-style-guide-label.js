@@ -1,10 +1,20 @@
 (function(root){
   'use strict';
+  function detachLegacySummaryObserver(){
+    if(typeof document==='undefined')return null;
+    const summary=document.getElementById('cxStyleSummary');
+    if(!summary)return null;
+    if(summary.dataset.chiselDetachedLegacyObserver==='1')return summary;
+    const clone=summary.cloneNode(true);
+    clone.dataset.chiselDetachedLegacyObserver='1';
+    summary.replaceWith(clone);
+    return clone;
+  }
   function sync(){
     if(typeof document==='undefined')return false;
     const bar=document.getElementById('styleBar');
     if(!bar||getComputedStyle(bar).display==='none')return false;
-    const summary=document.getElementById('cxStyleSummary');
+    const summary=detachLegacySummaryObserver()||document.getElementById('cxStyleSummary');
     const head=summary&&summary.closest('.cx-preview-head');
     const title=head&&head.querySelector('.cx-preview-title');
     const meta=document.querySelector('.camwrap .hud .meta');
@@ -12,7 +22,7 @@
     if(meta&&meta.textContent!=='LIVE STYLE GUIDE')meta.textContent='LIVE STYLE GUIDE';
     return true;
   }
-  function schedule(){setTimeout(sync,0);setTimeout(sync,220);}
+  function schedule(){setTimeout(sync,0);setTimeout(sync,220);setTimeout(sync,700);}
   function install(){
     if(typeof document==='undefined')return false;
     if(document.documentElement.dataset.chiselStyleGuideLabel==='1'){schedule();return true;}
@@ -30,6 +40,6 @@
     schedule();
     return true;
   }
-  root.ChiselStyleGuideLabel={install,sync};
+  root.ChiselStyleGuideLabel={install,sync,detachLegacySummaryObserver};
   if(typeof window!=='undefined')window.addEventListener('load',()=>setTimeout(install,520),{once:true});
 })(typeof globalThis!=='undefined'?globalThis:this);
