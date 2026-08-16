@@ -1,6 +1,6 @@
 # Chisel Feature Matrix
 
-_Last updated: 2026-08-09_
+_Last updated: 2026-08-16_
 
 Status legend:
 
@@ -64,23 +64,27 @@ Status legend:
 | FM-48 | Privacy policy page | Implemented | Must be hosted and linked in Play Console |
 | FM-49 | Photoreal hair/beard render | Client/server source present; production config/live QA pending | Optional cloud render with separate privacy/data-safety implications |
 | FM-50 | Future-you preview | Partial / illustrative | Current local visualization is not a guaranteed prediction |
-| FM-51 | Paywall UI + purchase/restore seam | Implemented; production config pending | Requires Play products + RevenueCat key/entitlement + live billing QA |
+| FM-51 | Paywall UI + purchase/restore seam | Automated verified; production config pending | Pro is framed as optional photoreal capacity; core local analysis remains available; Google Play remains the source of price/renewal terms |
 | FM-52 | Server entitlement enforcement | Partial / deploy pending | Supabase function source exists; production deployment/config required |
 | FM-53 | Premium Pro product definition | Product spec committed | Precision Lab Pro, Progress Intelligence, Adaptive Protocols, Looks Studio Pro, Professional Export, Private Vault Plus |
-| FM-54 | Automated tests / CI | Automated verified | Current suite covers enhancements, precision, native asset sync and premium UX |
+| FM-54 | Automated tests / CI | Automated verified | Current suite covers enhancements, precision, native asset sync, premium UX and product-polish regression behavior |
 | FM-55 | Capacitor Android sync integrity | Automated verified | Canonical `www` app/feature assets are checked against packaged Android copies |
 | FM-56 | Android release signing config | Implemented | Real upload keystore/passwords remain developer-owned and gitignored |
 | FM-57 | Android API 36 target | Configured; build CI gate | compile/target 36, AGP 8.10, Gradle 8.11.1 |
 | FM-58 | Android privacy hardening | Configured | Broad OS backup disabled; cleartext HTTP disabled |
-| FM-59 | Play Store listing/policy work | Manual/config pending | Store graphics, hosted policy URL, Data Safety/content/health declarations, testing tracks |
+| FM-59 | Play Store listing/policy work | Source guidance updated; console work pending | Conversion positioning now leads with Measure → Act → Compare, private-by-default value and a deliberate screenshot sequence; real-device graphics/console submission remain manual |
 | FM-60 | iOS | Deferred | Android-first release; iOS remains a separate platform project |
+| FM-61 | Today's Chisel daily focus | Automated verified | Home recommends one useful action, exposes Measure → Act → Compare, stores explicit completion under `chisel:cxpDaily`, resets by local calendar day and never auto-completes a task |
+| FM-62 | Product trust / anti-compulsion layer | Automated verified | Home emphasizes private local processing, no public beauty score, repeatability and “compare later” instead of repeated mirror checking |
 
 ## Product truth
 
-The canonical `www/index.html` is the only active app shell. Legacy Labs,
-Precision and Premium shell assets may remain in source for parity/history, but
-the Android activity must not inject them over the canonical UI.
+The canonical `www/index.html` remains the active app shell. The product-polish
+runtime is loaded after the experience-polish layer and is mirrored into the
+packaged Android assets. Legacy Labs, Precision and Premium shell assets may
+remain in source for parity/history, but the Android activity must not inject
+them over the canonical UI.
 
 Chisel is feature-complete enough for a serious Android release candidate. The remaining distinction is **software implementation versus empirical device validation**: camera/MediaPipe features must still be tested across representative phones, lighting, skin tones, facial hair/glasses, body framing and repeated same-condition captures before describing their numeric accuracy more strongly than photographic estimates.
 
-See `USER_GUIDE.md` for the end-user flow, `PREMIUM_FEATURES.md` for the Free/Pro boundary, and `PLAY_STORE.md` for publishing steps.
+See `USER_GUIDE.md` for the end-user flow, `PREMIUM_FEATURES.md` for the Free/Pro boundary, and `PLAY_STORE.md` for the updated store positioning and publishing steps.
