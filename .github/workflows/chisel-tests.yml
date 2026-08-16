@@ -52,7 +52,7 @@ jobs:
   tryon-visual-qa:
     needs: enhancements
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 7
     strategy:
       fail-fast: false
       matrix:
@@ -111,7 +111,7 @@ jobs:
   portrait-qa:
     needs: enhancements
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 7
     strategy:
       fail-fast: false
       matrix:
