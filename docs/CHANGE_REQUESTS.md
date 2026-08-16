@@ -50,7 +50,6 @@ _None._
   - Files: `chisel-android/www/index.html` (CSS focus block; camFlip/camShot attrs).
   - Verification: Node syntax — PASS; `:focus-visible` + aria present (grep). 2026-07-26.
 
-
 - **CR-006 -- Native plugin sync + Android asset parity.** Installed and synced
   missing declared native plugins (`@capacitor/local-notifications`,
   `@revenuecat/purchases-capacitor`) and re-synced Android assets to match
@@ -156,6 +155,24 @@ _None._
     `npx cap sync android`, `gradlew.bat assembleDebug`, final APK installed on
     `R3CW10Y67TT`, UI-tree bounds and live-camera AR checks. Temporary face/camera
     screenshots were deleted after inspection. 2026-08-11.
+
+- **CR-015 -- Daily product loop, trust-first Home, and honest Pro conversion.**
+  Reworked the late-loaded product-polish layer so Chisel leads with
+  **Measure → Act → Compare**, recommends one useful daily focus, lets the user
+  explicitly mark that focus complete, and stores the completion locally under
+  `chisel:cxpDaily` for the current calendar day. Added Home trust cues for local
+  processing, no public beauty score, and matched-condition progress. Reworked the
+  paywall to sell optional photoreal rendering capacity without hiding core local
+  analysis or using fake scarcity, and made Google Play the source of purchase
+  price/renewal terms. Updated Play Store positioning and screenshot order around
+  the same product promise.
+  - Affected features: FM-51, FM-54, FM-59, FM-61, FM-62.
+  - Files: `chisel-android/www/chisel-product-polish.js`, synchronized Android
+    `chisel-product-polish.js`, `chisel-android/tests/product-polish.test.cjs`,
+    `PLAY_STORE.md`, handoff/release documentation.
+  - Verification: local focused product-polish suite **11/11**; GitHub Actions
+    syntax gate + full `npm test` **114/114** on source commit
+    `5cd298161841f35bb9e7f19d45b6b6e037949014`. 2026-08-16.
 
 ## Rejected or Superseded
 
