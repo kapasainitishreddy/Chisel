@@ -6,7 +6,32 @@
   'use strict';
 
   const MARK='data-cxp';
+  const DAILY_KEY='chisel:cxpDaily';
   const q=(s,r=document)=>r&&r.querySelector?r.querySelector(s):null;
+
+  function dayKey(now=new Date()){
+    const d=now instanceof Date?now:new Date(now);
+    const pad=n=>String(n).padStart(2,'0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  }
+
+  function dailyState(storage,now=new Date()){
+    const key=dayKey(now);
+    if(!storage||typeof storage.getItem!=='function') return {key,done:false,action:null};
+    try{
+      const raw=storage.getItem(DAILY_KEY), data=raw?JSON.parse(raw):null;
+      if(!data||data.key!==key||data.done!==true) return {key,done:false,action:null};
+      return {key,done:true,action:typeof data.action==='string'?data.action:null,completedAt:data.completedAt||null};
+    }catch(_){ return {key,done:false,action:null}; }
+  }
+
+  function markDaily(storage,action,now=new Date()){
+    const record={key:dayKey(now),done:true,action:typeof action==='string'?action:null,completedAt:(now instanceof Date?now:new Date(now)).toISOString()};
+    if(storage&&typeof storage.setItem==='function'){
+      try{ storage.setItem(DAILY_KEY,JSON.stringify(record)); }catch(_){}
+    }
+    return record;
+  }
 
   function route(screen){
     if(typeof window!=='undefined'&&typeof window.go==='function'){window.go(screen);return true;}
@@ -15,12 +40,35 @@
     return false;
   }
 
+  function toastMessage(message){
+    if(typeof window!=='undefined'&&typeof window.toast==='function'){window.toast(message);return;}
+    const el=typeof document!=='undefined'?document.getElementById('toast'):null;
+    if(!el)return;
+    el.textContent=message;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),1800);
+  }
+
+  function hasComparableScan(){
+    if(typeof document==='undefined')return false;
+    const history=document.getElementById('scanHistory');
+    if(history){
+      const real=[...history.children].filter(el=>!el.hasAttribute('data-cxp-empty'));
+      if(real.length)return true;
+    }
+    try{
+      const photos=JSON.parse(localStorage.getItem('chisel:photos')||'[]');
+      if(Array.isArray(photos)&&photos.length)return true;
+    }catch(_){}
+    return false;
+  }
+
+  function recommendedAction(){ return hasComparableScan()?'groom':'analyze'; }
+
   function injectStyles(){
     if(document.getElementById('chiselProductPolishCss')) return;
     const style=document.createElement('style');
     style.id='chiselProductPolishCss';
     style.textContent=`
-      :root{--cxp-surface:rgba(255,255,255,.028);--cxp-line:rgba(201,168,106,.22);--cxp-soft:rgba(242,237,228,.68)}
+      :root{--cxp-surface:rgba(255,255,255,.028);--cxp-line:rgba(201,168,106,.22);--cxp-soft:rgba(242,237,228,.68);--cxp-green:#9ED5BC}
       html{-webkit-text-size-adjust:100%} body{overscroll-behavior:none}
       button,a,[role="button"],input,select,summary{touch-action:manipulation}
       button,.btn,.chip,.camctrl,[role="button"],nav a{min-height:44px}
@@ -28,17 +76,24 @@
       p,small,.lede,.cxp-copy,.cxp-sub,.card{overflow-wrap:anywhere}
       main.view{scroll-padding-top:22px}.screen>.eyebrow{margin-top:2px}.screen>.lede{font-size:13px;line-height:1.65}
       .card{box-shadow:0 14px 38px rgba(0,0,0,.12)}
-      .cxp-hub,.cxp-trust,.cxp-loop,.cxp-privacy,.cxp-empty,.cxp-result-trust{border:1px solid var(--cxp-line);background:linear-gradient(145deg,rgba(201,168,106,.075),rgba(255,255,255,.018));border-radius:18px}
-      .cxp-hub{margin:12px 0 22px;padding:16px}.cxp-kicker{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:700}.cxp-title{font-family:var(--display);font-size:25px;line-height:1.1;margin:5px 0 4px}.cxp-copy{font-size:11px;line-height:1.55;color:var(--ivory-dim);margin:0}
-      .cxp-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:13px}.cxp-action{min-height:62px;border:1px solid rgba(255,255,255,.13);border-radius:13px;background:rgba(0,0,0,.22);color:var(--ivory);padding:10px;text-align:left;font:600 11px/1.2 var(--sans);cursor:pointer}.cxp-action b{display:block;color:var(--gold-bright);font-size:12px;margin-bottom:4px}.cxp-action span{display:block;color:var(--ivory-dim);font-size:9px;font-weight:500;line-height:1.3}
+      .cxp-hub,.cxp-trust,.cxp-loop,.cxp-privacy,.cxp-empty,.cxp-result-trust,.cxp-value-strip,.cxp-pro-value{border:1px solid var(--cxp-line);background:linear-gradient(145deg,rgba(201,168,106,.075),rgba(255,255,255,.018));border-radius:18px}
+      .cxp-hub{margin:12px 0 14px;padding:16px}.cxp-kicker{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:700}.cxp-title{font-family:var(--display);font-size:25px;line-height:1.1;margin:5px 0 4px}.cxp-copy{font-size:11px;line-height:1.55;color:var(--ivory-dim);margin:0}
+      .cxp-phases{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:13px 0 10px}.cxp-phase{padding:8px 9px;border:1px solid rgba(255,255,255,.09);border-radius:11px;background:rgba(0,0,0,.18)}.cxp-phase b{display:block;color:var(--gold-bright);font-size:9px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:2px}.cxp-phase span{display:block;color:var(--ivory-dim);font-size:9px;line-height:1.3}
+      .cxp-focus{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:13px;border:1px solid rgba(201,168,106,.26);border-radius:14px;background:rgba(0,0,0,.24)}.cxp-focus-copy b{display:block;font-family:var(--display);font-size:19px;font-weight:500}.cxp-focus-copy span{display:block;color:var(--ivory-dim);font-size:10px;line-height:1.45;margin-top:2px}.cxp-focus-actions{display:flex;gap:7px;align-items:center}.cxp-focus-btn,.cxp-done-btn{min-height:44px;border-radius:999px;padding:10px 13px;font:700 9px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;cursor:pointer}.cxp-focus-btn{border:1px solid var(--gold);background:var(--gold);color:var(--onyx)}.cxp-done-btn{border:1px solid rgba(255,255,255,.16);background:transparent;color:var(--ivory-dim)}.cxp-done-btn[aria-pressed="true"]{border-color:rgba(158,213,188,.45);color:var(--cxp-green);background:rgba(62,107,90,.12)}
+      .cxp-daily-status{font-size:9px;color:var(--ivory-dim);margin:8px 1px 0;min-height:13px}.cxp-daily-status strong{color:var(--cxp-green);font-weight:700}
+      .cxp-tools-label{margin-top:14px;font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--ivory-dim)}
+      .cxp-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:7px}.cxp-action{min-height:62px;border:1px solid rgba(255,255,255,.13);border-radius:13px;background:rgba(0,0,0,.22);color:var(--ivory);padding:10px;text-align:left;font:600 11px/1.2 var(--sans);cursor:pointer}.cxp-action b{display:block;color:var(--gold-bright);font-size:12px;margin-bottom:4px}.cxp-action span{display:block;color:var(--ivory-dim);font-size:9px;font-weight:500;line-height:1.3}.cxp-action:hover,.cxp-action:focus-visible{border-color:rgba(201,168,106,.42);background:rgba(201,168,106,.07)}
+      .cxp-value-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;padding:1px;margin:0 0 22px;overflow:hidden}.cxp-value-strip>div{padding:12px;background:rgba(8,8,10,.68)}.cxp-value-strip b{display:block;font-size:10px;color:var(--ivory);margin-bottom:3px}.cxp-value-strip span{font-size:9px;color:var(--ivory-dim);line-height:1.35}
       .cxp-trust{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;padding:1px;margin:0 0 14px;overflow:hidden}.cxp-trust>div{padding:12px;background:rgba(8,8,10,.62)}.cxp-trust b{display:block;font-size:11px;color:var(--ivory);margin-bottom:3px}.cxp-trust span{font-size:9px;color:var(--ivory-dim);line-height:1.35}
       .cxp-loop{margin:0 0 18px;padding:15px}.cxp-loop-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}.cxp-step{padding:10px;border-radius:12px;background:rgba(0,0,0,.20);font-size:10px;color:var(--ivory-dim);line-height:1.35}.cxp-step b{display:block;color:var(--gold-bright);font-size:10px;margin-bottom:3px}
-      .cxp-privacy{padding:14px;margin:0 0 14px;display:flex;gap:12px;align-items:flex-start}.cxp-privacy .cxp-lock{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:rgba(62,107,90,.18);color:#9ED5BC;flex:0 0 auto}.cxp-privacy b{font-size:12px}.cxp-privacy p{font-size:10px;line-height:1.5;color:var(--ivory-dim);margin:3px 0 0}
+      .cxp-privacy{padding:14px;margin:0 0 14px;display:flex;gap:12px;align-items:flex-start}.cxp-privacy .cxp-lock{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:rgba(62,107,90,.18);color:var(--cxp-green);flex:0 0 auto}.cxp-privacy b{font-size:12px}.cxp-privacy p{font-size:10px;line-height:1.5;color:var(--ivory-dim);margin:3px 0 0}
       .cxp-empty{padding:18px;margin-top:12px;text-align:center}.cxp-empty b{display:block;font-family:var(--display);font-size:20px;margin-bottom:4px}.cxp-empty span{font-size:10px;line-height:1.5;color:var(--ivory-dim)}
       .cxp-result-trust{padding:11px 12px;margin:0 0 12px;display:flex;gap:10px;align-items:flex-start}.cxp-result-trust i{width:8px;height:8px;border-radius:50%;margin-top:4px;background:#7CC79A;box-shadow:0 0 0 4px rgba(124,199,154,.10);flex:0 0 auto}.cxp-result-trust b{font-size:10px;color:var(--ivory)}.cxp-result-trust span{display:block;font-size:9px;color:var(--ivory-dim);line-height:1.4;margin-top:2px}
       #paywall .panel{border-color:rgba(201,168,106,.34);box-shadow:0 30px 90px rgba(0,0,0,.55)}#paywallRestore{margin-top:4px}
-      @media(max-width:760px){.cxp-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.cxp-loop-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.cxp-trust{grid-template-columns:1fr}.hero{padding-top:20px!important}.card{border-radius:16px}}
-      @media(max-width:380px){.cxp-actions,.cxp-loop-grid{grid-template-columns:1fr}}
+      .cxp-pro-value{padding:14px;margin:14px 0 4px}.cxp-pro-value h4{margin:0 0 9px!important;font-family:var(--sans)!important;font-size:10px!important;letter-spacing:.20em!important;text-transform:uppercase;color:var(--gold)!important;font-weight:700!important}.cxp-pro-grid{display:grid;gap:7px}.cxp-pro-row{display:flex;gap:8px;align-items:flex-start;font-size:10px;color:var(--ivory-dim);line-height:1.4}.cxp-pro-row i{font-style:normal;color:var(--cxp-green);font-weight:700}.cxp-pro-trust{margin:10px 0 0;padding-top:9px;border-top:1px solid var(--line);font-size:9px;color:var(--ivory-dim);line-height:1.45}.cxp-pro-trust b{color:var(--ivory)}
+      #paywallOfferings .card{position:relative;overflow:hidden}#paywallOfferings .card .cxp-offer-note{display:block;margin:7px 0 10px;color:var(--ivory-dim);font-size:9px;line-height:1.35}#paywallOfferings .card button{font-size:10px}
+      @media(max-width:760px){.cxp-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.cxp-loop-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.cxp-trust,.cxp-value-strip{grid-template-columns:1fr}.cxp-focus{grid-template-columns:1fr}.cxp-focus-actions{display:grid;grid-template-columns:1fr 1fr}.cxp-focus-btn,.cxp-done-btn{width:100%}.hero{padding-top:20px!important}.card{border-radius:16px}}
+      @media(max-width:380px){.cxp-actions,.cxp-loop-grid,.cxp-phases,.cxp-focus-actions{grid-template-columns:1fr}}
       @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
     `;
     document.head.appendChild(style);
@@ -48,6 +103,8 @@
     const home=q('[data-screen="home"]');
     const homeLede=home&&q('.lede',home);
     if(homeLede) homeLede.textContent='A private appearance and grooming studio for repeatable scans, practical routines, realistic try-ons, and progress you can compare with context.';
+    const heroTitle=home&&q('h1.display',home);
+    if(heroTitle) heroTitle.innerHTML='Measure. <em>Act.</em><br/>Compare yourself to yourself.';
     const meditate=q('[data-screen="meditate"]');
     const h=meditate&&q('h2.section',meditate);
     if(h) h.innerHTML='See who <span class="gold">you\'re becoming.</span>';
@@ -64,26 +121,72 @@
     if(analyzeLede) analyzeLede.textContent='Private on-device analysis starts with capture quality and repeatability, then reports photographic structure and appearance estimates with context.';
   }
 
+  function focusMeta(action){
+    if(action==='analyze') return {title:'Create one clean baseline',copy:'Good light, relaxed face, straight-on framing. One reliable scan is more useful than repeated checking.',cta:'Scan now'};
+    return {title:'Do the controllable work',copy:'Use your routine today. Save comparison for later, under similar capture conditions.',cta:'Open routine'};
+  }
+
+  function renderHomeHub(hub){
+    if(!hub)return;
+    const action=recommendedAction(),meta=focusMeta(action),state=dailyState(typeof localStorage!=='undefined'?localStorage:null);
+    hub.innerHTML=`
+      <div class="cxp-kicker">Today's Chisel</div>
+      <h3 class="cxp-title">Do one useful thing today. Then leave the mirror alone.</h3>
+      <p class="cxp-copy">Chisel works best as a small loop: measure carefully, act on controllables, compare later.</p>
+      <div class="cxp-phases" aria-label="Chisel progress loop">
+        <div class="cxp-phase"><b>Measure</b><span>Build a clean baseline.</span></div>
+        <div class="cxp-phase"><b>Act</b><span>Follow one useful routine.</span></div>
+        <div class="cxp-phase"><b>Compare</b><span>Re-check under matched conditions.</span></div>
+      </div>
+      <div class="cxp-focus">
+        <div class="cxp-focus-copy"><b>${state.done?'Today is complete':meta.title}</b><span>${state.done?'You marked one useful action complete. More checking is optional.':meta.copy}</span></div>
+        <div class="cxp-focus-actions">
+          <button class="cxp-focus-btn" data-cxp-focus="${action}">${meta.cta}</button>
+          <button class="cxp-done-btn" data-cxp-done="${action}" aria-pressed="${state.done?'true':'false'}">${state.done?'Focus complete':'Mark focus complete'}</button>
+        </div>
+      </div>
+      <div class="cxp-daily-status" aria-live="polite">${state.done?'<strong>Done for today.</strong> Your progress is stored only on this device.':'Nothing is auto-completed. You decide when today\'s focus is done.'}</div>
+      <div class="cxp-tools-label">All tools</div>
+      <div class="cxp-actions"><button class="cxp-action" data-cxp-action="analyze"><b>Scan now</b><span>Create or compare a baseline</span></button><button class="cxp-action" data-cxp-action="tryon"><b>Try-on Studio</b><span>Hair, beard, eyewear, makeup</span></button><button class="cxp-action" data-cxp-action="yoga"><b>Face Yoga</b><span>Gentle unisex AR guidance</span></button><button class="cxp-action" data-cxp-action="groom"><b>Routine</b><span>Do the controllable work</span></button></div>`;
+  }
+
+  function runAction(action){
+    if(action==='analyze'){route('analyze');return;}
+    if(action==='groom'){route('groom');return;}
+    if(action==='tryon'){
+      route('analyze');setTimeout(()=>{if(typeof window.openStyle==='function')window.openStyle();else{const b=document.getElementById('openStyle');if(b)b.click();}},80);return;
+    }
+    if(action==='yoga'){
+      route('analyze');setTimeout(()=>{if(typeof window.startARCoach==='function')window.startARCoach('yoga');else{const b=document.getElementById('openTrain');if(b)b.click();}},80);
+    }
+  }
+
   function installHomeHub(){
     const home=q('[data-screen="home"]');
     const hero=home&&q('.hero',home);
     if(!hero||document.getElementById('cxpHomeHub')) return;
     const hub=document.createElement('section');
     hub.id='cxpHomeHub';hub.className='cxp-hub';hub.setAttribute(MARK,'home-hub');
-    hub.innerHTML=`<div class="cxp-kicker">Start here</div><h3 class="cxp-title">One useful action, then get on with your day.</h3><p class="cxp-copy">Scan when conditions are good. Use Try-on when making a style decision. Use the routine between scans.</p><div class="cxp-actions"><button class="cxp-action" data-cxp-action="analyze"><b>Scan now</b><span>Create or compare a baseline</span></button><button class="cxp-action" data-cxp-action="tryon"><b>Try-on Studio</b><span>Hair, beard, eyewear, makeup</span></button><button class="cxp-action" data-cxp-action="yoga"><b>Face Yoga</b><span>Gentle unisex AR guidance</span></button><button class="cxp-action" data-cxp-action="groom"><b>Routine</b><span>Do the controllable work</span></button></div>`;
+    renderHomeHub(hub);
     hero.insertAdjacentElement('afterend',hub);
     hub.addEventListener('click',e=>{
-      const btn=e.target.closest('[data-cxp-action]');if(!btn)return;
-      const a=btn.dataset.cxpAction;
-      if(a==='analyze'){route('analyze');return;}
-      if(a==='groom'){route('groom');return;}
-      if(a==='tryon'){
-        route('analyze');setTimeout(()=>{if(typeof window.openStyle==='function')window.openStyle();else{const b=document.getElementById('openStyle');if(b)b.click();}},80);return;
+      const done=e.target.closest('[data-cxp-done]');
+      if(done){
+        const action=done.dataset.cxpDone||recommendedAction();
+        markDaily(localStorage,action);renderHomeHub(hub);toastMessage('Today’s focus marked complete');return;
       }
-      if(a==='yoga'){
-        route('analyze');setTimeout(()=>{if(typeof window.startARCoach==='function')window.startARCoach('yoga');else{const b=document.getElementById('openTrain');if(b)b.click();}},80);
-      }
+      const focus=e.target.closest('[data-cxp-focus]');if(focus){runAction(focus.dataset.cxpFocus);return;}
+      const btn=e.target.closest('[data-cxp-action]');if(btn)runAction(btn.dataset.cxpAction);
     });
+    const history=document.getElementById('scanHistory');
+    if(history&&!history.dataset.cxpHubObserved){history.dataset.cxpHubObserved='1';new MutationObserver(()=>renderHomeHub(hub)).observe(history,{childList:true});}
+  }
+
+  function installValueStrip(){
+    const hub=document.getElementById('cxpHomeHub');if(!hub||document.getElementById('cxpValueStrip'))return;
+    const strip=document.createElement('section');strip.id='cxpValueStrip';strip.className='cxp-value-strip';strip.setAttribute(MARK,'value');
+    strip.innerHTML='<div><b>Private by default</b><span>Core face analysis stays on your device.</span></div><div><b>No public beauty score</b><span>Chisel tracks your own photographic signals, not a social ranking.</span></div><div><b>Built for repeatability</b><span>Capture quality and matched conditions matter more than checking often.</span></div>';
+    hub.insertAdjacentElement('afterend',strip);
   }
 
   function installAnalyzeTrust(){
@@ -148,21 +251,37 @@
     new MutationObserver(sync).observe(sheet,{childList:true});
   }
 
+  function annotateOfferings(){
+    const offerings=document.getElementById('paywallOfferings');if(!offerings)return;
+    offerings.querySelectorAll('.card').forEach(card=>{
+      if(card.dataset.cxpOffer==='1')return;card.dataset.cxpOffer='1';
+      const button=q('button',card);if(button)button.textContent='Continue with Google Play';
+      const note=document.createElement('span');note.className='cxp-offer-note';note.textContent='Price and renewal terms are shown by Google Play before purchase.';
+      if(button)button.insertAdjacentElement('beforebegin',note);else card.appendChild(note);
+    });
+  }
+
   function polishPaywall(){
     const paywall=document.getElementById('paywall');if(!paywall)return;
-    const panel=q('.panel',paywall),title=panel&&q('h3',panel),lede=panel&&q('.lede',panel),restore=document.getElementById('paywallRestore');
-    if(title)title.textContent='Chisel Pro, without hiding the core app.';
-    if(lede)lede.textContent='Core analysis stays on this device. Photoreal renders are optional cloud features. Paid access should add convenience and rendering capacity, not lock basic privacy, deletion or honest scan results.';
+    const panel=q('.panel',paywall),title=panel&&q('h3',panel),lede=panel&&q('.lede',panel),restore=document.getElementById('paywallRestore'),offerings=document.getElementById('paywallOfferings');
+    if(title)title.textContent='Chisel Pro: more optional cloud rendering.';
+    if(lede)lede.textContent='Core analysis stays on this device. Pro is for people who want more photoreal cloud renders; basic privacy, deletion, routines and honest scan results remain part of Chisel.';
+    if(panel&&!document.getElementById('cxpProValue')){
+      const box=document.createElement('section');box.id='cxpProValue';box.className='cxp-pro-value';box.setAttribute(MARK,'pro');
+      box.innerHTML='<h4>What Pro adds</h4><div class="cxp-pro-grid"><div class="cxp-pro-row"><i>✓</i><span><b>More photoreal rendering capacity</b> for style experiments you explicitly choose to send to the cloud.</span></div><div class="cxp-pro-row"><i>✓</i><span><b>Core stays local.</b> Your on-device scans, routine, tracking, deletion controls and local try-ons are not held hostage by Pro.</span></div><div class="cxp-pro-row"><i>✓</i><span><b>No ads. No account required.</b> Purchases are restored through Google Play.</span></div></div><div class="cxp-pro-trust"><b>Charged by Google Play.</b> Google Play shows the exact price and renewal terms before you confirm. Restore purchases anytime from this screen.</div>';
+      if(offerings)offerings.insertAdjacentElement('beforebegin',box);else panel.appendChild(box);
+    }
     if(restore){restore.textContent='Restore purchases';restore.setAttribute('aria-label','Restore purchases from Google Play');}
+    if(offerings&&!offerings.dataset.cxpOfferObserved){offerings.dataset.cxpOfferObserved='1';new MutationObserver(annotateOfferings).observe(offerings,{childList:true,subtree:true});annotateOfferings();}
   }
 
   function install(){
     if(typeof document==='undefined')return false;
     if(document.documentElement.dataset.cxpInstalled==='1')return true;
     document.documentElement.dataset.cxpInstalled='1';
-    injectStyles();polishVisibleCopy();installHomeHub();installAnalyzeTrust();installGroomLoop();installPrivacySummary();installEmptyStates();installResultTrust();polishPaywall();
+    injectStyles();polishVisibleCopy();installHomeHub();installValueStrip();installAnalyzeTrust();installGroomLoop();installPrivacySummary();installEmptyStates();installResultTrust();polishPaywall();
     return true;
   }
 
-  return{install,route};
+  return{install,route,dayKey,dailyState,markDaily};
 });
