@@ -160,6 +160,7 @@ jobs:
             /tmp/chisel-${{ matrix.gender }}-visual-tryon.json
             /tmp/chisel-${{ matrix.gender }}-visual-*.png
             /tmp/chisel-visual-http.log
+            tests/fixtures/portrait-${{ matrix.gender }}.jpg
           if-no-files-found: warn
           retention-days: 7
 
@@ -231,5 +232,6 @@ jobs:
             /tmp/chisel-${{ matrix.gender }}-tryon-result.json
             /tmp/chisel-${{ matrix.gender }}-tryon-*.png
             /tmp/chisel-http.log
+            tests/fixtures/portrait-${{ matrix.gender }}.jpg
           if-no-files-found: warn
           retention-days: 7
