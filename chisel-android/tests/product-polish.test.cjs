@@ -65,3 +65,29 @@ test('dynamic feature runtime loads product polish after experience polish', () 
   assert.ok(product > experience, 'product polish must load after experience polish');
   assert.match(runtime, /ChiselProductPolish\.install\(\)/);
 });
+
+test('route polish keeps current navigation semantic and motion reduced-motion safe', () => {
+  const js = read('www/chisel-product-polish.js');
+  assert.match(js, /aria-current/);
+  assert.match(js, /cxp-entering/);
+  assert.match(js, /@keyframes\s+cxpScreenIn/);
+  assert.match(js, /prefers-reduced-motion/);
+  assert.match(js, /__cxpWrapped/);
+});
+
+test('controls get useful names and toast status is announced politely', () => {
+  const js = read('www/chisel-product-polish.js');
+  assert.match(js, /Switch camera/);
+  assert.match(js, /Capture photo/);
+  assert.match(js, /aria-live/);
+  assert.match(js, /polite/);
+  assert.doesNotMatch(js, /aria-label[^\n]{0,80}Activate/);
+});
+
+test('home quick actions guard against accidental double activation', () => {
+  const js = read('www/chisel-product-polish.js');
+  assert.match(js, /aria-busy/);
+  assert.match(js, /lockAction/);
+  assert.match(js, /disabled\s*=\s*true/);
+  assert.match(js, /data-cxp-action/);
+});
