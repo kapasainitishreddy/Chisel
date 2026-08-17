@@ -6,10 +6,11 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
 const exists = (p) => fs.existsSync(path.join(root, p));
+const polishPath = path.join(root, 'www/chisel-product-polish.js');
 
 test('product polish runtime exists, parses, and is mirrored into Android', () => {
   assert.ok(exists('www/chisel-product-polish.js'), 'product polish runtime missing');
-  assert.doesNotThrow(() => require(path.join(root, 'www/chisel-product-polish.js')));
+  assert.doesNotThrow(() => require(polishPath));
   assert.ok(exists('android/app/src/main/assets/public/chisel-product-polish.js'), 'Android product polish runtime missing');
   assert.equal(read('www/chisel-product-polish.js'), read('android/app/src/main/assets/public/chisel-product-polish.js'));
 });
@@ -82,6 +83,19 @@ test('controls get useful names and toast status is announced politely', () => {
   assert.match(js, /aria-live/);
   assert.match(js, /polite/);
   assert.doesNotMatch(js, /aria-label[^\n]{0,80}Activate/);
+});
+
+test('semantic camera names win over icon glyph text', () => {
+  const {controlLabel} = require(polishPath);
+  const fake = (id, textContent, ariaLabel='') => ({
+    id,
+    textContent,
+    classList:{contains:()=>false},
+    getAttribute:(name)=>name==='aria-label'?ariaLabel:''
+  });
+  assert.equal(controlLabel(fake('camFlip','↻')), 'Switch camera');
+  assert.equal(controlLabel(fake('camShot','◉')), 'Capture photo');
+  assert.equal(controlLabel(fake('plainAction','Readable action')), 'Readable action');
 });
 
 test('home quick actions guard against accidental double activation', () => {
