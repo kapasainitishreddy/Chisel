@@ -85,7 +85,7 @@ test('controls get useful names and toast status is announced politely', () => {
   assert.doesNotMatch(js, /aria-label[^\n]{0,80}Activate/);
 });
 
-test('semantic camera names win over icon glyph text', () => {
+test('semantic camera names win over icon glyph text and generic fallback labels', () => {
   const {controlLabel} = require(polishPath);
   const fake = (id, textContent, ariaLabel='') => ({
     id,
@@ -95,6 +95,8 @@ test('semantic camera names win over icon glyph text', () => {
   });
   assert.equal(controlLabel(fake('camFlip','↻')), 'Switch camera');
   assert.equal(controlLabel(fake('camShot','◉')), 'Capture photo');
+  assert.equal(controlLabel(fake('camFlip','↻','Activate')), 'Switch camera');
+  assert.equal(controlLabel(fake('pickerX','×','Activate')), 'Close style picker');
   assert.equal(controlLabel(fake('plainAction','Readable action')), 'Readable action');
 });
 
