@@ -70,6 +70,8 @@ test('dynamic feature runtime loads product polish after experience polish', () 
 test('route polish keeps current navigation semantic and motion reduced-motion safe', () => {
   const js = read('www/chisel-product-polish.js');
   assert.match(js, /aria-current/);
+  assert.match(js, /querySelectorAll\('nav\.tabs \[data-route\]'\)/);
+  assert.doesNotMatch(js, /querySelectorAll\('\[data-route\]'\)\.forEach/);
   assert.match(js, /cxp-entering/);
   assert.match(js, /@keyframes\s+cxpScreenIn/);
   assert.match(js, /prefers-reduced-motion/);
