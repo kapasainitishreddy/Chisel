@@ -11,6 +11,7 @@ const screenshotPath='/tmp/chisel-interaction-qa.png';
 const result={checks:{},details:{},errors:[]};
 let browser=null;
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const annotationSafe=value=>String(value).replace(/%/g,'%25').replace(/\r/g,'%0D').replace(/\n/g,'%0A');
 
 try{
   browser=await puppeteer.launch({
@@ -111,7 +112,9 @@ try{
   const failed=Object.entries(result.checks).filter(([,value])=>!value).map(([key])=>key);
   if(failed.length)throw new Error(`Interaction QA failed: ${failed.join(', ')}`);
 }catch(err){
-  result.errors.push(err?.stack||err?.message||String(err));
+  const message=err?.stack||err?.message||String(err);
+  result.errors.push(message);
+  console.error(`::error title=Chisel interaction QA::${annotationSafe(message)}`);
   process.exitCode=1;
 }finally{
   try{fs.writeFileSync(jsonPath,JSON.stringify(result,null,2));}catch{}
