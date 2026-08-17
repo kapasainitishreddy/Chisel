@@ -44,10 +44,56 @@ jobs:
           node --check www/chisel-scan-guard.js
           node --check www/chisel-experience-polish.js
           node --check www/chisel-product-polish.js
+          node --check tests/interaction-qa-runner.mjs
           node --check tests/portrait-qa-runner.mjs
           node --check tests/tryon-visual-runner.mjs
       - name: Run automated tests
         run: npm test
+
+  interaction-qa:
+    needs: enhancements
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    defaults:
+      run:
+        working-directory: chisel-android
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install interaction QA browser controller
+        run: npm install --no-save --package-lock=false puppeteer-core@24
+      - name: Exercise rendered navigation and controls
+        shell: bash
+        run: |
+          set -uo pipefail
+          CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$CHROME" ]; then
+            echo "Chrome/Chromium is required for interaction QA" >&2
+            exit 1
+          fi
+          export CHROME
+          rm -f /tmp/chisel-interaction-qa.json /tmp/chisel-interaction-qa.png /tmp/chisel-interaction-http.log
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/chisel-interaction-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          sleep 1
+          timeout --signal=TERM --kill-after=5s 60s \
+            node tests/interaction-qa-runner.mjs "http://127.0.0.1:4173"
+      - name: Upload interaction QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: interaction-qa
+          path: |
+            /tmp/chisel-interaction-qa.json
+            /tmp/chisel-interaction-qa.png
+            /tmp/chisel-interaction-http.log
+          if-no-files-found: warn
+          retention-days: 7
 
   tryon-visual-qa:
     needs: enhancements
