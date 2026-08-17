@@ -68,7 +68,7 @@
   function syncNavigationState(screen){
     if(typeof document==='undefined')return false;
     const current=screen||currentScreen();
-    document.querySelectorAll('[data-route]').forEach(el=>{
+    document.querySelectorAll('nav.tabs [data-route]').forEach(el=>{
       if(el.dataset&&el.dataset.route===current)el.setAttribute('aria-current','page');
       else el.removeAttribute('aria-current');
     });
