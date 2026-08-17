@@ -109,15 +109,19 @@
     return true;
   }
 
+  function isGenericLabel(value){
+    return /^activate$/i.test((value||'').trim());
+  }
+
   function controlLabel(el){
     if(!el)return '';
     const existing=el.getAttribute&&el.getAttribute('aria-label');
-    if(existing&&existing.trim())return existing.trim();
+    if(existing&&existing.trim()&&!isGenericLabel(existing))return existing.trim();
     const id=el.id||'';
     if(CONTROL_LABELS[id])return CONTROL_LABELS[id];
     if((el.classList&&el.classList.contains('x'))||/X$/.test(id))return 'Close';
     const text=(el.textContent||'').replace(/\s+/g,' ').trim();
-    if(text)return text;
+    if(text&&!isGenericLabel(text))return text;
     return '';
   }
 
@@ -126,7 +130,8 @@
     const nav=document.getElementById('bottomTabs')||q('nav.tabs');
     if(nav&&!nav.getAttribute('aria-label'))nav.setAttribute('aria-label','Primary navigation');
     document.querySelectorAll('.camctrl,.x,[data-route]').forEach(el=>{
-      if(el.getAttribute&&el.getAttribute('aria-label'))return;
+      const existing=el.getAttribute&&el.getAttribute('aria-label');
+      if(existing&&existing.trim()&&!isGenericLabel(existing))return;
       const label=controlLabel(el);
       if(label)el.setAttribute('aria-label',label);
     });
