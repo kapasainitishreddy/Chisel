@@ -196,7 +196,7 @@
         route('analyze');setTimeout(()=>{if(typeof window.openStyle==='function')window.openStyle();else{const b=document.getElementById('openStyle');if(b)b.click();}},80);return;
       }
       if(a==='yoga'){
-        route('analyze');setTimeout(()=>{if(typeof window.startARCoach==='function')window.startARCoach('yoga');else{const b=document.getElementById('openTrain');if(b)b.click();}},80);return;
+        route('analyze');setTimeout(()=>{if(typeof window.startARCoach==='function')window.startARCoach('yoga');else{const b=document.getElementById('openTrain');if(b)b.click();}},80);
       }
     });
   }
