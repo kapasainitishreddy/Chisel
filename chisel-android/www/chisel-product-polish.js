@@ -113,11 +113,11 @@
     if(!el)return '';
     const existing=el.getAttribute&&el.getAttribute('aria-label');
     if(existing&&existing.trim())return existing.trim();
-    const text=(el.textContent||'').replace(/\s+/g,' ').trim();
-    if(text)return text;
     const id=el.id||'';
     if(CONTROL_LABELS[id])return CONTROL_LABELS[id];
     if((el.classList&&el.classList.contains('x'))||/X$/.test(id))return 'Close';
+    const text=(el.textContent||'').replace(/\s+/g,' ').trim();
+    if(text)return text;
     return '';
   }
 
@@ -196,7 +196,7 @@
         route('analyze');setTimeout(()=>{if(typeof window.openStyle==='function')window.openStyle();else{const b=document.getElementById('openStyle');if(b)b.click();}},80);return;
       }
       if(a==='yoga'){
-        route('analyze');setTimeout(()=>{if(typeof window.startARCoach==='function')window.startARCoach('yoga');else{const b=document.getElementById('openTrain');if(b)b.click();}},80);
+        route('analyze');setTimeout(()=>{if(typeof window.startARCoach==='function')window.startARCoach('yoga');else{const b=document.getElementById('openTrain');if(b)b.click();}},80);return;
       }
     });
   }
