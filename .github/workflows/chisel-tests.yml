@@ -98,7 +98,7 @@ jobs:
   tryon-visual-qa:
     needs: enhancements
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 5
     strategy:
       fail-fast: false
       matrix:
@@ -127,21 +127,30 @@ jobs:
           fi
           export CHROME
           gender="${{ matrix.gender }}"
-          rm -f "/tmp/chisel-${gender}-visual-tryon.json" /tmp/chisel-${gender}-visual-*.png /tmp/chisel-visual-http.log
+          FRAME="/tmp/chisel-${gender}-visual-frame.png"
+          VIDEO="/tmp/chisel-${gender}-visual.y4m"
+          rm -f "/tmp/chisel-${gender}-visual-tryon.json" /tmp/chisel-${gender}-visual-*.png /tmp/chisel-visual-http.log "$FRAME" "$VIDEO"
           python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/chisel-visual-http.log 2>&1 &
           SERVER_PID=$!
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
           sleep 1
           if [ "$gender" = "male" ]; then
-            VIDEO_FILTER="crop=iw/1.25:ih/1.25:(iw-iw/1.25)/2:(ih-ih/1.25)/2-12,scale=320:400:force_original_aspect_ratio=decrease,pad=320:400:(ow-iw)/2:(oh-ih)/2:color=gray,format=yuv420p"
+            VIDEO_FILTER="crop=iw/1.25:ih/1.25:(iw-iw/1.25)/2:(ih-ih/1.25)/2-12,scale=320:400:force_original_aspect_ratio=decrease,pad=320:400:(ow-iw)/2:(oh-ih)/2:color=gray"
           else
-            VIDEO_FILTER="scale=320:400:force_original_aspect_ratio=decrease,pad=320:400:(ow-iw)/2:(oh-ih)/2:color=gray,format=yuv420p"
+            VIDEO_FILTER="scale=320:400:force_original_aspect_ratio=decrease,pad=320:400:(ow-iw)/2:(oh-ih)/2:color=gray"
           fi
-          ffmpeg -hide_banner -loglevel error -y -loop 1 \
-            -i "tests/fixtures/portrait-${gender}.jpg" \
-            -vf "$VIDEO_FILTER" -r 20 -frames:v 60 -f yuv4mpegpipe "/tmp/chisel-${gender}-visual.y4m"
+          echo "Preparing normalized ${gender} fake-camera fixture"
+          timeout --signal=TERM --kill-after=5s 20s \
+            ffmpeg -hide_banner -loglevel error -y -i "tests/fixtures/portrait-${gender}.jpg" \
+              -vf "$VIDEO_FILTER" -frames:v 1 "$FRAME"
+          test -s "$FRAME"
+          timeout --signal=TERM --kill-after=5s 20s \
+            ffmpeg -hide_banner -loglevel error -y -loop 1 -framerate 8 -i "$FRAME" \
+              -frames:v 16 -pix_fmt yuv420p -f yuv4mpegpipe "$VIDEO"
+          test -s "$VIDEO"
+          rm -f "$FRAME"
           timeout --signal=TERM --kill-after=10s 150s \
-            node tests/tryon-visual-runner.mjs "$gender" "/tmp/chisel-${gender}-visual.y4m" "http://127.0.0.1:4173"
+            node tests/tryon-visual-runner.mjs "$gender" "$VIDEO" "http://127.0.0.1:4173"
       - name: Upload ${{ matrix.gender }} visual try-on evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -157,7 +166,7 @@ jobs:
   portrait-qa:
     needs: enhancements
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 5
     strategy:
       fail-fast: false
       matrix:
@@ -186,21 +195,30 @@ jobs:
           fi
           export CHROME
           gender="${{ matrix.gender }}"
-          rm -f "/tmp/chisel-${gender}-qa.html" "/tmp/chisel-${gender}-chrome.log" "/tmp/chisel-${gender}-result.txt" "/tmp/chisel-${gender}-tryon-result.json" /tmp/chisel-http.log /tmp/chisel-${gender}-tryon-*.png
+          FRAME="/tmp/chisel-${gender}-frame.png"
+          VIDEO="/tmp/chisel-${gender}.y4m"
+          rm -f "/tmp/chisel-${gender}-qa.html" "/tmp/chisel-${gender}-chrome.log" "/tmp/chisel-${gender}-result.txt" "/tmp/chisel-${gender}-tryon-result.json" /tmp/chisel-http.log /tmp/chisel-${gender}-tryon-*.png "$FRAME" "$VIDEO"
           python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/chisel-http.log 2>&1 &
           SERVER_PID=$!
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
           sleep 1
           if [ "$gender" = "male" ]; then
-            VIDEO_FILTER="crop=iw/1.25:ih/1.25:(iw-iw/1.25)/2:(ih-ih/1.25)/2-12,scale=320:400:force_original_aspect_ratio=decrease,pad=320:400:(ow-iw)/2:(oh-ih)/2:color=gray,format=yuv420p"
+            VIDEO_FILTER="crop=iw/1.25:ih/1.25:(iw-iw/1.25)/2:(ih-ih/1.25)/2-12,scale=320:400:force_original_aspect_ratio=decrease,pad=320:400:(ow-iw)/2:(oh-ih)/2:color=gray"
           else
-            VIDEO_FILTER="scale=320:400:force_original_aspect_ratio=decrease,pad=320:400:(ow-iw)/2:(oh-ih)/2:color=gray,format=yuv420p"
+            VIDEO_FILTER="scale=320:400:force_original_aspect_ratio=decrease,pad=320:400:(ow-iw)/2:(oh-ih)/2:color=gray"
           fi
-          ffmpeg -hide_banner -loglevel error -y -loop 1 \
-            -i "tests/fixtures/portrait-${gender}.jpg" \
-            -vf "$VIDEO_FILTER" -r 20 -frames:v 60 -f yuv4mpegpipe "/tmp/chisel-${gender}.y4m"
+          echo "Preparing normalized ${gender} fake-camera fixture"
+          timeout --signal=TERM --kill-after=5s 20s \
+            ffmpeg -hide_banner -loglevel error -y -i "tests/fixtures/portrait-${gender}.jpg" \
+              -vf "$VIDEO_FILTER" -frames:v 1 "$FRAME"
+          test -s "$FRAME"
+          timeout --signal=TERM --kill-after=5s 20s \
+            ffmpeg -hide_banner -loglevel error -y -loop 1 -framerate 8 -i "$FRAME" \
+              -frames:v 16 -pix_fmt yuv420p -f yuv4mpegpipe "$VIDEO"
+          test -s "$VIDEO"
+          rm -f "$FRAME"
           timeout --signal=TERM --kill-after=10s 120s \
-            node tests/portrait-qa-runner.mjs "$gender" "/tmp/chisel-${gender}.y4m" "http://127.0.0.1:4173"
+            node tests/portrait-qa-runner.mjs "$gender" "$VIDEO" "http://127.0.0.1:4173"
       - name: Upload ${{ matrix.gender }} portrait QA diagnostics
         if: always()
         uses: actions/upload-artifact@v4
