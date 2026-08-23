@@ -1,17 +1,18 @@
 name: Chisel Tests
 
 on:
-  push:
-    paths:
-      - 'chisel-android/**'
-      - '.github/workflows/chisel-tests.yml'
   pull_request:
     paths:
       - 'chisel-android/**'
       - '.github/workflows/chisel-tests.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: chisel-tests-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   enhancements:
