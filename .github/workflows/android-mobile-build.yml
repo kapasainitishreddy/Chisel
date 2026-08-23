@@ -2,18 +2,13 @@ name: Chisel Mobile Build
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'chisel-android/**'
-      - '.github/workflows/android-mobile-build.yml'
-  pull_request:
-    paths:
-      - 'chisel-android/**'
-      - '.github/workflows/android-mobile-build.yml'
 
 permissions:
   contents: read
+
+concurrency:
+  group: chisel-mobile-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   android:
