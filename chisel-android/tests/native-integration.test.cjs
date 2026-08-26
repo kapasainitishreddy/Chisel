@@ -51,3 +51,15 @@ test('synced Android enhancement assets exactly match the canonical www copies',
     );
   }
 });
+
+test('Android production shell forbids cleartext and mixed-content loading', () => {
+  const config = JSON.parse(read('capacitor.config.json'));
+  const manifest = read('android/app/src/main/AndroidManifest.xml');
+
+  assert.equal(config.android?.allowMixedContent, false, 'mixed HTTP content must stay disabled');
+  assert.equal(config.android?.webContentsDebuggingEnabled, false, 'WebView debugging must stay disabled');
+  assert.equal(config.server?.androidScheme, 'https', 'Capacitor origin must stay HTTPS');
+  assert.equal(config.server?.cleartext, false, 'Capacitor cleartext server access must stay disabled');
+  assert.match(manifest, /android:usesCleartextTraffic="false"/);
+  assert.match(manifest, /android:allowBackup="false"/);
+});
