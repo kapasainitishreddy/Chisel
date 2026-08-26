@@ -1,22 +1,23 @@
 name: Chisel Tests
 
 on:
-  push:
-    paths:
-      - 'chisel-android/**'
-      - '.github/workflows/chisel-tests.yml'
   pull_request:
     paths:
       - 'chisel-android/**'
       - '.github/workflows/chisel-tests.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: chisel-tests-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   enhancements:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 5
     defaults:
       run:
         working-directory: chisel-android
@@ -27,6 +28,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: npm
+          cache-dependency-path: chisel-android/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+      - name: Scan committed source for obvious secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git grep -nE -- '-----BEGIN (RSA|EC|OPENSSH|DSA) PRIVATE KEY-----|sk_live_[A-Za-z0-9]{16,}|gh[pousr]_[A-Za-z0-9]{20,}|AIza[0-9A-Za-z_-]{20,}' -- . ':!*.md'; then
+            echo 'Potential committed secret detected' >&2
+            exit 1
+          fi
       - name: Check JavaScript syntax
         run: |
           node --check www/chisel-ar-coach-core.js
