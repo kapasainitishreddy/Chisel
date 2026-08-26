@@ -42,7 +42,7 @@ jobs:
             echo 'Potential committed secret detected' >&2
             exit 1
           fi
-      - name: Check JavaScript syntax
+      - name: Check syntax
         run: |
           node --check www/chisel-ar-coach-core.js
           node --check www/chisel-beauty-studio.js
@@ -62,6 +62,7 @@ jobs:
           node --check tests/interaction-qa-runner.mjs
           node --check tests/portrait-qa-runner.mjs
           node --check tests/tryon-visual-runner.mjs
+          python3 -m py_compile tests/repair-truncated-fixture.py
       - name: Run automated tests
         run: npm test
 
@@ -134,7 +135,6 @@ jobs:
         shell: bash
         run: |
           set -uo pipefail
-          command -v ffmpeg >/dev/null || (sudo apt-get update && sudo apt-get install -y ffmpeg)
           CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
           if [ -z "$CHROME" ]; then
             echo "Chrome/Chromium is required for visual try-on QA" >&2
@@ -142,6 +142,15 @@ jobs:
           fi
           export CHROME
           gender="${{ matrix.gender }}"
+          SOURCE="tests/fixtures/portrait-${gender}.jpg"
+          if [ "$gender" = "female" ]; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg python3-pil
+            SOURCE="/tmp/chisel-female-repaired.jpg"
+            python3 tests/repair-truncated-fixture.py tests/fixtures/portrait-female.jpg "$SOURCE"
+          else
+            command -v ffmpeg >/dev/null || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+          fi
           FRAME="/tmp/chisel-${gender}-visual-frame.png"
           VIDEO="/tmp/chisel-${gender}-visual.y4m"
           rm -f "/tmp/chisel-${gender}-visual-tryon.json" /tmp/chisel-${gender}-visual-*.png /tmp/chisel-visual-http.log "$FRAME" "$VIDEO"
@@ -156,7 +165,7 @@ jobs:
           fi
           echo "Preparing normalized ${gender} fake-camera fixture"
           timeout --signal=TERM --kill-after=5s 20s \
-            ffmpeg -hide_banner -loglevel error -y -i "tests/fixtures/portrait-${gender}.jpg" \
+            ffmpeg -hide_banner -loglevel error -y -i "$SOURCE" \
               -vf "$VIDEO_FILTER" -frames:v 1 "$FRAME"
           test -s "$FRAME"
           timeout --signal=TERM --kill-after=5s 20s \
@@ -203,7 +212,6 @@ jobs:
         shell: bash
         run: |
           set -uo pipefail
-          command -v ffmpeg >/dev/null || (sudo apt-get update && sudo apt-get install -y ffmpeg)
           CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
           if [ -z "$CHROME" ]; then
             echo "Chrome/Chromium is required for portrait QA" >&2
@@ -211,6 +219,15 @@ jobs:
           fi
           export CHROME
           gender="${{ matrix.gender }}"
+          SOURCE="tests/fixtures/portrait-${gender}.jpg"
+          if [ "$gender" = "female" ]; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg python3-pil
+            SOURCE="/tmp/chisel-female-repaired.jpg"
+            python3 tests/repair-truncated-fixture.py tests/fixtures/portrait-female.jpg "$SOURCE"
+          else
+            command -v ffmpeg >/dev/null || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+          fi
           FRAME="/tmp/chisel-${gender}-frame.png"
           VIDEO="/tmp/chisel-${gender}.y4m"
           rm -f "/tmp/chisel-${gender}-qa.html" "/tmp/chisel-${gender}-chrome.log" "/tmp/chisel-${gender}-result.txt" "/tmp/chisel-${gender}-tryon-result.json" /tmp/chisel-http.log /tmp/chisel-${gender}-tryon-*.png "$FRAME" "$VIDEO"
@@ -225,7 +242,7 @@ jobs:
           fi
           echo "Preparing normalized ${gender} fake-camera fixture"
           timeout --signal=TERM --kill-after=5s 20s \
-            ffmpeg -hide_banner -loglevel error -y -i "tests/fixtures/portrait-${gender}.jpg" \
+            ffmpeg -hide_banner -loglevel error -y -i "$SOURCE" \
               -vf "$VIDEO_FILTER" -frames:v 1 "$FRAME"
           test -s "$FRAME"
           timeout --signal=TERM --kill-after=5s 20s \
