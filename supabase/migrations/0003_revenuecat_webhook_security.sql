@@ -70,6 +70,12 @@ begin
     return jsonb_build_object('processed', false, 'duplicate', true, 'stale', false);
   end if;
 
+  -- Unknown/no-op RevenueCat event types are recorded for idempotency/audit only.
+  -- They must not advance entitlement ordering or change access.
+  if p_action = 'noop' then
+    return jsonb_build_object('processed', true, 'duplicate', false, 'stale', false);
+  end if;
+
   select last_event_timestamp_ms
     into current_event_timestamp_ms
     from public.entitlements
@@ -118,15 +124,13 @@ begin
       last_event_timestamp_ms = excluded.last_event_timestamp_ms;
 
   elsif p_action = 'preserve' then
-    insert into public.entitlements (
-      id, tier, subscription_active_until, updated_at, last_event_timestamp_ms
-    ) values (
-      p_app_user_id, 'free', active_until, now(), p_event_timestamp_ms
-    )
-    on conflict (id) do update set
-      subscription_active_until = coalesce(excluded.subscription_active_until, public.entitlements.subscription_active_until),
-      updated_at = now(),
-      last_event_timestamp_ms = excluded.last_event_timestamp_ms;
+    -- Cancellation means auto-renew is off, not that paid access ended. Preserve
+    -- the current tier and only record the newer expiry/order on an existing row.
+    update public.entitlements
+      set subscription_active_until = coalesce(active_until, subscription_active_until),
+          updated_at = now(),
+          last_event_timestamp_ms = p_event_timestamp_ms
+      where id = p_app_user_id;
 
   elsif p_action = 'revoke' then
     insert into public.entitlements (
@@ -141,12 +145,6 @@ begin
       subscription_active_until = null,
       updated_at = now(),
       last_event_timestamp_ms = excluded.last_event_timestamp_ms;
-
-  else
-    update public.entitlements
-      set last_event_timestamp_ms = p_event_timestamp_ms,
-          updated_at = now()
-      where id = p_app_user_id;
   end if;
 
   return jsonb_build_object('processed', true, 'duplicate', false, 'stale', false);
