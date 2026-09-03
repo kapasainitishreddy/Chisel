@@ -109,3 +109,35 @@ test('home quick actions guard against accidental double activation', () => {
   assert.match(js, /disabled\s*=\s*true/);
   assert.match(js, /data-cxp-action/);
 });
+
+test('daily focus state is local, date-scoped, and explicitly completed by the user', () => {
+  const polish = require(polishPath);
+  assert.equal(typeof polish.dayKey, 'function');
+  assert.equal(typeof polish.dailyState, 'function');
+  assert.equal(typeof polish.markDaily, 'function');
+  const bag = new Map();
+  const storage = {
+    getItem: (key) => bag.has(key) ? bag.get(key) : null,
+    setItem: (key, value) => bag.set(key, value)
+  };
+  const sunday = new Date('2026-08-16T12:00:00-04:00');
+  const monday = new Date('2026-08-17T12:00:00-04:00');
+  assert.equal(polish.dailyState(storage, sunday).done, false);
+  polish.markDaily(storage, 'groom', sunday);
+  assert.equal(polish.dailyState(storage, sunday).done, true);
+  assert.equal(polish.dailyState(storage, sunday).action, 'groom');
+  assert.equal(polish.dailyState(storage, monday).done, false);
+});
+
+test('home makes Measure Act Compare the primary daily product loop', () => {
+  const js = read('www/chisel-product-polish.js');
+  for (const token of ["Today's Chisel", 'Measure', 'Act', 'Compare', 'Mark focus complete', 'cxpDaily']) assert.match(js, new RegExp(token, 'i'));
+  assert.match(js, /aria-live=["']polite["']/i);
+  assert.match(js, /Do one useful thing today/i);
+});
+
+test('Pro presentation sells optional cloud value without dark patterns', () => {
+  const js = read('www/chisel-product-polish.js');
+  for (const token of ['What Pro adds', 'More photoreal', 'No ads', 'No account required', 'Charged by Google Play', 'Core stays local']) assert.match(js, new RegExp(token, 'i'));
+  assert.doesNotMatch(js, /limited time|only today|last chance|people are viewing|spots left/i);
+});
