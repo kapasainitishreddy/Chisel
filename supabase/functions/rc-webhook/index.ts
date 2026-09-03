@@ -1,113 +1,116 @@
 // supabase/functions/rc-webhook/index.ts
-//
-// Receives RevenueCat subscription lifecycle webhooks and keeps the
-// `entitlements` table in sync. RevenueCat sends a static, dashboard-
-// configured value verbatim as the Authorization header on every request —
-// that's the auth mechanism (see RC's Webhooks docs: "Authorization Header
-// Value"), compared here against RC_WEBHOOK_SECRET.
-//
-// Deploy via the Supabase MCP tool `deploy_edge_function`.
-// Secret RC_WEBHOOK_SECRET must be set by a human (see Task 4) — pick any
-// long random string, put the same value in both the Supabase secret and
-// the RevenueCat dashboard's webhook "Authorization Header Value" field.
+// RevenueCat subscription lifecycle webhook with layered verification:
+// dashboard Authorization secret + HMAC signature + durable event-id idempotency.
 
 import { createClient } from "npm:@supabase/supabase-js@2";
-
-const CORS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import {
+  entitlementActionForEvent,
+  readRequestTextWithLimit,
+  validateRevenueCatEvent,
+  verifyRevenueCatSignature,
+} from "./security.mjs";
 
 const TRIAL_CREDITS = 15;
 
 interface RCEvent {
+  id: string;
   type: string;
   app_user_id: string;
+  event_timestamp_ms: number;
   product_id?: string;
   expiration_at_ms?: number | null;
   entitlement_ids?: string[];
-  period_type?: string; // "TRIAL" | "INTRO" | "NORMAL" | "PROMOTIONAL" | "PREPAID"
+  period_type?: string;
 }
 interface RCWebhookBody {
   api_version?: string;
   event?: RCEvent;
 }
 
+function json(data: unknown, status = 200) {
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "no-store",
+      "X-Content-Type-Options": "nosniff",
+    },
+  });
+}
+
 Deno.serve(async (req: Request) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
-  if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "POST only" }), { status: 405, headers: CORS });
+  if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
+  if (!/^application\/json(?:\s*;|$)/i.test(req.headers.get("Content-Type") || "")) {
+    return json({ error: "unsupported_media_type" }, 415);
   }
 
   const expectedAuth = Deno.env.get("RC_WEBHOOK_SECRET");
-  if (!expectedAuth) {
-    return new Response(JSON.stringify({ error: "Server not configured" }), { status: 500, headers: CORS });
+  const signingSecret = Deno.env.get("RC_WEBHOOK_SIGNING_SECRET");
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!expectedAuth || !signingSecret || !supabaseUrl || !serviceRoleKey) {
+    console.error("RevenueCat webhook server configuration incomplete");
+    return json({ error: "server_not_configured" }, 500);
   }
+
   if (req.headers.get("Authorization") !== expectedAuth) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: CORS });
+    return json({ error: "unauthorized" }, 401);
   }
+
+  let rawBody: string;
+  try {
+    rawBody = await readRequestTextWithLimit(req);
+  } catch (error) {
+    if (error instanceof Error && error.message === "body_too_large") {
+      return json({ error: "body_too_large" }, 413);
+    }
+    console.error("RevenueCat webhook body read failed");
+    return json({ error: "invalid_request" }, 400);
+  }
+
+  const signatureOk = await verifyRevenueCatSignature({
+    rawBody,
+    signatureHeader: req.headers.get("X-RevenueCat-Webhook-Signature"),
+    secret: signingSecret,
+  });
+  if (!signatureOk) return json({ error: "invalid_signature" }, 401);
 
   let body: RCWebhookBody;
   try {
-    body = await req.json();
+    body = JSON.parse(rawBody);
   } catch {
-    return new Response(JSON.stringify({ error: "Invalid JSON body" }), { status: 400, headers: CORS });
+    return json({ error: "invalid_json" }, 400);
   }
 
   const event = body.event;
-  if (!event || !event.type || !event.app_user_id) {
-    return new Response(JSON.stringify({ error: "Missing event fields" }), { status: 400, headers: CORS });
-  }
+  if (!validateRevenueCatEvent(event)) return json({ error: "invalid_event" }, 400);
 
-  const supabase = createClient(
-    Deno.env.get("SUPABASE_URL")!,
-    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-  );
+  const action = entitlementActionForEvent(event);
+  const supabase = createClient(supabaseUrl, serviceRoleKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
 
-  const id = event.app_user_id;
+  const { data, error } = await supabase.rpc("process_revenuecat_event", {
+    p_event_id: event.id,
+    p_event_type: event.type,
+    p_app_user_id: event.app_user_id,
+    p_event_timestamp_ms: event.event_timestamp_ms,
+    p_action: action,
+    p_expiration_at_ms: event.expiration_at_ms ?? null,
+    p_trial_credits: TRIAL_CREDITS,
+  });
 
-  if (event.type === "INITIAL_PURCHASE" || event.type === "RENEWAL" || event.type === "UNCANCELLATION") {
-    const isTrial = event.period_type === "TRIAL" || event.period_type === "INTRO";
-    if (isTrial) {
-      // Only grant trial credits on first entry into the trial (INITIAL_PURCHASE),
-      // not on every event — a RENEWAL during an active trial shouldn't happen,
-      // but guard anyway by only setting credits on INITIAL_PURCHASE.
-      if (event.type === "INITIAL_PURCHASE") {
-        const { error } = await supabase.from("entitlements").upsert({
-          id,
-          tier: "trial",
-          trial_credits_remaining: TRIAL_CREDITS,
-          updated_at: new Date().toISOString(),
-        });
-        if (error) console.error("entitlements upsert (trial) failed", error);
-      }
-    } else {
-      // Paid (non-trial) period: mark subscribed, reset the monthly render
-      // counter each renewal so the soft cap tracks the actual billing cycle.
-      const activeUntil = event.expiration_at_ms ? new Date(event.expiration_at_ms).toISOString() : null;
-      const { error } = await supabase.from("entitlements").upsert({
-        id,
-        tier: "subscribed",
-        subscription_active_until: activeUntil,
-        monthly_render_count: 0,
-        monthly_reset_at: new Date().toISOString().slice(0, 10),
-        updated_at: new Date().toISOString(),
-      });
-      if (error) console.error("entitlements upsert (subscribed) failed", error);
-    }
-  } else if (event.type === "CANCELLATION" || event.type === "EXPIRATION") {
-    const { error } = await supabase.from("entitlements").upsert({
-      id,
-      tier: "free",
-      updated_at: new Date().toISOString(),
+  if (error) {
+    console.error("RevenueCat webhook processing failed", {
+      eventId: event.id,
+      eventType: event.type,
     });
-    if (error) console.error("entitlements upsert (revert to free) failed", error);
-  }
-  // Other event types (BILLING_ISSUE, PRODUCT_CHANGE, etc.) are logged only —
-  // no entitlement state change needed for this app's scope.
-  else {
-    console.log("Unhandled RC event type (no-op)", event.type);
+    return json({ error: "processing_failed" }, 500);
   }
 
-  return new Response(JSON.stringify({ ok: true }), { headers: { ...CORS, "Content-Type": "application/json" } });
+  return json({
+    ok: true,
+    duplicate: Boolean(data?.duplicate),
+    stale: Boolean(data?.stale),
+  });
 });

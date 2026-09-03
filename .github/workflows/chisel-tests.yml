@@ -17,7 +17,7 @@ concurrency:
 jobs:
   enhancements:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 5
     defaults:
       run:
         working-directory: chisel-android
@@ -28,7 +28,21 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Check JavaScript syntax
+          cache: npm
+          cache-dependency-path: chisel-android/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+      - name: Scan committed source for obvious secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git grep -nE -- '-----BEGIN (RSA|EC|OPENSSH|DSA) PRIVATE KEY-----|sk_live_[A-Za-z0-9]{16,}|gh[pousr]_[A-Za-z0-9]{20,}|AIza[0-9A-Za-z_-]{20,}' -- . ':!*.md'; then
+            echo 'Potential committed secret detected' >&2
+            exit 1
+          fi
+      - name: Check syntax
         run: |
           node --check www/chisel-ar-coach-core.js
           node --check www/chisel-beauty-studio.js
@@ -45,15 +59,62 @@ jobs:
           node --check www/chisel-scan-guard.js
           node --check www/chisel-experience-polish.js
           node --check www/chisel-product-polish.js
+          node --check tests/interaction-qa-runner.mjs
           node --check tests/portrait-qa-runner.mjs
           node --check tests/tryon-visual-runner.mjs
+          python3 -m py_compile tests/repair-truncated-fixture.py
       - name: Run automated tests
         run: npm test
+
+  interaction-qa:
+    needs: enhancements
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    defaults:
+      run:
+        working-directory: chisel-android
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install interaction QA browser controller
+        run: npm install --no-save --package-lock=false puppeteer-core@24
+      - name: Exercise rendered navigation and controls
+        shell: bash
+        run: |
+          set -uo pipefail
+          CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
+          if [ -z "$CHROME" ]; then
+            echo "Chrome/Chromium is required for interaction QA" >&2
+            exit 1
+          fi
+          export CHROME
+          rm -f /tmp/chisel-interaction-qa.json /tmp/chisel-interaction-qa.png /tmp/chisel-interaction-http.log
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/chisel-interaction-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          sleep 1
+          timeout --signal=TERM --kill-after=5s 60s \
+            node tests/interaction-qa-runner.mjs "http://127.0.0.1:4173"
+      - name: Upload interaction QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: interaction-qa
+          path: |
+            /tmp/chisel-interaction-qa.json
+            /tmp/chisel-interaction-qa.png
+            /tmp/chisel-interaction-http.log
+          if-no-files-found: warn
+          retention-days: 7
 
   tryon-visual-qa:
     needs: enhancements
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 5
     strategy:
       fail-fast: false
       matrix:
@@ -74,7 +135,6 @@ jobs:
         shell: bash
         run: |
           set -uo pipefail
-          command -v ffmpeg >/dev/null || (sudo apt-get update && sudo apt-get install -y ffmpeg)
           CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
           if [ -z "$CHROME" ]; then
             echo "Chrome/Chromium is required for visual try-on QA" >&2
@@ -82,21 +142,39 @@ jobs:
           fi
           export CHROME
           gender="${{ matrix.gender }}"
-          rm -f "/tmp/chisel-${gender}-visual-tryon.json" /tmp/chisel-${gender}-visual-*.png /tmp/chisel-visual-http.log
+          SOURCE="tests/fixtures/portrait-${gender}.jpg"
+          if [ "$gender" = "female" ]; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg python3-pil
+            SOURCE="/tmp/chisel-female-repaired.jpg"
+            python3 tests/repair-truncated-fixture.py tests/fixtures/portrait-female.jpg "$SOURCE"
+          else
+            command -v ffmpeg >/dev/null || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+          fi
+          FRAME="/tmp/chisel-${gender}-visual-frame.png"
+          VIDEO="/tmp/chisel-${gender}-visual.y4m"
+          rm -f "/tmp/chisel-${gender}-visual-tryon.json" /tmp/chisel-${gender}-visual-*.png /tmp/chisel-visual-http.log "$FRAME" "$VIDEO"
           python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/chisel-visual-http.log 2>&1 &
           SERVER_PID=$!
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
           sleep 1
           if [ "$gender" = "male" ]; then
-            VIDEO_FILTER="crop=iw/1.25:ih/1.25:(iw-iw/1.25)/2:(ih-ih/1.25)/2-12,scale=320:400:force_original_aspect_ratio=decrease,pad=320:400:(ow-iw)/2:(oh-ih)/2:color=gray,format=yuv420p"
+            VIDEO_FILTER="crop=iw/1.25:ih/1.25:(iw-iw/1.25)/2:(ih-ih/1.25)/2-12,scale=320:400:force_original_aspect_ratio=decrease,pad=320:400:(ow-iw)/2:(oh-ih)/2:color=gray"
           else
-            VIDEO_FILTER="scale=320:400:force_original_aspect_ratio=decrease,pad=320:400:(ow-iw)/2:(oh-ih)/2:color=gray,format=yuv420p"
+            VIDEO_FILTER="scale=320:400:force_original_aspect_ratio=decrease,pad=320:400:(ow-iw)/2:(oh-ih)/2:color=gray"
           fi
-          ffmpeg -hide_banner -loglevel error -y -loop 1 \
-            -i "tests/fixtures/portrait-${gender}.jpg" \
-            -vf "$VIDEO_FILTER" -r 20 -frames:v 60 -f yuv4mpegpipe "/tmp/chisel-${gender}-visual.y4m"
+          echo "Preparing normalized ${gender} fake-camera fixture"
+          timeout --signal=TERM --kill-after=5s 20s \
+            ffmpeg -hide_banner -loglevel error -y -i "$SOURCE" \
+              -vf "$VIDEO_FILTER" -frames:v 1 "$FRAME"
+          test -s "$FRAME"
+          timeout --signal=TERM --kill-after=5s 20s \
+            ffmpeg -hide_banner -loglevel error -y -loop 1 -framerate 8 -i "$FRAME" \
+              -frames:v 16 -pix_fmt yuv420p -f yuv4mpegpipe "$VIDEO"
+          test -s "$VIDEO"
+          rm -f "$FRAME"
           timeout --signal=TERM --kill-after=10s 150s \
-            node tests/tryon-visual-runner.mjs "$gender" "/tmp/chisel-${gender}-visual.y4m" "http://127.0.0.1:4173"
+            node tests/tryon-visual-runner.mjs "$gender" "$VIDEO" "http://127.0.0.1:4173"
       - name: Upload ${{ matrix.gender }} visual try-on evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -106,13 +184,14 @@ jobs:
             /tmp/chisel-${{ matrix.gender }}-visual-tryon.json
             /tmp/chisel-${{ matrix.gender }}-visual-*.png
             /tmp/chisel-visual-http.log
+            chisel-android/tests/fixtures/portrait-${{ matrix.gender }}.jpg
           if-no-files-found: warn
           retention-days: 7
 
   portrait-qa:
     needs: enhancements
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 5
     strategy:
       fail-fast: false
       matrix:
@@ -133,7 +212,6 @@ jobs:
         shell: bash
         run: |
           set -uo pipefail
-          command -v ffmpeg >/dev/null || (sudo apt-get update && sudo apt-get install -y ffmpeg)
           CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser || true)"
           if [ -z "$CHROME" ]; then
             echo "Chrome/Chromium is required for portrait QA" >&2
@@ -141,21 +219,39 @@ jobs:
           fi
           export CHROME
           gender="${{ matrix.gender }}"
-          rm -f "/tmp/chisel-${gender}-qa.html" "/tmp/chisel-${gender}-chrome.log" "/tmp/chisel-${gender}-result.txt" "/tmp/chisel-${gender}-tryon-result.json" /tmp/chisel-http.log /tmp/chisel-${gender}-tryon-*.png
+          SOURCE="tests/fixtures/portrait-${gender}.jpg"
+          if [ "$gender" = "female" ]; then
+            sudo apt-get update
+            sudo apt-get install -y ffmpeg python3-pil
+            SOURCE="/tmp/chisel-female-repaired.jpg"
+            python3 tests/repair-truncated-fixture.py tests/fixtures/portrait-female.jpg "$SOURCE"
+          else
+            command -v ffmpeg >/dev/null || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+          fi
+          FRAME="/tmp/chisel-${gender}-frame.png"
+          VIDEO="/tmp/chisel-${gender}.y4m"
+          rm -f "/tmp/chisel-${gender}-qa.html" "/tmp/chisel-${gender}-chrome.log" "/tmp/chisel-${gender}-result.txt" "/tmp/chisel-${gender}-tryon-result.json" /tmp/chisel-http.log /tmp/chisel-${gender}-tryon-*.png "$FRAME" "$VIDEO"
           python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/chisel-http.log 2>&1 &
           SERVER_PID=$!
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
           sleep 1
           if [ "$gender" = "male" ]; then
-            VIDEO_FILTER="crop=iw/1.25:ih/1.25:(iw-iw/1.25)/2:(ih-ih/1.25)/2-12,scale=320:400:force_original_aspect_ratio=decrease,pad=320:400:(ow-iw)/2:(oh-ih)/2:color=gray,format=yuv420p"
+            VIDEO_FILTER="crop=iw/1.25:ih/1.25:(iw-iw/1.25)/2:(ih-ih/1.25)/2-12,scale=320:400:force_original_aspect_ratio=decrease,pad=320:400:(ow-iw)/2:(oh-ih)/2:color=gray"
           else
-            VIDEO_FILTER="scale=320:400:force_original_aspect_ratio=decrease,pad=320:400:(ow-iw)/2:(oh-ih)/2:color=gray,format=yuv420p"
+            VIDEO_FILTER="scale=320:400:force_original_aspect_ratio=decrease,pad=320:400:(ow-iw)/2:(oh-ih)/2:color=gray"
           fi
-          ffmpeg -hide_banner -loglevel error -y -loop 1 \
-            -i "tests/fixtures/portrait-${gender}.jpg" \
-            -vf "$VIDEO_FILTER" -r 20 -frames:v 60 -f yuv4mpegpipe "/tmp/chisel-${gender}.y4m"
+          echo "Preparing normalized ${gender} fake-camera fixture"
+          timeout --signal=TERM --kill-after=5s 20s \
+            ffmpeg -hide_banner -loglevel error -y -i "$SOURCE" \
+              -vf "$VIDEO_FILTER" -frames:v 1 "$FRAME"
+          test -s "$FRAME"
+          timeout --signal=TERM --kill-after=5s 20s \
+            ffmpeg -hide_banner -loglevel error -y -loop 1 -framerate 8 -i "$FRAME" \
+              -frames:v 16 -pix_fmt yuv420p -f yuv4mpegpipe "$VIDEO"
+          test -s "$VIDEO"
+          rm -f "$FRAME"
           timeout --signal=TERM --kill-after=10s 120s \
-            node tests/portrait-qa-runner.mjs "$gender" "/tmp/chisel-${gender}.y4m" "http://127.0.0.1:4173"
+            node tests/portrait-qa-runner.mjs "$gender" "$VIDEO" "http://127.0.0.1:4173"
       - name: Upload ${{ matrix.gender }} portrait QA diagnostics
         if: always()
         uses: actions/upload-artifact@v4
@@ -168,5 +264,6 @@ jobs:
             /tmp/chisel-${{ matrix.gender }}-tryon-result.json
             /tmp/chisel-${{ matrix.gender }}-tryon-*.png
             /tmp/chisel-http.log
+            chisel-android/tests/fixtures/portrait-${{ matrix.gender }}.jpg
           if-no-files-found: warn
           retention-days: 7
