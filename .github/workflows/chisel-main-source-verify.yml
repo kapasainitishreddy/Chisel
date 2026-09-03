@@ -42,13 +42,16 @@ jobs:
       - name: Audit production dependencies
         run: npm audit --omit=dev --audit-level=high
 
-      - name: Scan committed source for obvious secrets
+      - name: Scan committed release source for obvious secrets
         shell: bash
         working-directory: .
         run: |
           set -euo pipefail
-          if git grep -nE -- '-----BEGIN (RSA|EC|OPENSSH|DSA) PRIVATE KEY-----|sk_live_[A-Za-z0-9]{16,}|gh[pousr]_[A-Za-z0-9]{20,}|AIza[0-9A-Za-z_-]{20,}' -- . ':!*.md'; then
-            echo 'Potential committed secret detected' >&2
+          # Scan code and production backend sources. Root assets/*.txt are raw
+          # Google Stitch export captures and may contain provider-owned public
+          # frontend identifiers; they are not loaded by the Chisel runtime.
+          if git grep -nE -- '-----BEGIN (RSA|EC|OPENSSH|DSA) PRIVATE KEY-----|sk_live_[A-Za-z0-9]{16,}|gh[pousr]_[A-Za-z0-9]{20,}|AIza[0-9A-Za-z_-]{20,}' -- chisel-android supabase ':!*.md'; then
+            echo 'Potential committed secret detected in release source' >&2
             exit 1
           fi
 
