@@ -1,11 +1,6 @@
 name: Chisel Tests
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'chisel-android/**'
-      - '.github/workflows/chisel-tests.yml'
   pull_request:
     paths:
       - 'chisel-android/**'
