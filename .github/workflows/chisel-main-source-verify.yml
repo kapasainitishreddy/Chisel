@@ -1,0 +1,78 @@
+name: Chisel Main Source Verify
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'chisel-android/**'
+      - 'supabase/**'
+      - '.github/workflows/chisel-main-source-verify.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: chisel-main-source-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    defaults:
+      run:
+        working-directory: chisel-android
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: chisel-android/package-lock.json
+
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Scan committed source for obvious secrets
+        shell: bash
+        working-directory: .
+        run: |
+          set -euo pipefail
+          if git grep -nE -- '-----BEGIN (RSA|EC|OPENSSH|DSA) PRIVATE KEY-----|sk_live_[A-Za-z0-9]{16,}|gh[pousr]_[A-Za-z0-9]{20,}|AIza[0-9A-Za-z_-]{20,}' -- . ':!*.md'; then
+            echo 'Potential committed secret detected' >&2
+            exit 1
+          fi
+
+      - name: Check source syntax
+        run: |
+          node --check www/chisel-ar-coach-core.js
+          node --check www/chisel-beauty-studio.js
+          node --check www/chisel-tryon-runtime-fixes.js
+          node --check www/chisel-enhancements-core.js
+          node --check www/chisel-enhancements.js
+          node --check www/chisel-precision-stats.js
+          node --check www/chisel-precision-protocol.js
+          node --check www/chisel-precision-core.js
+          node --check www/chisel-precision-face.js
+          node --check www/chisel-precision-body.js
+          node --check www/chisel-precision-ui.js
+          node --check www/chisel-precision.js
+          node --check www/chisel-scan-guard.js
+          node --check www/chisel-experience-polish.js
+          node --check www/chisel-product-polish.js
+          node --check tests/interaction-qa-runner.mjs
+          node --check tests/portrait-qa-runner.mjs
+          node --check tests/tryon-visual-runner.mjs
+          python3 -m py_compile tests/repair-truncated-fixture.py
+
+      - name: Run automated tests
+        run: npm test
