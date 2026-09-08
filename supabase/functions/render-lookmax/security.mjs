@@ -1,5 +1,6 @@
 export const MAX_RENDER_REQUEST_BYTES = 8_500_000;
 export const MAX_IMAGE_BYTES = 5_500_000;
+export const MAX_PROVIDER_RESPONSE_BYTES = 262_144;
 
 const SAFE_COLORS = new Map([
   ['match', 'preserve the source person’s natural hair colour'],
@@ -18,8 +19,12 @@ const SAFE_COLORS = new Map([
 ]);
 
 export async function readRequestTextWithLimit(request, maxBytes = MAX_RENDER_REQUEST_BYTES) {
-  const declaredLength = Number(request.headers.get('content-length') || 0);
-  if (Number.isFinite(declaredLength) && declaredLength > maxBytes) throw new Error('body_too_large');
+  const rawLength = request.headers.get('content-length');
+  if (rawLength != null && rawLength !== '') {
+    if (!/^\d+$/.test(rawLength.trim())) throw new Error('invalid_content_length');
+    const declaredLength = Number(rawLength);
+    if (!Number.isSafeInteger(declaredLength) || declaredLength > maxBytes) throw new Error('body_too_large');
+  }
   if (!request.body) return '';
 
   const reader = request.body.getReader();
@@ -30,7 +35,10 @@ export async function readRequestTextWithLimit(request, maxBytes = MAX_RENDER_RE
       const { done, value } = await reader.read();
       if (done) break;
       total += value.byteLength;
-      if (total > maxBytes) throw new Error('body_too_large');
+      if (total > maxBytes) {
+        await reader.cancel().catch(() => undefined);
+        throw new Error('body_too_large');
+      }
       chunks.push(value);
     }
   } finally {
@@ -43,7 +51,89 @@ export async function readRequestTextWithLimit(request, maxBytes = MAX_RENDER_RE
     merged.set(chunk, offset);
     offset += chunk.byteLength;
   }
-  return new TextDecoder().decode(merged);
+  try {
+    return new TextDecoder('utf-8', { fatal: true }).decode(merged);
+  } catch {
+    throw new Error('invalid_utf8');
+  }
+}
+
+export async function readJsonObjectResponseWithLimit(response, maxBytes = MAX_PROVIDER_RESPONSE_BYTES) {
+  const rawLength = response.headers.get('content-length');
+  if (rawLength != null && rawLength !== '') {
+    if (!/^\d+$/.test(rawLength.trim())) throw new Error('provider_invalid_length');
+    const declaredLength = Number(rawLength);
+    if (!Number.isSafeInteger(declaredLength) || declaredLength > maxBytes) throw new Error('provider_response_too_large');
+  }
+  if (!response.body) throw new Error('provider_invalid_response');
+
+  const reader = response.body.getReader();
+  const chunks = [];
+  let total = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > maxBytes) {
+        await reader.cancel().catch(() => undefined);
+        throw new Error('provider_response_too_large');
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+
+  const merged = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    merged.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+
+  let text;
+  try {
+    text = new TextDecoder('utf-8', { fatal: true }).decode(merged);
+  } catch {
+    throw new Error('provider_invalid_response');
+  }
+
+  let parsed;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    throw new Error('provider_invalid_response');
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('provider_invalid_response');
+  return parsed;
+}
+
+export function validateReplicatePollUrl(value) {
+  if (typeof value !== 'string' || value.length < 1 || value.length > 2048) return null;
+  try {
+    const url = new URL(value);
+    if (url.protocol !== 'https:' || url.username || url.password || url.port) return null;
+    if (url.hostname.toLowerCase() !== 'api.replicate.com') return null;
+    if (!/^\/v1\/predictions\/[A-Za-z0-9_-]{1,160}$/.test(url.pathname)) return null;
+    if (url.search || url.hash) return null;
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+
+export function validateHttpsOutputUrl(value) {
+  if (typeof value !== 'string' || value.length < 1 || value.length > 2048) return null;
+  try {
+    const url = new URL(value);
+    if (url.protocol !== 'https:' || url.username || url.password || url.hash) return null;
+    const host = url.hostname.toLowerCase();
+    if (!host || host === 'localhost' || host.endsWith('.localhost')) return null;
+    return url.toString();
+  } catch {
+    return null;
+  }
 }
 
 export function normalizeDeviceId(value) {
