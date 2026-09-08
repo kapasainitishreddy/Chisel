@@ -6,10 +6,13 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import {
+  readJsonObjectResponseWithLimit,
   readRequestTextWithLimit,
   safeColorInstruction,
   validateDataImage,
+  validateHttpsOutputUrl,
   validateRenderIdentity,
+  validateReplicatePollUrl,
 } from './security.mjs';
 
 interface RenderRequest {
@@ -74,6 +77,10 @@ const BEARD_NAMES: Record<string,string> = {
 const REPLICATE_MODEL = 'black-forest-labs/flux-kontext-pro';
 const FREE_DAILY_LIMIT = 2;
 const PREMIUM_DAILY_LIMIT = 20;
+const MAX_REPLICATE_RESPONSE_BYTES = 7_000_000;
+const REVENUECAT_TIMEOUT_MS = 8_000;
+const REPLICATE_CREATE_TIMEOUT_MS = 70_000;
+const REPLICATE_POLL_TIMEOUT_MS = 10_000;
 
 function validId(v: string | undefined, map: Record<string,string>) {
   return !!v && Object.prototype.hasOwnProperty.call(map, v);
@@ -120,17 +127,35 @@ async function isPremiumViaRevenueCat(userId: string | null): Promise<boolean> {
   const secret = Deno.env.get('REVENUECAT_SECRET');
   if (!secret) return false;
   try {
-    const r = await fetch(`https://api.revenuecat.com/v1/subscribers/${encodeURIComponent(userId)}`, {
+    const signal = AbortSignal.timeout(REVENUECAT_TIMEOUT_MS);
+    const response = await fetch(`https://api.revenuecat.com/v1/subscribers/${encodeURIComponent(userId)}`, {
       headers: { Authorization: `Bearer ${secret}` },
-      signal: AbortSignal.timeout(8000),
+      signal,
+      redirect: 'error',
+      credentials: 'omit',
+      cache: 'no-store',
     });
-    if (!r.ok) return false;
-    const d = await r.json();
-    const entitlement = d?.subscriber?.entitlements?.premium;
-    return !!(entitlement && (!entitlement.expires_date || new Date(entitlement.expires_date).getTime() > Date.now()));
+    if (!response.ok) return false;
+    const payload = await readJsonObjectResponseWithLimit(response);
+    const subscriber = payload.subscriber;
+    if (!subscriber || typeof subscriber !== 'object' || Array.isArray(subscriber)) return false;
+    const entitlements = subscriber.entitlements;
+    if (!entitlements || typeof entitlements !== 'object' || Array.isArray(entitlements)) return false;
+    const entitlement = entitlements.premium;
+    if (!entitlement || typeof entitlement !== 'object' || Array.isArray(entitlement)) return false;
+    const expiresDate = entitlement.expires_date;
+    if (expiresDate == null || expiresDate === '') return true;
+    if (typeof expiresDate !== 'string' || expiresDate.length > 64) return false;
+    const expiresAt = Date.parse(expiresDate);
+    return Number.isFinite(expiresAt) && expiresAt > Date.now();
   } catch {
     return false;
   }
+}
+
+async function readReplicateSuccess(response: Response) {
+  if (!response.ok) throw new Error('provider_status');
+  return await readJsonObjectResponseWithLimit(response, MAX_REPLICATE_RESPONSE_BYTES);
 }
 
 Deno.serve(async (req: Request) => {
@@ -226,6 +251,7 @@ Deno.serve(async (req: Request) => {
   ].join(' ');
 
   try {
+    const createSignal = AbortSignal.timeout(REPLICATE_CREATE_TIMEOUT_MS);
     const create = await fetch(`https://api.replicate.com/v1/models/${REPLICATE_MODEL}/predictions`, {
       method: 'POST',
       headers: {
@@ -234,29 +260,42 @@ Deno.serve(async (req: Request) => {
         Prefer: 'wait=60',
       },
       body: JSON.stringify({ input: { prompt, input_image: body.image, output_format: 'jpg', safety_tolerance: 2 } }),
+      signal: createSignal,
+      redirect: 'error',
+      credentials: 'omit',
+      cache: 'no-store',
     });
-    const pred = await create.json();
-    if (!create.ok) {
-      console.error('Replicate render creation failed', { status: create.status });
-      return json(req, { error: 'render_failed' }, 502);
-    }
+    const pred = await readReplicateSuccess(create);
 
     let output = pred.output;
-    if (!output && pred.urls?.get) {
+    if (!output && pred.urls && typeof pred.urls === 'object' && !Array.isArray(pred.urls)) {
+      const pollUrl = validateReplicatePollUrl(pred.urls.get);
+      if (!pollUrl) return json(req, { error: 'render_failed' }, 502);
       for (let i = 0; i < 28; i += 1) {
         await new Promise((resolve) => setTimeout(resolve, 1200));
-        const poll = await fetch(pred.urls.get, { headers: { Authorization: `Bearer ${replicateToken}` } });
-        const pd = await poll.json();
+        const pollSignal = AbortSignal.timeout(REPLICATE_POLL_TIMEOUT_MS);
+        const poll = await fetch(pollUrl, {
+          headers: { Authorization: `Bearer ${replicateToken}` },
+          signal: pollSignal,
+          redirect: 'error',
+          credentials: 'omit',
+          cache: 'no-store',
+        });
+        const pd = await readReplicateSuccess(poll);
         if (pd.status === 'succeeded') {
           output = pd.output;
           break;
         }
         if (pd.status === 'failed' || pd.status === 'canceled') return json(req, { error: 'render_failed' }, 502);
+        if (typeof pd.status !== 'string' || !['starting', 'processing'].includes(pd.status)) {
+          return json(req, { error: 'render_failed' }, 502);
+        }
       }
     }
 
-    const imageUrl = Array.isArray(output) ? output[0] : output;
-    if (typeof imageUrl !== 'string' || !/^https:\/\//i.test(imageUrl)) return json(req, { error: 'render_timeout' }, 504);
+    const rawImageUrl = Array.isArray(output) ? output[0] : output;
+    const imageUrl = validateHttpsOutputUrl(rawImageUrl);
+    if (!imageUrl) return json(req, { error: 'render_timeout' }, 504);
     return json(req, {
       imageUrl,
       remaining: Number(allowance.remaining || 0),
