@@ -95,8 +95,9 @@ async function generate(){
 }
 async function cancel(){epoch++;preparing=false;closeConsent(false);if(previewController)previewController.abort();await controller.cancel();labels();}
 async function gallery(){
- const node=q('#clsSavedList');if(!node)return;for(const url of galleryURLs)URL.revokeObjectURL(url);galleryURLs.clear();node.replaceChildren();
+ const node=q('#clsSavedList');if(!node)return;const ticket=epoch;
  let items;try{items=await root.ChiselLooksGallery.list();}catch{text('#clsSavedStatus','Saved looks are unavailable.');return;}
+ if(ticket!==epoch)return;for(const url of galleryURLs)URL.revokeObjectURL(url);galleryURLs.clear();node.replaceChildren();
  text('#clsSavedStatus',items.length?'Saved on this device.':'No saved looks yet.');
  for(const item of items){const row=root.document.createElement('div');row.className='cls-saved-row';const img=root.document.createElement('img');img.alt='Saved AI look';const url=URL.createObjectURL(item.result);galleryURLs.add(url);img.src=url;const title=root.document.createElement('span');title.textContent=root.ChiselLookCatalog.CATALOG[item.look.category]?.find(x=>x.id===item.look.preset)?.label||'Saved look';const open=root.document.createElement('button');open.type='button';open.textContent='Open';open.addEventListener('click',()=>{epoch++;controller.clear();revoke();source=item.original;result=item.result;sourceURL=URL.createObjectURL(source);resultURL=URL.createObjectURL(result);saveId=item.id;savedLook=item.look;q('#clsBefore').src=sourceURL;q('#clsAfter').src=resultURL;show('#clsResult',true);q('#clsResult').scrollIntoView({block:'nearest'});});const remove=root.document.createElement('button');remove.type='button';remove.textContent='Delete';remove.setAttribute('aria-label',`Delete ${title.textContent}`);remove.addEventListener('click',async()=>{try{await root.ChiselLooksGallery.remove(item.id);if(saveId===item.id)revoke();await gallery();}catch{text('#clsSavedStatus','Could not delete this look.');}});row.append(img,title,open,remove);node.append(row);}
 }

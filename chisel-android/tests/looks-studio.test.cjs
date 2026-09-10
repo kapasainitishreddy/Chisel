@@ -74,3 +74,8 @@ test('a failed output download can reopen the same completed job without another
  assert.match(js,/s.status==='succeeded'&&!result/);
  assert.match(js,/Open preview/);
 });
+test('gallery reads finish before replacing live controls',()=>{
+ const js=fs.readFileSync(path.join(www,'chisel-looks-studio.js'),'utf8');
+ const body=js.slice(js.indexOf('async function gallery(){'),js.indexOf('async function save(){'));
+ assert.ok(body.indexOf('await root.ChiselLooksGallery.list()')<body.indexOf('node.replaceChildren()'));
+});
