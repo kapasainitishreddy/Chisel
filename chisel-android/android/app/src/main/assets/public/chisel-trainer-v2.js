@@ -37,8 +37,8 @@ function saveCompletion(detail){
   if(!root||!root.localStorage||!detail||!detail.state||!detail.state.completed)return;
   const state=detail.state,key=`${state.sessionId}:${state.startedAt}`;if(key===lastCompletionKey)return;lastCompletionKey=key;
   let history=[];try{history=JSON.parse(root.localStorage.getItem(STORAGE_KEY)||'[]');if(!Array.isArray(history))history=[];}catch{history=[];}
-  history.unshift({sessionId:state.sessionId,completedAt:new Date().toISOString(),cleanReps:Number(state.cleanReps)||0,lastFormScore:Number(state.lastFormScore)||0});
-  root.localStorage.setItem(STORAGE_KEY,JSON.stringify(history.slice(0,30)));
+  history.unshift({sessionId:state.sessionId,completedAt:new Date().toISOString(),cleanReps:Number(state.cleanReps)||0,lastFormScore:Number(state.lastFormScore)||0,guidedReps:Number(state.guidedReps)||0});
+  try{root.localStorage.setItem(STORAGE_KEY,JSON.stringify(history.slice(0,30)));}catch{/* Training must still finish when storage is full. */}
 }
 function updateLive(detail){
   if(!detail||!detail.state)return;const state=detail.state,form=detail.form||{},exercise=detail.exercise||{};

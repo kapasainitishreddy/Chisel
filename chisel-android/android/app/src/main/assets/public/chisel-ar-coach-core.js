@@ -35,18 +35,28 @@
     yoga:{id:'yoga',title:'Unisex Face Yoga',duration:'7 min',exerciseIds:['brow-release','cheek-raise','happy-cheeks','jaw-release','neck-length']}
   };
 
+  const MAX_FRAME_GAP_MS=350;
+  const validSignals=s=>!!s&&s.valid===true&&s.frontal===true&&['eyeTilt','centered','cornerLift','cornerAsymmetry','mouthOpen'].every(k=>typeof s[k]==='number'&&Number.isFinite(s[k]));
   const distance=(a,b)=>Math.hypot((a.x||0)-(b.x||0),(a.y||0)-(b.y||0));
   const exerciseById=id=>EXERCISES.find(item=>item.id===id)||null;
-  function signalsFromLandmarks(points){
+  function signalsFromLandmarks(points,dimensions){
     const required=[1,10,13,14,33,61,152,234,263,291,454];
-    if(!Array.isArray(points)||!required.every(index=>points[index]))return{valid:false,frontal:false};
+    if(!Array.isArray(points)||!required.every(index=>points[index]&&['x','y'].every(k=>Number.isFinite(points[index][k])&&points[index][k]>=0&&points[index][k]<=1)))return{valid:false,frontal:false};
+    // Landmarks normalize x by image width and y by image height. Put both
+    // axes in one pixel scale before computing distances and movement ratios.
+    if(dimensions){
+      if(!Number.isFinite(dimensions.width)||!Number.isFinite(dimensions.height)||dimensions.width<=0||dimensions.height<=0)return{valid:false,frontal:false};
+      const aspect=dimensions.height/dimensions.width;
+      points=points.map(p=>p?{...p,y:p.y*aspect}:p);
+    }
     const leftFace=points[234],rightFace=points[454],leftEye=points[33],rightEye=points[263],leftCorner=points[61],rightCorner=points[291],mouthTop=points[13],mouthBottom=points[14];
     const mouthWidth=distance(leftCorner,rightCorner)||.0001,faceWidth=distance(leftFace,rightFace)||.0001,mouthCenterY=(mouthTop.y+mouthBottom.y)/2;
+    if(faceWidth<.01||mouthWidth<.005||distance(leftEye,rightEye)<.005||distance(points[10],points[152])<.01)return{valid:false,frontal:false};
     const leftLift=(mouthCenterY-leftCorner.y)/mouthWidth,rightLift=(mouthCenterY-rightCorner.y)/mouthWidth;
     return{valid:true,frontal:true,eyeTilt:Math.abs(leftEye.y-rightEye.y)/(distance(leftEye,rightEye)||.0001),centered:Math.abs(points[1].x-((leftFace.x+rightFace.x)/2))/faceWidth,cornerLift:(leftLift+rightLift)/2,cornerAsymmetry:Math.abs(leftLift-rightLift),mouthOpen:distance(mouthTop,mouthBottom)/mouthWidth,faceWidth,faceHeight:distance(points[10],points[152])};
   }
   function scoreForm(exercise,signals){
-    if(!exercise||!signals||!signals.valid||signals.frontal===false)return 0;
+    if(!exercise||!validSignals(signals))return 0;
     let score=100;
     score-=clamp(signals.eyeTilt/.055,0,1)*28;
     score-=clamp(signals.centered/.08,0,1)*22;
@@ -63,26 +73,29 @@
   }
   function evaluateForm(exercise,signals){
     const score=scoreForm(exercise,signals);
-    if(!exercise||!signals||!signals.valid)return{accepted:false,correction:'Center your face in the guide',tone:'find',score};
-    if(signals.frontal===false)return{accepted:false,correction:'Face the camera directly',tone:'find',score};
-    if(signals.eyeTilt>.055)return{accepted:false,correction:'Level your eyes',tone:'find',score};
-    if(signals.centered>.08)return{accepted:false,correction:'Center your face',tone:'find',score};
+    const aligned=validSignals(signals)&&signals.eyeTilt<=.055&&signals.centered<=.08;
+    const released=!!exercise&&aligned&&signals.mouthOpen<.16&&(
+      exercise.kind==='smile'?signals.cornerLift<exercise.minLift*.55&&signals.cornerAsymmetry<=.08:
+      exercise.kind==='release'?signals.mouthOpen<.02:false);
+    const result=(accepted,correction,tone='find')=>({accepted,correction,tone,score,released,tracking:exercise&&exercise.tracking});
+    if(!exercise||!validSignals(signals))return result(false,'Center your face in the guide');
+    if(signals.eyeTilt>.055)return result(false,'Level your eyes');
+    if(signals.centered>.08)return result(false,'Center your face');
     if(exercise.kind==='release'){
-      if(signals.mouthOpen<.025)return{accepted:false,correction:'Let your lips part slightly and soften the jaw',tone:'find',score};
-      if(signals.mouthOpen>.16)return{accepted:false,correction:'Use a smaller jaw release - do not open wide',tone:'find',score};
-    }else if(signals.mouthOpen>.16)return{accepted:false,correction:'Relax your jaw and soften your mouth',tone:'find',score};
+      if(signals.mouthOpen<.025)return result(false,'Let your lips part slightly and soften the jaw');
+      if(signals.mouthOpen>.16)return result(false,'Use a smaller jaw release - do not open wide');
+    }else if(signals.mouthOpen>.16)return result(false,'Relax your jaw and soften your mouth');
     if(exercise.kind==='smile'){
-      if(signals.cornerAsymmetry>.08)return{accepted:false,correction:'Lift both cheeks evenly',tone:'find',score};
-      if(signals.cornerLift<exercise.minLift)return{accepted:false,correction:'Lift your cheeks gently',tone:'find',score};
-      if(signals.cornerLift>exercise.maxLift)return{accepted:false,correction:'Soften the smile and keep your jaw loose',tone:'find',score};
+      if(signals.cornerAsymmetry>.08)return result(false,'Lift both cheeks evenly');
+      if(signals.cornerLift<exercise.minLift)return result(false,'Lift your cheeks gently');
+      if(signals.cornerLift>exercise.maxLift)return result(false,'Soften the smile and keep your jaw loose');
     }
-    const guided=exercise.tracking===FORM_TRACKING.GUIDED;
-    return{accepted:true,correction:guided?'Position ready - follow the movement cue gently':'Form locked - keep breathing',tone:'hold',score};
+    return result(true,exercise.tracking===FORM_TRACKING.GUIDED?'Position ready - follow the movement cue gently':'Form locked - keep breathing','hold');
   }
   function phaseForEvent(event){
-    if(event==='hold')return'HOLD';if(event==='rep'||event==='rest')return'RELEASE';if(event==='complete')return'COMPLETE';return'POSITION';
+    if(event==='hold')return'HOLD';if(event==='rep'||event==='rest'||event==='release')return'RELEASE';if(event==='complete')return'COMPLETE';return'POSITION';
   }
-  function createState(sessionId,now=0){const session=SESSIONS[sessionId]||SESSIONS.full;return{sessionId:session.id,exerciseIds:session.exerciseIds.slice(),exerciseIndex:0,rep:0,cleanReps:0,lastFormScore:0,holdStartedAt:0,restUntil:0,startedAt:now,completed:false,event:'start',phase:'POSITION',correction:''};}
+  function createState(sessionId,now=0){const session=SESSIONS[sessionId]||SESSIONS.full;return{sessionId:session.id,exerciseIds:session.exerciseIds.slice(),exerciseIndex:0,rep:0,cleanReps:0,guidedReps:0,lastFormScore:0,minHoldScore:100,heldMs:0,lastSampleAt:null,needsRelease:false,releaseMs:0,holdStartedAt:0,restUntil:0,startedAt:now,completed:false,event:'start',phase:'POSITION',correction:''};}
   function currentExercise(state){return state&&!state.completed?exerciseById(state.exerciseIds[state.exerciseIndex]):null;}
   function emitCoachState(state,form){
     if(typeof window==='undefined'||typeof window.dispatchEvent!=='function'||typeof window.CustomEvent!=='function')return;
@@ -90,15 +103,40 @@
   }
   function finish(next,form){next.phase=phaseForEvent(next.event);emitCoachState(next,form);return next;}
   function advanceState(state,form,now){
-    if(!state||state.completed)return state;const next={...state};
-    if(form&&Number.isFinite(Number(form.score)))next.lastFormScore=Math.round(clamp(form.score,0,100));
-    if(next.restUntil&&now<next.restUntil){next.holdStartedAt=0;next.event='rest';return finish(next,form);}if(next.restUntil)next.restUntil=0;
-    if(!form||!form.accepted){next.holdStartedAt=0;next.event='find';next.correction=form&&form.correction?form.correction:'Center your face in the guide';return finish(next,form);}
-    const exercise=currentExercise(next);if(!exercise){next.completed=true;next.event='complete';return finish(next,form);}
-    if(!next.holdStartedAt){next.holdStartedAt=now;next.event='hold';next.correction=form.correction||'';return finish(next,form);}
-    if(now-next.holdStartedAt<exercise.hold*1000){next.event='hold';next.correction=form.correction||'';return finish(next,form);}
-    next.holdStartedAt=0;next.rep+=1;if(next.lastFormScore>=80)next.cleanReps=(next.cleanReps||0)+1;next.correction='';
-    if(next.rep>=exercise.reps){next.exerciseIndex+=1;next.rep=0;if(next.exerciseIndex>=next.exerciseIds.length){next.completed=true;next.event='complete';next.restUntil=0;return finish(next,form);}next.event='exercise';}else next.event='rep';
+    if(!state||state.completed)return state;
+    const next={...state};
+    const resetHold=()=>{next.holdStartedAt=0;next.heldMs=0;next.minHoldScore=100;};
+    if(!Number.isFinite(now)||now<0||(next.lastSampleAt!==null&&now<=next.lastSampleAt)){
+      resetHold();next.releaseMs=0;next.event='find';next.correction='Waiting for a fresh camera frame';
+      return finish(next,form);
+    }
+    const gap=next.lastSampleAt===null?0:now-next.lastSampleAt;
+    const fresh=gap<=MAX_FRAME_GAP_MS;
+    next.lastSampleAt=now;
+    next.lastFormScore=form&&Number.isFinite(form.score)?Math.round(clamp(form.score,0,100)):0;
+    if(!fresh){resetHold();next.releaseMs=0;}
+    const exercise=currentExercise(next);
+    if(!exercise){next.completed=true;next.event='complete';return finish(next,form);}
+    // Re-arming requires an observed, stable neutral release, not just a rest timer.
+    if(next.needsRelease){
+      next.releaseMs=form&&form.released===true&&fresh?(next.releaseMs||0)+gap:0;
+      if(next.releaseMs<300){resetHold();next.event='release';next.correction='Release gently to neutral before the next repetition';return finish(next,form);}
+      next.needsRelease=false;next.releaseMs=0;
+    }
+    if(next.restUntil&&now<next.restUntil){resetHold();next.event='rest';return finish(next,form);}
+    next.restUntil=0;
+    if(!form||form.accepted!==true){resetHold();next.event='find';next.correction=form&&form.correction||'Center your face in the guide';return finish(next,form);}
+    if(!next.holdStartedAt){next.holdStartedAt=Math.max(now,.001);next.heldMs=0;next.minHoldScore=next.lastFormScore;}
+    else next.heldMs=(next.heldMs||0)+gap;
+    next.minHoldScore=Math.min(next.minHoldScore,next.lastFormScore);
+    if(next.heldMs<exercise.hold*1000){next.event='hold';next.correction=form.correction||'';return finish(next,form);}
+    const clean=exercise.tracking===FORM_TRACKING.FORM&&next.minHoldScore>=80;
+    if(clean)next.cleanReps=(next.cleanReps||0)+1;
+    if(exercise.tracking===FORM_TRACKING.GUIDED)next.guidedReps=(next.guidedReps||0)+1;
+    resetHold();next.rep+=1;next.correction='';
+    next.needsRelease=exercise.kind==='smile'||exercise.kind==='release';
+    if(next.rep>=exercise.reps){next.exerciseIndex+=1;next.rep=0;next.needsRelease=false;if(next.exerciseIndex>=next.exerciseIds.length){next.completed=true;next.event='complete';next.restUntil=0;return finish(next,form);}next.event='exercise';}
+    else next.event='rep';
     next.restUntil=now+1300;return finish(next,form);
   }
   return{SAFETY_COPY,FORM_TRACKING,EXERCISES,SESSIONS,exerciseById,signalsFromLandmarks,scoreForm,evaluateForm,createState,currentExercise,advanceState};
@@ -118,6 +156,7 @@ if(typeof window!=='undefined'&&typeof document!=='undefined'){
       const fixStyleLabels=()=>{const first=document.querySelector('#styleTop .seg');if(!first)return;const buttons=first.querySelectorAll('button');if(buttons[0]){if(buttons[0].textContent!=='Short / structured')buttons[0].textContent='Short / structured';buttons[0].setAttribute('aria-label','Short structured hairstyle family');}if(buttons[1]){if(buttons[1].textContent!=='Long / layered')buttons[1].textContent='Long / layered';buttons[1].setAttribute('aria-label','Long layered hairstyle family');}first.setAttribute('aria-label','Browse by style family, not gender');};
       fixStyleLabels();const styleTop=document.getElementById('styleTop');if(styleTop&&!styleTop.dataset.styleFamilyObserver){styleTop.dataset.styleFamilyObserver='1';new MutationObserver(fixStyleLabels).observe(styleTop,{childList:true,subtree:true});}
       addCss('chisel-enhancements.css');await addScript('chisel-enhancements-core.js');await addScript('chisel-enhancements.js');
+      await addScript('chisel-capture-quality.js');
       addCss('chisel-trainer-v2.css');addCss('chisel-skin-appearance.css');await addScript('chisel-skin-appearance-core.js');
       await addScript('chisel-trainer-v2.js');if(window.ChiselTrainerV2)window.ChiselTrainerV2.install();
       await addScript('chisel-skin-appearance.js');if(window.ChiselSkinAppearance)window.ChiselSkinAppearance.install();
@@ -126,6 +165,7 @@ if(typeof window!=='undefined'&&typeof document!=='undefined'){
       await addScript('chisel-scan-guard.js');if(window.ChiselScanGuard)window.ChiselScanGuard.installBrowserGuard();
       await addScript('chisel-experience-polish.js');if(window.ChiselExperiencePolish)window.ChiselExperiencePolish.install();
       await addScript('chisel-product-polish.js');if(window.ChiselProductPolish)window.ChiselProductPolish.install();
+      await addScript('chisel-reliability-runtime.js');if(window.ChiselReliabilityRuntime)window.ChiselReliabilityRuntime.install();
     }catch(error){console.warn('[Chisel runtime] optional feature module failed to load',error);}})();
   },{once:true});
 }

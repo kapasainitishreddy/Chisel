@@ -1,5 +1,7 @@
 # Chisel Feature Matrix
 
+> **2026-09-10 reliability update:** See [Accuracy and realism status](ACCURACY_RELIABILITY.md). The current local suite has 184 passing tests; CI status must be read from the exact-head run. Trainer holds now require fresh frames and neutral release, guided repetitions are separate, skin/Precision checks reject unusable data, and cloud try-on uses uncropped input with explicit consent. These are software safeguards, not empirical accuracy or realism certification. Prior physical-device evidence below does not validate the new thresholds.
+
 _Last updated: 2026-09-10_
 
 Status legend:
@@ -68,7 +70,7 @@ Status legend:
 | FM-51 | Paywall UI + purchase/restore seam | Implemented; production config pending | Requires Play products + RevenueCat key/entitlement + live billing QA |
 | FM-52 | Server entitlement enforcement | Partial / deploy pending | Supabase function source exists; production deployment/config required |
 | FM-53 | Premium Pro product definition | Product spec committed | Precision Lab Pro, Progress Intelligence, Adaptive Protocols, Looks Studio Pro, Professional Export, Private Vault Plus |
-| FM-54 | Automated tests / CI | Automated + rendered verified | Current implementation snapshot passes 160/160 Node tests plus browser interaction QA, generated-portrait QA and try-on visual QA; production-only dependency audit is clean |
+| FM-54 | Automated tests / CI | Local automated verified; exact-head CI required | 184/184 local Node tests for the reliability update. Exact-head CI/browser results must be checked separately; the prior 160-test snapshot and its rendered QA are historical |
 | FM-55 | Capacitor Android sync integrity | Automated verified | Canonical `www` app/feature assets are checked byte-for-byte against packaged Android copies, including trainer and skin-appearance runtimes |
 | FM-56 | Android release signing config | Implemented | Real upload keystore/passwords remain developer-owned and gitignored |
 | FM-57 | Android API 36 target | Configured; build CI gate | compile/target 36, AGP 8.10, Gradle 8.11.1 |

@@ -34,11 +34,12 @@ function analyzePixelSet(input){
       const r=data[i],g=data[i+1],b=data[i+2],lum=luminance(r,g,b),sat=saturation(r,g,b);
       lums.push(lum);sats.push(sat);reds.push(r-(g+b)/2);browns.push((r+b*.15)-g*.55-b*.28);
       if(lum>215&&sat<.12)brightLowSat+=1;
-      if(lum<24||lum>240)clipped+=1;
+      // Reject actual channel clipping, not a darker natural complexion.
+      if(Math.max(r,g,b)<=2||Math.max(r,g,b)>=253)clipped+=1;
       samples+=1;
     }
   }
-  if(!samples)return{redness:0,shine:0,texture:0,pores:0,blemishContrast:0,pigmentUnevenness:0,confidence:0,sampleCount:0};
+  if(!samples)return{redness:0,shine:0,texture:0,pores:0,blemishContrast:0,pigmentUnevenness:0,confidence:0,valid:false,sampleCount:0};
   const avgLum=mean(lums),avgRed=mean(reds),avgBrown=mean(browns),lumSd=stdev(lums,avgLum),redSd=stdev(reds,avgRed),brownSd=stdev(browns,avgBrown);
   let adjacentDiff=0,adjacentN=0,poreLike=0,contrastLike=0;
   for(let y=0;y<height;y+=step){
@@ -54,7 +55,7 @@ function analyzePixelSet(input){
   const edgeMean=adjacentN?adjacentDiff/adjacentN:0;
   const clipRate=clipped/samples;
   const sizeConfidence=clamp((samples/450)*100);
-  const exposureConfidence=clamp(100-clipRate*240-Math.max(0,52-avgLum)*.65-Math.max(0,avgLum-205)*.65);
+  const exposureConfidence=clamp(100-clipRate*240);
   return{
     redness:round(((avgRed-8)/58)*100),
     shine:round((brightLowSat/samples)*420),
@@ -62,31 +63,38 @@ function analyzePixelSet(input){
     pores:round((poreLike/samples)*230+(edgeMean/34)*24),
     blemishContrast:round((contrastLike/samples)*155+(redSd/34)*22+(lumSd/45)*18),
     pigmentUnevenness:round((brownSd/34)*56+(lumSd/42)*44),
-    confidence:round(sizeConfidence*.42+exposureConfidence*.58),
+    confidence:round(Math.min(sizeConfidence,exposureConfidence)),
+    valid:samples>=64&&clipRate<.25&&Math.min(sizeConfidence,exposureConfidence)>=42,
+    clippedFraction:clipRate,
+    methodVersion:'skin-appearance-quality-v2',
     sampleCount:samples
   };
 }
 function aggregateRegions(regionResults){
   const regions={...(regionResults||{})};
-  const entries=Object.entries(regions).filter(([,result])=>result&&Number(result.sampleCount)>0);
+  const entries=Object.entries(regions).filter(([,result])=>result&&result.valid!==false&&Number.isFinite(result.confidence)&&result.confidence>=42&&Number(result.sampleCount)>0&&Object.keys(METRIC_DEFS).every(key=>Number.isFinite(result[key])));
   const out={regions};
   const keys=Object.keys(METRIC_DEFS);
   let weightTotal=0,confidenceTotal=0;
   for(const [,result] of entries){const weight=Math.max(1,Number(result.sampleCount)||1)*Math.max(.15,(Number(result.confidence)||0)/100);weightTotal+=weight;confidenceTotal+=(Number(result.confidence)||0)*weight;}
   for(const key of keys){let total=0;for(const [,result] of entries){const weight=Math.max(1,Number(result.sampleCount)||1)*Math.max(.15,(Number(result.confidence)||0)/100);total+=(Number(result[key])||0)*weight;}out[key]=round(weightTotal?total/weightTotal:0);}
   out.confidence=round(weightTotal?confidenceTotal/weightTotal:0);
+  out.valid=entries.length>=3;
+  out.excludedRegions=Object.keys(regions).filter(key=>!entries.some(([id])=>id===key));
+  if(!out.valid)out.confidence=0;
+  out.methodVersion='skin-appearance-quality-v2';
   out.sampleCount=entries.reduce((sum,[,result])=>sum+(Number(result.sampleCount)||0),0);
   return out;
 }
 function signalBand(value){const n=clamp(value);if(n<35)return{key:'low',label:'Low signal'};if(n<65)return{key:'moderate',label:'Moderate signal'};return{key:'high',label:'Higher signal'};}
 function buildAppearanceSummary(metrics){
   const safe=metrics||{};
-  const attention=Object.keys(METRIC_DEFS).map(key=>({key,label:METRIC_DEFS[key].label,value:round(safe[key]),band:signalBand(safe[key]),description:METRIC_DEFS[key].description})).sort((a,b)=>b.value-a.value).slice(0,3);
+  const attention=(safe.valid===false?[]:Object.keys(METRIC_DEFS).filter(key=>Number.isFinite(safe[key]))).map(key=>({key,label:METRIC_DEFS[key].label,value:round(safe[key]),band:signalBand(safe[key]),description:METRIC_DEFS[key].description})).sort((a,b)=>b.value-a.value).slice(0,3);
   const confidence=round(safe.confidence);
   return{
     attention,
     confidence,
-    headline:confidence>=75?'Good comparison conditions':confidence>=50?'Usable with caution':'Retake for a cleaner comparison',
+    headline:confidence>=75?'Photo sampling checks passed':confidence>=50?'Usable with caution':'Retake for a cleaner comparison',
     compareRule:'Compare again in matched lighting, camera distance, angle and expression. Look for repeated trends rather than one-photo changes.',
     disclaimer:'Cosmetic appearance signals only — not a diagnosis, disease screen, or measurement of skin health.'
   };

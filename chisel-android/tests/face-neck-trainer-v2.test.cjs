@@ -73,7 +73,7 @@ test('existing rep state machine remains backward compatible with scored form', 
   const exercise = coach.currentExercise(state);
   assert.ok(exercise);
   state = coach.advanceState(state, { accepted: true, correction: '', score: 94 }, 1000);
-  state = coach.advanceState(state, { accepted: true, correction: '', score: 94 }, 1000 + exercise.hold * 1000);
+  for(let t=1100;t<=1000+exercise.hold*1000;t+=100) state=coach.advanceState(state,{accepted:true,correction:'',score:94},t);
   assert.equal(state.rep, 1);
   assert.equal(state.lastFormScore, 94);
 });
