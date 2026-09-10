@@ -27,7 +27,7 @@ jobs:
         run: |
           set -euo pipefail
           npm ci --ignore-scripts
-          node --check www/chisel-platinum-ui.js
+          node --check www/chisel-studio-theme.js
           node --check tests/platinum-browser-runner.mjs
           npm test 2>&1 | tee /tmp/chisel-platinum-tests.txt
           git rev-parse HEAD > /tmp/chisel-platinum-sha.txt

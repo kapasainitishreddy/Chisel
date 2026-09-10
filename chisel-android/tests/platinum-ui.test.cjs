@@ -1,44 +1,37 @@
-const test = require('node:test');
-const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const path = require('node:path');
-const vm = require('node:vm');
-const www = path.join(__dirname, '../www');
-const read = name => fs.readFileSync(path.join(www, name), 'utf8');
-test('platinum theme and zoom permission are set before optional feature boot', () => {
-  const loader = read('chisel-ar-coach-core.js');
-  assert.match(loader, /dataset.chiselTheme='platinum'/);
-  assert.match(loader, /theme.href='chisel-platinum.css'/);
-  assert.match(loader, /viewport.content='width=device-width, initial-scale=1, viewport-fit=cover'/);
-  assert.ok(loader.indexOf("dataset.chiselTheme='platinum'") < loader.indexOf("await addScript('chisel-beauty-studio.js')"));
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const vm=require('node:vm');
+const www=path.join(__dirname,'../www');
+const read=name=>fs.readFileSync(path.join(www,name),'utf8');
+test('pinch zoom is enabled by the shared UI without changing measurement code',()=>{
+ const loader=read('chisel-ar-coach-core.js');
+ assert.match(read('chisel-studio-theme.js'),/viewport.content='width=device-width, initial-scale=1, viewport-fit=cover'/);
+ assert.ok(loader.indexOf("addScript('chisel-studio-theme.js')")>loader.indexOf("addScript('chisel-reliability-runtime.js')"));
 });
-test('platinum styles define one theme, readable controls and reduced motion', () => {
-  const css = read('chisel-platinum.css');
-  for (const token of ['--cp-bg', '--cp-surface', '--cp-text', '--cp-muted', '--cp-accent', '--cp-radius']) assert.ok(css.includes(token));
-  assert.match(css, /min-height:\s*48px/);
-  assert.match(css, /focus-visible/);
-  assert.match(css, /prefers-reduced-motion/);
-  assert.match(css, /safe-area-inset-bottom/);
-  assert.match(css, /\.cp-dialog-body/);
+test('Platinum refines the shared Studio tokens rather than loading a competing UI theme',()=>{
+ const css=read('chisel-studio-theme.css'),js=read('chisel-studio-theme.js'),loader=read('chisel-ar-coach-core.js');
+ for(const color of ['#0c0e12','#15181e','#f1f3f6','#e4eaf2'])assert.ok(css.includes(color));
+ assert.match(css,/--display:Inter/);
+ assert.match(css,/min-height:48px/);assert.match(css,/prefers-reduced-motion/);
+ assert.match(js,/dataset.chiselFinish='platinum'/);
+ assert.doesNotMatch(loader,/addScript\('chisel-platinum-ui.js'\)/);
 });
-test('platinum UI preserves the real shell, moves tools, and retains safety disclosures', () => {
-  const js = read('chisel-platinum-ui.js');
-  new vm.Script(js);
-  assert.match(js, /ChiselPlatinum/);
-  assert.match(js, /cpToolDock/);
-  assert.match(js, /chiselLabsLauncher/);
-  assert.match(js, /chiselPrecisionLauncher/);
-  assert.match(js, /cpTrainerDetails/);
-  assert.match(js, /\.ar-safety/);
-  assert.match(js, /\.ctv2-trust/);
-  assert.doesNotMatch(js, /fetch\(|getUserMedia\(|detectForVideo\(|localStorage\.setItem/);
+test('trainer keeps its existing filters and callbacks under a pinned header',()=>{
+ const js=read('chisel-studio-theme.js'),css=read('chisel-studio-theme.css');new vm.Script(js);
+ for(const value of ['installTrainerFrame','cs-trainer-head','cs-trainer-body','csTrainerFilters','matchesGoal','csOrbitTrigger'])assert.ok(js.includes(value),value);
+ assert.match(css,/\.cs-trainer-body\s*\{[^}]*overflow-y:auto/);
+ assert.match(css,/\.cs-trainer-head\s*\{[^}]*flex:0 0 auto/);
+ assert.match(js,/while\(panel.firstChild\)body.append\(panel.firstChild\)/);
 });
-test('theme runs after reliability, preserving its overrides', () => {
-  const source = read('chisel-ar-coach-core.js');
-  assert.ok(source.indexOf("addScript('chisel-platinum-ui.js')") > source.indexOf("addScript('chisel-reliability-runtime.js')"));
+test('dialog focus remembers external trigger before existing dialog focus handlers run',()=>{
+ const js=read('chisel-studio-theme.js');
+ assert.match(js,/pendingTrigger/);
+ assert.match(js,/if\(button.closest\('#csOrbit'\)\)pendingTrigger=q\('#csOrbitTrigger'\)/);
+ assert.match(js,/returnFocus=pendingTrigger&&pendingTrigger.isConnected\?pendingTrigger:doc\(\).activeElement/);
+ assert.doesNotMatch(js,/fetch\(|getUserMedia\(|detectForVideo\(|localStorage\.setItem/);
 });
-test('platinum assets are packaged byte-for-byte for Android', () => {
-  for (const name of ['chisel-platinum.css', 'chisel-platinum-ui.js', 'index.html', 'chisel-ar-coach-core.js']) {
-    assert.equal(read(name), fs.readFileSync(path.join(__dirname, '../android/app/src/main/assets/public', name), 'utf8'), name);
-  }
+test('shared Studio refinements and loader are packaged byte-identically',()=>{
+ for(const name of ['chisel-studio-theme.css','chisel-studio-theme.js','chisel-ar-coach-core.js','index.html'])assert.equal(read(name),fs.readFileSync(path.join(__dirname,'../android/app/src/main/assets/public',name),'utf8'),name);
 });
