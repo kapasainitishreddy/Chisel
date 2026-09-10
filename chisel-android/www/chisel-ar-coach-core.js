@@ -143,6 +143,14 @@
 });
 
 if(typeof window!=='undefined'&&typeof document!=='undefined'){
+  // Apply the theme while the original app is still behind its boot screen.
+  document.documentElement.dataset.chiselTheme='platinum';
+  document.title='Chisel — Personal care studio';
+  const viewport=document.querySelector('meta[name="viewport"]');
+  if(viewport)viewport.content='width=device-width, initial-scale=1, viewport-fit=cover';
+  if(!document.getElementById('chiselPlatinumCss')){
+    const theme=document.createElement('link');theme.id='chiselPlatinumCss';theme.rel='stylesheet';theme.href='chisel-platinum.css';document.head.appendChild(theme);
+  }
   window.addEventListener('load',()=>{
     const addCss=href=>{if(document.querySelector(`link[data-chisel-runtime="${href}"]`))return;const link=document.createElement('link');link.rel='stylesheet';link.href=href;link.dataset.chiselRuntime=href;document.head.appendChild(link);};
     if(!document.getElementById('chiselLauncherLayerFix')){const layerFix=document.createElement('style');layerFix.id='chiselLauncherLayerFix';layerFix.textContent='.chl-launcher,.chp-launcher{z-index:180!important}';document.head.appendChild(layerFix);}
@@ -166,6 +174,7 @@ if(typeof window!=='undefined'&&typeof document!=='undefined'){
       await addScript('chisel-experience-polish.js');if(window.ChiselExperiencePolish)window.ChiselExperiencePolish.install();
       await addScript('chisel-product-polish.js');if(window.ChiselProductPolish)window.ChiselProductPolish.install();
       await addScript('chisel-reliability-runtime.js');if(window.ChiselReliabilityRuntime)window.ChiselReliabilityRuntime.install();
+      await addScript('chisel-platinum-ui.js');if(window.ChiselPlatinum)window.ChiselPlatinum.install();
     }catch(error){console.warn('[Chisel runtime] optional feature module failed to load',error);}})();
   },{once:true});
 }

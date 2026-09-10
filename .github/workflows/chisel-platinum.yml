@@ -1,0 +1,55 @@
+name: Chisel Platinum UI
+on:
+  pull_request:
+    paths:
+      - 'chisel-android/**'
+      - '.github/workflows/chisel-platinum.yml'
+permissions:
+  contents: read
+concurrency:
+  group: chisel-platinum-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  platinum-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    defaults:
+      run:
+        working-directory: chisel-android
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Regression tests
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts
+          node --check www/chisel-platinum-ui.js
+          node --check tests/platinum-browser-runner.mjs
+          npm test 2>&1 | tee /tmp/chisel-platinum-tests.txt
+          git rev-parse HEAD > /tmp/chisel-platinum-sha.txt
+      - name: Inspect real Platinum screens and interactions
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false puppeteer-core@24
+          export CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/chisel-platinum-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          sleep 1
+          timeout --signal=TERM --kill-after=5s 120s node tests/platinum-browser-runner.mjs
+      - name: Preserve screenshots and evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: chisel-platinum-${{ github.run_id }}
+          path: |
+            /tmp/chisel-platinum/
+            /tmp/chisel-platinum-tests.txt
+            /tmp/chisel-platinum-sha.txt
+            /tmp/chisel-platinum-http.log
+          retention-days: 7
+          if-no-files-found: error
