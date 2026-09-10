@@ -22,7 +22,14 @@ try {
  report.checks.sixTrainerSessions=trainer.sessions===6;
  report.checks.trainerFits=trainer.width<=trainer.viewport+1;
  await page.screenshot({path:`${out}/trainer.png`});
+ report.closeBefore=await page.evaluate(()=>{
+  window.__closeClicks=[];
+  document.addEventListener('click',e=>window.__closeClicks.push({id:e.target.id,classes:e.target.className}),true);
+  const b=document.getElementById('arCoachX'),r=b.getBoundingClientRect(),panel=b.closest('.panel');
+  return{rect:{x:r.x,y:r.y,w:r.width,h:r.height},hit:document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.outerHTML,animations:panel.getAnimations().map(a=>({state:a.playState,time:a.currentTime}))};
+ });
  await page.click('#arCoachX');
+ report.closeAfter=await page.evaluate(()=>({clicks:window.__closeClicks,open:document.getElementById('arCoachModal').classList.contains('on')}));
  report.checks.trainerCloses=await page.evaluate(()=>!document.getElementById('arCoachModal').classList.contains('on'));
  await page.evaluate(()=>ChiselEnhancements.openLabs('skin'));
  await page.waitForSelector('#csaShell',{visible:true});
