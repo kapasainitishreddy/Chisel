@@ -16,6 +16,16 @@ try {
  await page.waitForFunction(()=>document.documentElement.dataset.chiselReliability==='1'&&(!document.getElementById('boot')||getComputedStyle(document.getElementById('boot')).pointerEvents==='none'),{timeout:15000});
  report.checks.pageIdentity=(await page.title()).startsWith('Chisel');
  report.checks.runtimeInstalled=true;
+ // Complete the real first-run UI before testing tools behind it. The popup
+ // is scheduled after boot and otherwise races the trainer's Close click.
+ await page.waitForSelector('#idModal.on',{visible:true,timeout:10000});
+ await page.evaluate(async()=>{
+  const panel=document.querySelector('#idModal .panel');
+  await Promise.all(panel.getAnimations().map(animation=>animation.finished.catch(()=>{})));
+ });
+ await page.click('#idX');
+ await page.waitForFunction(()=>!document.getElementById('idModal').classList.contains('on'),{timeout:2000});
+ report.checks.onboardingDismissed=true;
  await page.evaluate(()=>openTrain());
  await page.waitForSelector('#arCoachModal.on',{visible:true});
  report.checks.reducedMotionPanel=await page.evaluate(()=>getComputedStyle(document.querySelector('#arCoachModal .panel')).animationName==='none');
