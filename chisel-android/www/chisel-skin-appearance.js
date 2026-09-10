@@ -147,5 +147,5 @@ function buildShell(panel){
 function install(attempt=0){
   if(installed||typeof document==='undefined')return installed;const panel=$('#chl-panel-skin');if(!panel){if(attempt<20)setTimeout(()=>install(attempt+1),120);return false;}installed=true;panel.dataset.skinAppearance='1';buildShell(panel);return true;
 }
-return{install,analyzeSelected,regionRects,selectFile,clearSelection};
+return{install,analyzeSelected,regionRects,selectFile,clearSelection,detectFaces:async(canvas)=>(await getFaceLandmarker()).detect(canvas).faceLandmarks};
 });

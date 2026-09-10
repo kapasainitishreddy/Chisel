@@ -146,7 +146,7 @@ if(typeof window!=='undefined'&&typeof document!=='undefined'){
   window.addEventListener('load',()=>{
     const addCss=href=>{if(document.querySelector(`link[data-chisel-runtime="${href}"]`))return;const link=document.createElement('link');link.rel='stylesheet';link.href=href;link.dataset.chiselRuntime=href;document.head.appendChild(link);};
     if(!document.getElementById('chiselLauncherLayerFix')){const layerFix=document.createElement('style');layerFix.id='chiselLauncherLayerFix';layerFix.textContent='.chl-launcher,.chp-launcher{z-index:180!important}';document.head.appendChild(layerFix);}
-    const addScript=src=>new Promise((resolve,reject)=>{const prior=document.querySelector(`script[data-chisel-runtime="${src}"]`);if(prior){if(prior.dataset.loaded==='1')resolve();else prior.addEventListener('load',resolve,{once:true});return;}const script=document.createElement('script');script.src=src;script.dataset.chiselRuntime=src;script.addEventListener('load',()=>{script.dataset.loaded='1';resolve();},{once:true});script.addEventListener('error',()=>reject(new Error(`Could not load ${src}`)),{once:true});document.body.appendChild(script);});
+    const addScript=src=>new Promise((resolve,reject)=>{const prior=document.querySelector(`script[data-chisel-runtime="${src}"]`);if(prior){if(prior.dataset.loaded==='1')resolve();else prior.addEventListener('load',resolve,{once:true});return;}const script=document.createElement('script');script.src=src;if(src.endsWith('.mjs'))script.type='module';script.dataset.chiselRuntime=src;script.addEventListener('load',()=>{script.dataset.loaded='1';resolve();},{once:true});script.addEventListener('error',()=>reject(new Error(`Could not load ${src}`)),{once:true});document.body.appendChild(script);});
     (async()=>{try{
       await addScript('chisel-beauty-studio.js');
       await addScript('chisel-tryon-runtime-fixes.js');if(window.ChiselTryonRuntimeFixes)window.ChiselTryonRuntimeFixes.install();
@@ -169,6 +169,8 @@ if(typeof window!=='undefined'&&typeof document!=='undefined'){
       addCss('chisel-studio-theme.css');await addScript('chisel-studio-theme.js');if(window.ChiselStudioTheme)window.ChiselStudioTheme.install();
       addCss('chisel-personal-studio.css');await addScript('chisel-personal-photo.js');
       await addScript('chisel-personal-studio.js');if(window.ChiselPersonalStudio)window.ChiselPersonalStudio.install();
+      await addScript('chisel-look-catalog.mjs');await addScript('chisel-looks-core.js');await addScript('chisel-looks-gallery.js');
+      addCss('chisel-looks-studio.css');await addScript('chisel-looks-studio.js');if(window.ChiselLooksStudio)window.ChiselLooksStudio.install();
     }catch(error){console.warn('[Chisel runtime] optional feature module failed to load',error);}})();
   },{once:true});
 }

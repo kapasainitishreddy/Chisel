@@ -108,6 +108,7 @@
    if(!root.confirm('Delete all Chisel data on this device, including your saved photo? This cannot be undone.'))return;
    button.disabled=true;
    try{
+    if(root.ChiselLooksStudio)await root.ChiselLooksStudio.clearSaved();
     await remove();
     Object.keys(root.localStorage).filter(k=>k.startsWith('chisel:')).forEach(k=>root.localStorage.removeItem(k));
     root.dispatchEvent(new CustomEvent('chisel:data-cleared'));
