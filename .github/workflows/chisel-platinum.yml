@@ -1,5 +1,10 @@
 name: Chisel Platinum UI
 on:
+  push:
+    branches: ['feat/chisel-platinum-ui']
+    paths:
+      - 'chisel-android/**'
+      - '.github/workflows/chisel-platinum.yml'
   pull_request:
     paths:
       - 'chisel-android/**'
@@ -7,12 +12,12 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: chisel-platinum-${{ github.ref }}
+  group: chisel-platinum-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 jobs:
   platinum-ui:
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 8
     defaults:
       run:
         working-directory: chisel-android
@@ -40,7 +45,11 @@ jobs:
           SERVER_PID=$!
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
           sleep 1
-          timeout --signal=TERM --kill-after=5s 120s node tests/platinum-browser-runner.mjs
+          result=0
+          timeout --signal=TERM --kill-after=5s 120s node tests/platinum-browser-runner.mjs || result=1
+          timeout --signal=TERM --kill-after=5s 150s node tests/studio-browser-runner.mjs || result=1
+          timeout --signal=TERM --kill-after=5s 60s node tests/reliability-browser-runner.mjs || result=1
+          exit "$result"
       - name: Preserve screenshots and evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -48,6 +57,8 @@ jobs:
           name: chisel-platinum-${{ github.run_id }}
           path: |
             /tmp/chisel-platinum/
+            /tmp/chisel-studio-qa/
+            /tmp/chisel-reliability-browser/
             /tmp/chisel-platinum-tests.txt
             /tmp/chisel-platinum-sha.txt
             /tmp/chisel-platinum-http.log
