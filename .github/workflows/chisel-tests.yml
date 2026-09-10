@@ -49,6 +49,9 @@ jobs:
           node --check www/chisel-tryon-runtime-fixes.js
           node --check www/chisel-enhancements-core.js
           node --check www/chisel-enhancements.js
+          node --check www/chisel-trainer-v2.js
+          node --check www/chisel-skin-appearance-core.js
+          node --check www/chisel-skin-appearance.js
           node --check www/chisel-precision-stats.js
           node --check www/chisel-precision-protocol.js
           node --check www/chisel-precision-core.js
@@ -92,7 +95,7 @@ jobs:
             exit 1
           fi
           export CHROME
-          rm -f /tmp/chisel-interaction-qa.json /tmp/chisel-interaction-qa.png /tmp/chisel-interaction-http.log
+          rm -f /tmp/chisel-interaction-qa.json /tmp/chisel-interaction-qa.png /tmp/chisel-interaction-trainer.png /tmp/chisel-interaction-skin.png /tmp/chisel-interaction-http.log
           python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/chisel-interaction-http.log 2>&1 &
           SERVER_PID=$!
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
@@ -107,6 +110,8 @@ jobs:
           path: |
             /tmp/chisel-interaction-qa.json
             /tmp/chisel-interaction-qa.png
+            /tmp/chisel-interaction-trainer.png
+            /tmp/chisel-interaction-skin.png
             /tmp/chisel-interaction-http.log
           if-no-files-found: warn
           retention-days: 7
