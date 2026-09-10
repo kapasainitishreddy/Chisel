@@ -13,6 +13,7 @@ function read(name) {
 test('skin appearance runtime augments the existing skin panel with local regional analysis', () => {
   const js = read('chisel-skin-appearance.js');
   const css = read('chisel-skin-appearance.css');
+  assert.doesNotThrow(() => new Function(js));
   assert.match(js, /chl-panel-skin/);
   assert.match(js, /forehead/);
   assert.match(js, /leftCheek/);
