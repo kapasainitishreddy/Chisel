@@ -167,6 +167,8 @@ if(typeof window!=='undefined'&&typeof document!=='undefined'){
       await addScript('chisel-product-polish.js');if(window.ChiselProductPolish)window.ChiselProductPolish.install();
       await addScript('chisel-reliability-runtime.js');if(window.ChiselReliabilityRuntime)window.ChiselReliabilityRuntime.install();
       addCss('chisel-studio-theme.css');await addScript('chisel-studio-theme.js');if(window.ChiselStudioTheme)window.ChiselStudioTheme.install();
+      addCss('chisel-personal-studio.css');await addScript('chisel-personal-photo.js');
+      await addScript('chisel-personal-studio.js');if(window.ChiselPersonalStudio)window.ChiselPersonalStudio.install();
     }catch(error){console.warn('[Chisel runtime] optional feature module failed to load',error);}})();
   },{once:true});
 }

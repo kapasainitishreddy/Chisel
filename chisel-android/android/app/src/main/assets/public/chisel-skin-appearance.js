@@ -5,7 +5,7 @@
 })(typeof globalThis!=='undefined'?globalThis:this,function(root){
 'use strict';
 const HISTORY_KEY='chisel:skin-appearance:v1';
-let installed=false,visionPromise=null,landmarkerPromise=null,selectedFile=null,busy=false;
+let installed=false,visionPromise=null,landmarkerPromise=null,selectedFile=null,busy=false,selectionVersion=0;
 const REGION_LABELS={forehead:'Forehead',leftCheek:'Left cheek',rightCheek:'Right cheek',chin:'Chin'};
 function $(selector,scope){return (scope||document).querySelector(selector);}
 function clamp(v,a,b){return Math.max(a,Math.min(b,Number(v)||0));}
@@ -90,9 +90,9 @@ function saveHistory(metrics){
   history.unshift(compact);root.localStorage.setItem(HISTORY_KEY,JSON.stringify(history.slice(0,30)));
 }
 async function analyzeSelected(){
-  const button=$('#csaAnalyze');if(!selectedFile||!button||busy)return;busy=true;$('#csaFile').disabled=true;button.disabled=true;button.setAttribute('aria-busy','true');status('Checking face position and lighting…');
+  const button=$('#csaAnalyze');if(!selectedFile||!button||busy)return;const version=selectionVersion,source=selectedFile;busy=true;$('#csaFile').disabled=true;button.disabled=true;button.setAttribute('aria-busy','true');status('Checking face position and lighting…');
   try{
-    const image=await decodeImage(selectedFile),canvas=$('#csaPreview'),ctx=canvas.getContext('2d',{willReadFrequently:true});
+    const image=await decodeImage(source),canvas=$('#csaPreview'),ctx=canvas.getContext('2d',{willReadFrequently:true});
     const iw=image.width||image.naturalWidth,ih=image.height||image.naturalHeight,scale=Math.min(1,960/Math.max(iw,ih));canvas.width=Math.max(2,Math.round(iw*scale));canvas.height=Math.max(2,Math.round(ih*scale));ctx.drawImage(image,0,0,canvas.width,canvas.height);if(typeof image.close==='function')image.close();
     status('Mapping forehead, cheeks and chin on-device…');const landmarker=await getFaceLandmarker(),detected=landmarker.detect(canvas),points=detected&&detected.faceLandmarks&&detected.faceLandmarks[0];
     if(!points)throw new Error('No clear face found. Use a front-facing photo with the full face visible.');
@@ -104,9 +104,30 @@ async function analyzeSelected(){
     const box=faceBounds(points),fill=(box.right-box.left)*(box.bottom-box.top);if(fill<.10)throw new Error('Move closer so your face fills more of the frame.');
     const rects=regionRects(points,canvas.width,canvas.height),regions=analyzeRegions(ctx,rects),metrics=root.ChiselSkinAppearanceCore.aggregateRegions(regions);
     if(!metrics.valid||metrics.confidence<42)throw new Error('Lighting or exposure is too inconsistent for a useful appearance comparison. Retake in soft, even light.');
+    if(version!==selectionVersion)return;
     drawRegions(ctx,rects);$('#csaPreviewWrap').hidden=false;renderResults(metrics);saveHistory(metrics);status('Appearance scan complete. Photo pixels stayed on this device; only numeric history is saved locally. These cosmetic signals remain unvalidated estimates.');
   }catch(error){$('#csaResults').hidden=true;status(error&&error.message?error.message:'Could not analyze this photo. Try another clear, evenly lit image.');}
   finally{busy=false;$('#csaFile').disabled=false;button.disabled=!selectedFile;button.removeAttribute('aria-busy');}
+}
+function selectionEvent(file){
+  if(root.dispatchEvent&&root.CustomEvent)root.dispatchEvent(new root.CustomEvent('chisel:skin-selection',{detail:{file:file||null}}));
+}
+function clearSelection(){
+  selectedFile=null;selectionVersion+=1;
+  if(typeof document!=='undefined'){
+    const results=$('#csaResults'),preview=$('#csaPreviewWrap'),button=$('#csaAnalyze');
+    if(results)results.hidden=true;if(preview)preview.hidden=true;if(button)button.disabled=true;
+  }
+  selectionEvent(null);return true;
+}
+function selectFile(candidate){
+  if(busy)return false;
+  clearSelection();
+  if(!candidate){status('Choose a clear front-facing photo to begin.');return false;}
+  if(!/^image\/(jpeg|png|webp)$/i.test(candidate.type)){status('Use a JPEG, PNG or WebP photo.');return false;}
+  if(!candidate.size||candidate.size>15*1024*1024){status('Choose an image smaller than 15 MB.');return false;}
+  selectedFile=candidate;$('#csaAnalyze').disabled=false;
+  status('Photo ready. Analysis stays on-device.');selectionEvent(candidate);return true;
 }
 function buildShell(panel){
   if($('#csaShell',panel))return;const shell=document.createElement('section');shell.id='csaShell';shell.className='csa-shell';shell.setAttribute('aria-labelledby','csaTitle');shell.innerHTML=`
@@ -121,10 +142,10 @@ function buildShell(panel){
       <p class="csa-disclaimer" id="csaDisclaimer">Cosmetic appearance guidance only — this is not a diagnosis.</p>
     </div>`;
   const head=$('.chl-panel-head',panel);if(head)head.insertAdjacentElement('afterend',shell);else panel.prepend(shell);
-  const file=$('#csaFile'),button=$('#csaAnalyze');file.addEventListener('change',()=>{const candidate=file.files&&file.files[0];selectedFile=null;button.disabled=true;$('#csaResults').hidden=true;$('#csaPreviewWrap').hidden=true;if(!candidate){status('Choose a clear front-facing photo to begin.');return;}if(!/^image\/(jpeg|png|webp)$/i.test(candidate.type)){status('Use a JPEG, PNG or WebP photo.');return;}if(candidate.size>15*1024*1024){status('Choose an image smaller than 15 MB.');return;}selectedFile=candidate;button.disabled=false;status(`Ready to analyze ${candidate.name}. Processing stays on-device.`);});button.addEventListener('click',analyzeSelected);
+  const file=$('#csaFile'),button=$('#csaAnalyze');file.addEventListener('change',()=>selectFile(file.files&&file.files[0]));button.addEventListener('click',analyzeSelected);
 }
 function install(attempt=0){
   if(installed||typeof document==='undefined')return installed;const panel=$('#chl-panel-skin');if(!panel){if(attempt<20)setTimeout(()=>install(attempt+1),120);return false;}installed=true;panel.dataset.skinAppearance='1';buildShell(panel);return true;
 }
-return{install,analyzeSelected,regionRects};
+return{install,analyzeSelected,regionRects,selectFile,clearSelection};
 });
