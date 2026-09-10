@@ -8,6 +8,8 @@ if(!chrome)throw new Error('CHROME environment variable is required');
 
 const jsonPath='/tmp/chisel-interaction-qa.json';
 const screenshotPath='/tmp/chisel-interaction-qa.png';
+const trainerScreenshotPath='/tmp/chisel-interaction-trainer.png';
+const skinScreenshotPath='/tmp/chisel-interaction-skin.png';
 const result={checks:{},details:{},errors:[]};
 let browser=null;
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
@@ -78,11 +80,31 @@ try{
     const rects=[...modal.querySelectorAll('.ar-session')].map(el=>({width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height}));
     return{open:modal.classList.contains('on'),rects};
   });
-  await wait(50);
+  await wait(80);
   result.details.trainerOpen=trainerOpened;
   result.checks.trainerOpens=!!trainerOpened&&trainerOpened.open===true;
   result.checks.trainerTouchTargets=!!trainerOpened&&trainerOpened.rects.length>=5&&trainerOpened.rects.every(r=>r.width>=44&&r.height>=44);
+  if(result.checks.trainerOpens)await page.screenshot({path:trainerScreenshotPath,fullPage:true});
   await page.evaluate(()=>document.getElementById('arCoachModal')?.classList.remove('on'));
+
+  const skinOpened=await page.evaluate(()=>{
+    if(!window.ChiselEnhancements||typeof window.ChiselEnhancements.openLabs!=='function')return null;
+    window.ChiselEnhancements.openLabs('skin');
+    const root=document.getElementById('chiselLabsRoot');
+    const shell=document.getElementById('csaShell');
+    return{
+      open:!!root&&!root.hidden&&root.getAttribute('aria-hidden')==='false',
+      width:shell?.getBoundingClientRect().width||0,
+      chooseHeight:shell?.querySelector('.csa-file')?.getBoundingClientRect().height||0,
+      analyzeHeight:shell?.querySelector('#csaAnalyze')?.getBoundingClientRect().height||0
+    };
+  });
+  await wait(80);
+  result.details.skinOpen=skinOpened;
+  result.checks.skinLabOpens=!!skinOpened&&skinOpened.open===true;
+  result.checks.skinTouchTargets=!!skinOpened&&skinOpened.chooseHeight>=44&&skinOpened.analyzeHeight>=44;
+  if(result.checks.skinLabOpens)await page.screenshot({path:skinScreenshotPath,fullPage:true});
+  await page.evaluate(()=>window.ChiselEnhancements?.closeLabs?.());
 
   await page.evaluate(()=>window.go('home'));
   await wait(60);
