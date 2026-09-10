@@ -19,13 +19,23 @@ try{
  check('identityAndMeaningfulContent',(await page.title()).startsWith('Chisel')&&await page.$('#cxpHomeHub'));
  check('noFrameworkErrorOverlay',await page.evaluate(()=>!document.querySelector('vite-error-overlay,nextjs-portal')));
  check('sameFivePrimaryRoutes',await page.$$eval('nav.tabs [data-route]',n=>n.length===5));
- check('oneFloatingToolEntry',await page.evaluate(()=>getComputedStyle(document.querySelector('.chl-launcher')).display==='none'&&getComputedStyle(document.querySelector('.chp-launcher')).display==='none'&&!document.getElementById('csOrbitTrigger').hidden));
+ check('oneToolsEntry',await page.evaluate(()=>getComputedStyle(document.querySelector('.chl-launcher')).display==='none'&&getComputedStyle(document.querySelector('.chp-launcher')).display==='none'&&!document.getElementById('csOrbitTrigger').hidden));
  for(const width of [360,430,768,1280]){
   await page.setViewport({width,height:900,deviceScaleFactor:1});
   await page.evaluate(()=>{go('home');document.querySelector('main.view').scrollTop=0;});await wait(120);
   const layout=await page.evaluate(()=>({body:document.body.scrollWidth,width:innerWidth,main:document.querySelector('main.view').clientWidth,content:document.querySelector('main.view').scrollWidth,button:getComputedStyle(document.querySelector('.cxp-focus-btn')).fontSize}));
   report.details[`home${width}`]=layout;
   check(`homeFits${width}`,layout.content<=layout.main+1&&layout.body<=layout.width+1);
+  const headerLayout=await page.evaluate(()=>{
+   const trigger=document.getElementById('csOrbitTrigger'),header=trigger.closest('.cs-masthead');
+   const b=trigger.getBoundingClientRect(),h=header.getBoundingClientRect();
+   const focus=document.querySelector('.cxp-focus-btn').getBoundingClientRect();
+   return {inFlow:getComputedStyle(trigger).position==='static',shared:header.parentElement.matches('main.view'),
+    target:b.width>=44&&b.height>=44,inside:b.left>=h.left&&b.right<=h.right+1,
+    clear:b.bottom<=focus.top||b.top>=focus.bottom||b.right<=focus.left||b.left>=focus.right};
+  });
+  report.details[`header${width}`]=headerLayout;
+  check(`toolsHeaderFits${width}`,Object.values(headerLayout).every(Boolean));
   await page.screenshot({path:`${out}/home-${width}.png`});
  }
  await page.setViewport({width:430,height:900,deviceScaleFactor:1});

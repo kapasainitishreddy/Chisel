@@ -138,10 +138,15 @@ function installSkin(){
  text(q('#openTrain'),'Face & neck trainer');
 }
 function installOrbit(){
- const button=el('button','cs-orbit-trigger');button.id='csOrbitTrigger';button.type='button';button.innerHTML=icon('orbit')+'<span>Chisel</span>';button.setAttribute('aria-label','Open Chisel tools');button.setAttribute('aria-haspopup','dialog');button.setAttribute('aria-expanded','false');button.setAttribute('aria-controls','csOrbit');
+ const button=el('button','cs-orbit-trigger');button.id='csOrbitTrigger';button.type='button';button.innerHTML=icon('orbit')+'<span>Tools</span>';button.setAttribute('aria-label','Open Chisel tools');button.setAttribute('aria-haspopup','dialog');button.setAttribute('aria-expanded','false');button.setAttribute('aria-controls','csOrbit');
  const dialog=el('dialog','cs-orbit');dialog.id='csOrbit';dialog.setAttribute('aria-labelledby','csOrbitTitle');
  dialog.innerHTML=`<header><div><h2 id="csOrbitTitle">Your studio</h2><p>One place for your daily care.</p></div><button class="cs-icon-button" type="button" id="csOrbitClose" aria-label="Close Chisel tools">${icon('close')}</button></header><div class="cs-orbit-map"><button type="button" data-cs-open="home" class="cs-orbit-home">${icon('home')}<span>Home</span></button><button type="button" data-cs-open="train">${icon('train')}<span>Train</span></button><button type="button" data-cs-open="scan" class="cs-orbit-scan">${icon('scan')}<span>Scan</span></button><button type="button" data-cs-open="skin">${icon('skin')}<span>Skin</span></button><button type="button" data-cs-open="style">${icon('style')}<span>Style</span></button><button type="button" data-cs-open="routine">${icon('routine')}<span>Routine</span></button><button type="button" data-cs-open="precision">${icon('precision')}<span>Precision</span></button></div><button type="button" data-cs-open="settings" class="cs-orbit-settings">${icon('settings')}<span>Settings & privacy</span>${icon('arrow')}</button>`;
- doc().body.append(button,dialog);
+ // Keep tool discovery in document flow, never over a task or the bottom tabs.
+ const main=q('main.view'),masthead=q('.cs-masthead')||el('header','cs-masthead');
+ const privateLabel=q('.cs-private',masthead);if(privateLabel)privateLabel.remove();
+ const settings=q('#openSettings',masthead);masthead.insertBefore(button,settings||null);
+ if(main)main.prepend(masthead);else doc().body.prepend(masthead);
+ doc().body.append(dialog);
  button.addEventListener('click',openOrbit);q('#csOrbitClose').addEventListener('click',closeOrbit);
  dialog.addEventListener('cancel',()=>{button.setAttribute('aria-expanded','false');});
  dialog.addEventListener('close',()=>{button.setAttribute('aria-expanded','false');if(orbitReturn&&orbitReturn.isConnected)orbitReturn.focus();});
