@@ -1,0 +1,38 @@
+name: Chisel Render Readiness
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/chisel-render-readiness.yml'
+      - 'supabase/functions/looks-studio/**'
+permissions:
+  contents: read
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Read public readiness only
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/chisel-readiness
+          curl --proto '=https' --tlsv1.2 --max-time 25 --max-filesize 8192 --silent --show-error \
+            -w '%{http_code}' -o /tmp/chisel-readiness/response.json \
+            'https://wnzbmmhtdchdqjnskwlo.supabase.co/functions/v1/looks-studio' > /tmp/chisel-readiness/http-status.txt
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('/tmp/chisel-readiness')
+          raw=json.loads((root/'response.json').read_text())
+          safe={k:raw.get(k) for k in ('ready','error','apiVersion','provider')}
+          safe['httpStatus']=(root/'http-status.txt').read_text()
+          safe['method']='GET; no photo, no create, no spending'
+          (root/'readiness.json').write_text(json.dumps(safe,indent=2))
+          print(json.dumps(safe,indent=2))
+          (root/'response.json').unlink()
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: chisel-render-readiness
+          path: /tmp/chisel-readiness/
+          retention-days: 3
