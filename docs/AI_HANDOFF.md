@@ -1,13 +1,13 @@
 # AI Development Handoff
 
-## Current checkpoint: Quiet Studio UI, 2026-09-10
+## Current checkpoint: content-density correction, 2026-09-10
 
-Continue draft PR #7 on `feat/chisel-unisex-trainer-skin`, based on `feat/launch-machine-chisel`. Do not restart the static Capacitor app. The premium redesign uses `chisel-studio-theme.js` and `.css` after the reliability runtime, with byte-identical Android assets.
+Continue draft PR #7 on `feat/chisel-unisex-trainer-skin`, based on `feat/launch-machine-chisel`. Do not restart the static Capacitor app. User rejected the initial Quiet Studio presentation as text-heavy. The current existing theme removes slogans and repeated explanations rather than adding another UI layer.
 
-Read [Quiet Studio scope](STUDIO_UI_STATUS.md), [visual review](QUIET_STUDIO_REVIEW.md), and [accuracy safeguards](ACCURACY_RELIABILITY.md). The latest refinements preserve the concurrent shared header, prioritize trainer/skin on Home, move the actual Style catalog into Analyze and prevent focus restoration from scrolling it away. Underlying camera, provider, storage and quality engines are not replaced.
+Read [content revision and exact evidence](CONTENT_DENSITY.md) first. Home now leads with Face training / Skin / Style. Trainer uses simple rows. Skin prioritizes actual photo controls. Details and secondary tools remain accessible through disclosures. Shared-header placement, visible Style discovery and underlying measurement, camera, consent, storage and provider behavior are preserved.
 
-Local full suite is 195/195 PASS. Exact-head GitHub workflows and downloaded source/screenshot artifacts are authoritative for final rendered completion. Local browser navigation was blocked. No physical-device acceptance or signed Android build was performed in this update.
+Tested application revision: `84ca6b3e09d3f85e9998bfb534291e05fc4eb565`. Node 200/200, studio 43/43, discovery 10/10, density 46/46 passed. All three required workflows completed successfully, with a Chrome startup retry recorded in CONTENT_DENSITY.md. Theme JS/CSS match Android copies. Later documentation-only changes do not alter tested application source.
 
-Next acceptance: actual Android touch/scroll/camera flows, accessibility and large text, empirically measured error/repeatability, real cloud output quality, and parent PR #6's production billing/privacy/release gates. UI quality does not establish measurement accuracy.
+Local browser navigation was blocked; screenshots and interaction tests ran in GitHub Actions Chromium. No physical-device acceptance or signed APK/AAB was performed. Native touch/scroll/camera, large text and screen readers, actual accuracy/repeatability, real cloud output and parent PR #6 production gates remain open.
 
-[The complete preceding handoff](history/2026-09-10-before-studio-AI_HANDOFF.md) and its historical links are preserved. Older test counts and percentages are checkpoint history, not the latest verification.
+[Earlier Quiet Studio design](STUDIO_UI_STATUS.md), [visual review](QUIET_STUDIO_REVIEW.md), [accuracy safeguards](ACCURACY_RELIABILITY.md), and [historical handoff](history/2026-09-10-before-studio-AI_HANDOFF.md) remain available. Earlier typography descriptions and test counts are checkpoint history, not the current UI.
