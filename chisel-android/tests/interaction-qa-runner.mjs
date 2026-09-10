@@ -38,6 +38,52 @@ try{
   result.checks.productPolishInstalled=installed;
   if(!installed)throw new Error('ChiselProductPolish did not install');
 
+  const featureInstall=await page.waitForFunction(
+    ()=>!!(window.ChiselTrainerV2&&window.ChiselSkinAppearance&&document.querySelector('#arCoachModal[data-trainer-v2="1"]')&&document.querySelector('#chl-panel-skin[data-skin-appearance="1"] #csaShell')),
+    {timeout:12000,polling:100}
+  ).then(()=>true).catch(()=>false);
+  result.checks.trainerAndSkinInstalled=featureInstall;
+  if(!featureInstall)throw new Error('Trainer v2 or Skin Appearance Lab did not install');
+
+  const featureState=await page.evaluate(()=>{
+    const modal=document.getElementById('arCoachModal');
+    const skin=document.getElementById('csaShell');
+    const studio=document.getElementById('cxStudioCard');
+    return{
+      trainerTitle:document.getElementById('arCoachTitle')?.textContent?.trim()||'',
+      trainerSessions:[...modal.querySelectorAll('.ar-session')].map(el=>el.textContent.replace(/\s+/g,' ').trim()),
+      trainerGoalCards:modal.querySelectorAll('.ctv2-goal').length,
+      trainerTrustCards:modal.querySelectorAll('.ctv2-trust-card').length,
+      skinTitle:skin.querySelector('#csaTitle')?.textContent?.trim()||'',
+      skinFileType:skin.querySelector('#csaFile')?.getAttribute('accept')||'',
+      skinAnalyzeDisabled:skin.querySelector('#csaAnalyze')?.disabled===true,
+      skinGuidance:[...skin.querySelectorAll('.csa-guide h5')].map(el=>el.textContent.trim()),
+      skinLocal:/on-device analysis/i.test(skin.textContent),
+      styleFamilies:studio?[...studio.querySelectorAll('.cx-studio-btn b')].map(el=>el.textContent.trim()):[],
+      studioUnisex:studio?.dataset.unisexPresentation==='1'
+    };
+  });
+  result.details.features=featureState;
+  result.checks.trainerTitle=featureState.trainerTitle==='Face & Neck Trainer';
+  result.checks.trainerSessionCoverage=featureState.trainerSessions.some(x=>/Cheek activation/i.test(x))&&featureState.trainerSessions.some(x=>/Jaw & chin posture/i.test(x))&&featureState.trainerSessions.some(x=>/Chin & neck support/i.test(x));
+  result.checks.trainerTrustHierarchy=featureState.trainerGoalCards===3&&featureState.trainerTrustCards===2;
+  result.checks.skinAppearanceShell=featureState.skinTitle==='Skin appearance scan'&&featureState.skinAnalyzeDisabled&&/image\/jpeg/.test(featureState.skinFileType);
+  result.checks.skinGuidanceHierarchy=['What I see','What to do','Compare next'].every(label=>featureState.skinGuidance.includes(label))&&featureState.skinLocal;
+  result.checks.unisexStyleShortcuts=featureState.studioUnisex&&['Short / structured','Long / layered','Facial hair','Makeup / color'].every(label=>featureState.styleFamilies.includes(label));
+
+  const trainerOpened=await page.evaluate(()=>{
+    if(typeof openTrain!=='function')return null;
+    openTrain();
+    const modal=document.getElementById('arCoachModal');
+    const rects=[...modal.querySelectorAll('.ar-session')].map(el=>({width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height}));
+    return{open:modal.classList.contains('on'),rects};
+  });
+  await wait(50);
+  result.details.trainerOpen=trainerOpened;
+  result.checks.trainerOpens=!!trainerOpened&&trainerOpened.open===true;
+  result.checks.trainerTouchTargets=!!trainerOpened&&trainerOpened.rects.length>=5&&trainerOpened.rects.every(r=>r.width>=44&&r.height>=44);
+  await page.evaluate(()=>document.getElementById('arCoachModal')?.classList.remove('on'));
+
   await page.evaluate(()=>window.go('home'));
   await wait(60);
 
