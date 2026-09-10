@@ -33,6 +33,13 @@ try{
   });
   await page.reload({waitUntil:'domcontentloaded',timeout:30000});
 
+  const bootCleared=await page.waitForFunction(
+    ()=>!!document.getElementById('boot')?.classList.contains('gone'),
+    {timeout:8000,polling:100}
+  ).then(()=>true).catch(()=>false);
+  result.checks.bootCleared=bootCleared;
+  if(!bootCleared)throw new Error('Chisel boot splash did not clear before interaction QA');
+
   const installed=await page.waitForFunction(
     ()=>!!(window.ChiselProductPolish&&document.documentElement.dataset.cxpInstalled==='1'&&document.getElementById('cxpHomeHub')),
     {timeout:15000,polling:100}
