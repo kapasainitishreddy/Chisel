@@ -5,7 +5,7 @@
 })(typeof globalThis!=='undefined'?globalThis:this,function(root){
 'use strict';
 const STORAGE_KEY='chisel:trainer:v2';
-let installed=false,lastCompletionKey='';
+let installed=false,lastCompletionKey='',studioObserver=null;
 function $(selector,scope){return (scope||document).querySelector(selector);}
 function safeText(node,value){if(node&&node.textContent!==value)node.textContent=value;}
 function launchSession(sessionId){
@@ -49,6 +49,20 @@ function updateLive(detail){
   document.querySelectorAll('#arCoachHud .ctv2-phase span').forEach(node=>node.classList.toggle('on',node.dataset.phase===(state.phase||'POSITION')));
   saveCompletion(detail);
 }
+function fixUnisexStudio(){
+  if(typeof document==='undefined')return false;const card=$('#cxStudioCard');if(!card)return false;
+  const copy=$('.cx-studio-copy',card);if(copy)safeText(copy,'Choose by style family and goal, not gender. Pick a look, then Chisel collapses the controls so you can see the result on your full face.');
+  const relabel=(mode,title,meta,aria)=>{const button=card.querySelector(`[data-cx="${mode}"]`);if(!button)return;const b=button.querySelector('b'),small=button.querySelector('small');safeText(b,title);safeText(small,meta);button.setAttribute('aria-label',aria);};
+  relabel('men','Short / structured','Crops, fades, texture + color','Short and structured hairstyle family');
+  relabel('women','Long / layered','Layers, curls, waves + color','Long and layered hairstyle family');
+  relabel('beard','Facial hair','Stubble, beard, goatee + moustache','Facial hair style studio');
+  relabel('makeup','Makeup / color','Blush, lips, eyes + guide','Makeup and color style studio');
+  card.dataset.unisexPresentation='1';return true;
+}
+function watchUnisexStudio(){
+  if(fixUnisexStudio()||typeof MutationObserver==='undefined'||!document.body)return;
+  if(studioObserver)return;studioObserver=new MutationObserver(()=>{if(fixUnisexStudio()){studioObserver.disconnect();studioObserver=null;}});studioObserver.observe(document.body,{childList:true,subtree:true});
+}
 function install(){
   if(installed||typeof document==='undefined')return installed;const modal=$('#arCoachModal');if(!modal)return false;installed=true;
   modal.dataset.trainerV2='1';const panel=$('.panel',modal),grid=$('.ar-session-grid',modal),title=$('#arCoachTitle',modal),intro=$('.ar-coach-intro',modal);
@@ -74,8 +88,9 @@ function install(){
     const status=$('.ar-hud-status',hud);if(status)status.insertAdjacentElement('afterend',live);else hud.appendChild(live);
     live.insertAdjacentHTML('afterend',phaseMarkup()+'<div class="ctv2-tracking" id="ctv2TrackingCopy"><b>Camera verified:</b> keep your face centered to begin.</div>');
   }
+  watchUnisexStudio();
   if(root&&root.addEventListener)root.addEventListener('chisel:coach-state',event=>updateLive(event.detail));
   return true;
 }
-return{install,updateLive,launchSession};
+return{install,updateLive,launchSession,fixUnisexStudio};
 });
