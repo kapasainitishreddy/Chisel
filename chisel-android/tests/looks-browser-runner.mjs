@@ -5,7 +5,7 @@ const base=process.argv[2]||'http://127.0.0.1:4173',out='/tmp/chisel-looks-qa';
 fs.mkdirSync(out,{recursive:true});
 const report={scope:'Real app controls, storage and image decode with explicitly mocked provider responses and face checks. No paid generation or visual-realism validation.',checks:{},errors:[],calls:[]};
 const fixture=path.resolve('tests/fixtures/portrait-male.jpg'),bytes=fs.readFileSync(fixture);
-let browser,page,interrupt=false;const jobs=new Map();
+let browser,page,interrupt=false,holdStatus=false,releaseStatus=null;const jobs=new Map();
 const check=(name,value)=>{report.checks[name]=!!value;if(!value)throw Error(name);};
 async function boot(){await page.goto(base+'/www/index.html',{waitUntil:'load',timeout:30000});await page.waitForFunction(()=>document.documentElement.dataset.looksStudio==='1',{timeout:20000});try{await page.waitForSelector('#idModal.on',{timeout:2500});await page.click('#idX');}catch{}await page.waitForFunction(()=>!document.querySelector('#idModal.on'));}
 async function style(){if(await page.$eval('#clsEditor',n=>n.open))return;await page.evaluate(()=>ChiselStudioTheme.openSurface('style'));await page.waitForSelector('#cpsStyleHero',{visible:true});await page.click('#clsPanel>summary');await page.waitForSelector('#clsEditor[open]',{visible:true});}
@@ -20,7 +20,7 @@ try{
   if(r.method()==='GET')return r.respond({status:200,headers,body:JSON.stringify({ready:true,dailyAllowance:2})});
   const b=JSON.parse(r.postData());report.calls.push({action:b.action,requestId:b.requestId,category:b.look?.category});
   if(b.action==='create'){jobs.set(b.requestId,{image:b.image,look:b.look});return r.respond({status:202,headers,body:JSON.stringify({status:'processing',jobId:b.requestId,remaining:1})});}
-  if(b.action==='status'){if(interrupt){interrupt=false;return r.abort('failed');}return r.respond({status:200,headers,body:JSON.stringify({status:'succeeded',jobId:b.requestId,imageUrl:'https://replicate.delivery/test-fixture.jpg',remaining:1})});}
+  if(b.action==='status'){if(holdStatus)await new Promise(resolve=>{releaseStatus=resolve;});if(interrupt){interrupt=false;return r.abort('failed');}return r.respond({status:200,headers,body:JSON.stringify({status:'succeeded',jobId:b.requestId,imageUrl:'https://replicate.delivery/test-fixture.jpg',remaining:1})});}
   if(b.action==='output')return r.respond({status:200,headers:{...headers,'Content-Type':'image/jpeg'},body:bytes});
   if(b.action==='cancel')return r.respond({status:200,headers,body:JSON.stringify({status:'canceled'})});
   return r.respond({status:400,headers,body:JSON.stringify({error:'invalid_request'})});
@@ -35,7 +35,7 @@ try{
  await page.screenshot({path:`${out}/editor-${width}.png`});}
  await page.setViewport({width:430,height:900,deviceScaleFactor:1});await style();
  await page.click('#clsBrowse');await page.waitForSelector('#clsBrowser[open]');
- check('browseContainsRealCatalog',await page.$$eval('#clsPresets button',n=>n.length===25));await page.screenshot({path:out+'/browse-430.png'});
+ check('browseContainsRealCatalog',await page.$$eval('#clsPresets button',n=>n.length===25));await page.screenshot({path:out+'/browse-430.png'});check('singleSearchFocusBoundary',await page.evaluate(()=>getComputedStyle(document.getElementById('clsSearch')).outlineStyle==='none'&&getComputedStyle(document.querySelector('.cls-search')).outlineStyle!=='none'));
  await page.type('#clsSearch','CROP');check('searchFiltersRealNames',await page.$$eval('#clsPresets button:not([hidden])',n=>n.length===1&&n[0].textContent.includes('Textured crop')));
  await page.$eval('#clsSearch',n=>{n.value='no such hairstyle';n.dispatchEvent(new Event('input',{bubbles:true}));});check('noResultsIsExplicit',await page.$eval('#clsNoMatches',n=>!n.hidden));
  await page.$eval('#clsSearch',n=>{n.value='crop';n.dispatchEvent(new Event('input',{bubbles:true}));});await page.click('[data-cls-preset="crop"]');
@@ -48,6 +48,14 @@ try{
  await page.click('#clsLibraryOpen');check('emptySavedLibrary',await page.$eval('#clsLibrary',n=>n.open));await page.click('#clsLibraryClose');
  await page.evaluate(()=>ChiselSkinAppearance.detectFaces=async()=>[]);await page.click('#clsGenerate');await page.waitForFunction(()=>document.getElementById('clsStatus').textContent.includes('exactly one face'));
  check('noFaceCannotUpload',report.calls.every(c=>c.action!=='create'));await fixtureChecks();
+ // Backing out while the on-device check is awaiting a frame must not open consent later.
+ await page.evaluate(()=>{window.__photoCheckResolved=false;ChiselSkinAppearance.detectFaces=()=>new Promise(resolve=>{window.__releasePhotoCheck=()=>{window.__photoCheckResolved=true;resolve([[]]);};});});
+ await page.click('#clsGenerate');await page.waitForFunction(()=>typeof window.__releasePhotoCheck==='function');await page.click('#clsEditorClose');
+ await page.evaluate(()=>window.__releasePhotoCheck());await page.waitForFunction(()=>window.__photoCheckResolved);await new Promise(r=>setTimeout(r,250));
+ check('closedPreflightDoesNotOpenConsent',await page.evaluate(()=>!document.getElementById('clsConsent').open&&!document.getElementById('clsEditor').open));
+ check('closedPreflightDoesNotUpload',report.calls.every(c=>c.action!=='create'));
+ await style();await fixtureChecks();
+
  await page.click('#clsGenerate');await page.waitForSelector('#clsConsent[open]');check('consentBeforeUpload',report.calls.every(c=>c.action!=='create'));await page.click('#clsConsentCancel');check('declineLeavesOriginal',await page.$eval('#clsResult',n=>n.hidden));check('declineCreatesNoJob',report.calls.every(c=>c.action!=='create'));
  await page.click('#clsGenerate');await page.waitForSelector('#clsConsent[open]');await page.click('#clsConsentAccept');await page.waitForSelector('#clsResult:not([hidden])',{visible:true,timeout:20000});await page.waitForFunction(()=>document.getElementById('clsAfter').naturalWidth>0);
  check('exactlyOneCreate',report.calls.filter(c=>c.action==='create').length===1);check('resultDownloadedThroughServer',report.calls.some(c=>c.action==='output'));check('noProviderSecretInRequest',await page.evaluate(()=>!document.documentElement.innerHTML.includes('REPLICATE_API_TOKEN')));
@@ -59,7 +67,18 @@ try{
  // A lost status response must resume the same job, not initiate another paid call.
  interrupt=true;await page.click('#clsGenerate');await page.waitForSelector('#clsConsent[open]');await page.click('#clsConsentAccept');await page.waitForFunction(()=>document.getElementById('clsGenerate').textContent==='Check status',{timeout:15000});
  const createdBefore=report.calls.filter(c=>c.action==='create').length;await page.click('#clsGenerate');await page.waitForSelector('#clsResult:not([hidden])',{visible:true,timeout:15000});check('interruptionResumesWithoutCreate',report.calls.filter(c=>c.action==='create').length===createdBefore);
- await page.click('#clsDismiss');await page.click('#clsEditorClose');await page.evaluate(()=>go('home'));await page.click('.cps-avatar');await page.click('#cpsPhotoRemove');await page.waitForFunction(async()=>!(await ChiselLooksGallery.list()).length);check('photoRemovalClearsSavedCopies',await page.evaluate(async()=>!(await ChiselLooksGallery.list()).length));check('photoRemovalHidesPreview',await page.$eval('#clsResult',n=>n.hidden));
+ await page.click('#clsDismiss');
+ // An already submitted job may finish, but it must not reopen a closed workspace.
+ holdStatus=true;await page.click('#clsGenerate');await page.waitForSelector('#clsConsent[open]');await page.click('#clsConsentAccept');
+ for(let i=0;i<100&&!releaseStatus;i++)await new Promise(r=>setTimeout(r,50));check('statusWaitReached',!!releaseStatus);
+ await page.click('#clsEditorClose');const completedCreates=report.calls.filter(c=>c.action==='create').length;
+ holdStatus=false;releaseStatus();await page.waitForFunction(()=>!document.getElementById('clsResult').hidden&&document.getElementById('clsAfter').naturalWidth>0,{timeout:15000});
+ check('lateResultDoesNotReopenEditor',await page.$eval('#clsEditor',n=>!n.open));
+ check('lateResultDoesNotDuplicateJob',report.calls.filter(c=>c.action==='create').length===completedCreates);
+ await style();check('completedResultAvailableOnReturn',await page.$eval('#clsResult',n=>!n.hidden));await page.click('#clsDismiss');
+ await page.setViewport({width:430,height:650,deviceScaleFactor:1});await page.$eval('#clsGenerate',n=>n.scrollIntoView({block:'end'}));
+ check('shortScreenActionReachable',await page.$eval('#clsGenerate',n=>{const r=n.getBoundingClientRect();return r.top>=0&&r.bottom<=innerHeight;}));
+ await page.setViewport({width:430,height:900,deviceScaleFactor:1});await page.click('#clsEditorClose');await page.evaluate(()=>go('home'));await page.click('.cps-avatar');await page.click('#cpsPhotoRemove');await page.waitForFunction(async()=>!(await ChiselLooksGallery.list()).length);check('photoRemovalClearsSavedCopies',await page.evaluate(async()=>!(await ChiselLooksGallery.list()).length));check('photoRemovalHidesPreview',await page.$eval('#clsResult',n=>n.hidden));
  check('noUncaughtErrors',report.errors.length===0);
 }catch(e){report.errors.push(String(e.stack||e));process.exitCode=1;if(page)await page.screenshot({path:out+'/failure.png'}).catch(()=>{});}
 finally{fs.writeFileSync(out+'/report.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));if(browser)await browser.close();}

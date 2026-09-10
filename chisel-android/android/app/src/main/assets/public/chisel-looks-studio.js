@@ -81,6 +81,8 @@ function openEditor(){
  q('#clsPanel').open=true;syncPortrait(store.snapshot());q('#clsEditorClose').focus({preventScroll:true});
 }
 function closeEditor(){
+ // Leaving before upload invalidates pending preparation; submitted jobs keep their identity.
+ if(preparing){epoch++;preparing=false;labels();}
  closeConsent(false);if(lookBrowser.open)lookBrowser.close();if(library.open)library.close();editor.close();q('#clsPanel').open=false;
  // Closing the workspace does not start another request or silently cancel a paid job.
 }
@@ -92,7 +94,6 @@ function syncPortrait(snapshot){
 }
 function displayResult(visible){
  show('#clsResult',visible);show('#clsPhotoStage',!visible);if(editor)editor.dataset.result=String(visible);
- if(visible)openEditor();
 }
 function openBrowser(){browserReturn=root.document.activeElement;q('#clsSearch').value='';renderPresets();lookBrowser.showModal();q('#clsSearch').focus({preventScroll:true});}
 function openLibrary(){library.showModal();q('.cls-saved').open=true;gallery();}
@@ -122,8 +123,8 @@ async function loadResult(state,mine){
   const blob=new Blob([bytes],{type});const decoded=await createImageBitmap(blob);try{root.ChiselPersonalPhoto.displaySize(decoded.width,decoded.height);}finally{decoded.close();}
   if(mine!==epoch)return;
   if(resultURL)URL.revokeObjectURL(resultURL);result=blob;resultURL=URL.createObjectURL(blob);saveId=state.jobId||crypto.randomUUID();
-  q('#clsAfter').src=resultURL;q('#clsBefore').src=sourceURL;displayResult(true);q('#clsPanel').open=true;q('#clsCompare').value='50';q('#clsAfter').style.clipPath='inset(0 50% 0 0)';
-  text('#clsStatus','AI preview. Check your face, hairline and edges before saving.');text('#clsAllowance',Number.isFinite(state.remaining)?`${state.remaining} renders left today`:'');q('#clsResult').scrollIntoView({block:'nearest',behavior:'auto'});
+  q('#clsAfter').src=resultURL;q('#clsBefore').src=sourceURL;displayResult(true);q('#clsCompare').value='50';q('#clsAfter').style.clipPath='inset(0 50% 0 0)';
+  text('#clsStatus','AI preview. Check your face, hairline and edges before saving.');text('#clsAllowance',Number.isFinite(state.remaining)?`${state.remaining} renders left today`:'');if(editor.open)q('#clsResult').scrollIntoView({block:'nearest',behavior:'auto'});
  }catch(e){if(mine===epoch)text('#clsStatus',e.message||'Could not open the preview.');}
 }
 async function generate(){

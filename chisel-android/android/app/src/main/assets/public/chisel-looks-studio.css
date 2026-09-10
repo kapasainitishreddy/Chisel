@@ -105,3 +105,7 @@ html[data-personal-studio] :is(.cls-editor,.cls-browser) button:focus-visible{ou
  html[data-personal-studio] .cls-workspace{flex:none}
 }
 @media(prefers-reduced-motion:reduce){html[data-personal-studio] .cls-loading::after{animation:none}}
+
+/* One focus boundary belongs to the entire search control, including its icon. */
+html[data-personal-studio] .cls-search:focus-within{outline:2px solid #c7dbcb;outline-offset:2px;border-color:transparent}
+html[data-personal-studio] .cls-search #clsSearch:focus-visible{outline:none!important;box-shadow:none!important}

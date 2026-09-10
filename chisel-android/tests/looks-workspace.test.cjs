@@ -49,3 +49,23 @@ test('new editor uses the saved display photo but preserves existing original-fi
   assert.ok(js.includes('!await consent()'));
   assert.ok(js.includes("type='button'"));
 });
+
+test('leaving the editor invalidates pre-upload preparation without canceling submitted jobs', () => {
+  const js = read('chisel-looks-studio.js');
+  const close = js.slice(js.indexOf('function closeEditor(){'), js.indexOf('function syncPortrait('));
+  assert.match(close, /if\(preparing\)\{epoch\+\+;preparing=false;/);
+  assert.doesNotMatch(close, /controller\.cancel\(/);
+});
+test('late downloaded results do not reopen or scroll a workspace the user closed', () => {
+  const js = read('chisel-looks-studio.js');
+  const display = js.slice(js.indexOf('function displayResult('), js.indexOf('function openBrowser('));
+  const load = js.slice(js.indexOf('async function loadResult('), js.indexOf('async function generate('));
+  assert.doesNotMatch(display, /openEditor\(/);
+  assert.doesNotMatch(load, /q\('#clsPanel'\)\.open=true/);
+  assert.match(load, /if\(editor\.open\)q\('#clsResult'\)\.scrollIntoView/);
+});
+test('the search field has a single accessible focus outline, not stacked frames', () => {
+  const css = read('chisel-looks-studio.css');
+  assert.match(css, /\.cls-search:focus-within/);
+  assert.match(css, /#clsSearch:focus-visible\s*\{[^}]*outline:none!important/);
+});
