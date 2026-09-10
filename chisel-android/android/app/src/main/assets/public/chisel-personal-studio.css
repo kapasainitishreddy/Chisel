@@ -23,7 +23,7 @@ html[data-personal-studio] .cps-personal-image{position:absolute;inset:0;width:1
 html[data-personal-studio] .cps-personal-image[hidden],html[data-personal-studio] [hidden]{display:none!important}
 html[data-personal-studio] .cps-photo-empty{display:grid;place-items:center;position:absolute;inset:0;color:#92a8a0}
 html[data-personal-studio] .cps-photo-empty svg{width:52px;height:52px}
-html[data-personal-studio] .has-photo>.cps-photo-empty{display:none}
+html[data-personal-studio] .has-photo>.cps-photo-empty{display:none!important}
 html[data-personal-studio] .cps-edge-fade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 30%,#080b0c12 48%,#080b0ca6 72%,#080b0cf7 100%)}
 html[data-personal-studio] .cps-home-hero{height:354px;margin:0 -4px;border-radius:20px;box-shadow:var(--cps-shadow)}
 html[data-personal-studio] .cps-home-hero h1{position:absolute;left:24px;bottom:20px;margin:0;font:400 43px/1.04 Georgia,serif;letter-spacing:-.035em;color:#fffef9}
@@ -55,7 +55,7 @@ html[data-personal-studio] .cxp-focus-actions .cxp-focus-btn{color:#131818;backg
 html[data-personal-studio] .cxp-focus-actions .cxp-done-btn{border:0;color:var(--cs-muted);padding:10px 2px;background:transparent}
 html[data-personal-studio] .cs-disclosure{margin-top:12px;border-color:var(--cs-line)}
 html[data-personal-studio] .cs-disclosure>summary{font-size:13px;min-height:48px;padding:12px 0}
-html[data-personal-studio] .cs-focus-details,.cs-quick-tools{margin-top:8px}
+html[data-personal-studio] .cs-focus-details,html[data-personal-studio] .cs-quick-tools{margin-top:8px}
 html[data-personal-studio] .cs-home-more{margin-top:0}
 html[data-personal-studio] nav.tabs{background:#0b1112;border-top:1px solid var(--cs-line);padding:4px 10px max(4px,env(safe-area-inset-bottom));box-shadow:0 -10px 32px #0004}
 html[data-personal-studio] nav.tabs a{font-size:10px;letter-spacing:0;min-height:60px}
@@ -82,7 +82,7 @@ html[data-personal-studio] #cpsSessionMeta{font:400 12px/1.4 var(--sans);color:#
 html[data-personal-studio] #cpsStartSession{width:100%}
 html[data-personal-studio] #arCoachModal #csTrainerFilters{background:#172021;border:1px solid #2b3838;border-radius:24px;padding:3px;margin:0 0 18px;gap:2px}
 html[data-personal-studio] #csTrainerFilters button{border:0!important;border-radius:20px!important;min-height:44px;font-size:12px}
-html[data-personal-studio] #csTrainerFilters button[aria-pressed="true"]{background:var(--cs-accent);color:#101515}
+html[data-personal-studio] #arCoachModal #csTrainerFilters button[aria-pressed="true"]{background:var(--cs-accent);color:#101515}
 html[data-personal-studio] #arCoachModal .ar-session-grid{gap:8px;grid-template-columns:1fr}
 html[data-personal-studio] #arCoachModal .ar-session{display:grid;grid-template-columns:48px 1fr;grid-template-rows:auto auto;column-gap:12px;row-gap:3px;min-height:72px;padding:10px 32px 10px 10px;border:1px solid #2b3839;border-radius:14px;background:linear-gradient(110deg,#171f20,#0e1516);align-content:center;text-align:left}
 html[data-personal-studio] #arCoachModal .ar-session::before{display:none}
@@ -172,3 +172,6 @@ html[data-personal-studio] #cpsPhotoStatus{font:400 12px/1.5 var(--sans);color:v
 @media(prefers-reduced-motion:reduce){
  html[data-personal-studio] *,html[data-personal-studio] *::before,html[data-personal-studio] *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
 }
+
+/* Keep the style destination aligned even when it is the last short section. */
+html[data-personal-studio] #cxStudioCard{min-height:calc(100dvh - 100px);scroll-margin-top:20px}

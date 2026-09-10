@@ -90,6 +90,12 @@
  function broadcast(){try{root.localStorage.setItem(REVISION_KEY,`${Date.now()}:${Math.random()}`);}catch{}}
  async function save(file){const saved=await getStore().set(file);if(saved)broadcast();return saved;}
  async function remove(){await getStore().clear();broadcast();}
+ function notify(message){
+  // Named DOM elements may also appear on window; never call one as a function.
+  if(typeof root.toast==='function'){root.toast(message);return;}
+  const node=root.document&&root.document.getElementById('toast');
+  if(node){node.textContent=message;node.setAttribute('role','status');node.classList.add('on');root.setTimeout(()=>node.classList.remove('on'),3500);}
+ }
  function installDeletion(){
   if(deletionInstalled||!root.document)return;
   const button=root.document.getElementById('wipeData');if(!button)return;
@@ -105,9 +111,9 @@
     await remove();
     Object.keys(root.localStorage).filter(k=>k.startsWith('chisel:')).forEach(k=>root.localStorage.removeItem(k));
     root.dispatchEvent(new CustomEvent('chisel:data-cleared'));
-    if(root.toast)root.toast('Your local data was cleared');
+    notify('Your local data was cleared');
     setTimeout(()=>root.location.reload(),400);
-   }catch(error){if(root.toast)root.toast('Could not finish deleting your data. Please try again.');}
+   }catch(error){notify('Could not finish deleting your data. Please try again.');}
    finally{button.disabled=false;}
   };
   root.wipeAllData=wipe;button.addEventListener('click',wipe);

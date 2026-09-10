@@ -49,6 +49,8 @@ try{
   await page.screenshot({path:`${out}/home-${width}.png`});
   await page.click('.cs-direct-tools [data-cs-open="train"]');await page.waitForSelector('#arCoachModal.on',{visible:true});
   check(`trainerUsesOwnPhoto${width}`,await page.$eval('#cpsTrainerHero img',n=>!n.hidden&&n.naturalWidth>0));
+  check(`photoThumbnailsHaveNoPlaceholder${width}`,await page.$eval('.cps-exercise-thumb .cps-photo-empty',n=>getComputedStyle(n).display==='none'));
+  check(`selectedFilterHasDarkText${width}`,await page.$eval('#csTrainerFilters [aria-pressed="true"]',n=>getComputedStyle(n).color==='rgb(16, 21, 21)'));
   check(`noMadeUpFormScore${width}`,await page.$eval('#cpsLiveForm',n=>n.hidden));
   check(`trainerCloseVisible${width}`,await page.$eval('#arCoachX',n=>{const r=n.getBoundingClientRect();return r.top>=0&&r.bottom<innerHeight&&r.width>=44&&r.height>=44;}));
   await page.screenshot({path:`${out}/trainer-${width}.png`});
@@ -66,6 +68,7 @@ try{
   await page.keyboard.press('Escape');
   await page.click('.cs-direct-tools [data-cs-open="style"]');
   await page.waitForFunction(()=>{const r=document.getElementById('cxStudioCard').getBoundingClientRect();return r.width>0&&r.top>=0&&r.top<innerHeight/2;});
+  check(`styleHeadingAligned${width}`,await page.$eval('#cxStudioCard',n=>{const r=n.getBoundingClientRect();return r.top>=0&&r.top<=24;}));
   check(`styleUsesOwnPhoto${width}`,await page.$eval('#cpsStyleHero img',n=>!n.hidden&&n.complete&&n.naturalWidth>0));
   check(`posterNotPretendingToBeRendered${width}`,await page.$eval('#cpsStyleHero',n=>n.textContent.includes('no style applied')));
   await page.screenshot({path:`${out}/style-${width}.png`});
