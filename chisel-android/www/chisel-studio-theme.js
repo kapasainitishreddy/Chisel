@@ -46,7 +46,7 @@ function openSurface(id){
  if(id==='train')return call('openTrain');
  if(id==='skin'&&root.ChiselEnhancements){root.ChiselEnhancements.openLabs('skin');return true;}
  if(id==='precision'&&root.ChiselPrecision){root.ChiselPrecision.open('face');return true;}
- if(id==='style'){call('go','analyze');const n=q('#cxStudioCard');if(n)n.scrollIntoView({block:'start',behavior:'auto'});return !!n;}
+ if(id==='style'){const n=q('#cxStudioCard'),screen=n&&n.closest('[data-screen]'),route=screen&&screen.dataset.screen;if(!n||!route)return false;call('go',route);n.scrollIntoView({block:'start',behavior:'auto'});return true;}
  if(id==='routine')return call('go','groom');
  if(id==='settings')return call('go','connect');
  return false;
@@ -149,7 +149,7 @@ function installOrbit(){
  doc().body.append(dialog);
  button.addEventListener('click',openOrbit);q('#csOrbitClose').addEventListener('click',closeOrbit);
  dialog.addEventListener('cancel',()=>{button.setAttribute('aria-expanded','false');});
- dialog.addEventListener('close',()=>{button.setAttribute('aria-expanded','false');if(orbitReturn&&orbitReturn.isConnected)orbitReturn.focus();});
+ dialog.addEventListener('close',()=>{button.setAttribute('aria-expanded','false');if(orbitReturn&&orbitReturn.isConnected)orbitReturn.focus({preventScroll:true});});
  dialog.addEventListener('click',e=>{if(e.target===dialog)closeOrbit();});
 }
 function openOrbit(){

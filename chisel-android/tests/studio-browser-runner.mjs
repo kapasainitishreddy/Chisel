@@ -83,7 +83,8 @@ try{
  await page.screenshot({path:`${out}/skin-photo-outcome-430.png`});
  await page.keyboard.press('Escape');
  await page.click('#csOrbitTrigger');await page.click('#csOrbit [data-cs-open="style"]');
- check('styleDiscoveryReachable',await page.$eval('[data-screen="analyze"]',n=>n.classList.contains('active')));
+ check('styleDiscoveryReachable',await page.$eval('[data-screen="groom"]',n=>n.classList.contains('active')));
+ check('styleCardActuallyVisible',await page.$eval('#cxStudioCard',n=>{const r=n.getBoundingClientRect();return n.getClientRects().length>0&&r.width>0&&r.top>=0&&r.top<innerHeight-100;}));
  check('unisexStylesPreserved',await page.$$eval('#cxStudioCard .cx-studio-btn b',n=>['Short / structured','Long / layered','Facial hair','Makeup / color'].every(s=>n.some(x=>x.textContent===s))));
  await page.screenshot({path:`${out}/style-430.png`});
  await page.click('#csOrbitTrigger');await page.click('#csOrbit [data-cs-open="precision"]');

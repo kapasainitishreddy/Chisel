@@ -21,7 +21,7 @@ try{
  check('No floating launchers',await page.evaluate(()=>['chiselLabsLauncher','chiselPrecisionLauncher'].every(id=>getComputedStyle(document.getElementById(id)).display==='none')));
  const screenshot=async(name,width)=>{await page.screenshot({path:`${out}/${name}-${width}.png`});report.screens.push(`${name}-${width}.png`);};
  const nav=async(route,width)=>{const selector=`${width<=760?'#bottomTabs':'nav.rail'} [data-route="${route}"]`;await page.click(selector);await page.waitForFunction(r=>document.querySelector('.screen.active').dataset.screen===r,{},route);};
- const fits=async(selector)=>page.evaluate(sel=>{const n=document.querySelector(sel);if(!n)return false;const r=n.getBoundingClientRect();return r.left>=-1&&r.right<=innerWidth+1&&n.scrollWidth<=n.clientWidth+1;},selector);
+ const fits=async(selector)=>page.evaluate(sel=>{const n=document.querySelector(sel);if(!n)return false;const r=n.getBoundingClientRect();return n.getClientRects().length>0&&r.width>0&&r.left>=-1&&r.right<=innerWidth+1&&n.scrollWidth<=n.clientWidth+1;},selector);
  for(const width of [430,360,320,1280]){
   await page.setViewport({width,height:900,deviceScaleFactor:1});
   await nav('home',width);
@@ -72,8 +72,10 @@ try{
   check(`Precision remains reachable ${width}`,await page.evaluate(()=>!document.getElementById('chiselPrecisionRoot').hidden));
   await page.keyboard.press('Escape');
   await page.waitForFunction(()=>document.getElementById('chiselPrecisionRoot').hidden);
-  await nav('analyze',width);
-  await page.evaluate(()=>document.getElementById('cxStudioCard').scrollIntoView({block:'start'}));
+  await page.click('#csOrbitTrigger');
+  await page.click('#csOrbit [data-cs-open="style"]');
+  await page.waitForFunction(()=>document.querySelector('.screen.active').dataset.screen==='groom');
+  await page.waitForFunction(()=>{const n=document.getElementById('cxStudioCard'),r=n.getBoundingClientRect();return n.getClientRects().length&&r.top>=0&&r.top<innerHeight-100;});
   check(`Style fits ${width}`,await fits('#cxStudioCard'));
   check(`All unisex style actions retained ${width}`,await page.evaluate(()=>document.querySelectorAll('#cxStudioCard [data-cx]').length===4));
   await screenshot('style',width);

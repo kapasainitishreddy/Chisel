@@ -35,3 +35,9 @@ test('dialog focus remembers external trigger before existing dialog focus handl
 test('shared Studio refinements and loader are packaged byte-identically',()=>{
  for(const name of ['chisel-studio-theme.css','chisel-studio-theme.js','chisel-ar-coach-core.js','index.html'])assert.equal(read(name),fs.readFileSync(path.join(__dirname,'../android/app/src/main/assets/public',name),'utf8'),name);
 });
+test('Style tools route to the real card screen and do not scroll back to Tools on close',()=>{
+ const js=read('chisel-studio-theme.js');
+ assert.match(js,/n\.closest\('\[data-screen\]'\)/);
+ assert.match(js,/call\('go',route\)/);
+ assert.match(js,/orbitReturn\.focus\(\{preventScroll:true\}\)/);
+});
