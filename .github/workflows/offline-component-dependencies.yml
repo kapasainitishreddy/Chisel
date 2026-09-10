@@ -1,0 +1,36 @@
+name: Offline component test dependencies
+on:
+  push:
+    branches: [test/offline-component-dependencies]
+    paths: [.github/workflows/offline-component-dependencies.yml]
+permissions:
+  contents: read
+jobs:
+  dependencies:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Download public runtime only, no user images
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/offline-test-deps/wheels /tmp/offline-test-deps/canvas
+          python -m pip download --no-deps -d /tmp/offline-test-deps/wheels mediapipe==0.10.32 absl-py==2.3.1 flatbuffers==25.9.23 sounddevice==0.5.3
+          curl --fail --location --max-time 60 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task' -o /tmp/offline-test-deps/face_landmarker.task
+          cd /tmp/offline-test-deps/canvas
+          npm init -y >/dev/null
+          npm install --ignore-scripts --no-audit --no-fund @napi-rs/canvas@0.1.80
+          node -e 'const c=require("@napi-rs/canvas");const x=c.createCanvas(20,20);console.log("Canvas ready:",x.width)'
+          cd /tmp/offline-test-deps
+          sha256sum face_landmarker.task wheels/*.whl > SHA256SUMS
+          echo 'Public dependencies only. No portrait, credentials, private input or generated user output was passed to this workflow.' > SCOPE.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: offline-component-dependencies
+          path: /tmp/offline-test-deps/
+          retention-days: 1
