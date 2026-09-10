@@ -28,6 +28,11 @@ function contrastRatio(a,b){
   const lum=hex=>{const rgb=hex.replace('#','').match(/../g).map(v=>parseInt(v,16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);return rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722;};
   const x=lum(a),y=lum(b);return(Math.max(x,y)+.05)/(Math.min(x,y)+.05);
 }
+function taskCopy(action,done){
+ const names={analyze:['Your baseline','Scan'],tryon:['Try a style','Open styles'],yoga:['Face yoga','Start'],groom:['Daily routine','Open routine']};
+ const [title,cta]=names[action]||names.groom;
+ return {title:done?'Complete for today':title,cta,done:done?'Done':'Mark done'};
+}
 let installed=false,lastOverlay=null,returnFocus=null,orbitReturn=null;
 const doc=()=>root.document;
 const q=(s,scope)=> (scope||doc()).querySelector(s);
@@ -60,38 +65,53 @@ function installHome(){
  const masthead=el('header','cs-masthead');masthead.innerHTML='<span class="cs-wordmark">Chisel<span class="cs-wordmark-dot" aria-hidden="true">.</span></span><span class="cs-private">Your private studio</span>';
  const settings=q('#openSettings');if(settings){settings.classList.add('cs-icon-button');settings.innerHTML=icon('settings');settings.setAttribute('aria-label','Settings');masthead.append(settings);}
  home.prepend(masthead);
- const heading=q('h1.display',hero);if(heading)heading.innerHTML='A little care.<br><em>A clear direction.</em>';
- text(q('.lede',hero),'Train gently. Explore your style. Track your own changes, without a beauty score.');
+ const heading=q('h1.display',hero);if(heading)heading.textContent='Today';
+ q('.lede',hero)?.remove();
  const intro=hero.firstElementChild,heroActions=q('.btn-row',intro);if(heroActions){const d=disclosure('Mindset & reflection',[heroActions]);intro.append(d);}
  const side=hero.children[1];if(side){side.classList.add('cs-home-reflection');const d=disclosure('Your reflection & streak',[side]);home.append(d);}
  hero.append(hub);
  // Keep real inputs and handlers, but remove the competing home feature catalogue.
  const secondary=el('div','cs-home-secondary');
  Array.from(home.children).forEach(n=>{if(n!==masthead&&n!==hero&&n!==hub&&n.id!=='cxpValueStrip')secondary.append(n);});
- home.append(disclosure('Programs, habits & personal tools',[secondary],'cs-home-more'));
+ const date=q('.eyebrow',intro);if(date)secondary.prepend(date);
+ const trust=q('#cxpValueStrip');if(trust)secondary.append(trust);
+ home.append(disclosure('More',[secondary],'cs-home-more'));
  const transformHub=()=>{
   if(q('.cs-hub-marker',hub))return;
   hub.prepend(el('span','cs-hub-marker'));
-  text(q('#cxpHomeHubTitle',hub),'Your next small step');
-  text(q('.cxp-copy',hub),'Measure carefully. Choose one action. Compare later.');
-  const phases=q('.cxp-phases',hub);if(phases){phases.setAttribute('aria-label','Measure, act, compare');}
-  text(q('.cxp-tools-label',hub),'Explore your studio');
-  const yoga=q('[data-cxp-action="yoga"]',hub);if(yoga){text(q('b',yoga),'Face Yoga');text(q('span',yoga),'Gentle movement + guidance');}
-  all('.cxp-action',hub).forEach(button=>{const i=el('i','cs-action-icon');i.innerHTML=icon(({analyze:'scan',tryon:'style',yoga:'train',groom:'routine'})[button.dataset.cxpAction]);button.prepend(i);});
+  text(q('#cxpHomeHubTitle',hub),'Next');
+  q('.cxp-kicker',hub)?.remove();q('.cxp-copy',hub)?.remove();q('.cxp-phases',hub)?.remove();
+  const focus=q('[data-cxp-focus]',hub),done=q('[data-cxp-done]',hub);
+  if(focus&&done){
+   const copy=taskCopy(focus.dataset.cxpFocus,done.getAttribute('aria-pressed')==='true');
+   text(q('.cxp-focus-copy b',hub),copy.title);text(focus,copy.cta);text(done,copy.done);
+   const explanation=q('.cxp-focus-copy span',hub);if(explanation)hub.append(disclosure('Details',[explanation],'cs-focus-details'));
+   text(q('.cxp-daily-status',hub),done.getAttribute('aria-pressed')==='true'?'Saved on this device.':'');
+  }
+  const actions=q('.cxp-actions',hub);q('.cxp-tools-label',hub)?.remove();
+  all('.cxp-action',hub).forEach(button=>{
+   const key=button.dataset.cxpAction;
+   text(q('b',button),({analyze:'Scan',tryon:'Style',yoga:'Face yoga',groom:'Routine'})[key]);
+   q('span',button)?.remove();
+   const i=el('i','cs-action-icon');i.innerHTML=icon(({analyze:'scan',tryon:'style',yoga:'train',groom:'routine'})[key]);button.prepend(i);
+  });
+  if(actions)hub.append(disclosure('Quick tools',[actions],'cs-quick-tools'));
  };
  transformHub();new root.MutationObserver(transformHub).observe(hub,{childList:true});
  const launch=el('section','cs-direct-tools');launch.setAttribute('aria-label','Training and skin tools');
- launch.innerHTML=`<button class="cs-tool-row" type="button" data-cs-open="train">${icon('train')}<span><b>Face & neck training</b><small>Browse all six guided sessions</small></span>${icon('arrow')}</button><button class="cs-tool-row" type="button" data-cs-open="skin">${icon('skin')}<span><b>Skin appearance</b><small>Photo check-in + a simple routine</small></span>${icon('arrow')}</button>`;
+ launch.innerHTML=`<button class="cs-tool-row cs-train-entry" type="button" data-cs-open="train">${icon('train')}<span><b>Face training</b><small>6 sessions</small></span>${icon('arrow')}</button><button class="cs-tool-row" type="button" data-cs-open="skin">${icon('skin')}<span><b>Skin</b></span>${icon('arrow')}</button><button class="cs-tool-row" type="button" data-cs-open="style">${icon('style')}<span><b>Style</b></span>${icon('arrow')}</button>`;
  const reflection=q('.cs-disclosure',intro);if(reflection)secondary.prepend(reflection);
  launch.style.gridTemplateColumns='1fr';launch.style.marginTop='20px';intro.append(launch);
 }
 function installTrainer(){
  const modal=q('#arCoachModal'),grid=q('.ar-session-grid',modal);if(!grid)return;
- text(q('.ar-coach-intro',modal),'Choose a gentle session. Follow the cues, take your time, and stop if anything feels uncomfortable.');
- text(q('.eyebrow',modal),'Move at your pace');
+ q('.ar-coach-intro',modal)?.remove();q('.eyebrow',modal)?.remove();
  const goalbar=q('#ctv2GoalBar',modal),trust=q('.ctv2-trust',modal),note=q('.ctv2-note',modal),evidence=q('.ar-evidence',modal),yoga=q('.cx-yoga-note',modal);
  const details=disclosure('How tracking works',[goalbar,trust,note,evidence,yoga],'cs-trainer-method');
- const safety=q('.ar-safety',modal);if(safety)safety.insertAdjacentElement('afterend',details);else grid.insertAdjacentElement('afterend',details);
+ const safety=q('.ar-safety',modal);
+ const comfort=el('p','cs-comfort','Keep it gentle. Stop if you feel pain.');
+ grid.insertAdjacentElement('afterend',comfort);comfort.insertAdjacentElement('afterend',details);
+ if(safety)details.append(safety);
  const filters=el('div','cs-segments');filters.id='csTrainerFilters';filters.setAttribute('role','group');filters.setAttribute('aria-label','Filter training sessions');
  for(const [id,label] of [['all','All'],['cheeks','Cheeks'],['posture','Posture'],['relax','Release']]){
   const b=el('button','',label);b.type='button';b.dataset.csGoal=id;b.setAttribute('aria-pressed',String(id==='all'));filters.append(b);
@@ -105,36 +125,41 @@ function installTrainer(){
   const info=sessionInfo(root.ChiselARCoach,id);if(!info)return;
   b.dataset.csIndex=String(index+1).padStart(2,'0');b.dataset.csTracking=info.tracking;
   text(q('strong',b),info.title);
-  text(q('span',b),`${info.movements} movements · ${info.tracking==='camera'?'Camera checked':info.tracking==='guided'?'Guided':'Guided + camera checked'}`);
-  b.setAttribute('aria-label',`${info.title}, ${info.movements} movements`);grid.append(b);
+  text(q('span',b),`${info.movements} moves`);
+  b.setAttribute('aria-label',`${info.title}, ${info.movements} movements, ${info.tracking==='camera'?'camera checked':info.tracking==='guided'?'guided':'guided and camera checked'}`);grid.append(b);
  });
  const check=q('.ctv2-trust-card b',modal);if(check)text(check,'Camera-checked movement');
  const hud=q('#arCoachHud');if(hud){const pause=q('#arCoachStop');if(pause)pause.setAttribute('aria-label','Stop training and close camera');}
  root.addEventListener('chisel:coach-state',event=>{
   const d=event.detail||{};text(q('#ctv2FormScore'),feedbackLabel(d.exercise,d.form));
-  const tracking=q('#ctv2TrackingCopy');if(tracking)text(tracking,d.exercise&&d.exercise.tracking==='form'?'Movement check only. This is not a muscle-growth or appearance score.':'Guided practice. The camera checks setup, not the full movement.');
+  const tracking=q('#ctv2TrackingCopy');if(tracking)text(tracking,d.exercise&&d.exercise.tracking==='form'?'Camera movement check':'Guided movement · setup only');
  });
 }
 function installSkin(){
  const shell=q('#csaShell');if(!shell)return;
- const top=q('.csa-top p',shell);text(top,'A clear photo, a careful read, and a simpler routine. Cosmetic signals, not a skin-health diagnosis.');
+ const top=q('.csa-top p',shell);text(top,'Experimental. Not a diagnosis.');
  const prep=el('section','cs-capture-prep');prep.setAttribute('aria-label','Prepare a comparable skin photo');
  prep.innerHTML='<h5>Start with a comparable photo</h5><ol><li><b>Even light</b><span>Face a window. Avoid direct sun and strong shadows.</span></li><li><b>No filters</b><span>Use an unedited photo, without heavy makeup.</span></li><li><b>Match your setup</b><span>Same camera, distance, angle and relaxed expression.</span></li></ol>';
- q('.csa-actions',shell).insertAdjacentElement('beforebegin',prep);
- const file=q('.csa-file',shell);if(file){file.prepend(el('span','cs-file-icon'));q('.cs-file-icon',file).innerHTML=icon('scan');}
- const resultInfo=el('p','cs-method-note','Capture quality is a photo check, not an accuracy percentage. Skin signals are experimental and can change with lighting.');resultInfo.id='csSkinMethod';shell.append(resultInfo);
+ const tips=disclosure('Photo tips',[prep],'cs-photo-tips');
+ shell.append(tips);text(q('#csaStatus',shell),'Even light. No filters.');
+ const actions=q('.csa-actions',shell);actions.insertAdjacentElement('afterend',q('#csaStatus',shell));
+ const file=q('.csa-file',shell);if(file){
+  for(const child of Array.from(file.childNodes))if(child.nodeType===3)child.textContent='';
+  file.append(el('b','','Add photo'));file.prepend(el('span','cs-file-icon'));q('.cs-file-icon',file).innerHTML=icon('scan');
+ }
+ text(q('#csaAnalyze',shell),'Analyze');text(q('.csa-local',shell),'On-device');
+ const resultInfo=el('p','cs-method-note','Capture quality is a photo check, not an accuracy percentage. Skin signals are experimental and can change with lighting.');resultInfo.id='csSkinMethod';shell.append(disclosure('Details',[resultInfo],'cs-skin-details'));
  const quality=q('#csaConfidence');if(quality){const normalize=()=>{const value=quality.textContent.trim();if(/^\d+(?:\.\d+)?%$/.test(value))text(quality,qualityLabel(Number(value.slice(0,-1))));};new root.MutationObserver(normalize).observe(quality,{childList:true,characterData:true,subtree:true});normalize();}
  const results=q('#csaResults');if(results){const render=()=>{shell.dataset.hasResults=String(!results.hidden);};new root.MutationObserver(render).observe(results,{attributes:true,attributeFilter:['hidden']});render();}
  const panel=q('#chl-panel-skin');
  if(panel){
   const nodes=[q('#chl-skin-scan'),q('.chl-form-grid',panel),q('#chl-build-skin'),q('#chl-skin-result')];
-  panel.append(disclosure('Build or adjust your routine',nodes,'cs-skin-routine'));
+  panel.append(disclosure('Your routine',nodes,'cs-skin-routine'));
  }
- text(q('#chl-title'),'Care studio');
- text(q('.chl-header .chl-kicker'),'Private, on-device tools');
+ text(q('#chl-title'),'Care');q('.chl-header .chl-kicker')?.remove();
  const moduleNames={skin:'Skin',expression:'Expression',lips:'Lips & color',neck:'Neck',body:'Body'};
  all('.chl-module-card').forEach(b=>{const name=moduleNames[b.dataset.chlOpen];if(name){b.setAttribute('aria-label',b.textContent.trim());text(q('b',b),name);}});
- const dis=q('.chl-disclosure');if(dis){const more=disclosure('Privacy & measurement limits',[dis],'cs-labs-disclosure');q('.chl-header').insertAdjacentElement('afterend',more);}
+ const dis=q('.chl-disclosure');if(dis){const more=disclosure('Privacy & measurement limits',[dis],'cs-labs-disclosure');q('.chl-dialog').append(more);}
  const skinButton=el('button','btn cs-secondary','Skin appearance');skinButton.type='button';skinButton.dataset.csOpen='skin';skinButton.id='csOpenSkin';
  const analyze=q('.analyze-primary');if(analyze)analyze.append(skinButton);
  const precisionButton=el('button','btn ghost','Precision batch');precisionButton.type='button';precisionButton.dataset.csOpen='precision';
@@ -144,7 +169,7 @@ function installSkin(){
 function installOrbit(){
  const button=el('button','cs-orbit-trigger');button.id='csOrbitTrigger';button.type='button';button.innerHTML=icon('orbit')+'<span>Tools</span>';button.setAttribute('aria-label','Open Chisel tools');button.setAttribute('aria-haspopup','dialog');button.setAttribute('aria-expanded','false');button.setAttribute('aria-controls','csOrbit');
  const dialog=el('dialog','cs-orbit');dialog.id='csOrbit';dialog.setAttribute('aria-labelledby','csOrbitTitle');
- dialog.innerHTML=`<header><div><h2 id="csOrbitTitle">Your studio</h2><p>One place for your daily care.</p></div><button class="cs-icon-button" type="button" id="csOrbitClose" aria-label="Close Chisel tools">${icon('close')}</button></header><div class="cs-orbit-map"><button type="button" data-cs-open="home" class="cs-orbit-home">${icon('home')}<span>Home</span></button><button type="button" data-cs-open="train">${icon('train')}<span>Train</span></button><button type="button" data-cs-open="scan" class="cs-orbit-scan">${icon('scan')}<span>Scan</span></button><button type="button" data-cs-open="skin">${icon('skin')}<span>Skin</span></button><button type="button" data-cs-open="style">${icon('style')}<span>Style</span></button><button type="button" data-cs-open="routine">${icon('routine')}<span>Routine</span></button><button type="button" data-cs-open="precision">${icon('precision')}<span>Precision</span></button></div><button type="button" data-cs-open="settings" class="cs-orbit-settings">${icon('settings')}<span>Settings & privacy</span>${icon('arrow')}</button>`;
+ dialog.innerHTML=`<header><div><h2 id="csOrbitTitle">Tools</h2></div><button class="cs-icon-button" type="button" id="csOrbitClose" aria-label="Close Chisel tools">${icon('close')}</button></header><div class="cs-orbit-map"><button type="button" data-cs-open="home" class="cs-orbit-home">${icon('home')}<span>Home</span></button><button type="button" data-cs-open="train">${icon('train')}<span>Train</span></button><button type="button" data-cs-open="scan" class="cs-orbit-scan">${icon('scan')}<span>Scan</span></button><button type="button" data-cs-open="skin">${icon('skin')}<span>Skin</span></button><button type="button" data-cs-open="style">${icon('style')}<span>Style</span></button><button type="button" data-cs-open="routine">${icon('routine')}<span>Routine</span></button><button type="button" data-cs-open="precision">${icon('precision')}<span>Precision</span></button></div><button type="button" data-cs-open="settings" class="cs-orbit-settings">${icon('settings')}<span>Settings & privacy</span>${icon('arrow')}</button>`;
  // Keep tool discovery in document flow, never over a task or the bottom tabs.
  const main=q('main.view'),masthead=q('.cs-masthead')||el('header','cs-masthead');
  const privateLabel=q('.cs-private',masthead);if(privateLabel)privateLabel.remove();
@@ -205,14 +230,20 @@ function install(){
  installed=true;doc().documentElement.dataset.chiselTheme='quiet-studio';
  installHome();installTrainer();installSkin();
  const studio=q('#cxStudioCard'),analyze=q('[data-screen="analyze"]');
- if(studio&&analyze){analyze.append(studio);text(q('.cx-studio-copy',studio),'Explore hair, facial hair, eyewear and makeup. Live guides show placement; AI renders are visualizations, not predictions.');}
+ if(studio&&analyze){analyze.append(studio);text(q('.cx-studio-copy',studio),'Live guides, not predictions.');
+  all('.cx-studio-btn small',studio).forEach(n=>n.remove());}
+ const analyzeHelp=q('#cxpAnalyzeTrust');
+ if(analyzeHelp)analyze.append(disclosure('About these measurements',[analyzeHelp],'cs-analyze-details'));
+ q('[data-screen="analyze"] > .lede')?.remove();
+ const groom=q('[data-screen="groom"]'),loop=q('#cxpGroomLoop');
+ if(groom&&loop)groom.append(disclosure('How routines work',[loop]));
  installOrbit();installDialogAccess();
  doc().addEventListener('click',e=>{const button=e.target.closest('[data-cs-open]');if(button&&!button.disabled)openSurface(button.dataset.csOpen);});
- const paywall=q('#paywall .panel h3');text(paywall,'More room to explore.');
+ const paywall=q('#paywall .panel h3');text(paywall,'Chisel Pro');
  text(q('#paywall .eyebrow'),'Chisel Pro');
- text(q('#paywall .lede'),'Optional cloud style previews, with your core on-device tools staying free. Google Play confirms price and renewal terms before purchase.');
+ text(q('#paywall .lede'),'Optional AI style previews. Core tools stay free.');
  all('.x').forEach(button=>{if(button.tagName==='BUTTON')return;button.setAttribute('role','button');button.tabIndex=0;button.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();button.click();}});});
  return true;
 }
-return{TOKENS,SESSION_ORDER,sessionInfo,matchesGoal,qualityLabel,feedbackLabel,contrastRatio,install,openOrbit,closeOrbit,openSurface};
+return{TOKENS,SESSION_ORDER,taskCopy,sessionInfo,matchesGoal,qualityLabel,feedbackLabel,contrastRatio,install,openOrbit,closeOrbit,openSurface};
 });

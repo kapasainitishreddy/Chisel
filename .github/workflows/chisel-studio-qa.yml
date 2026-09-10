@@ -33,6 +33,7 @@ jobs:
           node --check www/chisel-studio-theme.js
           node --check tests/studio-browser-runner.mjs
           node --check tests/studio-discovery-browser.mjs
+          node --check tests/density-browser-runner.mjs
           npm audit --omit=dev --audit-level=high
       - name: Exercise premium UI in Chromium
         run: |
@@ -45,6 +46,7 @@ jobs:
           sleep 1
           timeout --signal=TERM --kill-after=5s 180s node tests/studio-browser-runner.mjs http://127.0.0.1:4173
           timeout --signal=TERM --kill-after=5s 90s node tests/studio-discovery-browser.mjs http://127.0.0.1:4173
+          timeout --signal=TERM --kill-after=5s 90s node tests/density-browser-runner.mjs http://127.0.0.1:4173
       - name: Preserve rendered screenshots and verification
         if: always()
         uses: actions/upload-artifact@v4

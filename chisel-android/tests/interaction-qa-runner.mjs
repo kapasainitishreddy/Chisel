@@ -67,7 +67,7 @@ try{
       skinFileType:skin.querySelector('#csaFile')?.getAttribute('accept')||'',
       skinAnalyzeDisabled:skin.querySelector('#csaAnalyze')?.disabled===true,
       skinGuidance:[...skin.querySelectorAll('.csa-guide h5')].map(el=>el.textContent.trim()),
-      skinLocal:/on-device analysis/i.test(skin.textContent),
+      skinLocal:/on-device/i.test(skin.textContent),
       styleFamilies:studio?[...studio.querySelectorAll('.cx-studio-btn b')].map(el=>el.textContent.trim()):[],
       studioUnisex:studio?.dataset.unisexPresentation==='1'
     };
@@ -116,6 +116,8 @@ try{
   await page.evaluate(()=>window.go('home'));
   await wait(60);
 
+  // Secondary tools are progressively disclosed after the content-density review.
+  await page.evaluate(()=>{const d=document.querySelector('.cs-quick-tools');if(d)d.open=true;});
   const homeState=await page.evaluate(()=>{
     const current=[...document.querySelectorAll('[data-route][aria-current="page"]')].map(el=>el.dataset.route);
     const actions=[...document.querySelectorAll('#cxpHomeHub [data-cxp-action]')].map(el=>({
