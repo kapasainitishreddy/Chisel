@@ -1,13 +1,9 @@
 # Change Requests
 
-## CR: Too much text and repetitive cards, 2026-09-10
+## CR: Implement approved visual design using each user's own photo
 
-User rejected the preceding Quiet Studio design. Implemented in the existing theme, application revision `84ca6b3e09d3f85e9998bfb534291e05fc4eb565`: Today heading, three primary Home tools, short real-task copy, open trainer/style rows, photo input first, and optional explanatory disclosures. Visible safety, errors, experimental labeling and portrait consent remain; underlying measurement/provider engines are untouched.
+2026-09-10. Implemented in existing draft PR #7, not a new mockup: local personal-photo manager, original/display separation, own-photo Home/Trainer/Skin/Style presentation, real existing task controls, balanced spacing and cream buttons. Includes explicit original-photo Skin handoff and complete local-data deletion.
 
-Five red-to-green content regressions plus dedicated browser density checks added. Node 200/200, studio 43/43, discovery 10/10, density 46/46 passed. Three required workflows succeeded; Chrome startup retry and exact source IDs recorded in [CONTENT_DENSITY.md](CONTENT_DENSITY.md). Physical Android, empirical accuracy and actual cloud realism remain unverified.
+Verified application/test revision `2d5ecf6de339621c8c96258ea74b53a034faf865`: 222/222 Node and 66/66 personal-photo browser checks. All four current workflows pass. Fixes identified in actual testing include the DOM toast collision, selected-tab contrast, thumbnail placeholders and doubled Style spacing. An outdated exact-title test now checks the approved Face training title after complete runtime installation.
 
-## Earlier CR: Premium UI/UX consistency and accessible controls
-
-Quiet Studio introduced shared colors, typography, button states, header Tools, trainer filters, clearer skin/routine guidance and visible unisex Style discovery. Shared-header and Style-navigation fixes remain intact. The new content edit supersedes its promotional/editorial copy and default density, not its core functionality.
-
-Read [original implementation scope](STUDIO_UI_STATUS.md) and [previous accuracy/reliability request](history/2026-09-10-before-studio-CHANGE_REQUESTS.md). All earlier release requirements remain in force.
+No default stock faces, mock measurement scores, fabricated photo transformations or new accuracy claims. No merge/build/install/deployment. See [implementation](PERSONAL_STUDIO.md), [visual deviations and review](PERSONAL_STUDIO_REVIEW.md), and [prior requests](history/2026-09-10-before-personal-CHANGE_REQUESTS.md).

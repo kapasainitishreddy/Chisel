@@ -1,13 +1,13 @@
 # AI Development Handoff
 
-## Current checkpoint: content-density correction, 2026-09-10
+## Current checkpoint: personal-photo UI, 2026-09-10
 
-Continue draft PR #7 on `feat/chisel-unisex-trainer-skin`, based on `feat/launch-machine-chisel`. Do not restart the static Capacitor app. User rejected the initial Quiet Studio presentation as text-heavy. The current existing theme removes slogans and repeated explanations rather than adding another UI layer.
+Continue draft PR #7 on `feat/chisel-unisex-trainer-skin`, based on `feat/launch-machine-chisel`. The user approved a photo-led concept and explicitly requested actual implementation using each app user's own photo. Do not revert to the rejected text-heavy UI or restart the static Capacitor application.
 
-Read [content revision and exact evidence](CONTENT_DENSITY.md) first. Home now leads with Face training / Skin / Style. Trainer uses simple rows. Skin prioritizes actual photo controls. Details and secondary tools remain accessible through disclosures. Shared-header placement, visible Style discovery and underlying measurement, camera, consent, storage and provider behavior are preserved.
+Read [implementation and exact evidence](PERSONAL_STUDIO.md) and [visual review](PERSONAL_STUDIO_REVIEW.md). The private photo store and new presentation components extend the existing shared theme. Original photos are separated from display renditions and passed to Skin only through explicit selection. Existing AR, quality, provider and consent boundaries remain intact.
 
-Tested application revision: `84ca6b3e09d3f85e9998bfb534291e05fc4eb565`. Node 200/200, studio 43/43, discovery 10/10, density 46/46 passed. All three required workflows completed successfully, with a Chrome startup retry recorded in CONTENT_DENSITY.md. Theme JS/CSS match Android copies. Later documentation-only changes do not alter tested application source.
+Verified application/test revision `2d5ecf6de339621c8c96258ea74b53a034faf865`: Node 222/222, personal-photo browser 66/66. Personal Photo UI #4, Quiet Studio QA #10, Reliability Evidence #15 and Chisel Tests #274 all completed successfully. Five changed canonical/native asset pairs match exactly. Later documentation-only changes do not alter that tested application.
 
-Local browser navigation was blocked; screenshots and interaction tests ran in GitHub Actions Chromium. No physical-device acceptance or signed APK/AAB was performed. Native touch/scroll/camera, large text and screen readers, actual accuracy/repeatability, real cloud output and parent PR #6 production gates remain open.
+No native signed build or physical phone installation occurred. Next acceptance remains physical Android camera/HUD/touch/scroll, large text/screen readers, actual reference-based measurement validation, real generated-output testing and parent PR #6 production release requirements. The user's still photo is not a generated exercise animation or a photoreal hairstyle result.
 
-[Earlier Quiet Studio design](STUDIO_UI_STATUS.md), [visual review](QUIET_STUDIO_REVIEW.md), [accuracy safeguards](ACCURACY_RELIABILITY.md), and [historical handoff](history/2026-09-10-before-studio-AI_HANDOFF.md) remain available. Earlier typography descriptions and test counts are checkpoint history, not the current UI.
+[Preceding handoff](history/2026-09-10-before-personal-AI_HANDOFF.md), [content-density history](CONTENT_DENSITY.md), [accuracy requirements](ACCURACY_RELIABILITY.md) and the older full feature inventory remain available. Older verification numbers describe earlier checkpoints.

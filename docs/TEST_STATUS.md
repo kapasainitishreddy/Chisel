@@ -1,15 +1,16 @@
 # Test Status
 
-## Content-density checkpoint, 2026-09-10
+## Personal Photo Studio, 2026-09-10
 
-Tested application revision: `84ca6b3e09d3f85e9998bfb534291e05fc4eb565`. CI merge checkout: `070b41c6c5ed1f0a550662a29ee2a268d850de9d`. Later documentation-only edits do not change application source.
+Verified application/test head `2d5ecf6de339621c8c96258ea74b53a034faf865`, CI checkout `66ca090ae691cf3f171765eb6f0e883f9bd0da81`. The application runtime itself is unchanged from `5a4745b`; the later commit updates the interaction suite's approved title expectation and full-runtime wait.
 
-`cd chisel-android && npm test`: **200/200 PASS**, zero failures or skips, in CI and rerun locally from the exact downloaded source. Five new content regressions failed against the preceding source and passed after the edit. Theme syntax and canonical/Android theme asset parity pass.
+- Full Node suite: **222/222 PASS**, no failures/skips, including a local rerun against the exact downloaded CI source.
+- Personal-photo browser suite: **66/66 PASS**, zero uncaught errors and zero POST requests recorded during the tested flows.
+- Personal Photo UI #4 (`34512941395`), Quiet Studio QA #10 (`34512941384`), Reliability Evidence #15 (`34512941407`) and Chisel Tests #274 (`34512941383`): **SUCCESS**.
+- Five modified canonical/native asset pairs matched byte-for-byte; syntax checks passed.
 
-Chisel Quiet Studio QA #4 (34503567137) and Chisel Tests #268 (34503567174) succeeded. Reliability Evidence #9 (34503567139) succeeded on attempt 2; the first attempt failed before app checks because Chrome did not start within 30 seconds. No application assertion was weakened for the retry.
+New tests cover own-photo import/reload/removal/clear-all, original SHA-256 preservation, invalid input, selection races, storage failures, real session/style filters and layout at 360/430/1280. Earlier browser suites remain enabled, including 768px layout checks. Initial deletion and spacing failures were fixed in source; the old trainer-title assertion was updated to the approved Face training text, not removed.
 
-Rendered suites: studio 43/43, discovery 10/10, density 46/46. Each has zero uncaught page errors. Browser widths: 360/430/768/1280; density-specific assertions cover 360/430/1280. Checks include actual task discovery, trainer filters, expanded safety/help, real completion state, rerender behavior, file states and bounded default-visible copy. The interaction runner opens Quick tools before checking its controls rather than assuming secondary actions are always visible.
+Artifacts: `10166520546` contains full source, screenshots, Node output and the lifecycle report. Actual screenshots were reviewed for composition, typography, spacing, contrast and photo ownership. See [full scope](PERSONAL_STUDIO.md).
 
-Local Playwright navigation was blocked. Rendered verification used GitHub Actions Chromium, not the user's physical phone. This is not empirical accuracy, successful skin measurement, live photorealistic-output, billing or signed Android-build validation.
-
-See [full evidence and counts](CONTENT_DENSITY.md), [release boundaries](RELEASE_STATUS.md), and [older test history](history/2026-09-10-before-studio-TEST_STATUS.md).
+Local browser navigation was blocked. Browser verification used GitHub Actions Chromium, not physical Android. No empirical accuracy study, successful reference-calibrated skin measurement, live photoreal model output, billing or signed native build is certified. [Preceding test history](history/2026-09-10-before-personal-TEST_STATUS.md) is preserved.

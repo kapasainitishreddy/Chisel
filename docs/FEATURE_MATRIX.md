@@ -1,16 +1,16 @@
 # Chisel Feature Matrix
 
-Updated 2026-09-10 after the user's content-density review. [The complete 60-area inventory](history/2026-09-10-before-studio-FEATURE_MATRIX.md) and its unvalidated/configuration-pending boundaries remain in force. A UI change does not establish measurement accuracy.
+Updated 2026-09-10 for Personal Photo Studio. The [complete earlier 60-area inventory](history/2026-09-10-before-studio-FEATURE_MATRIX.md) and its measurement/configuration limits remain applicable.
 
-| Area | Current presentation | Remaining acceptance |
+| Area | Current implementation | Remaining acceptance |
 |---|---|---|
-| Shared theme | Charcoal/ivory/sage, consistent controls, shorter labels, Inter/system headings | Physical Android and full accessibility review |
-| Home | Today; Face training / Skin / Style; actual daily task; optional Details / Quick tools / More | Native interaction review |
-| Trainer | Six unisex sessions, simple rows and movement counts, working filters, visible comfort cue, full details available | Real-camera thresholds and human-labelled rep validation |
-| Skin | Add photo / Analyze first; experimental label; optional Photo tips / Details / Your routine | Experimental signals; reference accuracy unestablished |
-| Style | Visible unisex catalog on Analyze, open rows without repeated descriptions | Approximate local guide; cloud realism unverified |
-| Tools and Precision | One shared-header Tools button; existing destinations and five primary routes retained | Native and screen-reader acceptance |
-| Reliability | Observed-frame holds, neutral release, aspect ratio and input-quality checks unchanged | Representative accuracy/repeatability study |
-| Billing/cloud/store | Existing source and consent behavior unchanged | Production configuration, signing, live tests and release requirements |
+| Personal photo | Explicit choose/take, local original and display storage, reload, replacement, removal and full-data deletion | Physical Android picker/camera and storage-lifecycle checks |
+| Home | Own-photo hero/avatar, three balanced tool controls and original daily completion | Physical touch/scroll and large text |
+| Trainer | Own-photo poster/thumbnails, real Start action, six sessions and working filters; no sample scores | Live camera thresholds and human-labelled rep validation; poster is not exercise animation |
+| Skin | Personal original selection, separate Analyze action, original quality gates and honest empty results | Signals remain experimental; reference accuracy unestablished |
+| Style | Personal poster, Hair/Beard/Makeup/Eyewear controls, existing live-guide actions | Stored photo is not a photoreal transformed result; provider output review pending |
+| Shared presentation | Dark green/black surfaces, cream controls, grouped photo-led tasks and consistent gutters | Physical accessibility/performance acceptance |
+| Reliability/privacy | Existing quality and provider consent boundaries retained; photo data not uploaded by the new store | Empirical validation and full production privacy review |
+| Cloud/billing/store | Existing source paths unchanged by this feature | Production configuration, signing, real billing and store requirements |
 
-Tested application revision `84ca6b3e09d3f85e9998bfb534291e05fc4eb565`: Node 200/200; studio/discovery/density browser suites 43/43, 10/10 and 46/46. Actual screenshots reviewed. Local browser navigation was blocked; rendered tests ran in GitHub Actions Chromium. See [content evidence](CONTENT_DENSITY.md), [test status](TEST_STATUS.md) and [release status](RELEASE_STATUS.md). No native build or clinical/photorealistic validation is implied.
+Verified revision `2d5ecf6de339621c8c96258ea74b53a034faf865`: 222 Node tests, 66 personal-photo browser checks, all four workflows green. See [exact evidence](PERSONAL_STUDIO.md), [release limits](RELEASE_STATUS.md) and [prior presentation matrix](history/2026-09-10-before-personal-FEATURE_MATRIX.md). UI test passes are not evidence of accuracy or realism.
