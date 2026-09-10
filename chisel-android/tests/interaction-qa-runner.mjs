@@ -54,6 +54,9 @@ try{
   result.checks.trainerAndSkinInstalled=featureInstall;
   if(!featureInstall)throw new Error('Trainer v2 or Skin Appearance Lab did not install');
 
+  await page.waitForFunction(()=>document.documentElement.dataset.personalStudio==='1',{timeout:12000,polling:100});
+  result.checks.personalStudioInstalled=true;
+
   const featureState=await page.evaluate(()=>{
     const modal=document.getElementById('arCoachModal');
     const skin=document.getElementById('csaShell');
@@ -73,7 +76,7 @@ try{
     };
   });
   result.details.features=featureState;
-  result.checks.trainerTitle=featureState.trainerTitle==='Face & Neck Trainer';
+  result.checks.trainerTitle=featureState.trainerTitle==='Face training';
   result.checks.trainerSessionCoverage=featureState.trainerSessions.some(x=>/Cheek activation/i.test(x))&&featureState.trainerSessions.some(x=>/Jaw & chin posture/i.test(x))&&featureState.trainerSessions.some(x=>/Chin & neck support/i.test(x));
   result.checks.trainerTrustHierarchy=featureState.trainerGoalCards===3&&featureState.trainerTrustCards===2;
   result.checks.skinAppearanceShell=featureState.skinTitle==='Skin appearance scan'&&featureState.skinAnalyzeDisabled&&/image\/jpeg/.test(featureState.skinFileType);
