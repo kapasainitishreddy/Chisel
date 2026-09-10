@@ -82,7 +82,8 @@ function installHome(){
  transformHub();new root.MutationObserver(transformHub).observe(hub,{childList:true});
  const launch=el('section','cs-direct-tools');launch.setAttribute('aria-label','Training and skin tools');
  launch.innerHTML=`<button class="cs-tool-row" type="button" data-cs-open="train">${icon('train')}<span><b>Face & neck training</b><small>Browse all six guided sessions</small></span>${icon('arrow')}</button><button class="cs-tool-row" type="button" data-cs-open="skin">${icon('skin')}<span><b>Skin appearance</b><small>Photo check-in + a simple routine</small></span>${icon('arrow')}</button>`;
- hero.insertAdjacentElement('afterend',launch);
+ const reflection=q('.cs-disclosure',intro);if(reflection)secondary.prepend(reflection);
+ launch.style.gridTemplateColumns='1fr';launch.style.marginTop='20px';intro.append(launch);
 }
 function installTrainer(){
  const modal=q('#arCoachModal'),grid=q('.ar-session-grid',modal);if(!grid)return;
@@ -92,7 +93,7 @@ function installTrainer(){
  const details=disclosure('How tracking works',[goalbar,trust,note,evidence,yoga],'cs-trainer-method');
  const safety=q('.ar-safety',modal);if(safety)safety.insertAdjacentElement('afterend',details);else grid.insertAdjacentElement('afterend',details);
  const filters=el('div','cs-segments');filters.id='csTrainerFilters';filters.setAttribute('role','group');filters.setAttribute('aria-label','Filter training sessions');
- for(const [id,label] of [['all','All sessions'],['cheeks','Cheeks'],['posture','Posture'],['relax','Release']]){
+ for(const [id,label] of [['all','All'],['cheeks','Cheeks'],['posture','Posture'],['relax','Release']]){
   const b=el('button','',label);b.type='button';b.dataset.csGoal=id;b.setAttribute('aria-pressed',String(id==='all'));filters.append(b);
  }
  grid.insertAdjacentElement('beforebegin',filters);
@@ -130,6 +131,9 @@ function installSkin(){
   panel.append(disclosure('Build or adjust your routine',nodes,'cs-skin-routine'));
  }
  text(q('#chl-title'),'Care studio');
+ text(q('.chl-header .chl-kicker'),'Private, on-device tools');
+ const moduleNames={skin:'Skin',expression:'Expression',lips:'Lips & color',neck:'Neck',body:'Body'};
+ all('.chl-module-card').forEach(b=>{const name=moduleNames[b.dataset.chlOpen];if(name){b.setAttribute('aria-label',b.textContent.trim());text(q('b',b),name);}});
  const dis=q('.chl-disclosure');if(dis){const more=disclosure('Privacy & measurement limits',[dis],'cs-labs-disclosure');q('.chl-header').insertAdjacentElement('afterend',more);}
  const skinButton=el('button','btn cs-secondary','Skin appearance');skinButton.type='button';skinButton.dataset.csOpen='skin';skinButton.id='csOpenSkin';
  const analyze=q('.analyze-primary');if(analyze)analyze.append(skinButton);
@@ -149,7 +153,7 @@ function installOrbit(){
  doc().body.append(dialog);
  button.addEventListener('click',openOrbit);q('#csOrbitClose').addEventListener('click',closeOrbit);
  dialog.addEventListener('cancel',()=>{button.setAttribute('aria-expanded','false');});
- dialog.addEventListener('close',()=>{button.setAttribute('aria-expanded','false');if(orbitReturn&&orbitReturn.isConnected)orbitReturn.focus();});
+ dialog.addEventListener('close',()=>{button.setAttribute('aria-expanded','false');if(orbitReturn&&orbitReturn.isConnected)orbitReturn.focus({preventScroll:true});});
  dialog.addEventListener('click',e=>{if(e.target===dialog)closeOrbit();});
 }
 function openOrbit(){
@@ -199,7 +203,10 @@ function installDialogAccess(){
 function install(){
  if(installed||!root.document||!q('#cxpHomeHub')||!q('#csaShell'))return installed;
  installed=true;doc().documentElement.dataset.chiselTheme='quiet-studio';
- installHome();installTrainer();installSkin();installOrbit();installDialogAccess();
+ installHome();installTrainer();installSkin();
+ const studio=q('#cxStudioCard'),analyze=q('[data-screen="analyze"]');
+ if(studio&&analyze){analyze.append(studio);text(q('.cx-studio-copy',studio),'Explore hair, facial hair, eyewear and makeup. Live guides show placement; AI renders are visualizations, not predictions.');}
+ installOrbit();installDialogAccess();
  doc().addEventListener('click',e=>{const button=e.target.closest('[data-cs-open]');if(button&&!button.disabled)openSurface(button.dataset.csOpen);});
  const paywall=q('#paywall .panel h3');text(paywall,'More room to explore.');
  text(q('#paywall .eyebrow'),'Chisel Pro');

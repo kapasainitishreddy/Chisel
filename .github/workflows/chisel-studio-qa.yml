@@ -27,11 +27,12 @@ jobs:
           set -euo pipefail
           mkdir -p /tmp/chisel-studio-qa
           git rev-parse HEAD > /tmp/chisel-studio-qa/source-sha.txt
-          git archive --format=tar.gz -o /tmp/chisel-studio-qa/source.tar.gz HEAD
+          git -C .. archive --format=tar.gz -o /tmp/chisel-studio-qa/source.tar.gz HEAD
           npm ci --ignore-scripts
           npm test | tee /tmp/chisel-studio-qa/node-tests.txt
           node --check www/chisel-studio-theme.js
           node --check tests/studio-browser-runner.mjs
+          node --check tests/studio-discovery-browser.mjs
           npm audit --omit=dev --audit-level=high
       - name: Exercise premium UI in Chromium
         run: |
@@ -43,6 +44,7 @@ jobs:
           trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
           sleep 1
           timeout --signal=TERM --kill-after=5s 180s node tests/studio-browser-runner.mjs http://127.0.0.1:4173
+          timeout --signal=TERM --kill-after=5s 90s node tests/studio-discovery-browser.mjs http://127.0.0.1:4173
       - name: Preserve rendered screenshots and verification
         if: always()
         uses: actions/upload-artifact@v4

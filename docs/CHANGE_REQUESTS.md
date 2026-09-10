@@ -1,9 +1,9 @@
 # Change Requests
 
-## CR: Improve accuracy, reliability and try-on realism (2026-09-10)
+## CR: Premium UI/UX consistency and accessible controls, 2026-09-10
 
-User approved implementation, continuing draft PR #7. The delivered engineering slice covers fresh-frame AR holds, neutral-release rep counting, finite/aspect-aware geometry, separate guided progress, skin/Precision invalid-data rejection, full-camera-frame try-on input and explicit upload consent. It does not deliver empirical validation of every feature or new photoreal model deployment.
+The requested redesign is implemented in the existing draft PR #7 rather than a parallel app. Quiet Studio unifies charcoal/ivory/champagne/sage tokens, typography, buttons, inputs, navigation and panels. Home prioritizes training/skin; trainer filters are functional; skin capture/routine guidance is structured; Style opens its visible existing catalog. The shared-header fix is preserved with no additional floating tools or bottom dock.
 
-Verification: 184/184 local Node tests, syntax and eight-module Android asset parity. Exact-head CI/browser results are recorded by workflows. Local browser navigation was blocked. Physical-device, reference-data and actual generated-output acceptance remain open.
+Verification: local Node 195/195 PASS, syntax and Android asset parity. Exact-head CI/browser artifacts determine final rendered acceptance. Local browser navigation was blocked. No empirical accuracy or photorealistic-output claim is added. Physical Android, real reference-data, provider and release acceptance remain open.
 
-See [complete scope and remaining work](ACCURACY_RELIABILITY.md). [All prior change requests](history/2026-09-10-before-reliability-CHANGE_REQUESTS.md) remain preserved; this checkpoint does not mark their unrelated release gates complete.
+Read [implementation scope](STUDIO_UI_STATUS.md) and [previous accuracy/reliability change request](history/2026-09-10-before-studio-CHANGE_REQUESTS.md). All earlier release gates remain in force.

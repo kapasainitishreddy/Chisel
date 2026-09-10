@@ -1,13 +1,13 @@
 # Test Status
 
-## 2026-09-10 reliability checkpoint
+## Quiet Studio checkpoint, 2026-09-10
 
-`cd chisel-android && npm test`: **184/184 PASS locally**, zero failures or skips. The initial five new trainer regressions failed against the prior source before fixes. Later negative cases cover invalid skin captures/regions, missing Precision data, pixel-aspect invariance, native camera sizing, frozen video, backgrounding, offline requests and cancelled cloud-upload consent.
+`cd chisel-android && npm test`: **195/195 PASS locally**, zero failures or skips. This includes the prior 185-test reliability baseline, eight theme tests, the shared-header regression and the visible Style/Home discovery regression. The latter failed against the preceding source before the fix.
 
-Syntax checks pass for modified JavaScript and the dedicated browser runner. Eight new/changed canonical `www` modules match their Android packaged copies byte-for-byte. Existing timer-only trainer tests now supply actual sequences of observed frames; their hold-duration and correction assertions remain.
+Syntax checks pass for the theme and discovery runner. Theme JS/CSS and the loader are byte-identical to packaged Android copies. Existing measurement and consent safeguards remain unchanged.
 
-Local Chromium navigation failed with `net::ERR_BLOCKED_BY_ADMINISTRATOR`. Therefore no local rendered-browser result is claimed. The new `Chisel Reliability Evidence` workflow preserves exact source and full Node output, and runs `tests/reliability-browser-runner.mjs` at mobile and desktop widths. It tests UI wiring and synthetic image-quality fixtures, not empirical measurement accuracy or generated hair quality. Read the exact-head run before asserting CI success.
+The exact-head Chisel Quiet Studio QA runs studio-browser-runner.mjs and studio-discovery-browser.mjs in Chromium. It exercises real UI controls, session filters, keyboard navigation, routine building, explicit daily completion, photo file selection/rejection and visible Style discovery at 360/430/768/1280 widths. Read its report and screenshots before asserting final success. Chisel Tests and Chisel Reliability Evidence remain required.
 
-No physical-device run, signed APK/AAB build, live cloud generation, billing test or representative accuracy study was performed by this update. See [remaining acceptance work](ACCURACY_RELIABILITY.md).
+Local Playwright navigation is blocked by the execution environment. CI browser results are not physical Android results. The earlier skin fixture was rejected as too small/low-resolution, not successfully measured. No accuracy study, live photoreal rendering, billing test or signed APK/AAB is claimed.
 
-[Prior test evidence and historical device checks](history/2026-09-10-before-reliability-TEST_STATUS.md) are preserved separately and must not be reported as validation of the new thresholds.
+See [UI acceptance boundaries](STUDIO_UI_STATUS.md) and [prior test status](history/2026-09-10-before-studio-TEST_STATUS.md).

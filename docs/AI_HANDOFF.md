@@ -1,15 +1,13 @@
 # AI Development Handoff
 
-## Current checkpoint: 2026-09-10
+## Current checkpoint: Quiet Studio UI, 2026-09-10
 
-Continue draft PR #7, branch `feat/chisel-unisex-trainer-skin`, based on `feat/launch-machine-chisel`. Do not restart or replace the static Capacitor app. No merge, production deployment, new model import, purchase configuration or store submission was performed by the accuracy/reliability update.
+Continue draft PR #7 on `feat/chisel-unisex-trainer-skin`, based on `feat/launch-machine-chisel`. Do not restart the static Capacitor app. The premium redesign uses `chisel-studio-theme.js` and `.css` after the reliability runtime, with byte-identical Android assets.
 
-The current change fixes invalid-data acceptance, unobserved/frozen-camera holds, sustained-smile overcounting, guided-rep misclassification and camera-aspect distortion. It also hardens skin sampling, Precision quality data, and full-frame cloud try-on preparation/consent. Read [Accuracy and realism status](ACCURACY_RELIABILITY.md) for exact scope, limitations and acceptance work.
+Read [Quiet Studio scope](STUDIO_UI_STATUS.md), [visual review](QUIET_STUDIO_REVIEW.md), and [accuracy safeguards](ACCURACY_RELIABILITY.md). The latest refinements preserve the concurrent shared header, prioritize trainer/skin on Home, move the actual Style catalog into Analyze and prevent focus restoration from scrolling it away. Underlying camera, provider, storage and quality engines are not replaced.
 
-Local Node verification is 184/184 passing. The exact-head GitHub workflows are authoritative for CI status. Local browser navigation was blocked; do not re-label it as tested. Eight canonical feature modules have byte-identical Android packaged copies. A new signed Android build and physical-device acceptance have not been performed here.
+Local full suite is 195/195 PASS. Exact-head GitHub workflows and downloaded source/screenshot artifacts are authoritative for final rendered completion. Local browser navigation was blocked. No physical-device acceptance or signed Android build was performed in this update.
 
-## Next work
+Next acceptance: actual Android touch/scroll/camera flows, accessibility and large text, empirically measured error/repeatability, real cloud output quality, and parent PR #6's production billing/privacy/release gates. UI quality does not establish measurement accuracy.
 
-Verify real camera behaviour and empirical error using labelled/reference data. Validate the new capture rejection thresholds, repeatability across devices and skin tones, and actual provider outputs. Skin signals remain photographic heuristics; local hair remains a placement guide. No blanket high-accuracy or photorealism claim is justified by passing software tests.
-
-The prior handoff is preserved in [historical handoff](history/2026-09-10-before-reliability-AI_HANDOFF.md). Its August percentages, tool versions and old test totals are historical, not current release evidence.
+[The complete preceding handoff](history/2026-09-10-before-studio-AI_HANDOFF.md) and its historical links are preserved. Older test counts and percentages are checkpoint history, not the latest verification.
