@@ -33,6 +33,14 @@ function taskCopy(action,done){
  const [title,cta]=names[action]||names.groom;
  return {title:done?'Complete for today':title,cta,done:done?'Done':'Mark done'};
 }
+function accessibleViewport(content){
+ const blocked=/^(?:user-scalable\s*=\s*no|maximum-scale\s*=\s*1(?:\.0*)?)$/i;
+ const parts=String(content||'').split(',').map(part=>part.trim()).filter(part=>part&&!blocked.test(part));
+ for(const required of ['width=device-width','initial-scale=1','viewport-fit=cover']){
+  if(!parts.some(part=>part.toLowerCase()===required))parts.push(required);
+ }
+ return parts.join(', ');
+}
 let installed=false,lastOverlay=null,returnFocus=null,orbitReturn=null;
 const doc=()=>root.document;
 const q=(s,scope)=> (scope||doc()).querySelector(s);
@@ -227,6 +235,7 @@ function installDialogAccess(){
 }
 function install(){
  if(installed||!root.document||!q('#cxpHomeHub')||!q('#csaShell'))return installed;
+ const viewport=q('meta[name="viewport"]');if(viewport)viewport.content=accessibleViewport(viewport.content);
  installed=true;doc().documentElement.dataset.chiselTheme='quiet-studio';
  installHome();installTrainer();installSkin();
  const studio=q('#cxStudioCard'),analyze=q('[data-screen="analyze"]');
@@ -245,5 +254,5 @@ function install(){
  all('.x').forEach(button=>{if(button.tagName==='BUTTON')return;button.setAttribute('role','button');button.tabIndex=0;button.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();button.click();}});});
  return true;
 }
-return{TOKENS,SESSION_ORDER,taskCopy,sessionInfo,matchesGoal,qualityLabel,feedbackLabel,contrastRatio,install,openOrbit,closeOrbit,openSurface};
+return{TOKENS,SESSION_ORDER,taskCopy,sessionInfo,matchesGoal,qualityLabel,feedbackLabel,contrastRatio,accessibleViewport,install,openOrbit,closeOrbit,openSurface};
 });
