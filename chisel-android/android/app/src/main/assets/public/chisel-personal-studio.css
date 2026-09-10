@@ -174,4 +174,4 @@ html[data-personal-studio] #cpsPhotoStatus{font:400 12px/1.5 var(--sans);color:v
 }
 
 /* Keep the style destination aligned even when it is the last short section. */
-html[data-personal-studio] #cxStudioCard{min-height:calc(100dvh - 100px);scroll-margin-top:20px}
+html[data-personal-studio] #cxStudioCard{min-height:calc(100dvh - 100px);scroll-margin-top:0px}
