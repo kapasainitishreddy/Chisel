@@ -13,6 +13,7 @@ function read(name) {
 test('trainer v2 runtime upgrades the existing AR coach instead of creating a second modal', () => {
   const js = read('chisel-trainer-v2.js');
   const css = read('chisel-trainer-v2.css');
+  assert.doesNotThrow(() => new Function(js));
   assert.match(js, /#arCoachModal|arCoachModal/);
   assert.match(js, /Face & Neck Trainer|Face &amp; Neck Trainer/);
   assert.match(js, /cheek-builder/);
@@ -22,6 +23,15 @@ test('trainer v2 runtime upgrades the existing AR coach instead of creating a se
   assert.doesNotMatch(js, /male routine|female routine|for men|for women/i);
   assert.match(css, /min-height:\s*44px|min-height:\s*48px/);
   assert.match(css, /prefers-reduced-motion/);
+});
+
+test('trainer runtime also repairs legacy try-on shortcuts into unisex style families', () => {
+  const js = read('chisel-trainer-v2.js');
+  assert.match(js, /Short \/ structured/);
+  assert.match(js, /Long \/ layered/);
+  assert.match(js, /Choose by style family and goal, not gender/);
+  assert.match(js, /Facial hair/);
+  assert.match(js, /Makeup \/ color/);
 });
 
 test('trainer bootstrap loads css before runtime and keeps core first', () => {
