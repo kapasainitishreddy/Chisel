@@ -66,8 +66,10 @@ test('aggregateRegions returns weighted metrics and a regional breakdown', () =>
 test('summary uses cautious appearance language and produces ranked attention areas', () => {
   const summary = skin.buildAppearanceSummary({ redness: 72, shine: 35, texture: 48, pores: 58, blemishContrast: 64, pigmentUnevenness: 40, confidence: 86 });
   assert.ok(summary.attention.length >= 2);
-  assert.match(summary.disclaimer, /cosmetic|appearance|not a diagnosis/i);
-  assert.doesNotMatch(JSON.stringify(summary), /you have acne|disease|diagnosis|treats/i);
+  assert.match(summary.disclaimer, /cosmetic appearance/i);
+  assert.match(summary.disclaimer, /not a diagnosis/i);
+  const claims = JSON.stringify({ attention: summary.attention, headline: summary.headline, compareRule: summary.compareRule });
+  assert.doesNotMatch(claims, /you have acne|skin disease|diagnosed|treats acne|cures/i);
 });
 
 test('signalBand gives stable low moderate high presentation labels', () => {
