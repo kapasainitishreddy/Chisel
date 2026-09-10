@@ -37,5 +37,7 @@
   #arCoachHud .ctv2-phase{grid-template-columns:1fr 1fr}
 }
 @media (prefers-reduced-motion:reduce){
+  #arCoachModal .panel{animation:none!important;transition:none!important}
   #arCoachModal .ctv2-motion,#arCoachModal .ctv2-motion *{animation:none!important;transition:none!important}
 }
+#arCoachX{min-width:44px;min-height:44px;z-index:1}

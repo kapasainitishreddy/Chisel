@@ -18,6 +18,7 @@ try {
  report.checks.runtimeInstalled=true;
  await page.evaluate(()=>openTrain());
  await page.waitForSelector('#arCoachModal.on',{visible:true});
+ report.checks.reducedMotionPanel=await page.evaluate(()=>getComputedStyle(document.querySelector('#arCoachModal .panel')).animationName==='none');
  const trainer=await page.evaluate(()=>({sessions:document.querySelectorAll('#arCoachModal .ar-session').length,width:document.getElementById('arCoachModal').scrollWidth,viewport:innerWidth}));
  report.checks.sixTrainerSessions=trainer.sessions===6;
  report.checks.trainerFits=trainer.width<=trainer.viewport+1;
