@@ -1,0 +1,45 @@
+name: Chisel Reliability Evidence
+on:
+  pull_request:
+    paths:
+      - 'chisel-android/**'
+      - 'supabase/functions/render-lookmax/**'
+      - '.github/workflows/chisel-reliability.yml'
+permissions:
+  contents: read
+concurrency:
+  group: chisel-reliability-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  reliability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Snapshot the exact tracked source under test
+        run: |
+          git rev-parse HEAD > /tmp/chisel-reliability-sha.txt
+          git archive --format=tar.gz --output=/tmp/chisel-reliability-source.tar.gz HEAD
+      - name: Run full regression suite
+        working-directory: chisel-android
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts
+          npm test 2>&1 | tee /tmp/chisel-reliability-tests.txt
+      - name: Preserve reproducible evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: chisel-reliability-${{ github.run_id }}
+          path: |
+            /tmp/chisel-reliability-source.tar.gz
+            /tmp/chisel-reliability-sha.txt
+            /tmp/chisel-reliability-tests.txt
+          retention-days: 7
+          if-no-files-found: error
