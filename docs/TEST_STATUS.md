@@ -1,6 +1,14 @@
 # Test Status
 
-## Personal Photo Studio, 2026-09-10
+## Current: focused Looks workspace, 2026-09-10
+
+Exact application/test head `3e0fc9d536a149ec7452c22129f92e15766bbe50`; CI merge checkout `1ebd083db6a690b4f90e0c861271ed18e9d1f054`. **245/245 Node and 54/54 Looks browser checks passed**, with zero failures/skips in Node and zero uncaught page errors. Node was rerun against the downloaded exact CI source. Nine new regressions were observed failing before implementation/fixes. Canonical/native Looks JS and CSS match the tested files byte-for-byte.
+
+All five workflows succeeded: Looks UI #5 `34529537034`, Chisel Tests #282 `34529536971`, Personal Photo #12 `34529537025`, Quiet Studio #18 `34529537054`, Reliability #23 `34529536955`. Artifact `10172946583` contains the exact source and editor screenshots. New cases cover search, colour parameters, nested dialogs, photo-plus-action visibility, short screens, closing delayed preflight and completed jobs without reopening/duplicate creation. Provider and face-check outputs remain explicit fixtures.
+
+See [visual comparison, exact commands and remaining limits](LOOKS_WORKSPACE_REVIEW.md). Local browser navigation was blocked; rendered verification was in GitHub Actions Chromium, not a physical Android build. Earlier checkpoints below retain their original evidence and are not the latest counts.
+
+## Earlier: Personal Photo Studio, 2026-09-10
 
 Verified application/test head `2d5ecf6de339621c8c96258ea74b53a034faf865`, CI checkout `66ca090ae691cf3f171765eb6f0e883f9bd0da81`. The application runtime itself is unchanged from `5a4745b`; the later commit updates the interaction suite's approved title expectation and full-runtime wait.
 

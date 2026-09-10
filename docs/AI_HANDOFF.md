@@ -1,6 +1,14 @@
 # AI Development Handoff
 
-## Current checkpoint: personal-photo UI, 2026-09-10
+## Current checkpoint: focused Looks workspace, 2026-09-10
+
+Continue draft PR #7 on `feat/chisel-unisex-trainer-skin`. The user again rejected the inline Looks form. Read [current layout and verification](LOOKS_WORKSPACE_REVIEW.md) and [live-render boundaries](LOOKS_STUDIO_STATUS.md). The existing Looks JS/CSS now implement a native-dialog photo workspace, searchable preset sheet, actual colour swatches and saved-look sheet. Keep the personal photo and primary action prominent; do not add another theme or duplicate the rejected inline controls.
+
+Tested application `3e0fc9d536a149ec7452c22129f92e15766bbe50`: 245/245 Node, 54/54 Looks browser checks, all five current workflows successful. Closing pre-upload preparation cannot open delayed consent, and submitted job results cannot reopen a workspace the user left. Both edited canonical/native asset pairs are byte-identical. Provider tests are fixtures; no new live render or native build was performed.
+
+Next acceptance: test the actual Android photo/camera/dialog/export flows, validate real provider output and production allowances before enabling cloud generation, complete instructional demonstrations and the existing release requirements. The following earlier checkpoint is preserved as history, not the latest test count.
+
+## Earlier checkpoint: personal-photo UI, 2026-09-10
 
 Continue draft PR #7 on `feat/chisel-unisex-trainer-skin`, based on `feat/launch-machine-chisel`. The user approved a photo-led concept and explicitly requested actual implementation using each app user's own photo. Do not revert to the rejected text-heavy UI or restart the static Capacitor application.
 
