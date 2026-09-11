@@ -1,0 +1,2 @@
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+test('privacy describes optional account, paid output storage and separate local deletion',()=>{const text=fs.readFileSync(path.join(__dirname,'../../docs/privacy-policy.html'),'utf8');assert.match(text,/OpenAI/);assert.match(text,/credit ledger/i);assert.match(text,/not delete your cloud account/i);assert.doesNotMatch(text,/No account or login\./);assert.doesNotMatch(text,/image is used only to generate that result and is <strong>not retained/);});

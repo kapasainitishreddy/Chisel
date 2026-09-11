@@ -20,7 +20,7 @@
 <div class="wrap">
   <h1>Chisel — Privacy Policy</h1>
   <p class="meta">Last updated: 10 September 2026</p>
-  <p>Chisel ("the app", "we") is a facial self-improvement app: on-device facial analysis, grooming and makeup guidance, affirmations and progress tracking. This policy explains what data the app handles. In short: <strong>almost everything stays on your device</strong>, and we don't run ads, analytics, or trackers.</p>
+  <p>Chisel ("the app", "we") is a facial self-improvement app: on-device facial analysis, grooming and makeup guidance, affirmations and progress tracking. This policy explains what data the app handles. Core analysis and personal photos stay local unless you explicitly submit a photo for cloud editing. Optional paid accounts and credit purchases use server-side records described below.</p>
 
   <h2>Who we are</h2>
   <p>Developer contact: <a href="mailto:nittureddy26@gmail.com">nittureddy26@gmail.com</a>. Chisel is intended for users aged 17 and over and is not directed to children.</p>
@@ -31,22 +31,22 @@
 
   <h2>Data sent off your device</h2>
   <ul>
-    <li><strong>Photoreal render (optional).</strong> If you use the optional "Make it photoreal" / photoreal features, the current photo is sent over an encrypted connection to our backend, which forwards it to a third-party image-generation provider (Replicate) to produce the result. The image is used only to generate that result and is <strong>not retained</strong> by us after the response is returned.</li>
-    <li><strong>Device identifier.</strong> A random identifier generated on your device is sent with render requests so we can apply free-usage limits and prevent abuse. It is not linked to your name, email, or real-world identity.</li>
-    <li><strong>Purchases.</strong> If you buy a subscription or trial, the transaction is handled by <strong>Google Play Billing</strong> (via RevenueCat for entitlement management). We do not receive or store your payment card details.</li>
+    <li><strong>Cloud photo editing (optional).</strong> After confirmation, a prepared photo is sent over an encrypted connection to our backend and the image provider named in the confirmation. The legacy path uses Replicate. The optional credit-backed path uses OpenAI after a provider-and-credit confirmation. Its generated result is stored in private backend storage for authenticated retrieval; the original input is not saved to that output bucket. AI results can contain artifacts and are not measurements of progress.</li>
+    <li><strong>Device identifier.</strong> A random identifier is used by the legacy free-render path for usage limits. Paid credit ownership comes from your verified account, not this device identifier.</li>
+    <li><strong>Purchases.</strong> If you buy a credit pack, subscription or trial, the transaction is handled by <strong>Google Play Billing</strong> via RevenueCat. We do not receive or store your payment card details.</li>
   </ul>
 
-  <h2>What we do NOT collect</h2>
-  <p>No account or login. No advertising. No third-party analytics or tracking SDKs. No contacts, no location, no background data collection.</p>
+  <h2>Accounts and data minimization</h2>
+  <p>Free local tools do not require an account. Paid credits use an email sign-in account. We retain an account identifier, credit ledger, purchase transaction identifiers, render status, input digest, usage costs and output paths to fulfill purchases, prevent duplicate charges and reconcile refunds. We do not receive card details or access your contacts or location through this feature. No advertising or third-party analytics SDK is added by the credit feature.</p>
 
   <h2>How data is shared</h2>
-  <p>We do not sell your data. Data is shared only as described above: the photo you submit for a photoreal render is shared with our image-processing provider for that purpose, and purchase data is handled by Google Play / RevenueCat.</p>
+  <p>We do not sell your data. Data is shared only as described above: the photo you explicitly submit for cloud editing is shared with the named provider, OpenAI or Replicate, for that purpose, and purchase data is handled by Google Play / RevenueCat.</p>
 
   <h2>Data retention &amp; deletion</h2>
-  <p>You can remove your saved personal photo using Remove photo in Your photo. Clear all data in the app includes the stored personal original and display copy. These controls remove Chisel's copies, not the original file in your phone's gallery. On-device data is also removed when you uninstall the app or clear its storage in your device settings. On our backend we keep only a per-device usage counter and (for subscribers) an entitlement record; you can request deletion of these by emailing <a href="mailto:nittureddy26@gmail.com">nittureddy26@gmail.com</a>, and we will delete them except where retention is required for fraud prevention or legal reasons.</p>
+  <p>You can remove your saved personal photo using Remove photo in Your photo. Clear all data in the app includes the stored personal original and display copy. These controls remove Chisel's copies, not the original file in your phone's gallery. On-device data is also removed when you uninstall the app or clear its storage in your device settings. Clear all data removes local photos, saved looks and the local sign-in session; it does not delete your cloud account, purchased balance, financial records or provider-held data. Credit-backed outputs have a 24-hour retrieval expiry. Expired output retrieval removes the object, but scheduled deletion is not yet enabled in this pre-release build, so physical removal at exactly 24 hours is not promised. Before enabling sales, retention and account-deletion workflows must be completed. Backend records also include the credit ledger and render-job metadata described above. You can request cloud account/data deletion by emailing <a href="mailto:nittureddy26@gmail.com">nittureddy26@gmail.com</a>, and we will delete them except where retention is required for fraud prevention or legal reasons.</p>
 
   <h2>Security</h2>
-  <p>Data sent off the device is transmitted over TLS (HTTPS). Because the app has no login, most of your information never leaves your device at all.</p>
+  <p>Data sent off the device is transmitted over TLS (HTTPS). Paid requests use verified account sessions and private output storage. API secrets remain on the backend, not in the Android app. Provider retention rules are separate from Chisel's local deletion controls. Cloud sales and rendering remain disabled until production configuration and review are complete.</p>
 
   <h2>Permissions</h2>
   <p><strong>Camera</strong> — required for live facial analysis, affirmations, try-on and makeup features. The camera is used only while you are in those screens. The optional Take photo action uses your device's photo-capture interface; Choose photo opens its file or photo picker.</p>

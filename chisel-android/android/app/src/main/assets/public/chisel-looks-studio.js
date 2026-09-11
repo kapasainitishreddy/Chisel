@@ -20,15 +20,16 @@ let previewController=null,consentDialog,consentResolve=null,consentReturn=null;
 const text=(selector,value)=>{const n=q(selector);if(n&&n.textContent!==value)n.textContent=value;};
 const show=(selector,value)=>{const n=q(selector);if(n)n.hidden=!value;};
 function revoke(){for(const u of [sourceURL,resultURL])if(u)URL.revokeObjectURL(u);sourceURL=resultURL=null;source=result=null;saveId=null;savedLook=null;displayResult(false);}
-function config(){
+function config(payload){
+ if(payload?.backend==='credits'||(!payload&&root.ChiselCredits?.isActive()))return{endpoint:root.ChiselCredits.endpoint(),key:typeof RENDER_ANON_KEY==='string'?RENDER_ANON_KEY:'',paid:true};
  const legacy=typeof RENDER_FN_URL==='string'?RENDER_FN_URL:'';
  const endpoint=legacy.replace(/\/render-lookmax$/,'/looks-studio');
  if(!/^https:\/\/[a-z0-9]{20}\.supabase\.co\/functions\/v1\/looks-studio$/.test(endpoint))throw Error('server_not_configured');
  return {endpoint,key:typeof RENDER_ANON_KEY==='string'?RENDER_ANON_KEY:''};
 }
 async function request(payload){
- if(!navigator.onLine)throw Error('offline');const c=config();
- const response=await fetch(c.endpoint,{method:payload?'POST':'GET',headers:{apikey:c.key,...(payload?{'Content-Type':'application/json'}:{})},...(payload?{body:JSON.stringify(payload)}:{}),signal:AbortSignal.timeout(30000),cache:'no-store',credentials:'omit',redirect:'error'});
+ if(!navigator.onLine)throw Error('offline');const c=config(payload);
+ const response=await fetch(c.endpoint,{method:payload?'POST':'GET',headers:{apikey:c.key,...(c.paid&&root.ChiselCredits.userId()?await root.ChiselCredits.headers(payload?.owner):{}),...(payload?{'Content-Type':'application/json'}:{})},...(payload?{body:JSON.stringify(payload)}:{}),signal:AbortSignal.timeout(30000),cache:'no-store',credentials:'omit',redirect:'error'});
  const body=await boundedBytes(response,65536);let data;try{data=JSON.parse(new TextDecoder().decode(body));}catch{throw Error('invalid_response');}
  if(!response.ok&&!data.error)throw Error('service_unavailable');return data;
 }
@@ -40,15 +41,19 @@ async function boundedBytes(response,max){
 }
 function id(){return typeof root.deviceId==='function'?root.deviceId():(()=>{let v=localStorage.getItem('chisel:looks-device');if(!v){v=crypto.randomUUID();localStorage.setItem('chisel:looks-device',v);}return v;}) ();}
 async function fileDigest(blob){const b=await crypto.subtle.digest('SHA-256',await blob.arrayBuffer());return Array.from(new Uint8Array(b),x=>x.toString(16).padStart(2,'0')).join('');}
-function consent(){return new Promise(resolve=>{consentResolve=resolve;consentReturn=root.document.activeElement;consentDialog.showModal();q('#clsConsentCancel').focus({preventScroll:true});});}
+function consent(){
+ if(root.ChiselCredits?.isActive()){const quote=root.ChiselCredits.quote();const ps=consentDialog.querySelectorAll('p');ps[0].textContent=`This sends a prepared copy of your photo to OpenAI. ${quote.credits} ${quote.credits===1?'credit':'credits'} will be reserved. Failed edits return credits.`;ps[1].textContent='The AI result can change unintended details. Chisel temporarily stores the result privately for retrieval. Provider processing and retention apply. Your original stays on this device.';q('#clsConsentAccept').textContent=`Create · ${quote.credits} ${quote.credits===1?'credit':'credits'}`;}
+ return new Promise(resolve=>{consentResolve=resolve;consentReturn=root.document.activeElement;consentDialog.showModal();q('#clsConsentCancel').focus({preventScroll:true});});}
 function closeConsent(accepted){if(!consentResolve)return;const done=consentResolve;consentResolve=null;consentDialog.close();done(accepted);}
 function persist(s){try{if(['idle','canceled','failed'].includes(s.status))sessionStorage.removeItem(PENDING);else sessionStorage.setItem(PENDING,JSON.stringify({...s,imageUrl:undefined,sourceIdentity}));}catch{}}
 function labels(){
  const state=controller.snapshot(),active=['submitting','starting','processing','canceling'].includes(state.status),waiting=state.status==='interrupted';
- const button=q('#clsGenerate');if(button){button.disabled=!store.snapshot().hasPhoto||preparing||active||!ready;button.textContent=waiting?'Check status':active?'Creating preview…':state.status==='succeeded'&&!result?'Open preview':!ready?'Preview unavailable':'Generate preview';}
+ const paid=root.ChiselCredits?.isActive(),creditQuote=paid?root.ChiselCredits.quote():null;
+ const button=q('#clsGenerate');if(button){button.disabled=!store.snapshot().hasPhoto||preparing||active||(!ready&&!waiting&&!(state.status==='succeeded'&&!result));button.textContent=waiting?'Check status':active?'Creating preview…':state.status==='succeeded'&&!result?'Open preview':!ready?'Preview unavailable':paid?`Generate · ${creditQuote.credits} ${creditQuote.credits===1?'credit':'credits'}`:'Generate preview';}
  all('#clsPresets button,#clsColor,#clsSwatches button,#clsBrowse,[data-cls-category],.cps-style-tabs button').forEach(n=>n.disabled=preparing||active||waiting);
- show('#clsCancel',preparing||active||waiting);show('#clsBusy',preparing||active);if(editor)editor.dataset.busy=String(preparing||active);
- if(active)text('#clsStatus','Creating your look. You can cancel or return later.');
+ show('#clsCancel',preparing||active||waiting);if(paid)q('#clsCancel').textContent='Close';
+ all('#ccModeGroup button').forEach(b=>b.disabled=preparing||active||waiting);show('#clsBusy',preparing||active);if(editor)editor.dataset.busy=String(preparing||active);
+ if(active)text('#clsStatus',paid?'Creating your look. You can close and return later.':'Creating your look. You can cancel or return later.');
  if(waiting)text('#clsStatus',root.ChiselLooksCore.message(state.error));
  if(state.status==='failed')text('#clsStatus',root.ChiselLooksCore.message(state.error));
  if(state.status==='canceled')text('#clsStatus','Preview dismissed. A provider cancellation is requested when possible.');
@@ -110,13 +115,13 @@ async function prepareOriginal(original){
  const blob=await new Promise((resolve,reject)=>canvas.toBlob(x=>x?resolve(x):reject(Error('Could not prepare the photo.')),'image/jpeg',.93));
  if(blob.size>5500000)throw Error('Choose a smaller original photo.');
  const data=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(Error('Could not read this photo.'));r.readAsDataURL(blob);});
- return {blob,data};
+ return {blob,data,shape:canvas.height>canvas.width*1.1?'portrait':canvas.width>canvas.height*1.1?'landscape':'square'};
 }
 async function loadResult(state,mine){
  if(previewController)previewController.abort();previewController=new AbortController();text('#clsStatus','Opening your preview…');
  try{
-  const url=root.ChiselLooksCore.safeOutput(state.imageUrl);if(!url)throw Error('invalid_output');
-  const c=config();const response=await fetch(c.endpoint,{method:'POST',headers:{apikey:c.key,'Content-Type':'application/json'},body:JSON.stringify({action:'output',requestId:state.requestId,token:state.token,deviceId:state.deviceId}),credentials:'omit',cache:'no-store',redirect:'error',signal:AbortSignal.any([previewController.signal,AbortSignal.timeout(25000)])});
+  const paid=state.backend==='credits'&&state.outputReady===true;const url=root.ChiselLooksCore.safeOutput(state.imageUrl);if(!paid&&!url)throw Error('invalid_output');
+  const c=config(state);const response=await fetch(c.endpoint,{method:'POST',headers:{apikey:c.key,'Content-Type':'application/json',...(c.paid?await root.ChiselCredits.headers(state.owner):{})},body:JSON.stringify({action:'output',requestId:state.requestId,token:state.token,deviceId:state.deviceId}),credentials:'omit',cache:'no-store',redirect:'error',signal:AbortSignal.any([previewController.signal,AbortSignal.timeout(25000)])});
   if(!response.ok)throw Error('The preview link expired. Check status before creating another look.');
   const bytes=await boundedBytes(response,8000000),type=(response.headers.get('Content-Type')||'').split(';')[0];
   if(!root.ChiselPersonalPhoto.signatureMatches(type,bytes))throw Error('The provider returned an unsupported image.');
@@ -124,13 +129,17 @@ async function loadResult(state,mine){
   if(mine!==epoch)return;
   if(resultURL)URL.revokeObjectURL(resultURL);result=blob;resultURL=URL.createObjectURL(blob);saveId=state.jobId||crypto.randomUUID();
   q('#clsAfter').src=resultURL;q('#clsBefore').src=sourceURL;displayResult(true);q('#clsCompare').value='50';q('#clsAfter').style.clipPath='inset(0 50% 0 0)';
-  text('#clsStatus','AI preview. Check your face, hairline and edges before saving.');text('#clsAllowance',Number.isFinite(state.remaining)?`${state.remaining} renders left today`:'');if(editor.open)q('#clsResult').scrollIntoView({block:'nearest',behavior:'auto'});
+  text('#clsStatus','AI preview. Check your face, hairline and edges before saving.');text('#clsAllowance',Number.isFinite(state.balance)?`${state.balance} credits remaining`:Number.isFinite(state.remaining)?`${state.remaining} renders left today`:'');if(editor.open)q('#clsResult').scrollIntoView({block:'nearest',behavior:'auto'});
  }catch(e){if(mine===epoch)text('#clsStatus',e.message||'Could not open the preview.');}
 }
 async function generate(){
- if(preparing)return;const s=controller.snapshot();if(['submitting','starting','processing','canceling'].includes(s.status))return;
+ if(preparing)return;
+ const paid=root.ChiselCredits?.isActive(),quote=paid?root.ChiselCredits.quote():null;
+ if(paid&&!root.ChiselCredits.userId()){root.ChiselCredits.open();return;}
+ const s=controller.snapshot();if(['submitting','starting','processing','canceling'].includes(s.status))return;
  const mine=++epoch;preparing=true;labels();
  try{
+  if(paid&&s.status!=='interrupted'&&!(s.status==='succeeded'&&!result)){await root.ChiselCredits.refresh();if(mine!==epoch)return;if(root.ChiselCredits.userId()!==quote.userId)throw Error('Sign in again before creating this edit.');if((root.ChiselCredits.snapshot()?.balance??0)<quote.credits){root.ChiselCredits.open();return;}}
   const original=await store.original();if(!original)throw Error('Choose your photo first.');
   if(s.status==='succeeded'&&!result){if(!source){const previousCategory=category;category=s.look?.category||category;try{const prepared=await prepareOriginal(original);if(mine!==epoch)return;source=prepared.blob;sourceURL=URL.createObjectURL(source);}finally{category=previousCategory;}}await loadResult(s,mine);return;}
   sourceIdentity=await fileDigest(original);text('#clsStatus','Checking your photo on this device…');
@@ -138,12 +147,12 @@ async function generate(){
   if(s.status!=='interrupted'&&!await consent()){text('#clsStatus','Nothing uploaded.');return;}
   if(mine!==epoch)return;
   revoke();source=prepared.blob;sourceURL=URL.createObjectURL(source);preparing=false;
-  let state;if(s.status==='interrupted')state=await controller.resume();else state=await controller.generate({image:prepared.data,look:root.ChiselLookCatalog.normalizeLook({category,preset,color:category==='hair'?color:'match'}),deviceId:id()});
+  let state;if(s.status==='interrupted')state=await controller.resume();else state=await controller.generate({image:prepared.data,look:root.ChiselLookCatalog.normalizeLook({category,preset,color:category==='hair'?color:'match'}),deviceId:id(),...(paid?{backend:'credits',owner:quote.userId,quality:quote.quality,quotedCredits:quote.credits,consent:true,shape:prepared.shape}:{})});
   if(mine===epoch&&state.status==='succeeded')await loadResult(state,mine);
  }catch(e){if(mine===epoch)text('#clsStatus',e.message in {'offline':1,'server_not_configured':1}?root.ChiselLooksCore.message(e.message):e.message||'Could not prepare this look.');}
- finally{if(mine===epoch){preparing=false;labels();}}
+ finally{if(mine===epoch){preparing=false;labels();if(paid)root.ChiselCredits.refresh();}}
 }
-async function cancel(){epoch++;preparing=false;closeConsent(false);if(previewController)previewController.abort();await controller.cancel();labels();}
+async function cancel(){if(controller?.snapshot().backend==='credits'&&['submitting','starting','processing','interrupted'].includes(controller.snapshot().status)){closeEditor();text('#clsStatus','Your edit is still processing. Reopen to check it.');return;}epoch++;preparing=false;closeConsent(false);if(previewController)previewController.abort();await controller.cancel();labels();}
 async function gallery(){
  const node=q('#clsSavedList');if(!node)return;const ticket=epoch;
  let items;try{items=await root.ChiselLooksGallery.list();}catch{text('#clsSavedStatus','Saved looks are unavailable.');return;}
@@ -151,9 +160,9 @@ async function gallery(){
  text('#clsSavedStatus',items.length?'Saved on this device.':'No saved looks yet.');
  for(const item of items){const row=root.document.createElement('div');row.className='cls-saved-row';const img=root.document.createElement('img');img.alt='Saved AI look';const url=URL.createObjectURL(item.result);galleryURLs.add(url);img.src=url;const title=root.document.createElement('span');title.textContent=root.ChiselLookCatalog.CATALOG[item.look.category]?.find(x=>x.id===item.look.preset)?.label||'Saved look';const open=root.document.createElement('button');open.type='button';open.textContent='Open';open.addEventListener('click',()=>{epoch++;controller.clear();revoke();source=item.original;result=item.result;sourceURL=URL.createObjectURL(source);resultURL=URL.createObjectURL(result);saveId=item.id;savedLook=item.look;q('#clsBefore').src=sourceURL;q('#clsAfter').src=resultURL;if(library.open)library.close();displayResult(true);q('#clsResult').scrollIntoView({block:'nearest'});});const remove=root.document.createElement('button');remove.type='button';remove.textContent='Delete';remove.setAttribute('aria-label',`Delete ${title.textContent}`);remove.addEventListener('click',async()=>{try{await root.ChiselLooksGallery.remove(item.id);if(saveId===item.id)revoke();await gallery();}catch{text('#clsSavedStatus','Could not delete this look.');}});row.append(img,title,open,remove);node.append(row);}
 }
-async function save(){if(!source||!result)return;const state=controller.snapshot(),mine=epoch;try{const ok=await root.ChiselLooksGallery.save({id:saveId||crypto.randomUUID(),createdAt:Date.now(),look:savedLook||state.look||{category,preset,color},original:source,result});if(mine===epoch){text('#clsStatus',ok?'Saved on this device.':'Save cancelled.');await gallery();}}catch(e){text('#clsStatus',e.message||'Could not save the look.');}}
+async function save(){if(!source||!result)return;const state=controller.snapshot(),mine=epoch;try{const ok=await root.ChiselLooksGallery.save({id:saveId||crypto.randomUUID(),createdAt:Date.now(),look:savedLook||state.look||{category,preset,color},original:source,result,sourceIdentity:await fileDigest(source)});if(mine===epoch){text('#clsStatus',ok?'Saved on this device.':'Save cancelled.');await gallery();}}catch(e){text('#clsStatus',e.message||'Could not save the look.');}}
 async function download(){if(!result)return;try{const file=new File([result],`chisel-look-${Date.now()}.${result.type==='image/png'?'png':'jpg'}`,{type:result.type});if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'Chisel AI look'});return;}const url=URL.createObjectURL(file),a=root.document.createElement('a');a.href=url;a.download=file.name;root.document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(e){if(e.name!=='AbortError')text('#clsStatus','Could not export this preview.');}}
-async function clearSaved(){epoch++;preparing=false;closeConsent(false);if(previewController)previewController.abort();controller?.clear();revoke();sessionStorage.removeItem(PENDING);await root.ChiselLooksGallery.clear();await gallery();}
+async function clearSaved(){epoch++;preparing=false;closeConsent(false);if(previewController)previewController.abort();controller?.clear();revoke();sessionStorage.removeItem(PENDING);await root.ChiselLooksGallery.clear();await gallery();await root.ChiselCredits?.signOut?.();}
 function install(){
  if(installed||!root.document||!q('#cpsStyleHero')||!root.ChiselLookCatalog)return false;installed=true;store=root.ChiselPersonalPhoto.getStore();
  const panel=root.document.createElement('details');panel.id='clsPanel';panel.className='cls-panel';panel.setAttribute('aria-label','Photoreal photo editor');
@@ -197,7 +206,10 @@ function install(){
  root.addEventListener('online',()=>request().then(s=>{ready=s.ready===true;labels();}).catch(()=>{}));
  // Pending entries contain a capability and hashes, not portrait pixels.
  if(savedText)try{const saved=JSON.parse(savedText);if(saved.createdAt>Date.now()-3600000){const resumedEpoch=epoch;store.load().then(async()=>{const original=await store.original();if(resumedEpoch!==epoch||!original||await fileDigest(original)!==saved.sourceIdentity){sessionStorage.removeItem(PENDING);return;}sourceIdentity=saved.sourceIdentity;controller.resume({...saved,status:'interrupted'}).then(async state=>{if(resumedEpoch===epoch&&state.status==='succeeded'){const prepared=await prepareOriginal(original);if(resumedEpoch!==epoch)return;source=prepared.blob;sourceURL=URL.createObjectURL(source);await loadResult(state,resumedEpoch);}}).catch(()=>text('#clsStatus','Check status to reopen this preview.'));}).catch(()=>text('#clsStatus','Could not restore this preview.'));}else sessionStorage.removeItem(PENDING);}catch{sessionStorage.removeItem(PENDING);}
+ root.addEventListener('chisel:credits-change',labels);
  root.document.documentElement.dataset.looksStudio='1';return true;
 }
-return{install,clearSaved,openEditor,closeEditor,selectionView,matchesPreset};
+function clearAccount(){if(controller?.snapshot().backend==='credits'){epoch++;preparing=false;controller.clear();revoke();sessionStorage.removeItem(PENDING);}}
+async function refreshAvailability(){try{const s=await request();ready=s.ready===true;labels();}catch{ready=false;labels();}}
+return{install,refreshAvailability,clearAccount,clearSaved,openEditor,closeEditor,selectionView,matchesPreset};
 });

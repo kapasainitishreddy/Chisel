@@ -1,0 +1,51 @@
+name: Chisel Credits and Compare QA
+on:
+  pull_request:
+    paths: ['chisel-android/**', 'supabase/functions/credit-*/**', 'supabase/migrations/**', '.github/workflows/chisel-credits-qa.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: chisel-credit-qa-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  credits:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    defaults:
+      run:
+        working-directory: chisel-android
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test and archive exact source
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/chisel-credits-qa
+          git rev-parse HEAD > /tmp/chisel-credits-qa/source-sha.txt
+          git -C .. archive --format=tar.gz -o /tmp/chisel-credits-qa/source.tar.gz HEAD
+          npm ci --ignore-scripts
+          npm test | tee /tmp/chisel-credits-qa/node-tests.txt
+          node --check www/chisel-credits-ui.js
+          node --check www/chisel-compare-tools.js
+          node --check tests/credits-browser-runner.mjs
+      - name: Browser test with isolated auth, store and image fixtures
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false puppeteer-core@24
+          export CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/chisel-credits-qa/http.log 2>&1 &
+          PID=$!
+          trap 'kill "$PID" 2>/dev/null || true' EXIT
+          sleep 1
+          timeout --signal=TERM --kill-after=5s 180s node tests/credits-browser-runner.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: chisel-credits-${{ github.run_id }}
+          path: /tmp/chisel-credits-qa/
+          retention-days: 7

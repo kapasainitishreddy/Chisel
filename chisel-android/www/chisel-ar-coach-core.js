@@ -171,6 +171,8 @@ if(typeof window!=='undefined'&&typeof document!=='undefined'){
       await addScript('chisel-personal-studio.js');if(window.ChiselPersonalStudio)window.ChiselPersonalStudio.install();
       await addScript('chisel-look-catalog.mjs');await addScript('chisel-looks-core.js');await addScript('chisel-looks-gallery.js');
       addCss('chisel-looks-studio.css');await addScript('chisel-looks-studio.js');if(window.ChiselLooksStudio)window.ChiselLooksStudio.install();
+      addCss('chisel-pro-tools.css');await addScript('chisel-policy-shared.js');await addScript('chisel-comparison-shared.js');await addScript('chisel-wallet-core.js');await addScript('chisel-credits-ui.js');if(window.ChiselCredits)window.ChiselCredits.install();
+      await addScript('chisel-compare-tools.js');if(window.ChiselCompareTools)window.ChiselCompareTools.install();
     }catch(error){console.warn('[Chisel runtime] optional feature module failed to load',error);}})();
   },{once:true});
 }

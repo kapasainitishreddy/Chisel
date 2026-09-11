@@ -14,6 +14,7 @@ try{
  browser=await puppeteer.launch({executablePath:process.env.CHROME,headless:true,args:['--no-sandbox','--disable-dev-shm-usage','--enable-unsafe-swiftshader']});page=await browser.newPage();await page.setViewport({width:430,height:900,deviceScaleFactor:1});await page.emulateMediaFeatures([{name:'prefers-reduced-motion',value:'reduce'}]);
  page.on('pageerror',e=>report.errors.push(e.message));await page.setRequestInterception(true);
  page.on('request',async r=>{try{
+  if(r.url().includes('/functions/v1/credit-studio'))return r.respond({status:404,headers:{'Content-Type':'application/json','Access-Control-Allow-Origin':'*'},body:JSON.stringify({error:'legacy_path_fixture'})});
   if(!r.url().includes('/functions/v1/looks-studio')){if(r.method()==='POST'&&/replicate|render-lookmax/.test(r.url()))return r.abort();return r.continue();}
   const headers={'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'apikey,content-type','Access-Control-Allow-Methods':'GET,POST,OPTIONS','Content-Type':'application/json'};
   if(r.method()==='OPTIONS')return r.respond({status:204,headers});
