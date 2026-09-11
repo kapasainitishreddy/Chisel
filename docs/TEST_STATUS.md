@@ -1,24 +1,20 @@
 # Test Status
 
-## Current: focused Looks workspace, 2026-09-10
+## Credits and compare, 2026-09-10
 
-Exact application/test head `3e0fc9d536a149ec7452c22129f92e15766bbe50`; CI merge checkout `1ebd083db6a690b4f90e0c861271ed18e9d1f054`. **245/245 Node and 54/54 Looks browser checks passed**, with zero failures/skips in Node and zero uncaught page errors. Node was rerun against the downloaded exact CI source. Nine new regressions were observed failing before implementation/fixes. Canonical/native Looks JS and CSS match the tested files byte-for-byte.
+Exact application/test head: 4a932d41b5af04f2e52317dcb2946cfac8e599c6.
+CI merge checkout: ee278a54e3ebdf027b8152e149b01e6b581d457.
 
-All five workflows succeeded: Looks UI #5 `34529537034`, Chisel Tests #282 `34529536971`, Personal Photo #12 `34529537025`, Quiet Studio #18 `34529537054`, Reliability #23 `34529536955`. Artifact `10172946583` contains the exact source and editor screenshots. New cases cover search, colour parameters, nested dialogs, photo-plus-action visibility, short screens, closing delayed preflight and completed jobs without reopening/duplicate creation. Provider and face-check outputs remain explicit fixtures.
+- Full Node suite: 273/273 PASS, zero failures/skips, rerun locally against the downloaded exact CI source.
+- Credit/compare browser runner: 33/33 PASS, no uncaught page errors. Auth, native billing, wallet replies, face checks and provider output are explicit fixtures. Real controls/storage/export operate locally.
+- Live deployed endpoint probe: 6/6 PASS. GET reports ready=false/salesReady=false, no public wallet; unauthenticated create is 401; foreign Origin 403; unconfigured purchase webhook 503. No input photo, credential, email, purchase or paid generation was submitted.
+- Actual Postgres acceptance transaction passed replay/owner/refund/reservation/budget/settlement/access-control cases, then ROLLBACK. Final DB inspection confirms both environments disabled and zero accounts/receipts/jobs/ledger entries.
+- Nine changed canonical/native asset pairs match each other and the tested local source byte-for-byte.
 
-See [visual comparison, exact commands and remaining limits](LOOKS_WORKSPACE_REVIEW.md). Local browser navigation was blocked; rendered verification was in GitHub Actions Chromium, not a physical Android build. Earlier checkpoints below retain their original evidence and are not the latest counts.
+Credits and Compare QA #2, run 34557980667: SUCCESS, artifact 10183290778. Chisel Tests #287 (34557980623), Looks QA #10 (34557980619), Personal Photo #17 (34557980621), Quiet Studio #23 (34557980625), Reliability #28 (34557980618), Render Readiness #4 (34557980652): SUCCESS.
 
-## Earlier: Personal Photo Studio, 2026-09-10
+**Known failure retained:** Frame Fitting QA #3 (34557980653) fails at node --check www/chisel-eyewear-fit.js with MODULE_NOT_FOUND. That workflow was added before this credits slice and references unimplemented fitting/policy/browser files. It is not hidden, skipped or claimed fixed.
 
-Verified application/test head `2d5ecf6de339621c8c96258ea74b53a034faf865`, CI checkout `66ca090ae691cf3f171765eb6f0e883f9bd0da81`. The application runtime itself is unchanged from `5a4745b`; the later commit updates the interaction suite's approved title expectation and full-runtime wait.
+Browser widths: 360,430,1280 x900. Reviewed wallet/editor/compare screenshots for alignment, clear prices/costs, photo visibility, selected state and text. Review caught stale pending-balance and disabled-service copy; one added unit regression failed before the correction, and four expanded browser assertions passed afterward. Initial 272/29 results are superseded by 273/33.
 
-- Full Node suite: **222/222 PASS**, no failures/skips, including a local rerun against the exact downloaded CI source.
-- Personal-photo browser suite: **66/66 PASS**, zero uncaught errors and zero POST requests recorded during the tested flows.
-- Personal Photo UI #4 (`34512941395`), Quiet Studio QA #10 (`34512941384`), Reliability Evidence #15 (`34512941407`) and Chisel Tests #274 (`34512941383`): **SUCCESS**.
-- Five modified canonical/native asset pairs matched byte-for-byte; syntax checks passed.
-
-New tests cover own-photo import/reload/removal/clear-all, original SHA-256 preservation, invalid input, selection races, storage failures, real session/style filters and layout at 360/430/1280. Earlier browser suites remain enabled, including 768px layout checks. Initial deletion and spacing failures were fixed in source; the old trainer-title assertion was updated to the approved Face training text, not removed.
-
-Artifacts: `10166520546` contains full source, screenshots, Node output and the lifecycle report. Actual screenshots were reviewed for composition, typography, spacing, contrast and photo ownership. See [full scope](PERSONAL_STUDIO.md).
-
-Local browser navigation was blocked. Browser verification used GitHub Actions Chromium, not physical Android. No empirical accuracy study, successful reference-calibrated skin measurement, live photoreal model output, billing or signed native build is certified. [Preceding test history](history/2026-09-10-before-personal-TEST_STATUS.md) is preserved.
+Local Chromium navigation was blocked by environment policy. Rendering ran in GitHub Actions Chromium. No real phone, native purchase, actual AI output or empirical measurement accuracy validation. [Earlier test history](history/2026-09-10-before-credits-TEST_STATUS.md) is preserved.

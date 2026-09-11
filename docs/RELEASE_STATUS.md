@@ -1,19 +1,13 @@
 # Release Status
 
-2026-09-10. **PR #7 remains draft and unmerged. The user's installed Android app has not been updated.**
+2026-09-10. **PR #7 remains draft/unmerged; no new installed APK or Play release.**
 
-## Latest UI checkpoint
+The credit-backed source and additive wallet migration are implemented. New credit-studio v1 and credit-purchases v1 Edge Functions were actually deployed to wnzbmmhtdchdqjnskwlo, pinned to server source 98d13b78a4076efbe1da437598cfb6e5c47f725e. Later UI-only source 4a932d41b5af04f2e52317dcb2946cfac8e599c6 does not change those server files. Public readiness and unauthenticated rejection were checked against the real deployed services.
 
-The focused Looks editor replaces the rejected inline form with a prominent user photo, grouped categories, searchable presets, colour swatches, a saved-look sheet and one primary action. Application/test revision `3e0fc9d536a149ec7452c22129f92e15766bbe50` passed 245 Node tests, 54 Looks browser checks and all five current workflows. See [exact verification and visual ledger](LOOKS_WORKSPACE_REVIEW.md).
+**Sales, rendering and costs_verified are false in SANDBOX and PRODUCTION.** Final DB read: no accounts, purchases, jobs or ledger entries; output bucket private. No API key was supplied through this session and backend key validity was not tested. Secure setup being opened earlier is not a delivered key. No actual OpenAI image edit, payment or user OTP email was performed.
 
-This UI change did not deploy or enable the rendering backend. The previous Looks backend was deployed separately but remains disabled/unverified for real output, as recorded in [LOOKS_STUDIO_STATUS.md](LOOKS_STUDIO_STATUS.md). Do not mistake simulated-ready test screenshots for a live generation service. Production billing-aware allowances, real output fidelity and retention review remain open.
+Activation requirements: OpenAI credentials/model access and real-output/cost acceptance; Play consumable product setup and RevenueCat notification/receipt mapping; OTP email template/sender; native purchase/refund/account tests; account-deletion UX, output-retention scheduler and operational recovery; exact-source native APK/AAB and signing; physical Android camera, export/share, accessibility and performance checks; remaining store/privacy/release requirements.
 
-## Earlier personal-photo checkpoint
+The prior Frame Fitting QA is still failing because its requested modules are absent. The faint hair guide, doubled-glasses issue, skin sampling accuracy and instructional exercise animations are NOT solved by monetization work. Do not promote source-level or fixture tests to real rendering/accuracy evidence.
 
-The user-approved photo-led UI is implemented with personal-photo storage, real feature controls and original-photo Skin handoff. Application/test revision `2d5ecf6de339621c8c96258ea74b53a034faf865` passed 222 Node tests, 66 personal-photo browser checks and the four required workflows at that checkpoint. See [historical evidence](PERSONAL_STUDIO.md).
-
-No signed APK/AAB or native installation has been performed for these changes. Physical Android camera/HUD/picker/touch/scroll, large text and screen reader acceptance remain open. Test representative devices and conditions, validate metric error/repeatability, review actual generated outputs, and complete parent PR #6's Supabase/RevenueCat/provider/privacy/Play requirements.
-
-The saved portrait is not a generated exercise demo or transformed hairstyle image. Existing numerical skin and geometry signals remain unvalidated photographic estimates. Instructional animations are still unfinished. No blanket accuracy or release-ready percentage is assigned.
-
-[Previous checkpoint](history/2026-09-10-before-personal-RELEASE_STATUS.md) and [accuracy requirements](ACCURACY_RELIABILITY.md) remain preserved.
+[Current implementation and tests](AI_CREDITS_STATUS.md), [full previous release checklist](history/2026-09-10-before-credits-RELEASE_STATUS.md) and [accuracy requirements](ACCURACY_RELIABILITY.md).
