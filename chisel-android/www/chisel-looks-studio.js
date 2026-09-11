@@ -210,6 +210,6 @@ function install(){
  root.document.documentElement.dataset.looksStudio='1';return true;
 }
 function clearAccount(){if(controller?.snapshot().backend==='credits'){epoch++;preparing=false;controller.clear();revoke();sessionStorage.removeItem(PENDING);}}
-async function refreshAvailability(){try{const s=await request();ready=s.ready===true;labels();}catch{ready=false;labels();}}
+async function refreshAvailability(){try{const s=await request();ready=s.ready===true;if(controller.snapshot().status==='idle'&&!preparing&&!result)text('#clsStatus',ready?'Upload only after confirmation':root.ChiselLooksCore.message(s.error));labels();}catch{ready=false;labels();}}
 return{install,refreshAvailability,clearAccount,clearSaved,openEditor,closeEditor,selectionView,matchesPreset};
 });

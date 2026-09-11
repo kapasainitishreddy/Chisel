@@ -4,7 +4,7 @@ function createWallet({userId,load,products,purchase}){
  let epoch=0,busy=false,balance=null,salesReady=false,offers=[],message='',configuration=null;const listeners=new Set();
  const snapshot=()=>Object.freeze({balance,salesReady,offers:offers.slice(),busy,message,configuration});
  const emit=()=>{for(const f of listeners)f(snapshot());};
- async function refresh(){const ticket=epoch,owner=userId();const data=await load();if(ticket!==epoch||owner!==userId())return snapshot();configuration=data;salesReady=data.salesReady===true;balance=owner&&data.wallet?.userId===owner&&Number.isSafeInteger(data.wallet.balance)?data.wallet.balance:null;emit();return snapshot();}
+ async function refresh(){const ticket=epoch,owner=userId();const data=await load();if(ticket!==epoch||owner!==userId())return snapshot();configuration=data;salesReady=data.salesReady===true;const previousBalance=balance;balance=owner&&data.wallet?.userId===owner&&Number.isSafeInteger(data.wallet.balance)?data.wallet.balance:null;if(previousBalance!==null&&balance!==previousBalance)message='Balance updated.';emit();return snapshot();}
  async function loadProducts(){const ticket=epoch,owner=userId();if(!owner||!salesReady){offers=[];emit();return;}const data=await products(configuration);if(ticket!==epoch||owner!==userId())return;offers=data.filter(p=>typeof p.identifier==='string'&&typeof p.priceString==='string'&&p.priceString.length>0);emit();}
  async function buy(id){
   if(busy)throw Error('purchase_in_progress');const owner=userId(),ticket=epoch;

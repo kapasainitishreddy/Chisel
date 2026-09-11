@@ -33,6 +33,8 @@ jobs:
           node --check www/chisel-credits-ui.js
           node --check www/chisel-compare-tools.js
           node --check tests/credits-browser-runner.mjs
+      - name: Check deployed prelaunch readiness without credentials or images
+        run: node tests/credits-live-readiness.mjs
       - name: Browser test with isolated auth, store and image fixtures
         run: |
           set -euo pipefail
