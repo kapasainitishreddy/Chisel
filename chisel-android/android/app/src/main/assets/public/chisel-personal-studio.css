@@ -1,0 +1,177 @@
+/* Photo-led theme: a single 8px spacing rhythm, real personal media, no fake stats. */
+html[data-personal-studio] {
+ --cs-bg:#080b0c;--cs-surface:#111719;--cs-raised:#1b2224;--cs-text:#f5f3ee;
+ --cs-muted:#b3b9b7;--cs-accent:#f1ede5;--cs-sage:#a9cbb8;--cs-line:#2b3436;
+ --cs-control:16px;--cs-radius:20px;--sans:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;
+ --cps-space:8px;--cps-edge:20px;--cps-shadow:0 8px 24px #0004;
+}
+html[data-personal-studio] main.view{padding:20px var(--cps-edge) 24px;scroll-padding:20px 0 24px}
+html[data-personal-studio] .screen{max-width:1000px}
+html[data-personal-studio] .cs-masthead{max-width:1000px;min-height:44px;margin:0 auto 16px;gap:12px}
+html[data-personal-studio] .cs-wordmark{font:500 19px/1.2 var(--sans);letter-spacing:.24em}
+html[data-personal-studio] .cs-orbit-trigger{background:transparent;border:0;min-height:44px;padding:8px;color:var(--cs-muted)}
+html[data-personal-studio] .cs-orbit-trigger svg{height:20px;width:20px}
+html[data-personal-studio] .cps-avatar{position:relative;overflow:hidden;width:44px;height:44px;flex-shrink:0;border-radius:50%;border:1px solid #697873;background:var(--cs-raised);padding:0;color:var(--cs-text)}
+html[data-personal-studio] .cps-avatar>svg{width:22px;height:22px}
+html[data-personal-studio] .cps-avatar .cps-personal-image{border-radius:50%;object-position:50% 30%}
+html[data-personal-studio] .cps-avatar:has(img:not([hidden]))>svg,html[data-personal-studio] .cps-avatar .cps-photo-empty{display:none}
+html[data-personal-studio] .cps-settings-in-tools{display:flex!important;gap:12px;width:100%;margin:0!important;justify-content:flex-start;height:48px;border:0!important;background:none!important;font:500 14px var(--sans)!important}
+html[data-personal-studio] .cps-settings-in-tools svg{width:22px;height:22px}
+html[data-personal-studio] .hero{display:grid;grid-template-columns:1fr;margin:0;gap:24px;padding:0!important}
+html[data-personal-studio] .cps-photo{position:relative;overflow:hidden;isolation:isolate;background:#172022;border-radius:18px}
+html[data-personal-studio] .cps-personal-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 30%;display:block}
+html[data-personal-studio] .cps-personal-image[hidden],html[data-personal-studio] [hidden]{display:none!important}
+html[data-personal-studio] .cps-photo-empty{display:grid;place-items:center;position:absolute;inset:0;color:#92a8a0}
+html[data-personal-studio] .cps-photo-empty svg{width:52px;height:52px}
+html[data-personal-studio] .has-photo>.cps-photo-empty{display:none!important}
+html[data-personal-studio] .cps-edge-fade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 30%,#080b0c12 48%,#080b0ca6 72%,#080b0cf7 100%)}
+html[data-personal-studio] .cps-home-hero{height:354px;margin:0 -4px;border-radius:20px;box-shadow:var(--cps-shadow)}
+html[data-personal-studio] .cps-home-hero h1{position:absolute;left:24px;bottom:20px;margin:0;font:400 43px/1.04 Georgia,serif;letter-spacing:-.035em;color:#fffef9}
+html[data-personal-studio] .cps-home-hero:not(.has-photo){height:300px}
+html[data-personal-studio] .cps-home-hero:not(.has-photo) h1{font-size:36px;bottom:24px}
+html[data-personal-studio] .cps-home-hero:not(.has-photo) .cps-photo-empty{bottom:95px}
+html[data-personal-studio] .cps-icon-btn{display:grid;place-items:center;width:44px;height:44px;min-height:44px;flex:0 0 44px;padding:0;border:1px solid #d6e5e02e;border-radius:14px;background:#111719bd;color:#f7f6f1}
+html[data-personal-studio] .cps-icon-btn svg{width:20px;height:20px}
+html[data-personal-studio] .cps-edit-photo{position:absolute;right:12px;top:12px}
+html[data-personal-studio] .cps-add-photo{position:absolute;top:44%;left:50%;transform:translateX(-50%);background:#f1ede5;color:#101515;border:0;border-radius:22px;min-height:44px;padding:12px 18px;font:600 13px var(--sans);white-space:nowrap}
+html[data-personal-studio] .cps-start{margin:24px 0 0}
+html[data-personal-studio] .cps-start h2,html[data-personal-studio] .cps-subheading{font:550 15px/1.4 var(--sans);margin:0 0 12px;color:var(--cs-text);letter-spacing:-.01em}
+html[data-personal-studio] .cs-direct-tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0}
+html[data-personal-studio] .cs-direct-tools .cs-tool-row{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:102px;padding:16px 8px;gap:12px;border:1px solid #b7c4bc2b;border-radius:18px;background:linear-gradient(145deg,#36312b,#191d1d);color:var(--cs-text);margin:0;box-shadow:inset 0 1px 0 #fff1}
+html[data-personal-studio] .cs-direct-tools .cs-tool-row:nth-child(2){background:linear-gradient(145deg,#34483d,#18251f)}
+html[data-personal-studio] .cs-direct-tools .cs-tool-row:nth-child(3){background:linear-gradient(145deg,#36352f,#1b2020)}
+html[data-personal-studio] .cs-direct-tools .cs-tool-row>svg:first-child{width:27px;height:27px;flex:none;color:var(--cs-text)}
+html[data-personal-studio] .cs-direct-tools .cs-tool-row>svg:last-child{display:none}
+html[data-personal-studio] .cs-direct-tools .cs-tool-row b{font:550 12px/1.35 var(--sans);letter-spacing:0;text-align:center}
+html[data-personal-studio] #cxpHomeHub{border:0;border-radius:0;background:transparent;padding:0;margin:0;box-shadow:none}
+html[data-personal-studio] #cxpHomeHubTitle{font:550 15px/1.4 var(--sans);color:var(--cs-text);margin:0 0 12px}
+html[data-personal-studio] .cxp-focus{display:grid;grid-template-columns:64px 1fr;gap:12px;background:var(--cs-surface);border:1px solid var(--cs-line);padding:12px;border-radius:18px;align-items:center}
+html[data-personal-studio] .cps-focus-photo{width:64px;height:74px;border-radius:12px;grid-row:1/3}
+html[data-personal-studio] .cps-focus-photo .cps-photo-empty svg{width:24px;height:24px}
+html[data-personal-studio] .cxp-focus-copy b{font:550 15px/1.35 var(--sans)}
+html[data-personal-studio] .cxp-focus-actions{margin:0;gap:8px;grid-column:2;display:flex;flex-wrap:wrap}
+html[data-personal-studio] .cxp-focus-actions>button{min-width:0;min-height:44px;font-size:12px;padding:10px 14px;border-radius:24px}
+html[data-personal-studio] .cxp-focus-actions .cxp-focus-btn{color:#131818;background:var(--cs-accent);border-color:#fff8}
+html[data-personal-studio] .cxp-focus-actions .cxp-done-btn{border:0;color:var(--cs-muted);padding:10px 2px;background:transparent}
+html[data-personal-studio] .cs-disclosure{margin-top:12px;border-color:var(--cs-line)}
+html[data-personal-studio] .cs-disclosure>summary{font-size:13px;min-height:48px;padding:12px 0}
+html[data-personal-studio] .cs-focus-details,html[data-personal-studio] .cs-quick-tools{margin-top:8px}
+html[data-personal-studio] .cs-home-more{margin-top:0}
+html[data-personal-studio] nav.tabs{background:#0b1112;border-top:1px solid var(--cs-line);padding:4px 10px max(4px,env(safe-area-inset-bottom));box-shadow:0 -10px 32px #0004}
+html[data-personal-studio] nav.tabs a{font-size:10px;letter-spacing:0;min-height:60px}
+html[data-personal-studio] nav.tabs .pill{background:#22302c;border-radius:18px}
+html[data-personal-studio] nav.tabs a.active{color:#fffef9}
+html[data-personal-studio] :is(.cps-primary,.cps-secondary){display:flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:13px 20px;border:1px solid #ffffff69;border-radius:30px;color:#101515;background:linear-gradient(145deg,#fffdf8,#e8e1d9);font:600 14px/1.3 var(--sans);cursor:pointer;box-shadow:0 2px 8px #0003;letter-spacing:0}
+html[data-personal-studio] .cps-primary svg,html[data-personal-studio] .cps-secondary svg{width:20px;height:20px;flex-shrink:0}
+html[data-personal-studio] .cps-secondary{background:#192122;color:var(--cs-text);border-color:#394747;box-shadow:none}
+html[data-personal-studio] :is(.cps-primary,.cps-secondary,.cps-icon-btn):active:not(:disabled){transform:translateY(1px)}
+html[data-personal-studio] :is(button,label):focus-visible,html[data-personal-studio] label:focus-within{outline:2px solid #badcc8;outline-offset:3px}
+html[data-personal-studio] button:disabled{opacity:.45;cursor:not-allowed}
+/* The task's heading stays outside its scrolling content. */
+html[data-personal-studio] #arCoachModal{padding:8px;align-items:center}
+html[data-personal-studio] #arCoachModal .panel{display:flex;flex-direction:column;padding:0;overflow:hidden;border-radius:24px;width:min(640px,100%);max-height:calc(100dvh - 16px);background:#080d0e;border:1px solid #3e494b}
+html[data-personal-studio] .cps-screen-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;flex-shrink:0}
+html[data-personal-studio] #arCoachTitle{font:550 18px/1.3 var(--sans);margin:0;padding:0;letter-spacing:-.015em}
+html[data-personal-studio] #arCoachX{position:static;width:44px;height:44px;min-width:44px;min-height:44px;border:0;background:none}
+html[data-personal-studio] .cps-trainer-body{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 16px 24px;scroll-padding:16px}
+html[data-personal-studio] .cps-trainer-hero{height:280px;border-radius:16px;margin:0 0 20px}
+html[data-personal-studio] .cps-image-label{position:absolute;left:12px;top:12px;background:#071011a6;color:#f3f4ed;border:1px solid #ffffff24;border-radius:16px;padding:6px 9px;font:500 10px/1.2 var(--sans);z-index:1}
+html[data-personal-studio] .cps-feature-caption{position:absolute;bottom:16px;left:16px;right:16px}
+html[data-personal-studio] #arCoachModal #cpsSessionTitle{font:550 22px/1.2 var(--sans);margin:0 0 6px;padding:0;letter-spacing:-.02em}
+html[data-personal-studio] #cpsSessionMeta{font:400 12px/1.4 var(--sans);color:#d2dad5;margin:0 0 14px}
+html[data-personal-studio] #cpsStartSession{width:100%}
+html[data-personal-studio] #arCoachModal #csTrainerFilters{background:#172021;border:1px solid #2b3838;border-radius:24px;padding:3px;margin:0 0 18px;gap:2px}
+html[data-personal-studio] #csTrainerFilters button{border:0!important;border-radius:20px!important;min-height:44px;font-size:12px}
+html[data-personal-studio] #arCoachModal #csTrainerFilters button[aria-pressed="true"]{background:var(--cs-accent);color:#101515}
+html[data-personal-studio] #arCoachModal .ar-session-grid{gap:8px;grid-template-columns:1fr}
+html[data-personal-studio] #arCoachModal .ar-session{display:grid;grid-template-columns:48px 1fr;grid-template-rows:auto auto;column-gap:12px;row-gap:3px;min-height:72px;padding:10px 32px 10px 10px;border:1px solid #2b3839;border-radius:14px;background:linear-gradient(110deg,#171f20,#0e1516);align-content:center;text-align:left}
+html[data-personal-studio] #arCoachModal .ar-session::before{display:none}
+html[data-personal-studio] #arCoachModal .ar-session::after{right:16px;border-color:#b6c8bd}
+html[data-personal-studio] #arCoachModal .ar-session strong{font:550 15px/1.4 var(--sans);align-self:end}
+html[data-personal-studio] #arCoachModal .ar-session>span{font:400 11px/1.3 var(--sans);color:#b6c1bc;align-self:start;grid-column:2;margin:0}
+html[data-personal-studio] .cps-exercise-thumb{grid-row:1/3;width:48px;height:50px;border-radius:9px}
+html[data-personal-studio] .cps-exercise-thumb .cps-photo-empty svg{width:20px;height:20px}
+html[data-personal-studio] .cs-comfort{font-size:12px!important;line-height:1.5;color:var(--cs-muted);margin:16px 0 8px}
+html[data-personal-studio] .cps-form-meter{--cps-score:0;display:flex;align-items:center;gap:12px;font:500 12px var(--sans);margin-top:12px;color:var(--cs-muted)}
+html[data-personal-studio] .cps-form-meter strong{display:grid;place-items:center;min-width:54px;height:54px;border:3px solid #83ae91;border-radius:50%;font-size:20px;color:var(--cs-text)}
+/* Skin retains original image analysis; the decorative frame is not a scan result. */
+html[data-personal-studio] .chl-dialog{background:#080d0e;border-radius:24px;border-color:#394748}
+html[data-personal-studio] .chl-header{padding:16px 20px 10px}
+html[data-personal-studio] .chl-header h2{font:550 18px/1.3 var(--sans)}
+html[data-personal-studio] .chl-close{background:none;border:0;width:44px;height:44px;min-width:44px;min-height:44px}
+html[data-personal-studio] .chl-panel{padding:16px 20px 24px;scroll-padding:16px}
+html[data-personal-studio] #csaTitle{font:550 17px/1.3 var(--sans);margin:0 0 6px;letter-spacing:-.02em}
+html[data-personal-studio] .csa-top{margin-bottom:16px}
+html[data-personal-studio] .csa-top p{font-size:11px;line-height:1.4}
+html[data-personal-studio] .csa-local{display:none}
+html[data-personal-studio] .cps-skin-hero{height:292px;border-radius:18px}
+html[data-personal-studio] .cps-skin-hero .cps-personal-image{object-position:40% 26%}
+html[data-personal-studio] .cps-skin-hero .cps-edge-fade{background:linear-gradient(90deg,transparent 30%,#07101140 57%,#071011e6 100%)}
+html[data-personal-studio] .cps-scan-bracket{position:absolute;inset:17% 40% 20% 12%;border:1px solid #effbf1b3;border-radius:32px;pointer-events:none}
+html[data-personal-studio] .cps-skin-title{position:absolute;right:16px;bottom:36px;max-width:115px;color:#fcfaf3}
+html[data-personal-studio] .cps-skin-title h3{font:500 24px/1.15 var(--sans);margin:0 0 8px;letter-spacing:-.02em}
+html[data-personal-studio] .cps-skin-title span{font:500 11px/1.3 var(--sans);color:#c6d4cd}
+html[data-personal-studio] .csa-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 0;padding:0;border:0;background:none}
+html[data-personal-studio] .csa-actions:has(#cpsUsePhoto:not([hidden])) #cpsUsePhoto{grid-column:1/-1;min-height:46px}
+html[data-personal-studio] .csa-actions .csa-file{min-height:52px!important;max-height:60px!important;flex-direction:row;gap:8px;padding:12px;border:1px solid #4c5958;border-radius:28px;background:#192122;color:#f4f2ed;font-size:13px}
+html[data-personal-studio] .csa-file svg{height:20px;width:20px}
+html[data-personal-studio] .csa-actions .csa-button{min-height:52px!important;max-height:60px;border-radius:28px;font-size:13px;padding:12px;background:var(--cs-accent);color:#111717}
+html[data-personal-studio] .csa-status{font-size:12px;line-height:1.45;padding:0;margin-top:12px}
+html[data-personal-studio] .cs-photo-tips{margin-top:16px}
+html[data-personal-studio] .csa-preview-wrap{margin-top:18px}
+html[data-personal-studio] .csa-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+html[data-personal-studio] .csa-metric{background:linear-gradient(135deg,#182122,#101617);border:1px solid #2d3a39;border-radius:16px;padding:16px}
+html[data-personal-studio] .csa-metric-name{font-size:13px}
+html[data-personal-studio] .csa-metric-value{font-size:22px}
+/* The saved photo is a poster, never a fabricated rendered style result. */
+html[data-personal-studio] #cxStudioCard{padding:0 0 24px;margin:28px 0 0;border:0;background:none}
+html[data-personal-studio] #cxStudioCard .cx-studio-title{font:550 20px/1.3 var(--sans);margin:0 0 16px;letter-spacing:-.02em}
+html[data-personal-studio] .cps-style-tabs{display:flex;padding:4px;border-radius:25px;background:#192021;border:1px solid #2d3838;gap:2px;margin:0 0 12px}
+html[data-personal-studio] .cps-style-tabs button{flex:1;min-width:0;min-height:44px;padding:8px 4px;border:0;border-radius:22px;background:transparent;color:#d3dad5;font:500 12px/1.3 var(--sans)}
+html[data-personal-studio] .cps-style-tabs button[aria-pressed="true"]{background:var(--cs-accent);color:#111717}
+html[data-personal-studio] .cps-style-hero{height:400px;margin:0 0 16px;border-radius:18px}
+html[data-personal-studio] #cpsTryStyle{width:100%;margin:0 0 12px}
+html[data-personal-studio] #cxStudioCard .cx-studio-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 0}
+html[data-personal-studio] #cxStudioCard .cx-studio-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:60px;padding:12px 14px;border:1px solid #354342;border-radius:16px;background:#131d1e;text-align:left}
+html[data-personal-studio] #cxStudioCard .cx-studio-btn b{font:500 13px/1.35 var(--sans);margin:0;color:#e8eee8}
+html[data-personal-studio] #cxStudioCard .cx-studio-btn svg{width:16px;height:16px}
+html[data-personal-studio] #cxStudioCard .cx-studio-copy{font:400 12px/1.4 var(--sans);margin:12px 0 0;color:var(--cs-muted)}
+/* Local-only photo management uses a native, keyboard-accessible dialog. */
+html[data-personal-studio] .cps-photo-dialog{width:min(420px,calc(100vw - 24px));padding:20px;color:var(--cs-text);background:#0d1415;border:1px solid #3b4a49;border-radius:24px;max-height:calc(100dvh - 24px);overflow:auto;box-shadow:0 24px 80px #000a}
+html[data-personal-studio] .cps-photo-dialog::backdrop{background:#000b;backdrop-filter:blur(8px)}
+html[data-personal-studio] .cps-photo-dialog header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px}
+html[data-personal-studio] .cps-photo-dialog h2{font:550 22px/1.3 var(--sans);margin:0}
+html[data-personal-studio] #cpsPhotoPreview{height:256px;border-radius:18px}
+html[data-personal-studio] .cps-private-note{font:400 12px/1.5 var(--sans);color:var(--cs-muted);text-align:center;margin:12px 0 16px}
+html[data-personal-studio] .cps-photo-actions{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+html[data-personal-studio] .cps-photo-actions label{position:relative;padding:12px;font-size:13px;overflow:hidden}
+html[data-personal-studio] .cps-photo-actions input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+html[data-personal-studio] .cps-remove{display:block;width:100%;min-height:44px;border:0;background:transparent;color:#d5b5b0;font:500 13px var(--sans);margin-top:12px}
+html[data-personal-studio] #cpsPhotoStatus{font:400 12px/1.5 var(--sans);color:var(--cs-muted);margin:12px 0 0}
+@media(min-width:950px){
+ html[data-personal-studio] main.view{padding:24px 40px 32px}
+ html[data-personal-studio] .hero{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:32px}
+ html[data-personal-studio] .cps-home-hero{height:440px;margin:0}
+ html[data-personal-studio] #cxpHomeHub{margin-top:12px}
+ html[data-personal-studio] .cps-trainer-hero{height:320px}
+ html[data-personal-studio] #cxStudioCard{max-width:760px;margin-inline:auto}
+ html[data-personal-studio] .cps-style-hero{height:500px}
+}
+@media(max-width:380px){
+ html[data-personal-studio]{--cps-edge:16px}
+ html[data-personal-studio] .cps-home-hero{height:320px}
+ html[data-personal-studio] .cps-home-hero h1{font-size:39px;left:20px}
+ html[data-personal-studio] .cs-direct-tools{gap:8px}
+ html[data-personal-studio] .cs-direct-tools .cs-tool-row{min-height:94px;padding:12px 4px}
+ html[data-personal-studio] .cs-direct-tools .cs-tool-row b{font-size:11px}
+ html[data-personal-studio] .cps-trainer-hero{height:250px}
+ html[data-personal-studio] .cps-skin-hero{height:260px}
+ html[data-personal-studio] .cps-style-hero{height:350px}
+ html[data-personal-studio] #arCoachModal .ar-session strong{font-size:13px}
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-personal-studio] *,html[data-personal-studio] *::before,html[data-personal-studio] *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+
+/* Keep the style destination aligned even when it is the last short section. */
+html[data-personal-studio] #cxStudioCard{min-height:calc(100dvh - 100px);scroll-margin-top:0px}

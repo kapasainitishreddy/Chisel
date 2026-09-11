@@ -12,6 +12,7 @@
     bodySide: { minimumFrames: 3, weights: { brightness:.12, sharpness:.12, fill:.13, tilt:.1, model:.17, mask:.2, limbs:.08, occlusion:.08 }, hard: { brightness:[45,235], sharpness:25, fill:[.46,.96], tilt:10, model:.72, mask:.68, limbs:.7, occlusion:.2 } }
   };
   const GUIDANCE = {
+    'quality-data': 'Some camera quality measurements are missing. Retake the capture; missing values are not treated as a perfect pose.',
     lighting: 'Move to even front lighting and avoid a bright window or lamp behind you.',
     blur: 'Hold the phone still, clean the lens, and wait for focus before capturing.',
     distance: 'Move until your face or body fits the guide without crowding the frame.',
@@ -29,6 +30,11 @@
   const guidanceFor = (reason) => GUIDANCE[reason] || `Correct the ${String(reason || 'capture').replace(/-/g,' ')} issue and retry.`;
   function scoreFrame(frame = {}, kind = 'face') {
     const protocol = PROTOCOLS[kind] || PROTOCOLS.face, q = frame.quality || frame, scores = {};
+    const required=kind.startsWith('body')
+      ? ['brightness','sharpness','fill','tiltDeg','modelConfidence','maskConfidence','limbVisibility','occlusion']
+      : ['brightness','sharpness','fill','rollDeg','yawDeg','pitchDeg','expression','modelConfidence','occlusion',...(kind==='skin'?['glare']:[])];
+    if(required.some(key=>typeof q[key]!=='number'||!Number.isFinite(q[key])))
+      return{score:0,accepted:false,critical:['quality-data'],components:{}};
     scores.brightness = linearScore(q.brightness, kind === 'skin' ? 95 : 80, kind === 'skin' ? 175 : 195, protocol.hard.brightness[0], protocol.hard.brightness[1]);
     scores.sharpness = linearScore(q.sharpness, kind.startsWith('body') ? 65 : 90, 10000, protocol.hard.sharpness, 10000);
     scores.fill = linearScore(q.fill, kind.startsWith('body') ? .62 : .38, kind.startsWith('body') ? .86 : .68, protocol.hard.fill[0], protocol.hard.fill[1]);
@@ -48,7 +54,7 @@
   function evaluateProtocol(frames = [], kind = 'face') {
     const protocol = PROTOCOLS[kind] || PROTOCOLS.face, evaluated = frames.map((frame,index) => ({ index, frame, ...scoreFrame(frame,kind) })), accepted = evaluated.filter((item) => item.accepted);
     const minForStats = Math.max(2,Math.min(protocol.minimumFrames,accepted.length)); const scores = robustConsensus(accepted.map((item)=>item.score),{ minimum:minForStats,maxRelativeSpread:.12,digits:1 });
-    const brightness = robustConsensus(accepted.map((item)=>item.frame.quality.brightness),{ minimum:minForStats,maxRelativeSpread:kind==='skin'?.055:.09,digits:1 }); const passRate = frames.length ? accepted.length/frames.length : 0;
+    const brightness = robustConsensus(accepted.map((item)=>(item.frame.quality||item.frame).brightness),{ minimum:minForStats,maxRelativeSpread:kind==='skin'?.055:.09,digits:1 }); const passRate = frames.length ? accepted.length/frames.length : 0;
     const stability = brightness.valid ? clamp(1-brightness.relativeSpread/(kind==='skin'?.055:.09),0,1) : 0; const protocolScore = Math.round(clamp((scores.valid?Number(scores.value):0)*.72 + passRate*18 + stability*10,0,100)); const reasons=[];
     if (frames.length<protocol.minimumFrames) reasons.push(`Capture at least ${protocol.minimumFrames} usable frames.`); if (accepted.length<protocol.minimumFrames) reasons.push(`Only ${accepted.length}/${protocol.minimumFrames} frames passed the quality checks. Follow the guidance below and retry.`); if (!brightness.valid) reasons.push('Keep one steady light source in front of you; lighting changed too much between frames.');
     const counts={}; evaluated.forEach((item)=>item.critical.forEach((reason)=>{counts[reason]=(counts[reason]||0)+1;})); Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,3).forEach(([reason,count])=>{if(count>=Math.max(2,Math.ceil(frames.length*.25))) reasons.push(`${guidanceFor(reason)} (${count} frame${count===1?'':'s'} affected.)`);});

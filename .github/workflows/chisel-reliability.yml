@@ -1,0 +1,60 @@
+name: Chisel Reliability Evidence
+on:
+  pull_request:
+    paths:
+      - 'chisel-android/**'
+      - 'supabase/functions/render-lookmax/**'
+      - '.github/workflows/chisel-reliability.yml'
+permissions:
+  contents: read
+concurrency:
+  group: chisel-reliability-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  reliability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Snapshot the exact tracked source under test
+        run: |
+          git rev-parse HEAD > /tmp/chisel-reliability-sha.txt
+          git archive --format=tar.gz --output=/tmp/chisel-reliability-source.tar.gz HEAD
+      - name: Run full regression suite
+        working-directory: chisel-android
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts
+          npm test 2>&1 | tee /tmp/chisel-reliability-tests.txt
+      - name: Exercise reliability UI and preflight in Chromium
+        working-directory: chisel-android
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false puppeteer-core@24
+          export CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          node --check tests/reliability-browser-runner.mjs
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/chisel-reliability-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          sleep 1
+          timeout --signal=TERM --kill-after=5s 75s node tests/reliability-browser-runner.mjs
+      - name: Preserve reproducible evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: chisel-reliability-${{ github.run_id }}
+          path: |
+            /tmp/chisel-reliability-source.tar.gz
+            /tmp/chisel-reliability-sha.txt
+            /tmp/chisel-reliability-tests.txt
+            /tmp/chisel-reliability-browser/
+            /tmp/chisel-reliability-http.log
+          retention-days: 7
+          if-no-files-found: error

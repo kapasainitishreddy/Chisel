@@ -1,0 +1,56 @@
+name: Chisel Quiet Studio QA
+on:
+  pull_request:
+    paths:
+      - 'chisel-android/**'
+      - '.github/workflows/chisel-studio-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: chisel-studio-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  studio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    defaults:
+      run:
+        working-directory: chisel-android
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test exact source and preserve snapshot
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/chisel-studio-qa
+          git rev-parse HEAD > /tmp/chisel-studio-qa/source-sha.txt
+          git -C .. archive --format=tar.gz -o /tmp/chisel-studio-qa/source.tar.gz HEAD
+          npm ci --ignore-scripts
+          npm test | tee /tmp/chisel-studio-qa/node-tests.txt
+          node --check www/chisel-studio-theme.js
+          node --check tests/studio-browser-runner.mjs
+          node --check tests/studio-discovery-browser.mjs
+          node --check tests/density-browser-runner.mjs
+          npm audit --omit=dev --audit-level=high
+      - name: Exercise premium UI in Chromium
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false puppeteer-core@24
+          export CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/chisel-studio-qa/http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          sleep 1
+          timeout --signal=TERM --kill-after=5s 180s node tests/studio-browser-runner.mjs http://127.0.0.1:4173
+          timeout --signal=TERM --kill-after=5s 90s node tests/studio-discovery-browser.mjs http://127.0.0.1:4173
+          timeout --signal=TERM --kill-after=5s 90s node tests/density-browser-runner.mjs http://127.0.0.1:4173
+      - name: Preserve rendered screenshots and verification
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: chisel-quiet-studio-${{ github.run_id }}
+          path: /tmp/chisel-studio-qa/
+          retention-days: 7

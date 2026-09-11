@@ -1,0 +1,43 @@
+#arCoachModal .ctv2-kicker{margin:10px 0 4px;color:var(--muted,#aaa);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase}
+#arCoachModal .ctv2-goalbar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0}
+#arCoachModal .ctv2-goal{min-width:0;padding:10px 11px;border:1px solid var(--line,rgba(255,255,255,.12));border-radius:14px;background:rgba(255,255,255,.025)}
+#arCoachModal .ctv2-goal strong{display:block;font-size:.78rem;line-height:1.25;color:var(--fg,#f4f1eb)}
+#arCoachModal .ctv2-goal span{display:block;margin-top:4px;color:var(--muted,#a8a8a8);font-size:.69rem;line-height:1.35}
+#arCoachModal .ar-session-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#arCoachModal .ar-session{min-height:48px;text-align:left}
+#arCoachModal .ar-session strong{display:block}
+#arCoachModal .ar-session span{display:block;margin-top:3px}
+#arCoachModal .ctv2-trust{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+#arCoachModal .ctv2-trust-card{padding:11px 12px;border-radius:14px;border:1px solid var(--line,rgba(255,255,255,.12));background:rgba(255,255,255,.018)}
+#arCoachModal .ctv2-trust-card b{display:flex;align-items:center;gap:7px;font-size:.76rem}
+#arCoachModal .ctv2-trust-card p{margin:5px 0 0;color:var(--muted,#a8a8a8);font-size:.69rem;line-height:1.42}
+#arCoachModal .ctv2-dot{width:7px;height:7px;border-radius:50%;background:var(--gold,#d7bd8b);flex:0 0 auto}
+#arCoachModal .ctv2-note{margin:10px 0 0;padding:10px 12px;border-left:2px solid var(--gold,#d7bd8b);background:rgba(215,189,139,.055);border-radius:0 12px 12px 0;color:var(--muted,#bcb8b0);font-size:.71rem;line-height:1.45}
+#arCoachHud .ctv2-live{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:9px}
+#arCoachHud .ctv2-live-item{min-width:0;padding:8px 9px;border:1px solid rgba(255,255,255,.13);border-radius:11px;background:rgba(8,8,9,.70)}
+#arCoachHud .ctv2-live-item small{display:block;color:#aaa;font-size:.62rem;text-transform:uppercase;letter-spacing:.06em}
+#arCoachHud .ctv2-live-item strong{display:block;margin-top:2px;color:#f5f2eb;font-size:.84rem;overflow-wrap:anywhere}
+#arCoachHud .ctv2-phase{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin-top:7px}
+#arCoachHud .ctv2-phase span{padding:5px 3px;text-align:center;border-radius:999px;border:1px solid rgba(255,255,255,.10);color:#888;font-size:.57rem;letter-spacing:.04em;text-transform:uppercase}
+#arCoachHud .ctv2-phase span.on{border-color:rgba(215,189,139,.72);background:rgba(215,189,139,.12);color:#f0dcc0}
+#arCoachHud .ctv2-tracking{margin-top:6px;color:#aaa;font-size:.64rem;line-height:1.35}
+#arCoachHud .ctv2-tracking b{color:#e8e4dc;font-weight:650}
+#arCoachModal .ctv2-motion{display:inline-flex;align-items:center;gap:5px;margin-left:4px;color:var(--gold,#d7bd8b)}
+#arCoachModal .ctv2-motion i{display:block;width:14px;height:1px;background:currentColor;position:relative}
+#arCoachModal .ctv2-motion i:after{content:'';position:absolute;right:-1px;top:-3px;width:6px;height:6px;border-top:1px solid currentColor;border-right:1px solid currentColor;transform:rotate(45deg)}
+@media (max-width:560px){
+  #arCoachModal .ctv2-goalbar{grid-template-columns:1fr}
+  #arCoachModal .ctv2-trust{grid-template-columns:1fr}
+  #arCoachModal .ar-session-grid{grid-template-columns:1fr}
+  #arCoachHud .ctv2-live{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:380px){
+  #arCoachHud .ctv2-live{grid-template-columns:1fr 1fr}
+  #arCoachHud .ctv2-live-item:last-child{grid-column:1/-1}
+  #arCoachHud .ctv2-phase{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion:reduce){
+  #arCoachModal .panel{animation:none!important;transition:none!important}
+  #arCoachModal .ctv2-motion,#arCoachModal .ctv2-motion *{animation:none!important;transition:none!important}
+}
+#arCoachX{min-width:44px;min-height:44px;z-index:1}

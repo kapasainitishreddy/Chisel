@@ -1,0 +1,4 @@
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const file=path.join(__dirname,'../www/chisel-compare-tools.js');
+test('compare tools wire the real saved gallery, not an image generation endpoint',()=>{assert.ok(fs.existsSync(file),'compare UI exists');const s=fs.readFileSync(file,'utf8');assert.match(s,/ChiselLooksGallery\.list/);assert.match(s,/ChiselComparePolicy\.pickLooks/);assert.match(s,/ChiselComparePolicy\.briefHTML/);assert.doesNotMatch(s,/fetch\(|\.generate\(|\.purchase\(/);});
+test('brief is explicit, kept separate from original and outputs are revoked',()=>{assert.ok(fs.existsSync(file));const s=fs.readFileSync(file,'utf8');assert.match(s,/createObjectURL/);assert.match(s,/revokeObjectURL/);assert.match(s,/AI preview/);assert.match(s,/sourceIdentity/);assert.match(s,/chisel-stylist-reference\.html/);assert.doesNotMatch(s,/innerHTML\s*=\s*(?:item|row|notes)/);});

@@ -8,6 +8,8 @@ if(!chrome)throw new Error('CHROME environment variable is required');
 
 const jsonPath='/tmp/chisel-interaction-qa.json';
 const screenshotPath='/tmp/chisel-interaction-qa.png';
+const trainerScreenshotPath='/tmp/chisel-interaction-trainer.png';
+const skinScreenshotPath='/tmp/chisel-interaction-skin.png';
 const result={checks:{},details:{},errors:[]};
 let browser=null;
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
@@ -31,6 +33,13 @@ try{
   });
   await page.reload({waitUntil:'domcontentloaded',timeout:30000});
 
+  const bootCleared=await page.waitForFunction(
+    ()=>!!document.getElementById('boot')?.classList.contains('gone'),
+    {timeout:8000,polling:100}
+  ).then(()=>true).catch(()=>false);
+  result.checks.bootCleared=bootCleared;
+  if(!bootCleared)throw new Error('Chisel boot splash did not clear before interaction QA');
+
   const installed=await page.waitForFunction(
     ()=>!!(window.ChiselProductPolish&&document.documentElement.dataset.cxpInstalled==='1'&&document.getElementById('cxpHomeHub')),
     {timeout:15000,polling:100}
@@ -38,9 +47,80 @@ try{
   result.checks.productPolishInstalled=installed;
   if(!installed)throw new Error('ChiselProductPolish did not install');
 
+  const featureInstall=await page.waitForFunction(
+    ()=>!!(window.ChiselTrainerV2&&window.ChiselSkinAppearance&&document.querySelector('#arCoachModal[data-trainer-v2="1"]')&&document.querySelector('#chl-panel-skin[data-skin-appearance="1"] #csaShell')),
+    {timeout:12000,polling:100}
+  ).then(()=>true).catch(()=>false);
+  result.checks.trainerAndSkinInstalled=featureInstall;
+  if(!featureInstall)throw new Error('Trainer v2 or Skin Appearance Lab did not install');
+
+  await page.waitForFunction(()=>document.documentElement.dataset.personalStudio==='1',{timeout:12000,polling:100});
+  result.checks.personalStudioInstalled=true;
+
+  const featureState=await page.evaluate(()=>{
+    const modal=document.getElementById('arCoachModal');
+    const skin=document.getElementById('csaShell');
+    const studio=document.getElementById('cxStudioCard');
+    return{
+      trainerTitle:document.getElementById('arCoachTitle')?.textContent?.trim()||'',
+      trainerSessions:[...modal.querySelectorAll('.ar-session')].map(el=>el.textContent.replace(/\s+/g,' ').trim()),
+      trainerGoalCards:modal.querySelectorAll('.ctv2-goal').length,
+      trainerTrustCards:modal.querySelectorAll('.ctv2-trust-card').length,
+      skinTitle:skin.querySelector('#csaTitle')?.textContent?.trim()||'',
+      skinFileType:skin.querySelector('#csaFile')?.getAttribute('accept')||'',
+      skinAnalyzeDisabled:skin.querySelector('#csaAnalyze')?.disabled===true,
+      skinGuidance:[...skin.querySelectorAll('.csa-guide h5')].map(el=>el.textContent.trim()),
+      skinLocal:/on-device/i.test(skin.textContent),
+      styleFamilies:studio?[...studio.querySelectorAll('.cx-studio-btn b')].map(el=>el.textContent.trim()):[],
+      studioUnisex:studio?.dataset.unisexPresentation==='1'
+    };
+  });
+  result.details.features=featureState;
+  result.checks.trainerTitle=featureState.trainerTitle==='Face training';
+  result.checks.trainerSessionCoverage=featureState.trainerSessions.some(x=>/Cheek activation/i.test(x))&&featureState.trainerSessions.some(x=>/Jaw & chin posture/i.test(x))&&featureState.trainerSessions.some(x=>/Chin & neck support/i.test(x));
+  result.checks.trainerTrustHierarchy=featureState.trainerGoalCards===3&&featureState.trainerTrustCards===2;
+  result.checks.skinAppearanceShell=featureState.skinTitle==='Skin appearance scan'&&featureState.skinAnalyzeDisabled&&/image\/jpeg/.test(featureState.skinFileType);
+  result.checks.skinGuidanceHierarchy=['What I see','What to do','Compare next'].every(label=>featureState.skinGuidance.includes(label))&&featureState.skinLocal;
+  result.checks.unisexStyleShortcuts=featureState.studioUnisex&&['Short / structured','Long / layered','Facial hair','Makeup / color'].every(label=>featureState.styleFamilies.includes(label));
+
+  const trainerOpened=await page.evaluate(()=>{
+    if(typeof openTrain!=='function')return null;
+    openTrain();
+    const modal=document.getElementById('arCoachModal');
+    const rects=[...modal.querySelectorAll('.ar-session')].map(el=>({width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height}));
+    return{open:modal.classList.contains('on'),rects};
+  });
+  await wait(80);
+  result.details.trainerOpen=trainerOpened;
+  result.checks.trainerOpens=!!trainerOpened&&trainerOpened.open===true;
+  result.checks.trainerTouchTargets=!!trainerOpened&&trainerOpened.rects.length>=5&&trainerOpened.rects.every(r=>r.width>=44&&r.height>=44);
+  if(result.checks.trainerOpens)await page.screenshot({path:trainerScreenshotPath,fullPage:true});
+  await page.evaluate(()=>document.getElementById('arCoachModal')?.classList.remove('on'));
+
+  const skinOpened=await page.evaluate(()=>{
+    if(!window.ChiselEnhancements||typeof window.ChiselEnhancements.openLabs!=='function')return null;
+    window.ChiselEnhancements.openLabs('skin');
+    const root=document.getElementById('chiselLabsRoot');
+    const shell=document.getElementById('csaShell');
+    return{
+      open:!!root&&!root.hidden&&root.getAttribute('aria-hidden')==='false',
+      width:shell?.getBoundingClientRect().width||0,
+      chooseHeight:shell?.querySelector('.csa-file')?.getBoundingClientRect().height||0,
+      analyzeHeight:shell?.querySelector('#csaAnalyze')?.getBoundingClientRect().height||0
+    };
+  });
+  await wait(80);
+  result.details.skinOpen=skinOpened;
+  result.checks.skinLabOpens=!!skinOpened&&skinOpened.open===true;
+  result.checks.skinTouchTargets=!!skinOpened&&skinOpened.chooseHeight>=44&&skinOpened.analyzeHeight>=44;
+  if(result.checks.skinLabOpens)await page.screenshot({path:skinScreenshotPath,fullPage:true});
+  await page.evaluate(()=>window.ChiselEnhancements?.closeLabs?.());
+
   await page.evaluate(()=>window.go('home'));
   await wait(60);
 
+  // Secondary tools are progressively disclosed after the content-density review.
+  await page.evaluate(()=>{const d=document.querySelector('.cs-quick-tools');if(d)d.open=true;});
   const homeState=await page.evaluate(()=>{
     const current=[...document.querySelectorAll('[data-route][aria-current="page"]')].map(el=>el.dataset.route);
     const actions=[...document.querySelectorAll('#cxpHomeHub [data-cxp-action]')].map(el=>({
