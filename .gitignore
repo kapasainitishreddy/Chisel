@@ -8,3 +8,4 @@ android/local.properties
 _dbg*.png
 _verify.png
 .superpowers/
+.env
