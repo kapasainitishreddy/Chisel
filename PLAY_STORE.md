@@ -144,8 +144,17 @@ Paste your hosted URL from step C.
   **17+/Mature** given the appearance focus. No user-generated content, no social features.
 
 ### Health apps declaration
-- If prompted (wellness wording), complete it and confirm **no medical claims**
-  (the app already says "cosmetic & educational — not medical advice").
+- Complete this declaration accurately for the exact artifact you upload. Chisel
+  includes face/neck movement routines and posture practice, so it is not
+  correct to select “no health features” merely because it is not a medical
+  device. Review the **Activity and Fitness** and **Stress Management,
+  Relaxation and Mental Acuity** categories; also review any category the
+  current build exposes for its local sleep, water or salt self-tracking.
+- State that the app provides general wellness and cosmetic education, does not
+  diagnose or treat disease, and does not claim to measure pressure, blood
+  flow, lymph drainage, muscle activation, fat loss or facial reshaping.
+- Do not claim Health Connect, clinical validation, medical-device status or
+  professional care unless those capabilities are actually added and reviewed.
 
 ### App access
 - No login required → select **All functionality is available without special access**.

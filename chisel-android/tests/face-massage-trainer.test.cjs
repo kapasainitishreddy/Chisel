@@ -36,8 +36,11 @@ test('hand guidance reports visibility and direction without claiming pressure',
   assert.equal(start.handVisible,true);assert.equal(start.accepted,true);
   const end=coach.evaluateHandMovement(exercise,{landmarks:[handAt(path.end)]},points,start.tracker);
   assert.equal(end.handVisible,true);assert.equal(end.accepted,true);assert.equal(end.strokeComplete,true);
+  const outside=coach.evaluateHandMovement(exercise,{landmarks:[handAt({x:.02,y:.02})]},points);
+  assert.equal(outside.correction,'Stay within the marked path');
   const catalog=JSON.stringify(coach.EXERCISES);
   assert.doesNotMatch(catalog,/measure(?:s|d)?\s+(?:finger\s+)?pressure|lymph drainage|blood flow/i);
+  assert.doesNotMatch(JSON.stringify(outside),/lighter touch|pressure is measured/i);
 });
 
 test('hand-tracked strokes complete reps and unavailable hand tracking falls back to guided timing',()=>{

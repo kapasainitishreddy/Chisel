@@ -88,3 +88,15 @@ html[data-chisel-theme] #arCoachModal .ar-session-grid{max-height:min(38dvh,320p
 #arCoachModal .ctv2-preview-footer{margin-top:10px}
 #arCoachHud .ctv2-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
 #arCoachHud .ctv2-actions :is(.ctv2-pause,#arCoachStop){width:100%;margin:0;min-height:44px}
+#arCoachModal .ctv2-today{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0;padding:12px 13px;border:1px solid rgba(226,197,138,.28);border-radius:14px;background:linear-gradient(110deg,rgba(226,197,138,.1),rgba(178,212,192,.07));}
+#arCoachModal .ctv2-today>div{min-width:0;display:grid;gap:3px}
+#arCoachModal .ctv2-today strong{font-size:.84rem;color:#f4f3ed;line-height:1.25}
+#arCoachModal .ctv2-today>div>span:last-child{color:var(--muted,#aaa);font-size:.68rem;line-height:1.35}
+#arCoachModal .ctv2-today button{flex:0 0 auto;min-height:40px;padding:8px 14px}
+#arCoachModal .ctv2-skin-note{display:grid;gap:4px;margin:10px 0;padding:10px 11px;border-left:2px solid rgba(226,197,138,.68);background:rgba(226,197,138,.06);color:var(--muted,#aaa);font-size:.68rem;line-height:1.4}
+#arCoachModal .ctv2-skin-note strong{color:#f4f3ed;font-size:.73rem}
+#arCoachModal .ctv2-skin-note button{justify-self:start;margin-top:3px;min-height:36px;padding:7px 11px;font-size:.68rem}
+#arCoachModal .ctv2-frequency-note{margin:8px 0 0;color:var(--muted,#aaa);font-size:.66rem;line-height:1.4}
+#arCoachHud .ctv2-complete-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+#arCoachHud .ctv2-complete-actions button{margin-top:0}
+@media (max-width:420px){#arCoachModal .ctv2-today{align-items:flex-start;padding:11px}.ctv2-today button{margin-top:2px}}

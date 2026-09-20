@@ -152,7 +152,7 @@
       const dist=exercise.handPath.motion==='circle'?Math.hypot(tip.x-candidate.anchor.x,tip.y-candidate.anchor.y):projection.distance;
       if(!best||dist<best.distance)best={...candidate,...projection,distance:dist};
     }
-    if(!best||best.distance>radius)return{accepted:false,handVisible:true,strokeComplete:false,score:Math.max(0,Math.round(74-best.distance/faceWidth*80)),tracking:FORM_TRACKING.HAND,correction:'Follow the marked path with a lighter touch',handPoint:tip,path,tracker:{last:tip}};
+    if(!best||best.distance>radius)return{accepted:false,handVisible:true,strokeComplete:false,score:Math.max(0,Math.round(74-best.distance/faceWidth*80)),tracking:FORM_TRACKING.HAND,correction:'Stay within the marked path',handPoint:tip,path,tracker:{last:tip}};
     const tracker={...previous,last:tip};
     let strokeComplete=false,progress=best.t;
     if(exercise.handPath.motion==='circle'){

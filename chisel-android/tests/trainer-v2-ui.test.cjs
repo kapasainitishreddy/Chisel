@@ -24,6 +24,10 @@ test('trainer v2 runtime upgrades the existing AR coach instead of creating a se
   assert.match(js, /ctv2Pause/);
   assert.match(js, /ctv2Next/);
   assert.match(js, /skipARCoachExercise/);
+  assert.match(js, /todayRecommendation/);
+  assert.match(js, /ctv2NoTouch/);
+  assert.match(js, /ctv2CompleteRepeat/);
+  assert.match(js, /does not measure finger pressure/);
   assert.match(js, /Haptics/);
   assert.match(js, /speechSynthesis/);
   assert.match(js, /cps-trainer-body/);
