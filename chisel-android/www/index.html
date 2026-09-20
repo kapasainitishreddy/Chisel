@@ -1855,6 +1855,7 @@ function savePhoto(url, overall, t){
 let _prBusy=false;
 async function renderPhotoreal(){
   if(_prBusy) return;
+  if(window.CHISEL_RELEASE_CONFIG?.cloudPhotoRendersEnabled!==true){ toast('Optional cloud photo editing is unavailable in this release'); return; }
   const btn=$('#photorealBtn'), retryBtn=$('#prRetry');
   if(!navigator.onLine){ toast('Needs internet'); return; }
   const hl=curHairList(), hairId=hl[styleHair]&&hl[styleHair].id;

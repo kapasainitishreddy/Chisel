@@ -10,6 +10,7 @@ test('free-first release does not expose unfinished paid account creation',()=>{
   const html=read('www/index.html');
   const credits=read('www/chisel-credits-ui.js');
   assert.match(html,/CHISEL_RELEASE_CONFIG\s*=\s*Object\.freeze\(\{billingEnabled:false/);
+  assert.match(html,/cloudPhotoRendersEnabled!==true/);
   assert.match(credits,/Credit purchases and paid accounts are disabled in this release/);
   assert.match(credits,/button\.hidden=!billingEnabled\(\)/);
 });
