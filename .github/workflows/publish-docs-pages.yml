@@ -1,12 +1,6 @@
 name: Publish Chisel policy pages
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'docs/privacy-policy.html'
-      - 'docs/terms-of-use.html'
-      - '.github/workflows/publish-docs-pages.yml'
   workflow_dispatch:
 
 permissions:

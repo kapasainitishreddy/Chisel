@@ -7,10 +7,10 @@ remains free-first: paid accounts and credit
 purchases are disabled until account deletion, retention, billing and Play
 testing are complete. A signed release AAB has not been produced because the
 developer-owned upload keystore is intentionally not present in the repository.
-Privacy Policy and Terms of Use are committed and a GitHub Pages deployment
-workflow is included; the public URL must be rechecked after that workflow
-completes. Play Console declarations still must match the exact submitted
-artifact.
+Privacy Policy and Terms of Use are committed and a manual GitHub Pages
+deployment workflow is included. Pages must be enabled once in repository
+Settings and the workflow run must succeed before the public URL can be used.
+Play Console declarations still must match the exact submitted artifact.
 
 2026-09-10. **PR #7 remains draft/unmerged; no new installed APK or Play release.**
 
