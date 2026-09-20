@@ -80,15 +80,13 @@ evidence.
 
 ## C. Host the privacy policy (required, public URL)
 
-`docs/privacy-policy.html` and `docs/terms-of-use.html` are ready. This repo now
-includes a GitHub Actions Pages deployment at
-`.github/workflows/publish-docs-pages.yml`:
-1. In GitHub repo → **Settings → Pages**, choose **GitHub Actions** as the source.
-2. Open **Actions → Publish Chisel policy pages → Run workflow** on `main`.
-3. Wait for the workflow to finish. The URL is:
-   `https://kapasainitishreddy.github.io/Chisel/privacy-policy.html`
+`docs/privacy-policy.html` and `docs/terms-of-use.html` are public in the
+repository and do not depend on GitHub Pages. Use:
+`https://github.com/kapasainitishreddy/Chisel/blob/main/docs/privacy-policy.html`
+as the Play Console privacy URL. The terms page is:
+`https://github.com/kapasainitishreddy/Chisel/blob/main/docs/terms-of-use.html`.
 
-Verify both pages return HTTP 200 and open in an incognito window before you paste the privacy URL into Play Console and publish the terms URL wherever your store listing or support page references it.
+Verify both links return HTTP 200 and open in an incognito window before you paste the privacy URL into Play Console and publish the terms URL wherever your store listing or support page references it.
 (Update the contact email inside the file first if you don't want to use the one there.)
 
 ---

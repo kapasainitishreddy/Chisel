@@ -19,7 +19,7 @@ test('privacy and deletion disclosures are present in the shipping surfaces',()=
   const html=read('www/index.html');
   const policy=read('../docs/privacy-policy.html');
   const terms=read('../docs/terms-of-use.html');
-  assert.match(html,/https:\/\/kapasainitishreddy\.github\.io\/Chisel\/privacy-policy\.html/);
+  assert.match(html,/https:\/\/github\.com\/kapasainitishreddy\/Chisel\/blob\/main\/docs\/privacy-policy\.html/);
   assert.match(html,/terms-of-use\.html/);
   assert.match(html,/function wipeAllData\(\)/);
   assert.match(html,/Clear all my data/);
