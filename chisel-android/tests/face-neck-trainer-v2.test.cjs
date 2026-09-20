@@ -77,3 +77,13 @@ test('existing rep state machine remains backward compatible with scored form', 
   assert.equal(state.rep, 1);
   assert.equal(state.lastFormScore, 94);
 });
+
+test('skipping advances to the next movement without manufacturing completion', () => {
+  let state = coach.createState('cheek-builder', 1000);
+  assert.equal(state.exerciseIndex, 0);
+  state = coach.skipExercise(state, 1200);
+  assert.equal(state.exerciseIndex, 1);
+  assert.equal(state.skippedExercises, 1);
+  assert.equal(state.completed, false);
+  assert.equal(coach.currentExercise(state).id, 'happy-cheeks');
+});

@@ -272,6 +272,16 @@ html[data-personal-studio] #arCoachHud .ctv2-complete button{border-radius:12px;
  html[data-personal-studio] #arCoachHud .ctv2-demo{max-height:132px}
 }
 
+html[data-personal-studio] #arCoachModal .ctv2-voice-toggle{
+ display:inline-flex;align-items:center;justify-content:center;min-height:40px;margin:10px 0 0;padding:0;border:0;border-bottom:1px solid #93a1972b;
+ background:transparent;color:#8f9d95;font:550 10px/1.2 var(--sans);letter-spacing:.03em;cursor:pointer;text-align:left;
+}
+html[data-personal-studio] #arCoachModal .ctv2-voice-toggle[aria-pressed="true"]{color:#e2e7e0}
+html[data-personal-studio] #arCoachHud .ctv2-voice-hud{display:block;width:auto;min-height:34px;margin:4px 0 0;border:0;background:transparent;color:#8f9d95;text-align:left}
+html[data-personal-studio] #arCoachHud .ctv2-voice-hud[aria-pressed="true"]{color:#e2e7e0}
+html[data-personal-studio] #arCoachHud .ctv2-next{border:1px solid #9ba99f;background:#0a1711;color:#e4e8e2}
+html[data-personal-studio] #arCoachHud .ctv2-stop-secondary{display:block;min-height:36px;margin:2px auto 0;padding:6px 10px;border:0;background:transparent;color:#829087;font:500 10px/1.2 var(--sans);letter-spacing:.02em;text-transform:none}
+
 /* Editorial trainer refresh: image-led discovery, calm motion and a clear camera. */
 html[data-personal-studio] :is(#arCoachModal,#camwrap){
  --trainer-ink:#06100d;--trainer-cream:#f1ece4;--trainer-sage:#9daca3;--trainer-brass:#d3ad73;

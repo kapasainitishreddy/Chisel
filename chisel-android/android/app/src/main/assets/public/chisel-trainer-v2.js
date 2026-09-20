@@ -4,12 +4,21 @@
   else root.ChiselTrainerV2=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(root){
   'use strict';
-  const STORAGE_KEY='chisel:trainer:v2';
+  const STORAGE_KEY='chisel:trainer:v2',VOICE_KEY='chisel:trainer:voice';
   let installed=false,lastCompletionKey='',studioObserver=null,previewSessionId='',previewReturn=null;
   function $(selector,scope){return (scope||document).querySelector(selector);}
   function all(selector,scope){return Array.from((scope||document).querySelectorAll(selector));}
   function safeText(node,value){if(node&&node.textContent!==value)node.textContent=value;}
   function core(){return root&&root.ChiselARCoach;}
+  function voiceEnabled(){try{return root.localStorage&&root.localStorage.getItem(VOICE_KEY)==='on';}catch{return false;}}
+  function updateVoiceButtons(){const enabled=voiceEnabled();all('.ctv2-voice-toggle').forEach(button=>{button.textContent=`Voice ${enabled?'on':'off'}`;button.setAttribute('aria-pressed',String(enabled));button.setAttribute('aria-label',`Spoken guidance ${enabled?'on':'off'}`);});}
+  function setVoiceEnabled(enabled){try{if(root.localStorage)root.localStorage.setItem(VOICE_KEY,enabled?'on':'off');}catch{}if(!enabled&&root.speechSynthesis)root.speechSynthesis.cancel();updateVoiceButtons();}
+  function toggleVoice(){setVoiceEnabled(!voiceEnabled());}
+  function speakGuidance(text){if(!voiceEnabled()||!text)return;try{if(typeof root.speak==='function'){root.speak(text,{rate:.82});return;}if(root.speechSynthesis&&root.SpeechSynthesisUtterance){root.speechSynthesis.cancel();const utterance=new root.SpeechSynthesisUtterance(text);utterance.rate=.82;root.speechSynthesis.speak(utterance);}}catch{}}
+  function haptic(kind='light'){
+    try{const plugin=root.Capacitor&&root.Capacitor.Plugins&&root.Capacitor.Plugins.Haptics;if(plugin){const result=kind==='complete'&&plugin.notification?plugin.notification({type:'SUCCESS'}):plugin.impact?plugin.impact({style:kind==='complete'?'HEAVY':'LIGHT'}):null;if(result&&typeof result.catch==='function')result.catch(()=>{});return;}}catch{}
+    try{if(root.navigator&&typeof root.navigator.vibrate==='function')root.navigator.vibrate(kind==='complete'?[18,40,28]:kind==='start'?12:18);}catch{}
+  }
   function launchSession(sessionId){
     try{
       if(typeof startARCoach==='function'){startARCoach(sessionId);return true;}
@@ -51,6 +60,7 @@
     }
     all('#arCoachHud .ctv2-phase span').forEach(node=>node.classList.toggle('on',node.dataset.phase===(state.phase||'POSITION')));
     const pause=$('#ctv2Pause');if(pause)pause.textContent=root&&typeof root.isARCoachPaused==='function'&&root.isARCoachPaused()?'Resume':'Pause';
+    const next=$('#ctv2Next');if(next)next.textContent=state.exerciseIndex>=state.exerciseIds.length-1?'End':'Next';
     saveCompletion(detail);
   }
   function showCompletion(detail){
@@ -80,9 +90,9 @@
     const body=$('.cps-trainer-body',panel);previewReturn=document.activeElement;previewSessionId=id;grid.hidden=true;if(body)body.hidden=true;preview.hidden=false;panel.classList.add('ctv2-preview-open');preview.setAttribute('aria-labelledby','ctv2PreviewTitle');
     const moves=session.exerciseIds.map(key=>c.exerciseById(key)).filter(Boolean),first=moves[0];
     const tracking=moves.some(x=>x.tracking==='hand-guided')?'Hand guidance + guided fallback':moves.every(x=>x.tracking==='form')?'Camera checked':'Guided + camera';
-    preview.innerHTML=`<button type="button" class="ctv2-preview-back" id="ctv2PreviewBack" aria-label="Back to routines"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Routines</span></button><div class="ctv2-preview-stage"><img src="chisel-trainer-sculpture.webp" alt="" decoding="async"><div class="ctv2-preview-shade"></div><span class="ctv2-preview-step">Movement 1 of ${moves.length}</span><div class="ctv2-preview-demo" id="ctv2PreviewDemo"></div></div><div class="ctv2-preview-head"><span class="ctv2-kicker">${session.duration} · ${moves.length} movements</span><h4 id="ctv2PreviewTitle">${session.title.replace(/^\d+-minute\s+/i,'')}</h4><p class="ctv2-preview-benefit">${benefitCopy(session)}</p></div><div class="ctv2-preview-instruction"><span>First movement</span><p class="ctv2-preview-cue">${first?first.instruction:''}</p></div><div class="ctv2-preview-meta"><span>${tracking}</span><span>Private · on-device</span></div><details><summary>See all movements</summary><ol>${moves.map(item=>`<li>${item.name}</li>`).join('')}</ol></details><div class="ctv2-preview-footer"><button type="button" class="btn solid ctv2-start-routine" id="ctv2StartRoutine">Start routine</button><p class="ctv2-pressure-note">Camera guidance checks approximate position and direction. It does not measure finger pressure.</p></div>`;
+    preview.innerHTML=`<button type="button" class="ctv2-preview-back" id="ctv2PreviewBack" aria-label="Back to routines"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Routines</span></button><div class="ctv2-preview-stage"><img src="chisel-trainer-sculpture.webp" alt="" decoding="async"><div class="ctv2-preview-shade"></div><span class="ctv2-preview-step">Movement 1 of ${moves.length}</span><div class="ctv2-preview-demo" id="ctv2PreviewDemo"></div></div><div class="ctv2-preview-head"><span class="ctv2-kicker">${session.duration} · ${moves.length} movements</span><h4 id="ctv2PreviewTitle">${session.title.replace(/^\d+-minute\s+/i,'')}</h4><p class="ctv2-preview-benefit">${benefitCopy(session)}</p></div><div class="ctv2-preview-instruction"><span>First movement</span><p class="ctv2-preview-cue">${first?first.instruction:''}</p></div><div class="ctv2-preview-meta"><span>${tracking}</span><span>Private · on-device</span></div><button type="button" class="ctv2-voice-toggle" id="ctv2VoiceToggle"></button><details><summary>See all movements</summary><ol>${moves.map(item=>`<li>${item.name}</li>`).join('')}</ol></details><div class="ctv2-preview-footer"><button type="button" class="btn solid ctv2-start-routine" id="ctv2StartRoutine">Start routine</button><p class="ctv2-pressure-note">Camera guidance checks approximate position and direction. It does not measure finger pressure.</p></div>`;
     if(root.ChiselTrainerDemos&&first)root.ChiselTrainerDemos.render(first,$('#ctv2PreviewDemo',preview),{reducedMotion:root.matchMedia&&root.matchMedia('(prefers-reduced-motion: reduce)').matches});
-    const back=$('#ctv2PreviewBack',preview);back.onclick=closePreview;$('#ctv2StartRoutine',preview).onclick=()=>{closePreview();launchSession(id);};back.focus({preventScroll:true});
+    const back=$('#ctv2PreviewBack',preview);back.onclick=closePreview;$('#ctv2VoiceToggle',preview).onclick=toggleVoice;$('#ctv2StartRoutine',preview).onclick=()=>{closePreview();launchSession(id);};updateVoiceButtons();back.focus({preventScroll:true});
   }
   function matchesCategory(id,category){
     const session=core()&&core().SESSIONS&&core().SESSIONS[id];if(!session)return false;
@@ -124,10 +134,14 @@
     const hud=$('#arCoachHud');if(hud){
       if(!$('#ctv2Live',hud)){const live=document.createElement('div');live.id='ctv2Live';live.className='ctv2-live';live.innerHTML='<div class="ctv2-live-item"><small>Form score</small><strong id="ctv2FormScore">Not measured</strong></div><div class="ctv2-live-item"><small>Phase</small><strong id="ctv2PhaseText">POSITION</strong></div><div class="ctv2-live-item"><small>Clean reps</small><strong id="ctv2CleanReps">0</strong></div>';const status=$('.ar-hud-status',hud);if(status)status.insertAdjacentElement('afterend',live);else hud.appendChild(live);live.insertAdjacentHTML('afterend',phaseMarkup()+'<div class="ctv2-tracking" id="ctv2TrackingCopy"><b>Camera verified:</b> keep your face centered to begin.</div>');}
       if(!$('#ctv2Demo',hud)){const demo=document.createElement('div');demo.id='ctv2Demo';demo.className='ctv2-demo';demo.hidden=true;hud.insertBefore(demo,hud.firstChild);}
-      if(!$('#ctv2Pause',hud)){const pause=document.createElement('button');pause.type='button';pause.id='ctv2Pause';pause.className='ctv2-pause';pause.textContent='Pause';pause.onclick=()=>root&&typeof root.toggleARCoachPause==='function'&&root.toggleARCoachPause();const stop=$('#arCoachStop',hud);if(stop)stop.insertAdjacentElement('beforebegin',pause);else hud.appendChild(pause);}
-      if(!$('.ctv2-actions',hud)){const actions=document.createElement('div');actions.className='ctv2-actions';const pause=$('#ctv2Pause',hud),stop=$('#arCoachStop',hud);if(pause)actions.appendChild(pause);if(stop)actions.appendChild(stop);hud.appendChild(actions);}
+      if(!$('#ctv2Pause',hud)){const pause=document.createElement('button');pause.type='button';pause.id='ctv2Pause';pause.className='ctv2-pause';pause.textContent='Pause';pause.onclick=()=>root&&typeof root.toggleARCoachPause==='function'&&root.toggleARCoachPause();hud.appendChild(pause);}
+      if(!$('.ctv2-actions',hud)){const actions=document.createElement('div');actions.className='ctv2-actions';hud.appendChild(actions);}
+      const actions=$('.ctv2-actions',hud),pause=$('#ctv2Pause',hud),stop=$('#arCoachStop',hud);if(pause&&pause.parentElement!==actions)actions.appendChild(pause);
+      if(!$('#ctv2Next',hud)){const next=document.createElement('button');next.type='button';next.id='ctv2Next';next.className='ctv2-next';next.textContent='Next';next.onclick=()=>root&&typeof root.skipARCoachExercise==='function'&&root.skipARCoachExercise();actions.appendChild(next);}
+      if(stop){stop.classList.add('ctv2-stop-secondary');hud.appendChild(stop);}
+      if(!$('#ctv2VoiceToggleHud',hud)){const voice=document.createElement('button');voice.type='button';voice.id='ctv2VoiceToggleHud';voice.className='ctv2-voice-toggle ctv2-voice-hud';voice.onclick=toggleVoice;hud.insertBefore(voice,actions);}updateVoiceButtons();
     }
     watchUnisexStudio();if(root&&root.addEventListener){root.addEventListener('chisel:coach-state',event=>updateLive(event.detail));root.addEventListener('chisel:trainer-complete',event=>showCompletion(event.detail));root.addEventListener('keydown',event=>{if(event.key==='Escape'&&previewSessionId){event.preventDefault();closePreview();}});}return true;
   }
-  return{install,updateLive,showCompletion,launchSession,openRoutinePreview,closePreview,fixUnisexStudio};
+  return{install,updateLive,showCompletion,launchSession,openRoutinePreview,closePreview,fixUnisexStudio,voiceEnabled,setVoiceEnabled,speakGuidance,haptic,syncCompactGrid};
 });

@@ -1278,6 +1278,7 @@ async function startARCoach(sessionId){
   _arState=AR_COACH.createState(sessionId,performance.now());
   _arForm={accepted:false,correction:'Center your face in the guide',tone:'find'};
   _arEvent='start'; _arPaused=false; _arDemoUntil=performance.now()+2600; _handTracker={}; _handPoint=null;
+  if(window.ChiselTrainerV2){ window.ChiselTrainerV2.haptic('start'); window.ChiselTrainerV2.speakGuidance('Begin when you are ready. Relax your shoulders and follow the technique.'); }
   massageMode=!!(AR_COACH.sessionRequiresHand&&AR_COACH.sessionRequiresHand(sessionId));
   _handModelStatus=massageMode?'loading':'off'; _handLandmarker=null;
   if(massageMode&&AR_COACH.loadHandLandmarker){
@@ -1295,6 +1296,14 @@ function readHands(){
 }
 window.isARCoachPaused=()=>_arPaused;
 window.toggleARCoachPause=()=>{if(!trainMode)return;_arPaused=!_arPaused;const pause=$('#ctv2Pause');if(pause)pause.textContent=_arPaused?'Resume':'Pause';if(_arPaused){setGuideMsg('','PAUSED · CAMERA STAYS ON');}else{_arDemoUntil=Math.max(_arDemoUntil,performance.now()+500);setGuideMsg('','WATCH THE TECHNIQUE');}};
+window.skipARCoachExercise=()=>{
+  if(!trainMode||!_arState||!AR_COACH)return;
+  const last=_arState.exerciseIndex>=_arState.exerciseIds.length-1;
+  if(last){ if(window.ChiselTrainerV2)window.ChiselTrainerV2.speakGuidance('Session ended.'); closeCam(); return; }
+  const now=performance.now();_arState=AR_COACH.skipExercise(_arState,now);_arForm={accepted:false,correction:'Watch the technique once, then follow the path',tone:'find',score:null};_arEvent='exercise';_arDemoUntil=now+2200;_handTracker={};_handPoint=null;
+  if(window.ChiselTrainerV2){window.ChiselTrainerV2.haptic('exercise');window.ChiselTrainerV2.speakGuidance(`${AR_COACH.currentExercise(_arState).name}. ${AR_COACH.currentExercise(_arState).cue}`);}
+  renderARCoachHud(now);setGuideMsg('','WATCH THE TECHNIQUE');
+};
 function arCoachProgress(ex,now){
   if(!_arState||!ex) return 0;
   const repBase=_arState.rep/ex.reps;
@@ -1353,8 +1362,8 @@ function trainStep(d){
   if(!_arForm.accepted&&pose.msg) _arForm.correction=pose.msg.toLowerCase().replace(/(^|\s)\S/g,c=>c.toUpperCase());
   _arState=AR_COACH.advanceState(before,_arForm,now);
   if(_arState.event!==_arEvent){
-    if(_arState.event==='rep'||_arState.event==='exercise'){ try{ navigator.vibrate&&navigator.vibrate(18); }catch{} }
-    if(_arState.event==='exercise') _arDemoUntil=now+2200;
+    if(_arState.event==='rep'||_arState.event==='exercise'){ if(window.ChiselTrainerV2)window.ChiselTrainerV2.haptic(_arState.event==='exercise'?'exercise':'rep'); }
+    if(_arState.event==='exercise') { _arDemoUntil=now+2200; const nextExercise=AR_COACH.currentExercise(_arState); if(nextExercise&&window.ChiselTrainerV2)window.ChiselTrainerV2.speakGuidance(`${nextExercise.name}. ${nextExercise.cue}`); }
     _arEvent=_arState.event;
   }
   if(_arState.completed){ finishTrain(); return; }
@@ -1376,6 +1385,7 @@ function finishTrain(){
   sessions.total=(sessions.total||0)+1; sessions.byType=sessions.byType||{};
   sessions.byType[sessionId]=(sessions.byType[sessionId]||0)+1; sessions.last=new Date().toISOString();
   store.set('arCoachSessions',sessions);
+  if(window.ChiselTrainerV2){window.ChiselTrainerV2.haptic('complete');window.ChiselTrainerV2.speakGuidance('Routine complete. Take a breath and notice how you feel.');}
   if(completedState&&window.dispatchEvent&&window.CustomEvent)window.dispatchEvent(new CustomEvent('chisel:trainer-complete',{detail:{state:completedState,form:_arForm,exercise:null}}));
   trainMode=false; massageMode=false; _handModelStatus='off'; _arState=null; _arForm=null; _handPoint=null; _arDemoUntil=0;
   setGuideMsg('✓','AR COACH SESSION COMPLETE');

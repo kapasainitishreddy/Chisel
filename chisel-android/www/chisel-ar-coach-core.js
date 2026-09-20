@@ -254,7 +254,7 @@
   function phaseForEvent(event){
     if(event==='hold')return'HOLD';if(event==='rep'||event==='rest'||event==='release')return'RELEASE';if(event==='complete')return'COMPLETE';return'POSITION';
   }
-  function createState(sessionId,now=0){const session=SESSIONS[sessionId]||SESSIONS.full;return{sessionId:session.id,exerciseIds:session.exerciseIds.slice(),exerciseIndex:0,rep:0,cleanReps:0,guidedReps:0,lastFormScore:0,minHoldScore:100,heldMs:0,lastSampleAt:null,needsRelease:false,releaseMs:0,holdStartedAt:0,restUntil:0,startedAt:now,completed:false,event:'start',phase:'POSITION',correction:''};}
+  function createState(sessionId,now=0){const session=SESSIONS[sessionId]||SESSIONS.full;return{sessionId:session.id,exerciseIds:session.exerciseIds.slice(),exerciseIndex:0,rep:0,cleanReps:0,guidedReps:0,skippedExercises:0,lastFormScore:0,minHoldScore:100,heldMs:0,lastSampleAt:null,needsRelease:false,releaseMs:0,holdStartedAt:0,restUntil:0,startedAt:now,completed:false,event:'start',phase:'POSITION',correction:''};}
   function currentExercise(state){return state&&!state.completed?exerciseById(state.exerciseIds[state.exerciseIndex]):null;}
   function emitCoachState(state,form){
     if(typeof window==='undefined'||typeof window.dispatchEvent!=='function'||typeof window.CustomEvent!=='function')return;
@@ -299,8 +299,14 @@
     else next.event='rep';
     next.restUntil=now+1300;return finish(next,form);
   }
+  function skipExercise(state,now=0){
+    if(!state||state.completed)return state;
+    const next={...state,exerciseIndex:state.exerciseIndex+1,rep:0,skippedExercises:(state.skippedExercises||0)+1,holdStartedAt:0,heldMs:0,minHoldScore:100,lastSampleAt:Number.isFinite(now)?now:state.lastSampleAt,needsRelease:false,releaseMs:0,restUntil:0,event:'exercise',correction:'Exercise skipped'};
+    if(next.exerciseIndex>=next.exerciseIds.length){next.exerciseIndex=state.exerciseIndex;next.event='skip-end';next.correction='Last movement — stop when you are ready';}
+    return finish(next,{accepted:false,score:null,correction:next.correction,tracking:'guided'});
+  }
   const sessionRequiresHand=id=>!!(SESSIONS[id]&&SESSIONS[id].exerciseIds.some(key=>{const item=exerciseById(key);return item&&item.tracking===FORM_TRACKING.HAND;}));
-  return{SAFETY_COPY,FORM_TRACKING,EXERCISES,SESSIONS,ROUTINES,MASSAGE_REGIONS,exerciseById,signalsFromLandmarks,scoreForm,evaluateForm,createState,currentExercise,advanceState,handPathForExercise,evaluateHandMovement,loadHandLandmarker,sessionRequiresHand};
+  return{SAFETY_COPY,FORM_TRACKING,EXERCISES,SESSIONS,ROUTINES,MASSAGE_REGIONS,exerciseById,signalsFromLandmarks,scoreForm,evaluateForm,createState,currentExercise,advanceState,skipExercise,handPathForExercise,evaluateHandMovement,loadHandLandmarker,sessionRequiresHand};
 });
 
 if(typeof window!=='undefined'&&typeof document!=='undefined'){

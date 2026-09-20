@@ -1,10 +1,11 @@
-const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{pathToFileURL}=require('node:url');
 const root=path.resolve(__dirname,'../..'),www=path.join(root,'chisel-android/www');
 let catalog,core;
+const importFile=file=>import(pathToFileURL(file).href);
 test('photoreal modules exist and load',async()=>{
  assert.ok(fs.existsSync(path.join(www,'chisel-look-catalog.mjs')),'Missing shared photoreal catalog');
  assert.ok(fs.existsSync(path.join(www,'chisel-looks-core.js')),'Missing resumable render controller');
- catalog=await import(path.join(www,'chisel-look-catalog.mjs'));core=require(path.join(www,'chisel-looks-core.js'));
+ catalog=await importFile(path.join(www,'chisel-look-catalog.mjs'));core=require(path.join(www,'chisel-looks-core.js'));
 });
 test('all four categories have explicit unique unisex presets',async()=>{
  if(!catalog)return assert.fail('Catalog not implemented');
@@ -53,7 +54,7 @@ test('untrusted or missing success output never becomes a successful result',asy
  await c.generate({image:'data:x',look:{category:'hair',preset:'bob'}});assert.equal(c.snapshot().status,'failed');
 });
 test('server protocol rejects malformed capability and pins output host',async()=>{
- const p=await import(path.join(root,'supabase/functions/looks-studio/protocol.mjs'));
+ const p=await importFile(path.join(root,'supabase/functions/looks-studio/protocol.mjs'));
  const valid={action:'create',deviceId:'550e8400-e29b-41d4-a716-446655440000',requestId:'550e8400-e29b-41d4-a716-446655440000',token:'b'.repeat(64)};
  assert.doesNotThrow(()=>p.requestIdentity(valid));for(const value of [{...valid,token:'short'},{...valid,requestId:'../../admin'},{...valid,action:'delete'}])assert.throws(()=>p.requestIdentity(value));
  assert.throws(()=>p.providerState({id:'test',status:'succeeded',output:'https://evil.test/a.jpg'}));assert.equal(p.providerState({id:'test',status:'succeeded',output:'https://replicate.delivery/a.jpg'}).status,'succeeded');
