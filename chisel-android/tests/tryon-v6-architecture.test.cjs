@@ -80,7 +80,7 @@ test('visual QA accepts an intentionally sparse guide but still requires visible
 test('try-on UX clearly separates local Live Guide from realistic generation',()=>{
   assert.match(hair,/Live Guide/);
   assert.match(hair,/Generate realistic try-on/);
-  assert.match(hair,/actual hairstyle\/beard result/);
+  assert.match(hair,/AI-generated hairstyle\/beard visualization/);
 });
 
 test('photoreal backend supports every current women style without generic aliases',()=>{

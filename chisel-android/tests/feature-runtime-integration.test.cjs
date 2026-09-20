@@ -8,10 +8,11 @@ const root = path.resolve(__dirname, '..');
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
 const hash = (p) => crypto.createHash('sha256').update(read(p)).digest('hex');
 
-test('feature runtime loads Beauty Studio, Chisel Labs, Precision and polish runtimes after the app shell', () => {
+test('feature runtime loads Beauty Studio, Chisel Labs, trainer, skin appearance, Precision and polish runtimes after the app shell', () => {
   const js = read('www/chisel-ar-coach-core.js');
   for (const ref of [
     'chisel-beauty-studio.js','chisel-enhancements.css','chisel-enhancements-core.js','chisel-enhancements.js',
+    'chisel-trainer-v2.css','chisel-trainer-v2.js','chisel-skin-appearance.css','chisel-skin-appearance-core.js','chisel-skin-appearance.js',
     'chisel-precision.css','chisel-precision-stats.js','chisel-precision-protocol.js','chisel-precision-core.js',
     'chisel-precision-face.js','chisel-precision-body.js','chisel-precision-ui.js','chisel-precision.js',
     'chisel-scan-guard.js','chisel-experience-polish.js'
@@ -24,16 +25,22 @@ test('Precision runtime loads dependency order before dependants', () => {
   for (let i=1;i<order.length;i++) assert.ok(js.indexOf(order[i-1]) < js.indexOf(order[i]), `${order[i-1]} must load before ${order[i]}`);
 });
 
-test('style gender switch is customer-facing Men / Women', () => {
+test('style family switch is visibly unisex', () => {
   const js = read('www/chisel-ar-coach-core.js');
-  assert.match(js, /textContent\s*=\s*['"]Men['"]/);
-  assert.match(js, /textContent\s*=\s*['"]Women['"]/);
-  assert.match(js, /Men hairstyles/);
-  assert.match(js, /Women hairstyles/);
+  assert.match(js, /Short \/ structured/);
+  assert.match(js, /Long \/ layered/);
+  assert.match(js, /Browse by style family, not gender/i);
+  assert.doesNotMatch(js, /Men hairstyles|Women hairstyles/);
 });
 
-test('feature runtime is synchronized into the Android package assets', () => {
-  assert.equal(hash('www/chisel-ar-coach-core.js'), hash('android/app/src/main/assets/public/chisel-ar-coach-core.js'), 'feature runtime differs between canonical www and Android assets');
+test('feature runtimes are synchronized into the Android package assets', () => {
+  for (const file of [
+    'chisel-ar-coach-core.js',
+    'chisel-trainer-v2.css','chisel-trainer-v2.js',
+    'chisel-skin-appearance.css','chisel-skin-appearance-core.js','chisel-skin-appearance.js'
+  ]) {
+    assert.equal(hash(`www/${file}`), hash(`android/app/src/main/assets/public/${file}`), `${file} differs between canonical www and Android assets`);
+  }
 });
 
 test('floating Labs and Precision launchers stay below camera and modal layers', () => {

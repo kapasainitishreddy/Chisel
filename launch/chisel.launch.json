@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "productId": "chisel",
+  "name": "Chisel",
+  "family": "private-personal",
+  "status": "Waitlist",
+  "promise": "Measure what you can improve, track change over time, and get evidence-graded appearance guidance without turning your face into a rating.",
+  "problem": "Appearance tools often reduce people to a score, mix weak claims with useful guidance, or make it hard to tell real progress from camera and condition changes.",
+  "audience": [
+    "People who want structured grooming and appearance guidance without attractiveness ratings",
+    "Privacy-conscious Android users who want to compare controllable appearance changes over time"
+  ],
+  "differentiators": [
+    "Core facial analysis, progress comparison, grooming guidance, and local try-on are designed around on-device or local processing.",
+    "Scan recommendations are labeled by evidence strength instead of presenting every tip as equally proven.",
+    "Progress comparison is uncertainty-aware and can reject weak or mismatched captures rather than forcing a confident-looking number.",
+    "The product combines measurement, grooming plans, AR coaching, try-on, and progress tracking in one Android workflow."
+  ],
+  "allowedClaims": [
+    "Chisel is deliberately anti-rating and focuses on controllable appearance changes rather than attractiveness scores.",
+    "Core Chisel analysis and Precision image processing are designed to stay local on the device.",
+    "Chisel labels recommendations with evidence-strength categories such as Strong, Moderate, Limited, and Myth.",
+    "Chisel includes uncertainty-aware progress comparison and capture-quality checks.",
+    "Optional photoreal rendering is a separate opt-in cloud path from the local core experience."
+  ],
+  "forbiddenClaims": [
+    "Medical diagnosis",
+    "Clinically proven appearance improvement",
+    "Guaranteed attractiveness improvement",
+    "Guaranteed facial symmetry improvement",
+    "Highly accurate facial measurement",
+    "All photos never leave the device",
+    "Exercises reshape adult facial bones"
+  ],
+  "primaryUrl": "https://syrava.com/contact/",
+  "primaryCta": "Ask about the Chisel beta",
+  "pricing": { "mode": "unannounced" },
+  "analytics": { "campaignPrefix": "chisel-launch" },
+  "privacy": {
+    "summary": "The core experience is designed around local processing and no analytics or tracking SDKs. Marketing measurement must not include face images, measurements, progress photos, grooming logs, or other private appearance data.",
+    "telemetry": "none"
+  },
+  "evidence": {
+    "releaseGate": "pending",
+    "releaseReport": null,
+    "checkedAt": null
+  }
+}

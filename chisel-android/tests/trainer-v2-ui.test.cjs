@@ -1,0 +1,62 @@
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+
+const root = path.resolve(__dirname, '..');
+const coachCore = fs.readFileSync(path.join(root, 'www/chisel-ar-coach-core.js'), 'utf8');
+
+function read(name) {
+  return fs.readFileSync(path.join(root, 'www', name), 'utf8');
+}
+
+test('trainer v2 runtime upgrades the existing AR coach instead of creating a second modal', () => {
+  const js = read('chisel-trainer-v2.js');
+  const css = read('chisel-trainer-v2.css');
+  assert.doesNotThrow(() => new Function(js));
+  assert.match(js, /#arCoachModal|arCoachModal/);
+  assert.match(js, /Face & Neck Trainer|Face &amp; Neck Trainer/);
+  assert.match(js, /cheek-builder/);
+  assert.match(js, /jaw-chin/);
+  assert.match(js, /chisel:coach-state/);
+  assert.match(js, /massage-full/);
+  assert.match(js, /ctv2Preview/);
+  assert.match(js, /ctv2Pause/);
+  assert.match(js, /ctv2Next/);
+  assert.match(js, /skipARCoachExercise/);
+  assert.match(js, /Haptics/);
+  assert.match(js, /speechSynthesis/);
+  assert.match(js, /cps-trainer-body/);
+  assert.match(js, /ctv2-preview-open/);
+  assert.match(js, /ctv2-actions/);
+  assert.match(js, /syncCompactGrid/);
+  assert.match(js, /ctv2ViewAll/);
+  assert.match(js, /benefitCopy/);
+  assert.match(js, /form score/i);
+  assert.doesNotMatch(js, /male routine|female routine|for men|for women/i);
+  assert.match(css, /min-height:\s*44px|min-height:\s*48px/);
+  assert.match(css, /prefers-reduced-motion/);
+  assert.match(css, /ct-demo-motion/);
+  assert.match(css, /min-height:44px/);
+  assert.match(css, /ctv2-preview-benefit/);
+  assert.match(css, /ctv2-actions/);
+  assert.match(css, /prefers-reduced-motion/);
+});
+
+test('trainer runtime also repairs legacy try-on shortcuts into unisex style families', () => {
+  const js = read('chisel-trainer-v2.js');
+  assert.match(js, /Short \/ structured/);
+  assert.match(js, /Long \/ layered/);
+  assert.match(js, /Choose by style family and goal, not gender/);
+  assert.match(js, /Facial hair/);
+  assert.match(js, /Makeup \/ color/);
+});
+
+test('trainer bootstrap loads css before runtime and keeps core first', () => {
+  const cssIndex = coachCore.indexOf("chisel-trainer-v2.css");
+  const jsIndex = coachCore.indexOf("chisel-trainer-v2.js");
+  assert.ok(cssIndex >= 0, 'trainer css missing from bootstrap');
+  assert.ok(jsIndex >= 0, 'trainer runtime missing from bootstrap');
+  assert.ok(cssIndex < jsIndex, 'trainer css should be registered before runtime');
+  assert.ok(coachCore.indexOf("chisel-trainer-demos.js") < jsIndex, 'demo runtime should load before trainer runtime');
+});

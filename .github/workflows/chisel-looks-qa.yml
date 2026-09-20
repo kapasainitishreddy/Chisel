@@ -1,0 +1,50 @@
+name: Chisel Looks UI QA
+on:
+  pull_request:
+    paths:
+      - 'chisel-android/**'
+      - 'supabase/functions/looks-studio/**'
+      - '.github/workflows/chisel-looks-qa.yml'
+permissions:
+  contents: read
+concurrency:
+  group: chisel-looks-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  looks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    defaults:
+      run:
+        working-directory: chisel-android
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify source
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/chisel-looks-qa
+          git rev-parse HEAD > /tmp/chisel-looks-qa/source-sha.txt
+          git -C .. archive --format=tar.gz -o /tmp/chisel-looks-qa/source.tar.gz HEAD
+          npm ci --ignore-scripts
+          npm test | tee /tmp/chisel-looks-qa/node-tests.txt
+      - name: Test UI with isolated provider fixtures
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false puppeteer-core@24
+          export CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/chisel-looks-qa/http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          sleep 1
+          timeout --signal=TERM --kill-after=5s 180s node tests/looks-browser-runner.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: chisel-looks-${{ github.run_id }}
+          path: /tmp/chisel-looks-qa/
+          retention-days: 7

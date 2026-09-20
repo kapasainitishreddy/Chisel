@@ -63,6 +63,7 @@ test('bad form resets the hold and accepted form completes only after hold durat
   assert.equal(state.holdStartedAt, 0);
   assert.equal(state.rep, 0);
   state = coach.advanceState(state, { accepted: true, correction: '' }, 3000);
+  for(let t=3100;t<=5900;t+=100) state=coach.advanceState(state,{accepted:true,correction:''},t);
   state = coach.advanceState(state, { accepted: true, correction: '' }, 5999);
   assert.equal(state.rep, 0);
   state = coach.advanceState(state, { accepted: true, correction: '' }, 6000);

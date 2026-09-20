@@ -1,0 +1,51 @@
+name: Chisel Personal Photo UI
+on:
+  pull_request:
+    paths: ['chisel-android/**', '.github/workflows/chisel-personal-ui.yml']
+permissions:
+  contents: read
+concurrency:
+  group: chisel-personal-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  personal-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    defaults:
+      run:
+        working-directory: chisel-android
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test and snapshot exact source
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/chisel-personal-ui
+          npm ci --ignore-scripts
+          npm test | tee /tmp/chisel-personal-ui/node-tests.txt
+          node --check www/chisel-personal-photo.js
+          node --check www/chisel-personal-studio.js
+          node --check tests/personal-studio-browser.mjs
+          git rev-parse HEAD > /tmp/chisel-personal-ui/source-sha.txt
+          git -C .. archive --format=tar.gz -o /tmp/chisel-personal-ui/source.tar.gz HEAD
+      - name: Exercise real portrait lifecycle and photo-led screens
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false puppeteer-core@24
+          export CHROME="$(command -v google-chrome || command -v chromium)"
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/chisel-personal-ui/http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          sleep 1
+          timeout --signal=TERM --kill-after=5s 180s node tests/personal-studio-browser.mjs
+      - name: Preserve real screenshots and evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: chisel-personal-ui-${{ github.run_id }}
+          path: /tmp/chisel-personal-ui/
+          retention-days: 7

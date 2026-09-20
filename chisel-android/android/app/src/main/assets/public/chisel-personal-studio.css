@@ -1,0 +1,452 @@
+/* Photo-led theme: a single 8px spacing rhythm, real personal media, no fake stats. */
+html[data-personal-studio] {
+ --cs-bg:#080b0c;--cs-surface:#111719;--cs-raised:#1b2224;--cs-text:#f5f3ee;
+ --cs-muted:#b3b9b7;--cs-accent:#f1ede5;--cs-sage:#a9cbb8;--cs-line:#2b3436;
+ --cs-control:16px;--cs-radius:20px;--sans:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif;
+ --cps-space:8px;--cps-edge:20px;--cps-shadow:0 8px 24px #0004;
+}
+html[data-personal-studio] main.view{padding:20px var(--cps-edge) 24px;scroll-padding:20px 0 24px}
+html[data-personal-studio] .screen{max-width:1000px}
+html[data-personal-studio] .cs-masthead{max-width:1000px;min-height:44px;margin:0 auto 16px;gap:12px}
+html[data-personal-studio] .cs-wordmark{font:500 19px/1.2 var(--sans);letter-spacing:.24em}
+html[data-personal-studio] .cs-orbit-trigger{background:transparent;border:0;min-height:44px;padding:8px;color:var(--cs-muted)}
+html[data-personal-studio] .cs-orbit-trigger svg{height:20px;width:20px}
+html[data-personal-studio] .cps-avatar{position:relative;overflow:hidden;width:44px;height:44px;flex-shrink:0;border-radius:50%;border:1px solid #697873;background:var(--cs-raised);padding:0;color:var(--cs-text)}
+html[data-personal-studio] .cps-avatar>svg{width:22px;height:22px}
+html[data-personal-studio] .cps-avatar .cps-personal-image{border-radius:50%;object-position:50% 30%}
+html[data-personal-studio] .cps-avatar:has(img:not([hidden]))>svg,html[data-personal-studio] .cps-avatar .cps-photo-empty{display:none}
+html[data-personal-studio] .cps-settings-in-tools{display:flex!important;gap:12px;width:100%;margin:0!important;justify-content:flex-start;height:48px;border:0!important;background:none!important;font:500 14px var(--sans)!important}
+html[data-personal-studio] .cps-settings-in-tools svg{width:22px;height:22px}
+html[data-personal-studio] .hero{display:grid;grid-template-columns:1fr;margin:0;gap:24px;padding:0!important}
+html[data-personal-studio] .cps-photo{position:relative;overflow:hidden;isolation:isolate;background:#172022;border-radius:18px}
+html[data-personal-studio] .cps-personal-image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 30%;display:block}
+html[data-personal-studio] .cps-personal-image[hidden],html[data-personal-studio] [hidden]{display:none!important}
+html[data-personal-studio] .cps-photo-empty{display:grid;place-items:center;position:absolute;inset:0;color:#92a8a0}
+html[data-personal-studio] .cps-photo-empty svg{width:52px;height:52px}
+html[data-personal-studio] .has-photo>.cps-photo-empty{display:none!important}
+html[data-personal-studio] .cps-edge-fade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 30%,#080b0c12 48%,#080b0ca6 72%,#080b0cf7 100%)}
+html[data-personal-studio] .cps-home-hero{height:354px;margin:0 -4px;border-radius:20px;box-shadow:var(--cps-shadow)}
+html[data-personal-studio] .cps-home-hero h1{position:absolute;left:24px;bottom:20px;margin:0;font:400 43px/1.04 Georgia,serif;letter-spacing:-.035em;color:#fffef9}
+html[data-personal-studio] .cps-home-hero:not(.has-photo){height:300px}
+html[data-personal-studio] .cps-home-hero:not(.has-photo) h1{font-size:36px;bottom:24px}
+html[data-personal-studio] .cps-home-hero:not(.has-photo) .cps-photo-empty{bottom:95px}
+html[data-personal-studio] .cps-icon-btn{display:grid;place-items:center;width:44px;height:44px;min-height:44px;flex:0 0 44px;padding:0;border:1px solid #d6e5e02e;border-radius:14px;background:#111719bd;color:#f7f6f1}
+html[data-personal-studio] .cps-icon-btn svg{width:20px;height:20px}
+html[data-personal-studio] .cps-edit-photo{position:absolute;right:12px;top:12px}
+html[data-personal-studio] .cps-add-photo{position:absolute;top:44%;left:50%;transform:translateX(-50%);background:#f1ede5;color:#101515;border:0;border-radius:22px;min-height:44px;padding:12px 18px;font:600 13px var(--sans);white-space:nowrap}
+html[data-personal-studio] .cps-start{margin:24px 0 0}
+html[data-personal-studio] .cps-start h2,html[data-personal-studio] .cps-subheading{font:550 15px/1.4 var(--sans);margin:0 0 12px;color:var(--cs-text);letter-spacing:-.01em}
+html[data-personal-studio] .cs-direct-tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0}
+html[data-personal-studio] .cs-direct-tools .cs-tool-row{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:102px;padding:16px 8px;gap:12px;border:1px solid #b7c4bc2b;border-radius:18px;background:linear-gradient(145deg,#36312b,#191d1d);color:var(--cs-text);margin:0;box-shadow:inset 0 1px 0 #fff1}
+html[data-personal-studio] .cs-direct-tools .cs-tool-row:nth-child(2){background:linear-gradient(145deg,#34483d,#18251f)}
+html[data-personal-studio] .cs-direct-tools .cs-tool-row:nth-child(3){background:linear-gradient(145deg,#36352f,#1b2020)}
+html[data-personal-studio] .cs-direct-tools .cs-tool-row>svg:first-child{width:27px;height:27px;flex:none;color:var(--cs-text)}
+html[data-personal-studio] .cs-direct-tools .cs-tool-row>svg:last-child{display:none}
+html[data-personal-studio] .cs-direct-tools .cs-tool-row b{font:550 12px/1.35 var(--sans);letter-spacing:0;text-align:center}
+html[data-personal-studio] #cxpHomeHub{border:0;border-radius:0;background:transparent;padding:0;margin:0;box-shadow:none}
+html[data-personal-studio] #cxpHomeHubTitle{font:550 15px/1.4 var(--sans);color:var(--cs-text);margin:0 0 12px}
+html[data-personal-studio] .cxp-focus{display:grid;grid-template-columns:64px 1fr;gap:12px;background:var(--cs-surface);border:1px solid var(--cs-line);padding:12px;border-radius:18px;align-items:center}
+html[data-personal-studio] .cps-focus-photo{width:64px;height:74px;border-radius:12px;grid-row:1/3}
+html[data-personal-studio] .cps-focus-photo .cps-photo-empty svg{width:24px;height:24px}
+html[data-personal-studio] .cxp-focus-copy b{font:550 15px/1.35 var(--sans)}
+html[data-personal-studio] .cxp-focus-actions{margin:0;gap:8px;grid-column:2;display:flex;flex-wrap:wrap}
+html[data-personal-studio] .cxp-focus-actions>button{min-width:0;min-height:44px;font-size:12px;padding:10px 14px;border-radius:24px}
+html[data-personal-studio] .cxp-focus-actions .cxp-focus-btn{color:#131818;background:var(--cs-accent);border-color:#fff8}
+html[data-personal-studio] .cxp-focus-actions .cxp-done-btn{border:0;color:var(--cs-muted);padding:10px 2px;background:transparent}
+html[data-personal-studio] .cs-disclosure{margin-top:12px;border-color:var(--cs-line)}
+html[data-personal-studio] .cs-disclosure>summary{font-size:13px;min-height:48px;padding:12px 0}
+html[data-personal-studio] .cs-focus-details,html[data-personal-studio] .cs-quick-tools{margin-top:8px}
+html[data-personal-studio] .cs-home-more{margin-top:0}
+html[data-personal-studio] nav.tabs{background:#0b1112;border-top:1px solid var(--cs-line);padding:4px 10px max(4px,env(safe-area-inset-bottom));box-shadow:0 -10px 32px #0004}
+html[data-personal-studio] nav.tabs a{font-size:10px;letter-spacing:0;min-height:60px}
+html[data-personal-studio] nav.tabs .pill{background:#22302c;border-radius:18px}
+html[data-personal-studio] nav.tabs a.active{color:#fffef9}
+html[data-personal-studio] :is(.cps-primary,.cps-secondary){display:flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:13px 20px;border:1px solid #ffffff69;border-radius:30px;color:#101515;background:linear-gradient(145deg,#fffdf8,#e8e1d9);font:600 14px/1.3 var(--sans);cursor:pointer;box-shadow:0 2px 8px #0003;letter-spacing:0}
+html[data-personal-studio] .cps-primary svg,html[data-personal-studio] .cps-secondary svg{width:20px;height:20px;flex-shrink:0}
+html[data-personal-studio] .cps-secondary{background:#192122;color:var(--cs-text);border-color:#394747;box-shadow:none}
+html[data-personal-studio] :is(.cps-primary,.cps-secondary,.cps-icon-btn):active:not(:disabled){transform:translateY(1px)}
+html[data-personal-studio] :is(button,label):focus-visible,html[data-personal-studio] label:focus-within{outline:2px solid #badcc8;outline-offset:3px}
+html[data-personal-studio] button:disabled{opacity:.45;cursor:not-allowed}
+/* The task's heading stays outside its scrolling content. */
+html[data-personal-studio] #arCoachModal{padding:8px;align-items:center}
+html[data-personal-studio] #arCoachModal .panel{display:flex;flex-direction:column;padding:0;overflow:hidden;border-radius:24px;width:min(640px,100%);max-height:calc(100dvh - 16px);background:#080d0e;border:1px solid #3e494b}
+html[data-personal-studio] .cps-screen-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;flex-shrink:0}
+html[data-personal-studio] #arCoachTitle{font:550 18px/1.3 var(--sans);margin:0;padding:0;letter-spacing:-.015em}
+html[data-personal-studio] #arCoachX{position:static;width:44px;height:44px;min-width:44px;min-height:44px;border:0;background:none}
+html[data-personal-studio] .cps-trainer-body{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 16px 24px;scroll-padding:16px}
+html[data-personal-studio] .cps-trainer-hero{height:280px;border-radius:16px;margin:0 0 20px}
+html[data-personal-studio] .cps-image-label{position:absolute;left:12px;top:12px;background:#071011a6;color:#f3f4ed;border:1px solid #ffffff24;border-radius:16px;padding:6px 9px;font:500 10px/1.2 var(--sans);z-index:1}
+html[data-personal-studio] .cps-feature-caption{position:absolute;bottom:16px;left:16px;right:16px}
+html[data-personal-studio] #arCoachModal #cpsSessionTitle{font:550 22px/1.2 var(--sans);margin:0 0 6px;padding:0;letter-spacing:-.02em}
+html[data-personal-studio] #cpsSessionMeta{font:400 12px/1.4 var(--sans);color:#d2dad5;margin:0 0 14px}
+html[data-personal-studio] #cpsStartSession{width:100%}
+html[data-personal-studio] #arCoachModal #csTrainerFilters{background:#172021;border:1px solid #2b3838;border-radius:24px;padding:3px;margin:0 0 18px;gap:2px}
+html[data-personal-studio] #csTrainerFilters button{border:0!important;border-radius:20px!important;min-height:44px;font-size:12px}
+html[data-personal-studio] #arCoachModal #csTrainerFilters button[aria-pressed="true"]{background:var(--cs-accent);color:#101515}
+html[data-personal-studio] #arCoachModal .ar-session-grid{gap:8px;grid-template-columns:1fr}
+html[data-personal-studio] #arCoachModal .ar-session{display:grid;grid-template-columns:48px 1fr;grid-template-rows:auto auto;column-gap:12px;row-gap:3px;min-height:72px;padding:10px 32px 10px 10px;border:1px solid #2b3839;border-radius:14px;background:linear-gradient(110deg,#171f20,#0e1516);align-content:center;text-align:left}
+html[data-personal-studio] #arCoachModal .ar-session::before{display:none}
+html[data-personal-studio] #arCoachModal .ar-session::after{right:16px;border-color:#b6c8bd}
+html[data-personal-studio] #arCoachModal .ar-session strong{font:550 15px/1.4 var(--sans);align-self:end}
+html[data-personal-studio] #arCoachModal .ar-session>span{font:400 11px/1.3 var(--sans);color:#b6c1bc;align-self:start;grid-column:2;margin:0}
+html[data-personal-studio] .cps-exercise-thumb{grid-row:1/3;width:48px;height:50px;border-radius:9px}
+html[data-personal-studio] .cps-exercise-thumb .cps-photo-empty svg{width:20px;height:20px}
+html[data-personal-studio] .cs-comfort{font-size:12px!important;line-height:1.5;color:var(--cs-muted);margin:16px 0 8px}
+html[data-personal-studio] .cps-form-meter{--cps-score:0;display:flex;align-items:center;gap:12px;font:500 12px var(--sans);margin-top:12px;color:var(--cs-muted)}
+html[data-personal-studio] .cps-form-meter strong{display:grid;place-items:center;min-width:54px;height:54px;border:3px solid #83ae91;border-radius:50%;font-size:20px;color:var(--cs-text)}
+/* Skin retains original image analysis; the decorative frame is not a scan result. */
+html[data-personal-studio] .chl-dialog{background:#080d0e;border-radius:24px;border-color:#394748}
+html[data-personal-studio] .chl-header{padding:16px 20px 10px}
+html[data-personal-studio] .chl-header h2{font:550 18px/1.3 var(--sans)}
+html[data-personal-studio] .chl-close{background:none;border:0;width:44px;height:44px;min-width:44px;min-height:44px}
+html[data-personal-studio] .chl-panel{padding:16px 20px 24px;scroll-padding:16px}
+html[data-personal-studio] #csaTitle{font:550 17px/1.3 var(--sans);margin:0 0 6px;letter-spacing:-.02em}
+html[data-personal-studio] .csa-top{margin-bottom:16px}
+html[data-personal-studio] .csa-top p{font-size:11px;line-height:1.4}
+html[data-personal-studio] .csa-local{display:none}
+html[data-personal-studio] .cps-skin-hero{height:292px;border-radius:18px}
+html[data-personal-studio] .cps-skin-hero .cps-personal-image{object-position:40% 26%}
+html[data-personal-studio] .cps-skin-hero .cps-edge-fade{background:linear-gradient(90deg,transparent 30%,#07101140 57%,#071011e6 100%)}
+html[data-personal-studio] .cps-scan-bracket{position:absolute;inset:17% 40% 20% 12%;border:1px solid #effbf1b3;border-radius:32px;pointer-events:none}
+html[data-personal-studio] .cps-skin-title{position:absolute;right:16px;bottom:36px;max-width:115px;color:#fcfaf3}
+html[data-personal-studio] .cps-skin-title h3{font:500 24px/1.15 var(--sans);margin:0 0 8px;letter-spacing:-.02em}
+html[data-personal-studio] .cps-skin-title span{font:500 11px/1.3 var(--sans);color:#c6d4cd}
+html[data-personal-studio] .csa-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 0;padding:0;border:0;background:none}
+html[data-personal-studio] .csa-actions:has(#cpsUsePhoto:not([hidden])) #cpsUsePhoto{grid-column:1/-1;min-height:46px}
+html[data-personal-studio] .csa-actions .csa-file{min-height:52px!important;max-height:60px!important;flex-direction:row;gap:8px;padding:12px;border:1px solid #4c5958;border-radius:28px;background:#192122;color:#f4f2ed;font-size:13px}
+html[data-personal-studio] .csa-file svg{height:20px;width:20px}
+html[data-personal-studio] .csa-actions .csa-button{min-height:52px!important;max-height:60px;border-radius:28px;font-size:13px;padding:12px;background:var(--cs-accent);color:#111717}
+html[data-personal-studio] .csa-status{font-size:12px;line-height:1.45;padding:0;margin-top:12px}
+html[data-personal-studio] .cs-photo-tips{margin-top:16px}
+html[data-personal-studio] .csa-preview-wrap{margin-top:18px}
+html[data-personal-studio] .csa-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+html[data-personal-studio] .csa-metric{background:linear-gradient(135deg,#182122,#101617);border:1px solid #2d3a39;border-radius:16px;padding:16px}
+html[data-personal-studio] .csa-metric-name{font-size:13px}
+html[data-personal-studio] .csa-metric-value{font-size:22px}
+/* The saved photo is a poster, never a fabricated rendered style result. */
+html[data-personal-studio] #cxStudioCard{padding:0 0 24px;margin:28px 0 0;border:0;background:none}
+html[data-personal-studio] #cxStudioCard .cx-studio-title{font:550 20px/1.3 var(--sans);margin:0 0 16px;letter-spacing:-.02em}
+html[data-personal-studio] .cps-style-tabs{display:flex;padding:4px;border-radius:25px;background:#192021;border:1px solid #2d3838;gap:2px;margin:0 0 12px}
+html[data-personal-studio] .cps-style-tabs button{flex:1;min-width:0;min-height:44px;padding:8px 4px;border:0;border-radius:22px;background:transparent;color:#d3dad5;font:500 12px/1.3 var(--sans)}
+html[data-personal-studio] .cps-style-tabs button[aria-pressed="true"]{background:var(--cs-accent);color:#111717}
+html[data-personal-studio] .cps-style-hero{height:400px;margin:0 0 16px;border-radius:18px}
+html[data-personal-studio] #cpsTryStyle{width:100%;margin:0 0 12px}
+html[data-personal-studio] #cxStudioCard .cx-studio-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0 0}
+html[data-personal-studio] #cxStudioCard .cx-studio-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:60px;padding:12px 14px;border:1px solid #354342;border-radius:16px;background:#131d1e;text-align:left}
+html[data-personal-studio] #cxStudioCard .cx-studio-btn b{font:500 13px/1.35 var(--sans);margin:0;color:#e8eee8}
+html[data-personal-studio] #cxStudioCard .cx-studio-btn svg{width:16px;height:16px}
+html[data-personal-studio] #cxStudioCard .cx-studio-copy{font:400 12px/1.4 var(--sans);margin:12px 0 0;color:var(--cs-muted)}
+/* Local-only photo management uses a native, keyboard-accessible dialog. */
+html[data-personal-studio] .cps-photo-dialog{width:min(420px,calc(100vw - 24px));padding:20px;color:var(--cs-text);background:#0d1415;border:1px solid #3b4a49;border-radius:24px;max-height:calc(100dvh - 24px);overflow:auto;box-shadow:0 24px 80px #000a}
+html[data-personal-studio] .cps-photo-dialog::backdrop{background:#000b;backdrop-filter:blur(8px)}
+html[data-personal-studio] .cps-photo-dialog header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px}
+html[data-personal-studio] .cps-photo-dialog h2{font:550 22px/1.3 var(--sans);margin:0}
+html[data-personal-studio] #cpsPhotoPreview{height:256px;border-radius:18px}
+html[data-personal-studio] .cps-private-note{font:400 12px/1.5 var(--sans);color:var(--cs-muted);text-align:center;margin:12px 0 16px}
+html[data-personal-studio] .cps-photo-actions{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+html[data-personal-studio] .cps-photo-actions label{position:relative;padding:12px;font-size:13px;overflow:hidden}
+html[data-personal-studio] .cps-photo-actions input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+html[data-personal-studio] .cps-remove{display:block;width:100%;min-height:44px;border:0;background:transparent;color:#d5b5b0;font:500 13px var(--sans);margin-top:12px}
+html[data-personal-studio] #cpsPhotoStatus{font:400 12px/1.5 var(--sans);color:var(--cs-muted);margin:12px 0 0}
+@media(min-width:950px){
+ html[data-personal-studio] main.view{padding:24px 40px 32px}
+ html[data-personal-studio] .hero{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:32px}
+ html[data-personal-studio] .cps-home-hero{height:440px;margin:0}
+ html[data-personal-studio] #cxpHomeHub{margin-top:12px}
+ html[data-personal-studio] .cps-trainer-hero{height:320px}
+ html[data-personal-studio] #cxStudioCard{max-width:760px;margin-inline:auto}
+ html[data-personal-studio] .cps-style-hero{height:500px}
+}
+@media(max-width:380px){
+ html[data-personal-studio]{--cps-edge:16px}
+ html[data-personal-studio] .cps-home-hero{height:320px}
+ html[data-personal-studio] .cps-home-hero h1{font-size:39px;left:20px}
+ html[data-personal-studio] .cs-direct-tools{gap:8px}
+ html[data-personal-studio] .cs-direct-tools .cs-tool-row{min-height:94px;padding:12px 4px}
+ html[data-personal-studio] .cs-direct-tools .cs-tool-row b{font-size:11px}
+ html[data-personal-studio] .cps-trainer-hero{height:250px}
+ html[data-personal-studio] .cps-skin-hero{height:260px}
+ html[data-personal-studio] .cps-style-hero{height:350px}
+ html[data-personal-studio] #arCoachModal .ar-session strong{font-size:13px}
+}
+@media(prefers-reduced-motion:reduce){
+ html[data-personal-studio] *,html[data-personal-studio] *::before,html[data-personal-studio] *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+
+/* Keep the style destination aligned even when it is the last short section. */
+html[data-personal-studio] #cxStudioCard{min-height:calc(100dvh - 100px);scroll-margin-top:0px}
+
+/* Premium trainer: editorial hierarchy, compact discovery and a camera-first HUD. */
+html[data-personal-studio] #arCoachModal{background:#020606c7;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
+html[data-personal-studio] #arCoachModal .panel{width:min(600px,100%);background:#080d0e;border-color:#344140;box-shadow:0 28px 90px #000c,inset 0 1px 0 #ffffff0a}
+html[data-personal-studio] #arCoachModal .cps-screen-head{padding:14px 18px 12px;border-bottom:1px solid #ffffff0a}
+html[data-personal-studio] #arCoachModal #arCoachTitle{font:600 21px/1.25 var(--sans);letter-spacing:-.025em}
+html[data-personal-studio] #arCoachModal #arCoachX{border:1px solid #3a4847;border-radius:14px;background:#11191a;color:#eef1eb;transition:background-color 180ms ease,border-color 180ms ease,transform 180ms ease}
+html[data-personal-studio] #arCoachModal #arCoachX:hover{background:#182223;border-color:#60716e}
+html[data-personal-studio] #arCoachModal .cps-trainer-body{padding:0 18px 22px;scrollbar-width:thin;scrollbar-color:#50605d transparent}
+html[data-personal-studio] #arCoachModal .cps-trainer-hero{height:224px;margin:0 0 14px;border:1px solid #2d3a39;border-radius:18px;background:radial-gradient(circle at 50% 24%,#27332f 0,#16201f 46%,#0d1415 100%);box-shadow:inset 0 1px 0 #ffffff0a}
+html[data-personal-studio] #arCoachModal .cps-trainer-hero:not(.has-photo)>.cps-photo-empty{display:none}
+html[data-personal-studio] #arCoachModal .cps-trainer-demo{position:absolute;inset:4px 18px 66px;display:grid;place-items:center;z-index:0;opacity:.9}
+html[data-personal-studio] #arCoachModal .cps-trainer-demo .ctv2-demo-svg{width:min(100%,176px);filter:drop-shadow(0 16px 24px #0007)}
+html[data-personal-studio] #arCoachModal .cps-trainer-demo .ct-demo-label{display:none}
+html[data-personal-studio] #arCoachModal .cps-trainer-hero.has-photo .cps-trainer-demo{display:none}
+html[data-personal-studio] #arCoachModal .cps-trainer-hero:not(.has-photo) .cps-edge-fade{background:linear-gradient(180deg,transparent 24%,#080d0e0d 44%,#080d0ebd 78%,#080d0efa 100%)}
+html[data-personal-studio] #arCoachModal .cps-image-label{left:12px;top:12px;padding:5px 8px;border-color:#ffffff1f;border-radius:10px;background:#071011c9;color:#dce4de;font-size:9px;letter-spacing:.035em}
+html[data-personal-studio] #arCoachModal .cps-feature-caption{bottom:12px;left:14px;right:14px;z-index:2}
+html[data-personal-studio] #arCoachModal #cpsSessionTitle{font:600 19px/1.25 var(--sans);margin-bottom:3px}
+html[data-personal-studio] #arCoachModal #cpsSessionMeta{margin:0 0 10px;color:#c0cac4;font-size:11px}
+html[data-personal-studio] #arCoachModal #cpsStartSession{min-height:46px;border-radius:14px;background:#f0ebe3;box-shadow:0 8px 24px #0005;font-size:13px;transition:transform 180ms ease,background-color 180ms ease}
+html[data-personal-studio] #arCoachModal #csTrainerFilters{position:sticky;top:0;z-index:4;margin:0 0 12px;padding:3px;border-color:#2e3b3a;border-radius:16px;background:#141d1eeb;box-shadow:0 8px 18px #080d0e}
+html[data-personal-studio] #arCoachModal #csTrainerFilters button{min-height:42px;border-radius:12px!important;font:550 11px/1.2 var(--sans);transition:background-color 180ms ease,color 180ms ease}
+html[data-personal-studio] #arCoachModal #csTrainerFilters button[aria-pressed="true"]{background:#eee9e1;color:#111717;box-shadow:0 2px 8px #0004}
+html[data-personal-studio] #arCoachModal .cps-subheading{margin:2px 0 4px;color:#aeb9b3;font-size:11px;letter-spacing:.055em;text-transform:uppercase}
+html[data-personal-studio] #arCoachModal .ar-session-grid{max-height:none!important;overflow:visible!important;gap:0;padding:0!important;border-top:1px solid #2b3736;border-bottom:1px solid #2b3736}
+html[data-personal-studio] #arCoachModal .ar-session{grid-template-columns:42px 1fr;min-height:64px;padding:8px 30px 8px 0;border:0;border-bottom:1px solid #283332;border-radius:0;background:transparent;column-gap:12px;transition:background-color 180ms ease,padding-left 180ms ease}
+html[data-personal-studio] #arCoachModal .ar-session:last-child{border-bottom:0}
+html[data-personal-studio] #arCoachModal .ar-session:hover{padding-left:8px;background:#ffffff05}
+html[data-personal-studio] #arCoachModal .ar-session::after{right:6px;border-color:#8fa097}
+html[data-personal-studio] #arCoachModal .ar-session strong{font:560 14px/1.35 var(--sans)}
+html[data-personal-studio] #arCoachModal .ar-session>span{font-size:10.5px;color:#9fada6}
+html[data-personal-studio] #arCoachModal .cps-exercise-thumb{width:42px;height:44px;border:1px solid #263231;border-radius:11px;background:#101819}
+html[data-personal-studio] #arCoachModal .cps-exercise-thumb .cps-photo-empty svg{width:17px;height:17px;opacity:.75}
+html[data-personal-studio] #arCoachModal .cs-comfort{margin:12px 0 2px;font-size:11px!important}
+html[data-personal-studio] #arCoachModal .cs-trainer-method{margin-top:4px}
+
+html[data-personal-studio] #arCoachModal .panel.ctv2-preview-open .cps-screen-head{border-bottom-color:#2b3736}
+html[data-personal-studio] #arCoachModal .ctv2-preview{flex:1;min-height:0;overflow-y:auto;margin:0;padding:8px 18px max(14px,env(safe-area-inset-bottom));border:0;border-radius:0;background:transparent;scrollbar-width:thin;scrollbar-color:#50605d transparent}
+html[data-personal-studio] #arCoachModal .ctv2-preview-back{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0;border:0;background:transparent;color:#b7c3bd;font:550 12px/1.3 var(--sans)}
+html[data-personal-studio] #arCoachModal .ctv2-preview-back svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+html[data-personal-studio] #arCoachModal .ctv2-preview-head{margin:5px 0 14px}
+html[data-personal-studio] #arCoachModal .ctv2-preview-head h4{margin:6px 0 4px;font:600 25px/1.14 var(--sans);letter-spacing:-.035em;color:#f4f2ec}
+html[data-personal-studio] #arCoachModal .ctv2-preview-head>p:not(.ctv2-preview-benefit){font-size:11px;color:#9faea7}
+html[data-personal-studio] #arCoachModal .ctv2-preview-benefit{max-width:46ch;margin:10px 0 0;color:#cbd3ce;font:400 13px/1.5 var(--sans)}
+html[data-personal-studio] #arCoachModal .ctv2-preview-demo{min-height:210px;margin:0 0 12px;border:1px solid #2c3938;border-radius:18px;background:radial-gradient(circle at 50% 35%,#202b28 0,#101718 62%,#0b1112 100%);box-shadow:inset 0 1px 0 #ffffff0a}
+html[data-personal-studio] #arCoachModal .ctv2-preview-demo .ctv2-demo-svg{width:min(100%,220px);filter:drop-shadow(0 14px 24px #0007)}
+html[data-personal-studio] #arCoachModal .ctv2-preview-cue{margin:0 0 9px;font:550 13px/1.48 var(--sans);color:#edf0ea}
+html[data-personal-studio] #arCoachModal .ctv2-preview-meta{margin:0;padding:0 0 10px;border-bottom:1px solid #283332;color:#9eaba5;font-size:10.5px}
+html[data-personal-studio] #arCoachModal .ctv2-preview details{padding:0;border:0}
+html[data-personal-studio] #arCoachModal .ctv2-preview summary{min-height:44px;display:flex;align-items:center;color:#b7c2bc;font:500 11px/1.4 var(--sans)}
+html[data-personal-studio] #arCoachModal .ctv2-preview ol{margin:0 0 8px;padding:8px 0 8px 24px;border-top:1px solid #202b2a;color:#acb8b2;font-size:11px;line-height:1.7}
+html[data-personal-studio] #arCoachModal .ctv2-preview-footer{position:sticky;bottom:-14px;margin-top:2px;padding:10px 0 max(10px,env(safe-area-inset-bottom));background:linear-gradient(180deg,#080d0e00,#080d0e 18%,#080d0e 100%);z-index:3}
+html[data-personal-studio] #arCoachModal .ctv2-start-routine{min-height:50px;margin:0;border:0;border-radius:14px;background:#f0ebe3;color:#101515;font:650 13px/1.3 var(--sans);box-shadow:0 10px 28px #0007}
+html[data-personal-studio] #arCoachModal .ctv2-pressure-note{margin:8px 2px 0;color:#899790;font-size:10px;line-height:1.45}
+
+html[data-personal-studio] #arCoachHud{left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));bottom:max(10px,env(safe-area-inset-bottom));width:auto;max-width:560px;max-height:46dvh;margin-inline:auto;padding:14px;border-color:#40504d;border-radius:20px;background:#081011f2;box-shadow:0 22px 64px #000b;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);scrollbar-width:thin}
+html[data-personal-studio] #arCoachHud .ctv2-demo{min-height:0;max-height:154px;margin:-2px 0 10px;padding:0;border:0;border-radius:14px;background:radial-gradient(circle at 50% 40%,#1d2926,#0b1213 70%);overflow:hidden}
+html[data-personal-studio] #arCoachHud .ctv2-demo-svg{width:min(100%,166px)}
+html[data-personal-studio] #arCoachHud .ar-hud-title{font:600 18px/1.2 var(--sans);letter-spacing:-.02em}
+html[data-personal-studio] #arCoachHud .ar-hud-evidence{padding:4px 7px;border-color:#41504d;border-radius:8px;background:#111b1b;color:#afbbb5;font:550 9px/1.3 var(--sans);letter-spacing:.02em}
+html[data-personal-studio] #arCoachHud .ar-hud-cue{margin-top:6px;color:#e6e9e3;font:450 12px/1.45 var(--sans)}
+html[data-personal-studio] #arCoachHud .ar-hud-status{margin-top:8px;color:#aab6b0;font-size:10.5px}
+html[data-personal-studio] #arCoachHud .ar-hud-progress{height:3px;margin-top:7px;background:#26302f}
+html[data-personal-studio] #arCoachHud .ctv2-live{gap:0;margin-top:10px;padding:8px 0;border-top:1px solid #2b3736;border-bottom:1px solid #2b3736}
+html[data-personal-studio] #arCoachHud .ctv2-live-item{padding:0 9px;border:0;border-right:1px solid #2b3736;border-radius:0;background:transparent}
+html[data-personal-studio] #arCoachHud .ctv2-live-item:first-child{padding-left:0}
+html[data-personal-studio] #arCoachHud .ctv2-live-item:last-child{padding-right:0;border-right:0}
+html[data-personal-studio] #arCoachHud .ctv2-live-item small{font-size:9px;line-height:1.3;color:#86948d}
+html[data-personal-studio] #arCoachHud .ctv2-live-item strong{margin-top:2px;font:600 13px/1.25 var(--sans)}
+html[data-personal-studio] #arCoachHud .ctv2-phase{gap:6px;margin-top:8px}
+html[data-personal-studio] #arCoachHud .ctv2-phase span{position:relative;padding:7px 2px 5px;border:0;border-radius:0;background:transparent;color:#75837d;font-size:9px}
+html[data-personal-studio] #arCoachHud .ctv2-phase span::before{content:'';display:block;height:2px;margin:0 0 5px;border-radius:2px;background:#283332}
+html[data-personal-studio] #arCoachHud .ctv2-phase span.on{border:0;background:transparent;color:#c8ded1}
+html[data-personal-studio] #arCoachHud .ctv2-phase span.on::before{background:#8fbba2;box-shadow:0 0 12px #8fbba255}
+html[data-personal-studio] #arCoachHud .ctv2-tracking{margin-top:7px;color:#87958e;font-size:9.5px;line-height:1.4}
+html[data-personal-studio] #arCoachHud .ctv2-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+html[data-personal-studio] #arCoachHud .ctv2-actions :is(.ctv2-pause,#arCoachStop){width:100%;min-height:44px;margin:0;border-radius:12px;font:600 12px/1.3 var(--sans)}
+html[data-personal-studio] #arCoachHud .ctv2-pause{border:1px solid #e9e4dc;background:#e9e4dc;color:#101515}
+html[data-personal-studio] #arCoachHud #arCoachStop{border:1px solid #40504d;background:#121b1c;color:#d7dfda}
+html[data-personal-studio] #arCoachHud #cpsLiveForm{display:none!important}
+html[data-personal-studio] #arCoachHud .ctv2-complete{padding:8px 2px 2px}
+html[data-personal-studio] #arCoachHud .ctv2-complete strong{font:600 22px/1.2 var(--sans);letter-spacing:-.025em}
+html[data-personal-studio] #arCoachHud .ctv2-complete button{border-radius:12px;background:#e9e4dc;color:#101515}
+
+@media(max-width:430px){
+ html[data-personal-studio] #arCoachModal .cps-screen-head{padding:12px 16px 10px}
+ html[data-personal-studio] #arCoachModal #arCoachTitle{font-size:19px}
+ html[data-personal-studio] #arCoachModal .cps-trainer-body{padding-inline:16px}
+ html[data-personal-studio] #arCoachModal .cps-trainer-hero{height:208px}
+ html[data-personal-studio] #arCoachModal .ctv2-preview{padding-inline:16px}
+ html[data-personal-studio] #arCoachModal .ctv2-preview-head h4{font-size:23px}
+ html[data-personal-studio] #arCoachModal .ctv2-preview-demo{min-height:188px}
+ html[data-personal-studio] #arCoachHud{max-height:50dvh;padding:12px}
+ html[data-personal-studio] #arCoachHud .ctv2-demo{max-height:132px}
+}
+
+html[data-personal-studio] #arCoachModal .ctv2-voice-toggle{
+ display:inline-flex;align-items:center;justify-content:center;min-height:40px;margin:10px 0 0;padding:0;border:0;border-bottom:1px solid #93a1972b;
+ background:transparent;color:#8f9d95;font:550 10px/1.2 var(--sans);letter-spacing:.03em;cursor:pointer;text-align:left;
+}
+html[data-personal-studio] #arCoachModal .ctv2-voice-toggle[aria-pressed="true"]{color:#e2e7e0}
+html[data-personal-studio] #arCoachHud .ctv2-voice-hud{display:block;width:auto;min-height:34px;margin:4px 0 0;border:0;background:transparent;color:#8f9d95;text-align:left}
+html[data-personal-studio] #arCoachHud .ctv2-voice-hud[aria-pressed="true"]{color:#e2e7e0}
+html[data-personal-studio] #arCoachHud .ctv2-next{border:1px solid #9ba99f;background:#0a1711;color:#e4e8e2}
+html[data-personal-studio] #arCoachHud .ctv2-stop-secondary{display:block;min-height:36px;margin:2px auto 0;padding:6px 10px;border:0;background:transparent;color:#829087;font:500 10px/1.2 var(--sans);letter-spacing:.02em;text-transform:none}
+
+/* Editorial trainer refresh: image-led discovery, calm motion and a clear camera. */
+html[data-personal-studio] :is(#arCoachModal,#camwrap){
+ --trainer-ink:#06100d;--trainer-cream:#f1ece4;--trainer-sage:#9daca3;--trainer-brass:#d3ad73;
+}
+html[data-personal-studio] #arCoachModal{
+ padding:0;background:#020806;backdrop-filter:none;-webkit-backdrop-filter:none;align-items:stretch;
+}
+html[data-personal-studio] #arCoachModal .panel{
+ width:min(640px,100%);height:100dvh;max-height:none;margin:auto;border:0;border-radius:0;
+ background:var(--trainer-ink);box-shadow:0 0 80px #000;overflow:hidden;
+}
+html[data-personal-studio] #arCoachModal .cps-screen-head{
+ position:absolute;inset:0 0 auto;z-index:12;padding:max(15px,env(safe-area-inset-top)) 18px 12px;
+ border:0;background:linear-gradient(180deg,#020806c7,transparent);pointer-events:none;
+}
+html[data-personal-studio] #arCoachModal #arCoachTitle{
+ color:#f4efe7;font:500 15px/1.2 Georgia,serif;letter-spacing:.01em;text-shadow:0 2px 14px #000;
+}
+html[data-personal-studio] #arCoachModal #arCoachX{
+ pointer-events:auto;border:0;border-radius:50%;background:#08110ec7;color:#f4efe7;box-shadow:none;
+}
+html[data-personal-studio] #arCoachModal .cps-trainer-body{padding:0 0 32px;scroll-padding:0;overflow-y:auto;background:var(--trainer-ink)}
+html[data-personal-studio] #arCoachModal .cps-trainer-hero{
+ height:min(56dvh,560px);min-height:390px;margin:0;border:0;border-radius:0;background:#0a1511;box-shadow:none;
+}
+html[data-personal-studio] #arCoachModal .cps-trainer-fallback{
+ position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:52% 31%;filter:saturate(.78) contrast(1.04);
+}
+html[data-personal-studio] #arCoachModal .cps-trainer-hero.has-photo .cps-trainer-fallback{display:none}
+html[data-personal-studio] #arCoachModal .cps-trainer-hero .cps-personal-image{object-position:50% 30%}
+html[data-personal-studio] #arCoachModal .cps-trainer-hero>.cps-photo-empty,
+html[data-personal-studio] #arCoachModal .cps-trainer-demo{display:none!important}
+html[data-personal-studio] #arCoachModal .cps-trainer-hero .cps-edge-fade{
+ background:linear-gradient(180deg,#03100a08 18%,#06100d12 38%,#06100dc7 78%,var(--trainer-ink) 100%);
+}
+html[data-personal-studio] #arCoachModal .cps-image-label{display:none}
+html[data-personal-studio] #arCoachModal .cps-feature-caption{left:22px;right:22px;bottom:22px;z-index:3}
+html[data-personal-studio] #arCoachModal .cps-feature-kicker{
+ display:block;margin-bottom:7px;color:var(--trainer-brass);font:600 10px/1.2 var(--sans);letter-spacing:.2em;text-transform:uppercase;
+}
+html[data-personal-studio] #arCoachModal #cpsSessionTitle{
+ max-width:13ch;margin:0 0 7px;color:#fffaf2;font:400 clamp(34px,8vw,47px)/.98 Georgia,serif;letter-spacing:-.045em;
+}
+html[data-personal-studio] #arCoachModal .cps-session-benefit{max-width:35ch;margin:0 0 7px;color:#e2e4de;font:400 12px/1.45 var(--sans)}
+html[data-personal-studio] #arCoachModal #cpsSessionMeta{margin:0 0 15px;color:#bdc8c0;font:500 10px/1.35 var(--sans);letter-spacing:.025em}
+html[data-personal-studio] #arCoachModal #cpsStartSession{
+ justify-content:space-between;width:100%;min-height:52px;padding:0 18px;border:0;border-radius:2px;background:var(--trainer-cream);
+ color:#0a1511;box-shadow:0 10px 28px #0008;font:650 13px/1 var(--sans);
+}
+html[data-personal-studio] #arCoachModal #cpsStartSession svg{width:17px;height:17px}
+html[data-personal-studio] #arCoachModal .cps-routine-library{padding:22px 22px 8px}
+html[data-personal-studio] #arCoachModal .cps-routine-head{display:flex;align-items:end;justify-content:space-between;margin-bottom:14px}
+html[data-personal-studio] #arCoachModal .cps-routine-head span{color:var(--trainer-brass);font:600 9px/1.2 var(--sans);letter-spacing:.18em;text-transform:uppercase}
+html[data-personal-studio] #arCoachModal .cps-routine-head h4{margin:4px 0 0;color:#f4f0e9;font:400 23px/1.1 Georgia,serif;letter-spacing:-.025em}
+html[data-personal-studio] #arCoachModal #csTrainerFilters{
+ position:static;display:flex;gap:22px;overflow-x:auto;margin:0 -22px 12px;padding:0 22px;border:0;border-bottom:1px solid #93a1972e;
+ border-radius:0;background:transparent;box-shadow:none;scrollbar-width:none;
+}
+html[data-personal-studio] #arCoachModal #csTrainerFilters::-webkit-scrollbar{display:none}
+html[data-personal-studio] #arCoachModal #csTrainerFilters button{
+ position:relative;flex:0 0 auto;min-height:42px;padding:0;border:0!important;border-radius:0!important;background:transparent!important;
+ color:#77877e;font:550 11px/1.2 var(--sans);box-shadow:none!important;
+}
+html[data-personal-studio] #arCoachModal #csTrainerFilters button[aria-pressed="true"]{color:#f0eee8}
+html[data-personal-studio] #arCoachModal #csTrainerFilters button[aria-pressed="true"]::after{
+ content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--trainer-brass);
+}
+html[data-personal-studio] #arCoachModal #ctv2GoalBar{display:none}
+html[data-personal-studio] #arCoachModal .ar-session-grid{display:block;max-height:none!important;overflow:visible!important;border:0;padding:0!important}
+html[data-personal-studio] #arCoachModal .ar-session{
+ display:grid;grid-template-columns:58px 1fr;grid-template-rows:auto auto;gap:2px 14px;width:100%;min-height:78px;padding:10px 28px 10px 0;
+ border:0;border-bottom:1px solid #93a1972b;border-radius:0;background:transparent;align-content:center;transition:color 180ms ease,transform 180ms ease;
+}
+html[data-personal-studio] #arCoachModal .ar-session:hover{padding-left:0;background:transparent;transform:translateX(3px)}
+html[data-personal-studio] #arCoachModal .ar-session::after{right:4px;border-color:#aeb9b2}
+html[data-personal-studio] #arCoachModal .ar-session strong{color:#f0eee8;font:500 15px/1.25 var(--sans)}
+html[data-personal-studio] #arCoachModal .ar-session>span{grid-column:2;color:#819087;font:450 10px/1.3 var(--sans);letter-spacing:.01em;text-transform:none}
+html[data-personal-studio] #arCoachModal .cps-exercise-thumb{
+ grid-row:1/3;width:58px;height:58px;border:0;border-radius:1px;background:#142019;
+}
+html[data-personal-studio] #arCoachModal .cps-exercise-thumb::after{
+ content:'';position:absolute;inset:0;background:linear-gradient(145deg,#1d2e25,#09120e);opacity:.62;
+}
+html[data-personal-studio] #arCoachModal .cps-exercise-thumb .cps-photo-empty{z-index:1}
+html[data-personal-studio] #arCoachModal .cps-exercise-thumb .cps-photo-empty svg{width:19px;height:19px;color:#b89b6f}
+html[data-personal-studio] #arCoachModal .ar-session-grid:not([data-expanded="true"]) .ctv2-overflow{display:none}
+html[data-personal-studio] #arCoachModal .ctv2-view-all{
+ width:100%;min-height:48px;margin:10px 0 0;border:0;border-bottom:1px solid #93a1972b;background:transparent;color:#c7d0ca;
+ font:550 11px/1.2 var(--sans);letter-spacing:.03em;text-align:left;cursor:pointer;
+}
+html[data-personal-studio] #arCoachModal .ctv2-note{margin:13px 0 0;color:#77877e;font:400 10px/1.55 var(--sans)}
+html[data-personal-studio] #arCoachModal :is(.ar-coach-intro,.cs-comfort,.cs-trainer-method){display:none}
+
+html[data-personal-studio] #arCoachModal .panel.ctv2-preview-open .cps-screen-head{display:none}
+html[data-personal-studio] #arCoachModal .ctv2-preview{padding:0 22px max(14px,env(safe-area-inset-bottom));background:var(--trainer-ink)}
+html[data-personal-studio] #arCoachModal .ctv2-preview-back{position:absolute;z-index:5;top:max(12px,env(safe-area-inset-top));left:14px;padding:0 9px;color:#f3efe8;background:#07100dc2;border-radius:20px}
+html[data-personal-studio] #arCoachModal .ctv2-preview-stage{position:relative;height:min(49dvh,470px);margin:0 -22px 20px;overflow:hidden;background:#101a15}
+html[data-personal-studio] #arCoachModal .ctv2-preview-stage>img{width:100%;height:100%;object-fit:cover;object-position:52% 30%;filter:saturate(.76)}
+html[data-personal-studio] #arCoachModal .ctv2-preview-shade{position:absolute;inset:0;background:linear-gradient(180deg,#02100a09 34%,var(--trainer-ink) 100%)}
+html[data-personal-studio] #arCoachModal .ctv2-preview-step{position:absolute;left:22px;bottom:20px;color:#e4e6df;font:550 10px/1.2 var(--sans);letter-spacing:.06em}
+html[data-personal-studio] #arCoachModal .ctv2-preview-demo{
+ position:absolute;right:18px;bottom:18px;display:grid;place-items:center;width:112px;min-height:126px;margin:0;border:1px solid #d3ad7357;
+ border-radius:2px;background:#07100de6;box-shadow:0 14px 30px #0008;
+}
+html[data-personal-studio] #arCoachModal .ctv2-preview-demo .ctv2-demo-svg{width:108px}
+html[data-personal-studio] #arCoachModal .ctv2-preview-head{margin:0 0 18px}
+html[data-personal-studio] #arCoachModal .ctv2-kicker{color:var(--trainer-brass);font-size:9px;letter-spacing:.15em}
+html[data-personal-studio] #arCoachModal .ctv2-preview-head h4{max-width:13ch;margin:7px 0 8px;color:#fbf6ee;font:400 36px/.98 Georgia,serif;letter-spacing:-.045em}
+html[data-personal-studio] #arCoachModal .ctv2-preview-benefit{max-width:42ch;margin:0;color:#aebbb3;font:400 12px/1.55 var(--sans)}
+html[data-personal-studio] #arCoachModal .ctv2-preview-instruction{padding:14px 0;border-top:1px solid #93a1972b;border-bottom:1px solid #93a1972b}
+html[data-personal-studio] #arCoachModal .ctv2-preview-instruction>span{color:#78877e;font:600 9px/1.2 var(--sans);letter-spacing:.12em;text-transform:uppercase}
+html[data-personal-studio] #arCoachModal .ctv2-preview-cue{margin:6px 0 0;color:#eceae4;font:450 13px/1.5 var(--sans)}
+html[data-personal-studio] #arCoachModal .ctv2-preview-meta{margin:12px 0 0;padding:0;border:0;color:#8f9d95;font-size:9px}
+html[data-personal-studio] #arCoachModal .ctv2-preview details{border:0;border-bottom:1px solid #93a1972b}
+html[data-personal-studio] #arCoachModal .ctv2-preview summary{min-height:44px;color:#b7c1bb}
+html[data-personal-studio] #arCoachModal .ctv2-preview-footer{bottom:-14px;padding-top:12px;background:linear-gradient(180deg,transparent,var(--trainer-ink) 17%)}
+html[data-personal-studio] #arCoachModal .ctv2-start-routine{border-radius:2px;background:var(--trainer-cream)}
+
+html[data-personal-studio] #arCoachHud{
+ left:0;right:0;bottom:0;width:100%;max-width:none;max-height:44dvh;margin:0;padding:32px 20px max(18px,env(safe-area-inset-bottom));
+ border:0;border-radius:0;background:linear-gradient(180deg,transparent 0,#06100dcc 22%,#06100df7 43%,#06100d 100%);box-shadow:none;backdrop-filter:none;
+}
+html[data-personal-studio] #arCoachHud .ar-hud-top{align-items:center}
+html[data-personal-studio] #arCoachHud .ar-hud-title{max-width:75%;color:#fffaf2;font:400 30px/1 Georgia,serif;letter-spacing:-.04em}
+html[data-personal-studio] #arCoachHud .ar-hud-evidence{
+ position:fixed;top:max(16px,env(safe-area-inset-top));right:18px;padding:0;border:0;background:transparent;color:#e2e7e2;font:550 10px/1.2 var(--sans);letter-spacing:.03em;text-transform:none;
+}
+html[data-personal-studio] #arCoachHud .ar-hud-cue{max-width:42ch;margin-top:8px;color:#d7ded8;font:400 12px/1.5 var(--sans)}
+html[data-personal-studio] #arCoachHud .ar-hud-status{
+ position:fixed;top:max(16px,env(safe-area-inset-top));left:18px;display:block;margin:0;color:#f1eee7;font:550 11px/1.2 var(--sans);letter-spacing:.04em;text-transform:none;
+}
+html[data-personal-studio] #arCoachHud #arCoachHold{display:none}
+html[data-personal-studio] #arCoachHud .ar-hud-progress{position:fixed;top:calc(max(16px,env(safe-area-inset-top)) + 24px);left:18px;right:18px;height:2px;margin:0;background:#ffffff29}
+html[data-personal-studio] #arCoachHud .ar-hud-progress i{background:var(--trainer-brass)}
+html[data-personal-studio] #arCoachHud :is(.ctv2-live,.ctv2-phase){display:none}
+html[data-personal-studio] #arCoachHud .ctv2-tracking{margin:9px 0 0;color:#8e9c94;font-size:9px}
+html[data-personal-studio] #arCoachHud .ctv2-demo{
+ position:absolute;right:20px;top:-112px;width:98px;height:112px;margin:0;padding:0;border:1px solid #d3ad734d;border-radius:2px;background:#07100de8;box-shadow:0 16px 32px #0008;
+}
+html[data-personal-studio] #arCoachHud .ctv2-demo-svg{width:96px}
+html[data-personal-studio] #arCoachHud .ctv2-actions{gap:10px;margin-top:12px}
+html[data-personal-studio] #arCoachHud .ctv2-actions :is(.ctv2-pause,#arCoachStop){min-height:48px;border-radius:2px;font-size:11px;letter-spacing:.02em;text-transform:none}
+html[data-personal-studio] #arCoachHud .ctv2-pause{border-color:var(--trainer-cream);background:var(--trainer-cream);color:#07100d}
+html[data-personal-studio] #arCoachHud #arCoachStop{border-color:#7d8c833f;background:#0c1712;color:#d7ded8}
+html[data-personal-studio] #arCoachHud.locked{border:0}
+html[data-personal-studio] #camwrap[data-mode="train"]>.hud{top:max(14px,env(safe-area-inset-top));padding:0 18px;justify-content:flex-end;background:none;z-index:13}
+html[data-personal-studio] #camwrap[data-mode="train"]>.hud .meta,
+html[data-personal-studio] #camwrap[data-mode="train"]>.hud>div:last-child,
+html[data-personal-studio] #camwrap[data-mode="train"]>.controls,
+html[data-personal-studio] #camwrap[data-mode="train"]>.tap-hint{display:none!important}
+html[data-personal-studio] #camwrap[data-mode="train"]>.hud .back{position:fixed;top:max(56px,calc(env(safe-area-inset-top) + 54px));right:18px;display:grid;place-items:center;width:44px;height:44px;margin:0;border:1px solid #a8b7ae66;border-radius:50%;background:#07100da8;color:#f1eee7;font-size:18px}
+html[data-personal-studio] #camwrap[data-mode="train"] #arCoachHud{border:0!important;border-radius:0!important;background:linear-gradient(180deg,transparent 0,#06100dcc 22%,#06100df7 43%,#06100d 100%)!important;box-shadow:none!important}
+html[data-personal-studio] #camwrap[data-mode="train"] #arCoachHud .ctv2-actions{display:grid!important;grid-template-columns:1fr 1fr!important}
+html[data-personal-studio] #camwrap[data-mode="train"] #arCoachHud .ctv2-pause{display:block!important;border-color:var(--trainer-cream)!important;background:var(--trainer-cream)!important;color:#07100d!important}
+
+@media(min-width:641px){
+ html[data-personal-studio] #arCoachModal{padding:18px;align-items:center;background:#010403e8}
+ html[data-personal-studio] #arCoachModal .panel{height:min(900px,calc(100dvh - 36px));border:1px solid #8ea0962e;box-shadow:0 35px 110px #000;border-radius:3px}
+}
+@media(max-width:430px){
+ html[data-personal-studio] #arCoachModal .cps-trainer-hero{height:54dvh;min-height:374px}
+ html[data-personal-studio] #arCoachModal .cps-feature-caption{left:18px;right:18px;bottom:18px}
+ html[data-personal-studio] #arCoachModal .cps-routine-library{padding-inline:18px}
+ html[data-personal-studio] #arCoachModal #csTrainerFilters{margin-inline:-18px;padding-inline:18px;gap:20px}
+ html[data-personal-studio] #arCoachModal .ctv2-preview{padding-inline:18px}
+ html[data-personal-studio] #arCoachModal .ctv2-preview-stage{margin-inline:-18px;height:46dvh;min-height:330px}
+ html[data-personal-studio] #arCoachHud{padding-inline:18px}
+}

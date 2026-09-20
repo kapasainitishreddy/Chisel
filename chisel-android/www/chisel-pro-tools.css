@@ -1,0 +1,24 @@
+/* Existing photo-first palette, shared task spacing, no extra theme controller. */
+.cc-dialog,.cb-dialog{color:#f3f2eb;background:#101a17;border:1px solid #35453e;border-radius:24px;padding:24px;width:min(460px,calc(100vw - 24px));max-height:calc(100dvh - 32px);overflow:auto;box-sizing:border-box;font:14px/1.5 Inter,system-ui,sans-serif}
+.cc-dialog::backdrop,.cb-dialog::backdrop{background:#030907b8;backdrop-filter:blur(6px)}
+.cc-dialog header,.cb-dialog header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px}
+.cc-dialog h2,.cb-dialog h2{font:600 24px/1.25 Inter,system-ui,sans-serif;letter-spacing:-.03em;margin:0}
+.cc-dialog button,.cb-dialog button{min-height:46px;border:1px solid #43534b;border-radius:12px;padding:10px 16px;font:600 14px/1.4 Inter,system-ui,sans-serif;color:inherit;background:transparent;cursor:pointer}
+.cc-dialog button:disabled,.cb-dialog button:disabled{opacity:.48;cursor:not-allowed}
+.cc-dialog #ccClose,.cb-dialog .cb-close{padding:8px;width:46px;font-size:22px}
+.cc-balance{font-size:28px;font-weight:600;letter-spacing:-.03em}.cc-sub,.cc-small,.cc-rules{color:#bdc8c0;font-size:12px;line-height:1.65;margin:12px 0}.cc-sub{margin-bottom:24px}.cc-rules{padding:16px 0;border-block:1px solid #35453e}
+.cc-packs{display:grid;gap:10px;margin-top:20px}.cc-dialog .cc-pack{display:flex;justify-content:space-between;align-items:center;min-height:64px;padding:18px;border-radius:16px;background:#1b2922}.cc-pack strong{color:#eeeadd;font-weight:600}
+.cc-dialog form{display:grid;gap:8px}.cc-dialog form input,.cb-dialog input,.cb-dialog textarea,.cb-dialog select{font:16px/1.5 Inter,system-ui,sans-serif;padding:12px;background:#0c1411;border:1px solid #43534b;border-radius:12px;color:#f3f2eb;box-sizing:border-box;width:100%}
+.cc-dialog form small{color:#bdc8c0;font-size:12px}.cc-dialog form button{background:#eeeadd;color:#0c1411;border-color:#eeeadd;margin-top:6px}.cc-footer{display:flex;justify-content:space-between;gap:10px;margin-top:16px}
+html[data-chisel-personal-studio] .cc-chip,.cc-chip{min-height:44px;padding:8px 12px;border:1px solid #43534b;border-radius:30px;background:#182720;color:#eeeadd;font:500 12px/1.4 Inter,system-ui,sans-serif;white-space:nowrap;cursor:pointer}
+.cc-modes{display:flex;gap:6px;margin:8px 0 12px;grid-column:1/-1}.cc-modes[hidden]{display:none}.cc-modes button{flex:1;min-height:44px;border-radius:12px;border:1px solid #43534b;background:transparent;color:#c9d0ca;font:500 12px/1.4 Inter,system-ui,sans-serif;padding:8px}.cc-modes button[aria-pressed=true]{background:#253e31;color:#fff;border-color:#8da895}
+.cc-dialog :focus-visible,.cb-dialog :focus-visible,.cc-modes :focus-visible,.cc-chip:focus-visible{outline:2px solid #c5dfcd;outline-offset:3px}
+.cb-dialog{width:min(1080px,calc(100vw - 24px))}.cb-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.cb-grid figure{margin:0}.cb-grid img{width:100%;height:clamp(180px,45vh,440px);object-fit:contain;background:#090e0b;border-radius:14px}.cb-grid figcaption{padding:10px 0;color:#bdc8c0;font-size:13px}.cb-choices{display:grid;gap:10px}.cb-choice{display:flex;align-items:center;gap:12px;min-height:64px}.cb-choice img{height:64px;width:52px;object-fit:cover;border-radius:8px}.cb-choice input{width:22px;height:22px;accent-color:#b1cbb7}.cb-choice span{flex:1}.cb-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.cb-actions .cb-primary{background:#eeeadd;color:#102019}.cb-notes{margin-top:24px;display:grid;gap:12px}.cb-notes textarea{min-height:90px}.cb-help{color:#bdc8c0;font-size:12px;margin:12px 0}.cb-status{min-height:22px;font-size:12px;color:#bdc8c0}
+@media(max-width:380px){.cc-dialog,.cb-dialog{padding:20px}.cls-header #clsEditorTitle{font-size:17px}.cc-chip{padding:8px 10px}.cb-grid{gap:8px}.cb-grid img{height:220px}}
+@media(prefers-reduced-motion:reduce){.cc-dialog *,.cb-dialog *,.cc-modes *{transition:none!important;animation:none!important}}
+
+.cc-dialog [hidden],.cb-dialog [hidden]{display:none!important}
+#clsEditor .cls-header:has(#ccEditorBalance){display:grid;grid-template-columns:44px minmax(0,1fr) auto 44px;gap:8px}
+#clsEditor .cls-header #clsEditorTitle{min-width:0;font-size:20px}
+#clsLibrary #cbOpen{margin:0 20px 16px;max-width:calc(100% - 40px)}
+@media(max-width:380px){#clsEditor .cls-header #clsEditorTitle{font-size:17px}.cc-chip{font-size:11px;padding-inline:8px}}

@@ -1,0 +1,51 @@
+name: Chisel Frame Fitting QA
+on:
+  pull_request:
+    paths:
+      - 'chisel-android/**'
+      - '.github/workflows/chisel-render-repair-qa.yml'
+permissions:
+  contents: read
+concurrency:
+  group: chisel-frame-fit-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  frame-fitting:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    defaults:
+      run:
+        working-directory: chisel-android
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify exact source
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/chisel-render-repair
+          git rev-parse HEAD > /tmp/chisel-render-repair/source-sha.txt
+          git -C .. archive --format=tar.gz -o /tmp/chisel-render-repair/source.tar.gz HEAD
+          npm ci --ignore-scripts
+          npm test | tee /tmp/chisel-render-repair/node-tests.txt
+          node --check www/chisel-eyewear-fit.js
+          node --check www/chisel-tryon-policy.js
+          node --check tests/render-repair-browser.mjs
+      - name: Check real camera model and fitting without upload
+        run: |
+          set -euo pipefail
+          npm install --no-save --package-lock=false puppeteer-core@24
+          export CHROME="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          ffmpeg -y -loop 1 -i tests/fixtures/portrait-male.jpg -vf 'scale=640:640,format=yuv420p' -r 10 -t 2 /tmp/chisel-render-repair/frame-fit.y4m >/tmp/chisel-render-repair/ffmpeg.log 2>&1
+          python3 -m http.server 4173 --bind 127.0.0.1 >/tmp/chisel-render-repair/http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          sleep 1
+          timeout --signal=TERM --kill-after=5s 150s node tests/render-repair-browser.mjs http://127.0.0.1:4173 /tmp/chisel-render-repair/frame-fit.y4m
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: chisel-frame-fitting-${{ github.run_id }}
+          path: /tmp/chisel-render-repair/
+          retention-days: 7

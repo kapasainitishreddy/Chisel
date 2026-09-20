@@ -11,9 +11,10 @@ const packagedFixPath = path.join(root, 'android/app/src/main/assets/public/chis
 const fix = fs.readFileSync(fixPath, 'utf8');
 const fixes = require(fixPath);
 
-test('Men/Women label repair is mutation-safe and cannot recursively rewrite identical labels', () => {
-  assert.match(runtime, /buttons\[0\]\.textContent!=='Men'/);
-  assert.match(runtime, /buttons\[1\]\.textContent!=='Women'/);
+test('style-family label repair is mutation-safe and cannot recursively rewrite identical labels', () => {
+  assert.match(runtime, /buttons\[0\]\.textContent!=='Short \/ structured'/);
+  assert.match(runtime, /buttons\[1\]\.textContent!=='Long \/ layered'/);
+  assert.match(runtime, /Browse by style family, not gender/);
 });
 
 test('loader installs the user-controlled try-on fix before the polish layers', () => {
@@ -59,7 +60,7 @@ test('generic try-on starts clean and face matching preserves a user-selected be
   context.styleGender = 'women';
   context.styleBeard = 2;
   context.applyMatches();
-  assert.equal(context.styleBeard, 0, 'Women Hair mode must not inherit facial hair');
+  assert.equal(context.styleBeard, 0, 'Long-hair catalog mode must not inherit facial hair');
   assert.equal(nodes.beardLab.style.display, 'none');
   assert.equal(nodes.beardChips.style.display, 'none');
 });
@@ -70,7 +71,7 @@ test('live preview summary follows the selected hair beard and makeup state', ()
   assert.equal(fixes.previewSummary({id:'butterfly',name:'Butterfly layers'},{id:'none',name:'Clean'},{id:'peachlift',name:'Peach lift'}), 'Butterfly layers + Peach lift');
 });
 
-test('women haircuts resolve to materially different visual geometry', () => {
+test('long-hair catalog styles resolve to materially different visual geometry', () => {
   const french = fixes.styleVisualProfile({id:'frenchbob',top:.32,side:.18,front:.22,jitter:.025,fall:.50,flare:.17,fringe:true},'women');
   const butterfly = fixes.styleVisualProfile({id:'butterfly',top:.42,side:.21,front:.39,jitter:.05,fall:1.08,flare:.24},'women');
   const curls = fixes.styleVisualProfile({id:'curls',top:.48,side:.26,front:.44,jitter:.115,fall:.90,flare:.27},'women');
@@ -89,7 +90,7 @@ test('premium local hair keeps the real forehead visible instead of drawing an o
   assert.doesNotMatch(renderer, /ctx\.fill\(/);
 });
 
-test('men crop and quiff keep distinct front and crown behavior', () => {
+test('short-hair catalog crop and quiff keep distinct front and crown behavior', () => {
   const crop = fixes.styleVisualProfile({id:'crop',top:.20,side:.10,front:.26,jitter:.01},'men');
   const quiff = fixes.styleVisualProfile({id:'quiff',top:.34,side:.10,front:.52,jitter:.015},'men');
   assert.ok(quiff.frontLift > crop.frontLift * 1.35);
