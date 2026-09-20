@@ -30,6 +30,7 @@
   const remove=q('#cpsPhotoRemove');if(remove)remove.hidden=!snapshot.hasPhoto;
   const own=q('#cpsUsePhoto');if(own)own.hidden=!snapshot.hasPhoto;
   const hero=q('#cpsHomeHero');if(hero)hero.setAttribute('aria-label',snapshot.hasPhoto?'Your personal photo':'Add your own photo to Chisel');
+  setText(q('#cpsTrainerMediaLabel'),snapshot.hasPhoto?'Your photo':'Movement preview');
  }
  function installPhotoManager(){
   photoDialog=el('dialog','cps-photo-dialog');photoDialog.id='cpsPhotoDialog';photoDialog.setAttribute('aria-labelledby','cpsPhotoTitle');
@@ -79,14 +80,15 @@
  }
  function installTrainer(){
   const modal=q('#arCoachModal'),panel=q('.panel',modal),grid=q('.ar-session-grid',modal);if(!panel||!grid)return;
-  const header=el('header','cps-screen-head'),title=q('#arCoachTitle'),close=q('#arCoachX');setText(title,'Face training');header.append(title,close);
+  const header=el('header','cps-screen-head'),title=q('#arCoachTitle'),close=q('#arCoachX');setText(title,'Face & Neck Trainer');header.append(title,close);
   const body=el('div','cps-trainer-body');while(panel.firstChild)body.append(panel.firstChild);panel.append(header,body);
   const featured=photoSurface('cpsTrainerHero','cps-trainer-hero');
-  featured.innerHTML+=`<div class="cps-edge-fade"></div><span class="cps-image-label">Your photo</span><div class="cps-feature-caption"><h3 id="cpsSessionTitle"></h3><p id="cpsSessionMeta"></p><button type="button" id="cpsStartSession" class="cps-primary">${svg('play')}Start session</button></div>`;
+  const demo=el('div','cps-trainer-demo');featured.prepend(demo);
+  featured.insertAdjacentHTML('beforeend',`<div class="cps-edge-fade"></div><span class="cps-image-label" id="cpsTrainerMediaLabel">Movement preview</span><div class="cps-feature-caption"><h3 id="cpsSessionTitle"></h3><p id="cpsSessionMeta"></p><button type="button" id="cpsStartSession" class="cps-primary">${svg('play')}Start session</button></div>`);
   body.prepend(featured);
-  grid.insertAdjacentElement('beforebegin',el('h4','cps-subheading','All exercises'));
+  grid.insertAdjacentElement('beforebegin',el('h4','cps-subheading','Routines'));
   let selected='jaw-chin';
-  const refresh=()=>{const info=sessionMeta(root.ChiselARCoach,selected);setText(q('#cpsSessionTitle'),info.title);setText(q('#cpsSessionMeta'),`${info.moves} moves · ${info.tracking}`);};refresh();
+  const refresh=()=>{const info=sessionMeta(root.ChiselARCoach,selected),session=root.ChiselARCoach&&root.ChiselARCoach.SESSIONS&&root.ChiselARCoach.SESSIONS[selected],first=session&&root.ChiselARCoach.exerciseById(session.exerciseIds[0]);setText(q('#cpsSessionTitle'),info.title);setText(q('#cpsSessionMeta'),`${info.moves} moves · ${info.tracking}`);if(first&&root.ChiselTrainerDemos)root.ChiselTrainerDemos.render(first,demo,{reducedMotion:root.matchMedia&&root.matchMedia('(prefers-reduced-motion: reduce)').matches});};refresh();
   q('#cpsStartSession').addEventListener('click',()=>{const b=all('.ar-session',grid).find(n=>(n.dataset.ctv2Session||n.dataset.arSession)===selected);if(b)b.click();});
   all('.ar-session',grid).forEach((b,i)=>{const thumb=photoSurface(`cpsExercise${i}`,'cps-exercise-thumb');thumb.setAttribute('aria-hidden','true');b.prepend(thumb);});
   q('#csTrainerFilters')?.addEventListener('click',()=>{const b=all('.ar-session',grid).find(n=>!n.hidden);if(b){selected=b.dataset.ctv2Session||b.dataset.arSession;refresh();}});

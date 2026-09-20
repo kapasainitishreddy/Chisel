@@ -8,6 +8,7 @@ test('personal surfaces reference the private photo store, never stock people or
  const src=read('chisel-personal-studio.js');assert.match(src,/ChiselPersonalPhoto/);assert.match(src,/subscribe/);
  assert.doesNotMatch(src,/unsplash|pexels|portrait-male|portrait-female|Form Score: 72|84%|76%/);
  for(const surface of ['cpsHomeHero','cpsTrainerHero','cpsSkinHero','cpsStyleHero'])assert.ok(src.includes(surface));
+ assert.match(src,/Face & Neck Trainer/);assert.match(src,/cps-trainer-demo/);assert.match(src,/Movement preview/);
 });
 test('session metadata and live feedback derive from real engines',()=>{
  const m=require('../www/chisel-personal-studio.js'),core=require('../www/chisel-ar-coach-core.js');

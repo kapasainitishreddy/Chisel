@@ -82,3 +82,9 @@ html[data-chisel-theme] #arCoachModal .ar-session-grid{max-height:min(38dvh,320p
 #arCoachHud .ctv2-complete strong{font-size:1.2rem;color:#f4f3ed}
 #arCoachHud .ctv2-complete span:not(.ctv2-complete-kicker){color:#b8bfbc;font-size:.76rem}
 #arCoachHud .ctv2-complete button{margin-top:8px;min-height:48px;border:1px solid #e1d5bb;border-radius:12px;background:#e1d5bb;color:#101314;font:650 14px/1.4 inherit;cursor:pointer}
+#arCoachModal .ctv2-preview-back{display:inline-flex;align-items:center;gap:6px}
+#arCoachModal .ctv2-preview-back svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#arCoachModal .ctv2-preview-benefit{margin:9px 0 0;color:var(--muted,#aaa);font-size:.76rem;line-height:1.45}
+#arCoachModal .ctv2-preview-footer{margin-top:10px}
+#arCoachHud .ctv2-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+#arCoachHud .ctv2-actions :is(.ctv2-pause,#arCoachStop){width:100%;margin:0;min-height:44px}

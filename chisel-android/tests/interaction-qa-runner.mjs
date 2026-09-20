@@ -76,7 +76,7 @@ try{
     };
   });
   result.details.features=featureState;
-  result.checks.trainerTitle=featureState.trainerTitle==='Face training';
+  result.checks.trainerTitle=featureState.trainerTitle==='Face & Neck Trainer';
   result.checks.trainerSessionCoverage=featureState.trainerSessions.some(x=>/Cheek activation/i.test(x))&&featureState.trainerSessions.some(x=>/Jaw & chin posture/i.test(x))&&featureState.trainerSessions.some(x=>/Chin & neck support/i.test(x));
   result.checks.trainerTrustHierarchy=featureState.trainerGoalCards===3&&featureState.trainerTrustCards===2;
   result.checks.skinAppearanceShell=featureState.skinTitle==='Skin appearance scan'&&featureState.skinAnalyzeDisabled&&/image\/jpeg/.test(featureState.skinFileType);

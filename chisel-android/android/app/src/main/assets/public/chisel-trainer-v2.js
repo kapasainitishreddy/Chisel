@@ -5,7 +5,7 @@
 })(typeof globalThis!=='undefined'?globalThis:this,function(root){
   'use strict';
   const STORAGE_KEY='chisel:trainer:v2';
-  let installed=false,lastCompletionKey='',studioObserver=null,previewSessionId='';
+  let installed=false,lastCompletionKey='',studioObserver=null,previewSessionId='',previewReturn=null;
   function $(selector,scope){return (scope||document).querySelector(selector);}
   function all(selector,scope){return Array.from((scope||document).querySelectorAll(selector));}
   function safeText(node,value){if(node&&node.textContent!==value)node.textContent=value;}
@@ -58,19 +58,26 @@
     return true;
   }
   function closePreview(){
-    const preview=$('#ctv2Preview'),grid=$('.ar-session-grid');
-    if(preview){preview.hidden=true;preview.innerHTML='';}if(grid)grid.hidden=false;previewSessionId='';
+    const preview=$('#ctv2Preview'),modal=$('#arCoachModal'),panel=$('.panel',modal),body=$('.cps-trainer-body',panel),grid=$('.ar-session-grid',modal);
+    if(preview){preview.hidden=true;preview.innerHTML='';}
+    if(body)body.hidden=false;if(grid)grid.hidden=false;if(panel)panel.classList.remove('ctv2-preview-open');
+    const target=previewReturn;previewReturn=null;previewSessionId='';
+    if(target&&target.isConnected)target.focus({preventScroll:true});
+  }
+  function benefitCopy(session){
+    const goal=session&&session.goal;
+    return ({refresh:'A light reset for a fresher, more awake appearance.','jaw-relax':'Gentle touch and movement for jaw comfort.','full-face':'A balanced pass across the face, jaw and neck.',relax:'A calm routine for facial tension and evening comfort.',tension:'Focused relief after long screen time.',posture:'Head, jaw and neck positioning practice.',all:'Balanced face control and relaxation.'})[goal]||'A short, comfort-first face and neck practice.';
   }
   function openRoutinePreview(id){
     const c=core(),session=c&&c.SESSIONS&&c.SESSIONS[id];if(!session)return launchSession(id);
     const modal=$('#arCoachModal'),panel=$('.panel',modal),grid=$('.ar-session-grid',modal);if(!panel||!grid)return launchSession(id);
     let preview=$('#ctv2Preview',panel);if(!preview){preview=document.createElement('section');preview.id='ctv2Preview';preview.className='ctv2-preview';preview.hidden=true;panel.appendChild(preview);}
-    previewSessionId=id;grid.hidden=true;preview.hidden=false;
+    const body=$('.cps-trainer-body',panel);previewReturn=document.activeElement;previewSessionId=id;grid.hidden=true;if(body)body.hidden=true;preview.hidden=false;panel.classList.add('ctv2-preview-open');preview.setAttribute('aria-labelledby','ctv2PreviewTitle');
     const moves=session.exerciseIds.map(key=>c.exerciseById(key)).filter(Boolean),first=moves[0];
     const tracking=moves.some(x=>x.tracking==='hand-guided')?'Hand guidance + guided fallback':moves.every(x=>x.tracking==='form')?'Camera checked':'Guided + camera';
-    preview.innerHTML=`<button type="button" class="ctv2-preview-back" id="ctv2PreviewBack">Back to routines</button><div class="ctv2-preview-head"><span class="ctv2-kicker">Routine preview</span><h4>${session.title}</h4><p>${session.duration} · ${moves.length} movements · ${session.difficulty||'Gentle'}</p></div><div class="ctv2-preview-demo" id="ctv2PreviewDemo"></div><p class="ctv2-preview-cue">${first?first.instruction:''}</p><div class="ctv2-preview-meta"><span>${tracking}</span><span>On-device</span></div><details><summary>Movements</summary><ol>${moves.map(item=>`<li>${item.name}</li>`).join('')}</ol></details><button type="button" class="btn solid ctv2-start-routine" id="ctv2StartRoutine">Start routine</button><p class="ctv2-pressure-note">Camera guidance checks approximate position and direction. It does not measure finger pressure.</p>`;
+    preview.innerHTML=`<button type="button" class="ctv2-preview-back" id="ctv2PreviewBack" aria-label="Back to routines"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Routines</span></button><div class="ctv2-preview-head"><span class="ctv2-kicker">Routine preview</span><h4 id="ctv2PreviewTitle">${session.title}</h4><p>${session.duration} · ${moves.length} movements · ${session.difficulty||'Gentle'}</p><p class="ctv2-preview-benefit">${benefitCopy(session)}</p></div><div class="ctv2-preview-demo" id="ctv2PreviewDemo"></div><p class="ctv2-preview-cue">${first?first.instruction:''}</p><div class="ctv2-preview-meta"><span>${tracking}</span><span>On-device</span></div><details><summary>View all movements</summary><ol>${moves.map(item=>`<li>${item.name}</li>`).join('')}</ol></details><div class="ctv2-preview-footer"><button type="button" class="btn solid ctv2-start-routine" id="ctv2StartRoutine">Start routine</button><p class="ctv2-pressure-note">Camera guidance checks approximate position and direction. It does not measure finger pressure.</p></div>`;
     if(root.ChiselTrainerDemos&&first)root.ChiselTrainerDemos.render(first,$('#ctv2PreviewDemo',preview),{reducedMotion:root.matchMedia&&root.matchMedia('(prefers-reduced-motion: reduce)').matches});
-    $('#ctv2PreviewBack',preview).onclick=closePreview;$('#ctv2StartRoutine',preview).onclick=()=>{closePreview();launchSession(id);};
+    const back=$('#ctv2PreviewBack',preview);back.onclick=closePreview;$('#ctv2StartRoutine',preview).onclick=()=>{closePreview();launchSession(id);};back.focus({preventScroll:true});
   }
   function matchesCategory(id,category){
     const session=core()&&core().SESSIONS&&core().SESSIONS[id];if(!session)return false;
@@ -110,8 +117,9 @@
       if(!$('#ctv2Live',hud)){const live=document.createElement('div');live.id='ctv2Live';live.className='ctv2-live';live.innerHTML='<div class="ctv2-live-item"><small>Form score</small><strong id="ctv2FormScore">Not measured</strong></div><div class="ctv2-live-item"><small>Phase</small><strong id="ctv2PhaseText">POSITION</strong></div><div class="ctv2-live-item"><small>Clean reps</small><strong id="ctv2CleanReps">0</strong></div>';const status=$('.ar-hud-status',hud);if(status)status.insertAdjacentElement('afterend',live);else hud.appendChild(live);live.insertAdjacentHTML('afterend',phaseMarkup()+'<div class="ctv2-tracking" id="ctv2TrackingCopy"><b>Camera verified:</b> keep your face centered to begin.</div>');}
       if(!$('#ctv2Demo',hud)){const demo=document.createElement('div');demo.id='ctv2Demo';demo.className='ctv2-demo';demo.hidden=true;hud.insertBefore(demo,hud.firstChild);}
       if(!$('#ctv2Pause',hud)){const pause=document.createElement('button');pause.type='button';pause.id='ctv2Pause';pause.className='ctv2-pause';pause.textContent='Pause';pause.onclick=()=>root&&typeof root.toggleARCoachPause==='function'&&root.toggleARCoachPause();const stop=$('#arCoachStop',hud);if(stop)stop.insertAdjacentElement('beforebegin',pause);else hud.appendChild(pause);}
+      if(!$('.ctv2-actions',hud)){const actions=document.createElement('div');actions.className='ctv2-actions';const pause=$('#ctv2Pause',hud),stop=$('#arCoachStop',hud);if(pause)actions.appendChild(pause);if(stop)actions.appendChild(stop);hud.appendChild(actions);}
     }
-    watchUnisexStudio();if(root&&root.addEventListener){root.addEventListener('chisel:coach-state',event=>updateLive(event.detail));root.addEventListener('chisel:trainer-complete',event=>showCompletion(event.detail));}return true;
+    watchUnisexStudio();if(root&&root.addEventListener){root.addEventListener('chisel:coach-state',event=>updateLive(event.detail));root.addEventListener('chisel:trainer-complete',event=>showCompletion(event.detail));root.addEventListener('keydown',event=>{if(event.key==='Escape'&&previewSessionId){event.preventDefault();closePreview();}});}return true;
   }
   return{install,updateLive,showCompletion,launchSession,openRoutinePreview,closePreview,fixUnisexStudio};
 });
