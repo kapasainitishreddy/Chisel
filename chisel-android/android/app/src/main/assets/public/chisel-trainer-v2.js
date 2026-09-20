@@ -3,94 +3,115 @@
   if(typeof module==='object'&&module.exports)module.exports=api;
   else root.ChiselTrainerV2=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(root){
-'use strict';
-const STORAGE_KEY='chisel:trainer:v2';
-let installed=false,lastCompletionKey='',studioObserver=null;
-function $(selector,scope){return (scope||document).querySelector(selector);}
-function safeText(node,value){if(node&&node.textContent!==value)node.textContent=value;}
-function launchSession(sessionId){
-  try{
-    if(typeof startARCoach==='function'){startARCoach(sessionId);return true;}
-    if(root&&typeof root.startARCoach==='function'){root.startARCoach(sessionId);return true;}
-  }catch{}
-  return false;
-}
-function sessionButton(grid,id,title,meta){
-  let button=grid.querySelector(`[data-ctv2-session="${id}"]`);
-  if(!button){
-    button=document.createElement('button');button.type='button';button.className='ar-session ctv2-session';button.dataset.ctv2Session=id;
-    button.addEventListener('click',()=>launchSession(id));grid.appendChild(button);
+  'use strict';
+  const STORAGE_KEY='chisel:trainer:v2';
+  let installed=false,lastCompletionKey='',studioObserver=null,previewSessionId='';
+  function $(selector,scope){return (scope||document).querySelector(selector);}
+  function all(selector,scope){return Array.from((scope||document).querySelectorAll(selector));}
+  function safeText(node,value){if(node&&node.textContent!==value)node.textContent=value;}
+  function core(){return root&&root.ChiselARCoach;}
+  function launchSession(sessionId){
+    try{
+      if(typeof startARCoach==='function'){startARCoach(sessionId);return true;}
+      if(root&&typeof root.startARCoach==='function'){root.startARCoach(sessionId);return true;}
+    }catch{}
+    return false;
   }
-  button.innerHTML=`<strong>${title}</strong><span>${meta}</span>`;
-  button.setAttribute('aria-label',`${title}, ${meta}`);
-  return button;
-}
-function upgradeLegacyButton(grid,legacy,id,title,meta){
-  const button=grid.querySelector(`[data-ar-session="${legacy}"]`);if(!button)return null;
-  button.dataset.arSession=id;button.dataset.ctv2Session=id;
-  button.innerHTML=`<strong>${title}</strong><span>${meta}</span>`;
-  button.setAttribute('aria-label',`${title}, ${meta}`);
-  return button;
-}
-function phaseMarkup(){return '<div class="ctv2-phase" aria-label="Exercise phase"><span data-phase="POSITION">Position</span><span data-phase="HOLD">Hold</span><span data-phase="RELEASE">Release</span><span data-phase="COMPLETE">Done</span></div>';}
-function saveCompletion(detail){
-  if(!root||!root.localStorage||!detail||!detail.state||!detail.state.completed)return;
-  const state=detail.state,key=`${state.sessionId}:${state.startedAt}`;if(key===lastCompletionKey)return;lastCompletionKey=key;
-  let history=[];try{history=JSON.parse(root.localStorage.getItem(STORAGE_KEY)||'[]');if(!Array.isArray(history))history=[];}catch{history=[];}
-  history.unshift({sessionId:state.sessionId,completedAt:new Date().toISOString(),cleanReps:Number(state.cleanReps)||0,lastFormScore:Number(state.lastFormScore)||0,guidedReps:Number(state.guidedReps)||0});
-  try{root.localStorage.setItem(STORAGE_KEY,JSON.stringify(history.slice(0,30)));}catch{/* Training must still finish when storage is full. */}
-}
-function updateLive(detail){
-  if(!detail||!detail.state)return;const state=detail.state,form=detail.form||{},exercise=detail.exercise||{};
-  const score=$('#ctv2FormScore'),phase=$('#ctv2PhaseText'),clean=$('#ctv2CleanReps'),tracking=$('#ctv2TrackingCopy');
-  safeText(score,Number.isFinite(Number(form.score))?`${Math.round(Number(form.score))}/100`:`${Math.round(Number(state.lastFormScore)||0)}/100`);
-  safeText(phase,state.phase||'POSITION');safeText(clean,String(Number(state.cleanReps)||0));
-  if(tracking){const formTracked=exercise.tracking==='form';tracking.innerHTML=formTracked?'<b>Camera verified:</b> centering, range and symmetry gates are active.':'<b>Guided movement:</b> camera verifies setup and head position; follow the movement cue gently.';}
-  document.querySelectorAll('#arCoachHud .ctv2-phase span').forEach(node=>node.classList.toggle('on',node.dataset.phase===(state.phase||'POSITION')));
-  saveCompletion(detail);
-}
-function fixUnisexStudio(){
-  if(typeof document==='undefined')return false;const card=$('#cxStudioCard');if(!card)return false;
-  const copy=$('.cx-studio-copy',card);if(copy)safeText(copy,'Choose by style family and goal, not gender. Pick a look, then Chisel collapses the controls so you can see the result on your full face.');
-  const relabel=(mode,title,meta,aria)=>{const button=card.querySelector(`[data-cx="${mode}"]`);if(!button)return;const b=button.querySelector('b'),small=button.querySelector('small');safeText(b,title);safeText(small,meta);button.setAttribute('aria-label',aria);};
-  relabel('men','Short / structured','Crops, fades, texture + color','Short and structured hairstyle family');
-  relabel('women','Long / layered','Layers, curls, waves + color','Long and layered hairstyle family');
-  relabel('beard','Facial hair','Stubble, beard, goatee + moustache','Facial hair style studio');
-  relabel('makeup','Makeup / color','Blush, lips, eyes + guide','Makeup and color style studio');
-  card.dataset.unisexPresentation='1';return true;
-}
-function watchUnisexStudio(){
-  if(fixUnisexStudio()||typeof MutationObserver==='undefined'||!document.body)return;
-  if(studioObserver)return;studioObserver=new MutationObserver(()=>{if(fixUnisexStudio()){studioObserver.disconnect();studioObserver=null;}});studioObserver.observe(document.body,{childList:true,subtree:true});
-}
-function install(){
-  if(installed||typeof document==='undefined')return installed;const modal=$('#arCoachModal');if(!modal)return false;installed=true;
-  modal.dataset.trainerV2='1';const panel=$('.panel',modal),grid=$('.ar-session-grid',modal),title=$('#arCoachTitle',modal),intro=$('.ar-coach-intro',modal);
-  safeText(title,'Face & Neck Trainer');
-  safeText(intro,'Choose a unisex, goal-based session. Chisel follows your face on-device, gives live form score feedback where the camera can verify it, and clearly labels movements that are guided rather than measured.');
-  if(grid){
-    grid.setAttribute('aria-label','Face and neck training sessions');
-    upgradeLegacyButton(grid,'jaw','jaw-chin','Jaw & chin posture','6 min · posture + control');
-    upgradeLegacyButton(grid,'cheek','cheek-builder','Cheek activation','5 min · limited evidence');
-    upgradeLegacyButton(grid,'full','full','Full face + neck','10 min · mixed evidence');
-    sessionButton(grid,'chin-support','Chin & neck support','7 min · posture support');
-    sessionButton(grid,'release','Face & jaw release','4 min · gentle mobility');
+  function sessionButton(grid,id,title,meta){
+    let button=grid.querySelector(`[data-ctv2-session="${id}"]`);
+    if(!button){button=document.createElement('button');button.type='button';button.className='ar-session ctv2-session';button.dataset.ctv2Session=id;grid.appendChild(button);}
+    button.innerHTML=`<strong>${title}</strong><span>${meta}</span>`;button.setAttribute('aria-label',`${title}, ${meta}`);return button;
   }
-  if(panel&&!$('#ctv2GoalBar',panel)){
-    const goals=document.createElement('div');goals.id='ctv2GoalBar';goals.className='ctv2-goalbar';goals.innerHTML='<div class="ctv2-goal"><strong>Cheeks</strong><span>Symmetry, lift range and clean holds.</span></div><div class="ctv2-goal"><strong>Jaw + chin posture</strong><span>Neutral-head and neck-control practice.</span></div><div class="ctv2-goal"><strong>Neck support <span class="ctv2-motion" aria-hidden="true"><i></i></span></strong><span>Guided posture work, not targeted fat loss.</span></div>';
-    grid&&grid.insertAdjacentElement('beforebegin',goals);
-    const trust=document.createElement('div');trust.className='ctv2-trust';trust.innerHTML='<div class="ctv2-trust-card"><b><span class="ctv2-dot"></span>Camera verified</b><p>Face centering, head level, cheek symmetry/range and gentle jaw-opening gates can pause a rep when form drifts.</p></div><div class="ctv2-trust-card"><b><span class="ctv2-dot"></span>Guided</b><p>Chin tucks, deep-neck nods and brow release use the camera for setup only. Chisel does not pretend it can measure muscle or bone change from one frame.</p></div>';
-    grid&&grid.insertAdjacentElement('afterend',trust);
-    const note=document.createElement('p');note.className='ctv2-note';note.textContent='For under-chin appearance, the trainer supports posture and neck control. It does not claim to selectively remove under-chin fat or reshape adult facial bones.';trust.insertAdjacentElement('afterend',note);
+  function upgradeLegacyButton(grid,legacy,id,title,meta){
+    const button=grid.querySelector(`[data-ar-session="${legacy}"]`);if(!button)return null;
+    button.dataset.arSession=id;button.dataset.ctv2Session=id;button.innerHTML=`<strong>${title}</strong><span>${meta}</span>`;button.setAttribute('aria-label',`${title}, ${meta}`);return button;
   }
-  const hud=$('#arCoachHud');if(hud&&!$('#ctv2Live',hud)){
-    const live=document.createElement('div');live.id='ctv2Live';live.className='ctv2-live';live.innerHTML='<div class="ctv2-live-item"><small>Form score</small><strong id="ctv2FormScore">0/100</strong></div><div class="ctv2-live-item"><small>Phase</small><strong id="ctv2PhaseText">POSITION</strong></div><div class="ctv2-live-item"><small>Clean reps</small><strong id="ctv2CleanReps">0</strong></div>';
-    const status=$('.ar-hud-status',hud);if(status)status.insertAdjacentElement('afterend',live);else hud.appendChild(live);
-    live.insertAdjacentHTML('afterend',phaseMarkup()+'<div class="ctv2-tracking" id="ctv2TrackingCopy"><b>Camera verified:</b> keep your face centered to begin.</div>');
+  function phaseMarkup(){return '<div class="ctv2-phase" aria-label="Exercise phase"><span data-phase="POSITION">Position</span><span data-phase="HOLD">Hold</span><span data-phase="RELEASE">Release</span><span data-phase="COMPLETE">Done</span></div>';}
+  function saveCompletion(detail){
+    if(!root||!root.localStorage||!detail||!detail.state||!detail.state.completed)return;
+    const state=detail.state,key=`${state.sessionId}:${state.startedAt}`;if(key===lastCompletionKey)return;lastCompletionKey=key;
+    let history=[];try{history=JSON.parse(root.localStorage.getItem(STORAGE_KEY)||'[]');if(!Array.isArray(history))history=[];}catch{history=[];}
+    history.unshift({sessionId:state.sessionId,completedAt:new Date().toISOString(),cleanReps:Number(state.cleanReps)||0,lastFormScore:Number(state.lastFormScore)||0,guidedReps:Number(state.guidedReps)||0});
+    try{root.localStorage.setItem(STORAGE_KEY,JSON.stringify(history.slice(0,30)));}catch{}
   }
-  watchUnisexStudio();
-  if(root&&root.addEventListener)root.addEventListener('chisel:coach-state',event=>updateLive(event.detail));
-  return true;
-}
-return{install,updateLive,launchSession,fixUnisexStudio};
+  function updateLive(detail){
+    if(!detail||!detail.state)return;
+    const state=detail.state,form=detail.form||{},exercise=detail.exercise||{};
+    const score=$('#ctv2FormScore'),phase=$('#ctv2PhaseText'),clean=$('#ctv2CleanReps'),tracking=$('#ctv2TrackingCopy');
+    safeText(score,exercise.tracking==='hand-guided'?(form.fallback?'Guided mode':'Hand path'):(Number.isFinite(Number(form.score))?`${Math.round(Number(form.score))}/100`:`${Math.round(Number(state.lastFormScore)||0)}/100`));
+    safeText(phase,state.phase||'POSITION');safeText(clean,String(Number(state.cleanReps)||0));
+    if(tracking){
+      if(exercise.tracking==='hand-guided')tracking.innerHTML=form.fallback?'<b>Guided mode:</b> hand guidance is unavailable, so follow the illustrated path gently.':'<b>Hand guidance:</b> position and movement direction are approximate; pressure is not measured.';
+      else {const formTracked=exercise.tracking==='form';tracking.innerHTML=formTracked?'<b>Camera verified:</b> centering, range and symmetry gates are active.':'<b>Guided movement:</b> camera verifies setup and head position; follow the movement cue gently.';}
+    }
+    all('#arCoachHud .ctv2-phase span').forEach(node=>node.classList.toggle('on',node.dataset.phase===(state.phase||'POSITION')));
+    const pause=$('#ctv2Pause');if(pause)pause.textContent=root&&typeof root.isARCoachPaused==='function'&&root.isARCoachPaused()?'Resume':'Pause';
+    saveCompletion(detail);
+  }
+  function showCompletion(detail){
+    const hud=$('#arCoachHud');if(!hud||!detail||!detail.state)return false;
+    const state=detail.state,session=(core()&&core().SESSIONS&&core().SESSIONS[state.sessionId])||null;
+    let card=$('#ctv2Complete',hud);if(!card){card=document.createElement('div');card.id='ctv2Complete';card.className='ctv2-complete';hud.appendChild(card);}
+    card.innerHTML=`<span class="ctv2-complete-kicker">Routine complete</span><strong>${session?session.duration:'Session'} complete</strong><span>Completed: ${state.exerciseIds.length}/${state.exerciseIds.length} movements</span><button type="button" id="ctv2CompleteDone">Done</button>`;
+    hud.classList.add('is-complete');hud.hidden=false;
+    $('#ctv2CompleteDone',card).onclick=()=>{if(root&&typeof root.closeCam==='function')root.closeCam();else if(typeof closeCam==='function')closeCam();};
+    return true;
+  }
+  function closePreview(){
+    const preview=$('#ctv2Preview'),grid=$('.ar-session-grid');
+    if(preview){preview.hidden=true;preview.innerHTML='';}if(grid)grid.hidden=false;previewSessionId='';
+  }
+  function openRoutinePreview(id){
+    const c=core(),session=c&&c.SESSIONS&&c.SESSIONS[id];if(!session)return launchSession(id);
+    const modal=$('#arCoachModal'),panel=$('.panel',modal),grid=$('.ar-session-grid',modal);if(!panel||!grid)return launchSession(id);
+    let preview=$('#ctv2Preview',panel);if(!preview){preview=document.createElement('section');preview.id='ctv2Preview';preview.className='ctv2-preview';preview.hidden=true;panel.appendChild(preview);}
+    previewSessionId=id;grid.hidden=true;preview.hidden=false;
+    const moves=session.exerciseIds.map(key=>c.exerciseById(key)).filter(Boolean),first=moves[0];
+    const tracking=moves.some(x=>x.tracking==='hand-guided')?'Hand guidance + guided fallback':moves.every(x=>x.tracking==='form')?'Camera checked':'Guided + camera';
+    preview.innerHTML=`<button type="button" class="ctv2-preview-back" id="ctv2PreviewBack">Back to routines</button><div class="ctv2-preview-head"><span class="ctv2-kicker">Routine preview</span><h4>${session.title}</h4><p>${session.duration} · ${moves.length} movements · ${session.difficulty||'Gentle'}</p></div><div class="ctv2-preview-demo" id="ctv2PreviewDemo"></div><p class="ctv2-preview-cue">${first?first.instruction:''}</p><div class="ctv2-preview-meta"><span>${tracking}</span><span>On-device</span></div><details><summary>Movements</summary><ol>${moves.map(item=>`<li>${item.name}</li>`).join('')}</ol></details><button type="button" class="btn solid ctv2-start-routine" id="ctv2StartRoutine">Start routine</button><p class="ctv2-pressure-note">Camera guidance checks approximate position and direction. It does not measure finger pressure.</p>`;
+    if(root.ChiselTrainerDemos&&first)root.ChiselTrainerDemos.render(first,$('#ctv2PreviewDemo',preview),{reducedMotion:root.matchMedia&&root.matchMedia('(prefers-reduced-motion: reduce)').matches});
+    $('#ctv2PreviewBack',preview).onclick=closePreview;$('#ctv2StartRoutine',preview).onclick=()=>{closePreview();launchSession(id);};
+  }
+  function matchesCategory(id,category){
+    const session=core()&&core().SESSIONS&&core().SESSIONS[id];if(!session)return false;
+    if(category==='all')return true;if(category==='massage')return session.category==='massage';if(category==='yoga')return session.category==='yoga';
+    if(category==='jaw-neck')return session.category==='jaw-neck'||session.category==='relax';if(category==='quick')return session.category==='quick'||id==='quick';return true;
+  }
+  function installCategoryBar(grid){
+    if($('#csTrainerFilters'))return $('#csTrainerFilters');
+    const filters=document.createElement('div');filters.id='csTrainerFilters';filters.className='cs-segments ctv2-category-bar';filters.setAttribute('role','group');filters.setAttribute('aria-label','Trainer areas');
+    [['all','All'],['yoga','Yoga'],['massage','Massage'],['jaw-neck','Jaw + Neck'],['quick','Quick']].forEach(([id,label],index)=>{const b=document.createElement('button');b.type='button';b.dataset.csGoal=id;b.setAttribute('aria-pressed',String(index===0));b.textContent=label;filters.appendChild(b);});
+    grid.insertAdjacentElement('beforebegin',filters);
+    const apply=category=>{all('button',filters).forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.csGoal===category)));all('.ar-session',grid).forEach(b=>{b.hidden=!matchesCategory(b.dataset.ctv2Session||b.dataset.arSession,category);});};
+    filters.addEventListener('click',e=>{const b=e.target.closest('[data-cs-goal]');if(b)apply(b.dataset.csGoal);});apply('all');return filters;
+  }
+  function fixUnisexStudio(){
+    if(typeof document==='undefined')return false;const card=$('#cxStudioCard');if(!card)return false;
+    const copy=$('.cx-studio-copy',card);if(copy)safeText(copy,'Choose by style family and goal, not gender. Pick a look, then Chisel collapses the controls so you can see the result on your full face.');
+    const relabel=(mode,title,meta,aria)=>{const button=card.querySelector(`[data-cx="${mode}"]`);if(!button)return;const b=button.querySelector('b'),small=button.querySelector('small');safeText(b,title);safeText(small,meta);button.setAttribute('aria-label',aria);};
+    relabel('men','Short / structured','Crops, fades, texture + color','Short and structured hairstyle family');relabel('women','Long / layered','Layers, curls, waves + color','Long and layered hairstyle family');relabel('beard','Facial hair','Stubble, beard, goatee + moustache','Facial hair style studio');relabel('makeup','Makeup / color','Blush, lips, eyes + guide','Makeup and color style studio');card.dataset.unisexPresentation='1';return true;
+  }
+  function watchUnisexStudio(){
+    if(fixUnisexStudio()||typeof MutationObserver==='undefined'||!document.body)return;if(studioObserver)return;
+    studioObserver=new MutationObserver(()=>{if(fixUnisexStudio()){studioObserver.disconnect();studioObserver=null;}});studioObserver.observe(document.body,{childList:true,subtree:true});
+  }
+  function install(){
+    if(installed||typeof document==='undefined')return installed;const modal=$('#arCoachModal');if(!modal)return false;installed=true;
+    modal.dataset.trainerV2='1';const panel=$('.panel',modal),grid=$('.ar-session-grid',modal),title=$('#arCoachTitle',modal),intro=$('.ar-coach-intro',modal);safeText(title,'Face & Neck Trainer');
+    safeText(intro,'Choose a short goal-based routine. Chisel keeps camera checks honest and labels hand movements as guided when the phone cannot verify them reliably.');
+    if(grid){
+      grid.setAttribute('aria-label','Face yoga and face massage routines');upgradeLegacyButton(grid,'jaw','jaw-chin','Jaw & chin posture','6 min · posture + control');upgradeLegacyButton(grid,'cheek','cheek-builder','Cheek activation','5 min · camera checked');upgradeLegacyButton(grid,'full','full','Full face + neck','10 min · mixed guidance');
+      sessionButton(grid,'chin-support','Chin & neck support','7 min · guided posture');sessionButton(grid,'release','Face & jaw release','4 min · gentle mobility');sessionButton(grid,'massage-morning','3-minute Morning Refresh','4 moves · gentle massage');sessionButton(grid,'massage-jaw','5-minute Jaw Relax','5 moves · hand guided');sessionButton(grid,'massage-depuff','5-minute De-Puff Routine','5 moves · very gentle');sessionButton(grid,'massage-reset','7-minute Face Reset','5 moves · hand guided');sessionButton(grid,'massage-full','10-minute Full Face Massage','8 moves · hand guided');sessionButton(grid,'massage-evening','Evening Unwind','5 moves · hand guided');sessionButton(grid,'massage-screen','Screen-Time Face Reset','5 moves · gentle');sessionButton(grid,'quick','Quick Face Reset','3 moves · start here');installCategoryBar(grid);
+      grid.addEventListener('click',event=>{const button=event.target.closest('.ar-session');if(!button)return;event.preventDefault();event.stopImmediatePropagation();openRoutinePreview(button.dataset.ctv2Session||button.dataset.arSession);},true);
+      if(panel&&!$('#ctv2MassageNote',panel)){const note=document.createElement('p');note.id='ctv2MassageNote';note.className='ctv2-note';note.textContent='Massage uses light, comfort-first touch. Stop for pain, clicking, locking, dizziness, numbness or discomfort.';grid.insertAdjacentElement('afterend',note);}
+    }
+    if(panel&&!$('#ctv2GoalBar',panel)){const goals=document.createElement('div');goals.id='ctv2GoalBar';goals.className='ctv2-goalbar';goals.innerHTML='<div class="ctv2-goal"><strong>Relax</strong><span>Jaw, brow and screen-time tension.</span></div><div class="ctv2-goal"><strong>Refresh</strong><span>Short, gentle movement and massage routines.</span></div><div class="ctv2-goal"><strong>Posture</strong><span>Neutral head and neck-control practice.</span></div>';grid&&grid.insertAdjacentElement('beforebegin',goals);}
+    const hud=$('#arCoachHud');if(hud){
+      if(!$('#ctv2Live',hud)){const live=document.createElement('div');live.id='ctv2Live';live.className='ctv2-live';live.innerHTML='<div class="ctv2-live-item"><small>Form score</small><strong id="ctv2FormScore">Not measured</strong></div><div class="ctv2-live-item"><small>Phase</small><strong id="ctv2PhaseText">POSITION</strong></div><div class="ctv2-live-item"><small>Clean reps</small><strong id="ctv2CleanReps">0</strong></div>';const status=$('.ar-hud-status',hud);if(status)status.insertAdjacentElement('afterend',live);else hud.appendChild(live);live.insertAdjacentHTML('afterend',phaseMarkup()+'<div class="ctv2-tracking" id="ctv2TrackingCopy"><b>Camera verified:</b> keep your face centered to begin.</div>');}
+      if(!$('#ctv2Demo',hud)){const demo=document.createElement('div');demo.id='ctv2Demo';demo.className='ctv2-demo';demo.hidden=true;hud.insertBefore(demo,hud.firstChild);}
+      if(!$('#ctv2Pause',hud)){const pause=document.createElement('button');pause.type='button';pause.id='ctv2Pause';pause.className='ctv2-pause';pause.textContent='Pause';pause.onclick=()=>root&&typeof root.toggleARCoachPause==='function'&&root.toggleARCoachPause();const stop=$('#arCoachStop',hud);if(stop)stop.insertAdjacentElement('beforebegin',pause);else hud.appendChild(pause);}
+    }
+    watchUnisexStudio();if(root&&root.addEventListener){root.addEventListener('chisel:coach-state',event=>updateLive(event.detail));root.addEventListener('chisel:trainer-complete',event=>showCompletion(event.detail));}return true;
+  }
+  return{install,updateLive,showCompletion,launchSession,openRoutinePreview,closePreview,fixUnisexStudio};
 });

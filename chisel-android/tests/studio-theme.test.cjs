@@ -5,12 +5,12 @@ const path=require('node:path');
 const base=path.join(__dirname,'../www');
 const apiPath=path.join(base,'chisel-studio-theme.js');
 function theme(){assert.ok(fs.existsSync(apiPath),'Quiet Studio runtime must exist');return require(apiPath);}
-test('studio exposes six unisex sessions with computed movement and tracking metadata',()=>{
+test('studio exposes yoga, massage and quick sessions with computed movement and tracking metadata',()=>{
  const t=theme(),core=require('../www/chisel-ar-coach-core.js');
- for(const id of ['jaw-chin','cheek-builder','full','chin-support','release','yoga']){
+ for(const id of ['jaw-chin','cheek-builder','full','chin-support','release','yoga','massage-full','quick']){
   const info=t.sessionInfo(core,id);
   assert.equal(info.movements,core.SESSIONS[id].exerciseIds.length);
-  assert.ok(['guided','camera','mixed'].includes(info.tracking));
+  assert.ok(['guided','hand-guided','camera','mixed'].includes(info.tracking));
  }
  assert.equal(t.sessionInfo(core,'not-a-session'),null);
 });
@@ -21,6 +21,8 @@ test('studio filters change discovery not session availability by identity',()=>
  assert.equal(t.matchesGoal('yoga','all'),true);
  assert.equal(t.matchesGoal('jaw-chin','posture'),true);
  assert.equal(t.matchesGoal('release','relax'),true);
+ assert.equal(t.matchesGoal('massage-full','massage'),true);
+ assert.equal(t.matchesGoal('quick','quick'),true);
 });
 test('studio never formats missing or invalid quality as a measured zero or accuracy percentage',()=>{
  const t=theme();

@@ -19,10 +19,15 @@ test('trainer v2 runtime upgrades the existing AR coach instead of creating a se
   assert.match(js, /cheek-builder/);
   assert.match(js, /jaw-chin/);
   assert.match(js, /chisel:coach-state/);
+  assert.match(js, /massage-full/);
+  assert.match(js, /ctv2Preview/);
+  assert.match(js, /ctv2Pause/);
   assert.match(js, /form score/i);
   assert.doesNotMatch(js, /male routine|female routine|for men|for women/i);
   assert.match(css, /min-height:\s*44px|min-height:\s*48px/);
   assert.match(css, /prefers-reduced-motion/);
+  assert.match(css, /ct-demo-motion/);
+  assert.match(css, /min-height:44px/);
 });
 
 test('trainer runtime also repairs legacy try-on shortcuts into unisex style families', () => {
@@ -40,4 +45,5 @@ test('trainer bootstrap loads css before runtime and keeps core first', () => {
   assert.ok(cssIndex >= 0, 'trainer css missing from bootstrap');
   assert.ok(jsIndex >= 0, 'trainer runtime missing from bootstrap');
   assert.ok(cssIndex < jsIndex, 'trainer css should be registered before runtime');
+  assert.ok(coachCore.indexOf("chisel-trainer-demos.js") < jsIndex, 'demo runtime should load before trainer runtime');
 });

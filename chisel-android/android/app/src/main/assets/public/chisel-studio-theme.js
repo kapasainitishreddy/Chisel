@@ -6,23 +6,28 @@
 })(typeof globalThis!=='undefined'?globalThis:this,function(root){
 'use strict';
 const TOKENS=Object.freeze({bg:'#101314',surface:'#1b1f20',text:'#f4f3ed',muted:'#b8bfbc',accent:'#e1d5bb',sage:'#b2d4c0'});
-const SESSION_ORDER=['cheek-builder','jaw-chin','chin-support','release','full','yoga'];
+const SESSION_ORDER=['jaw-chin','cheek-builder','chin-support','release','full','yoga','massage-morning','massage-jaw','massage-depuff','massage-reset','massage-full','massage-evening','massage-screen','quick'];
 const validScore=v=>typeof v==='number'&&Number.isFinite(v)&&v>=0&&v<=100;
 function qualityLabel(value){return validScore(value)?`${Math.round(value)}/100 capture quality`:'Not measured';}
 function feedbackLabel(exercise,form){
   if(exercise&&exercise.tracking==='guided')return 'Setup only';
+  if(exercise&&exercise.tracking==='hand-guided')return form&&form.fallback?'Guided fallback':form&&form.handVisible===false?'Hand not found':'Hand path';
   if(!form||form.accepted!==true)return 'Adjust position';
   return validScore(form.score)?`${Math.round(form.score)}/100`:'Not measured';
 }
 function sessionInfo(core,id){
   const session=core&&core.SESSIONS&&core.SESSIONS[id];if(!session)return null;
   const exercises=session.exerciseIds.map(key=>core.exerciseById(key)).filter(Boolean);
-  const tracked=exercises.filter(e=>e.tracking==='form').length;
-  return {title:session.title,movements:exercises.length,tracking:tracked===0?'guided':tracked===exercises.length?'camera':'mixed'};
+  const tracked=exercises.filter(e=>e.tracking==='form').length,hand=exercises.filter(e=>e.tracking==='hand-guided').length;
+  return {title:session.title,movements:exercises.length,tracking:tracked===0?(hand?'hand-guided':'guided'):tracked===exercises.length?'camera':'mixed'};
 }
 function matchesGoal(id,goal){
   if(goal==='all')return SESSION_ORDER.includes(id);
-  return ({cheeks:['cheek-builder'],posture:['jaw-chin','chin-support'],relax:['release','full','yoga']}[goal]||[]).includes(id);
+  if(goal==='yoga')return id==='yoga';
+  if(goal==='massage')return id.indexOf('massage-')===0;
+  if(goal==='jaw-neck')return ['jaw-chin','chin-support','release','full'].includes(id);
+  if(goal==='quick')return id==='quick';
+  return ({cheeks:['cheek-builder'],posture:['jaw-chin','chin-support'],relax:['release','full','yoga'],jaw:['jaw-chin','chin-support','release']}[goal]||[]).includes(id);
 }
 function contrastRatio(a,b){
   const lum=hex=>{const rgb=hex.replace('#','').match(/../g).map(v=>parseInt(v,16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);return rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722;};
@@ -120,21 +125,17 @@ function installTrainer(){
  const comfort=el('p','cs-comfort','Keep it gentle. Stop if you feel pain.');
  grid.insertAdjacentElement('afterend',comfort);comfort.insertAdjacentElement('afterend',details);
  if(safety)details.append(safety);
- const filters=el('div','cs-segments');filters.id='csTrainerFilters';filters.setAttribute('role','group');filters.setAttribute('aria-label','Filter training sessions');
- for(const [id,label] of [['all','All'],['cheeks','Cheeks'],['posture','Posture'],['relax','Release']]){
-  const b=el('button','',label);b.type='button';b.dataset.csGoal=id;b.setAttribute('aria-pressed',String(id==='all'));filters.append(b);
- }
- grid.insertAdjacentElement('beforebegin',filters);
+ const filters=q('#csTrainerFilters',modal)||el('div','cs-segments');
+ if(!filters.id){filters.id='csTrainerFilters';filters.setAttribute('role','group');filters.setAttribute('aria-label','Filter training sessions');for(const [id,label] of [['all','All'],['yoga','Yoga'],['massage','Massage'],['jaw-neck','Jaw + Neck'],['quick','Quick']]){const b=el('button','',label);b.type='button';b.dataset.csGoal=id;b.setAttribute('aria-pressed',String(id==='all'));filters.append(b);}grid.insertAdjacentElement('beforebegin',filters);}
  const update=goal=>{all('[data-cs-goal]',filters).forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.csGoal===goal)));all('.ar-session',grid).forEach(b=>{b.hidden=!matchesGoal(b.dataset.ctv2Session||b.dataset.arSession,goal);});};
- filters.addEventListener('click',e=>{const b=e.target.closest('[data-cs-goal]');if(b)update(b.dataset.csGoal);});
- filters.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;const buttons=all('button',filters),i=buttons.indexOf(doc().activeElement);if(i<0)return;e.preventDefault();const next=e.key==='Home'?0:e.key==='End'?buttons.length-1:(i+(e.key==='ArrowRight'?1:-1)+buttons.length)%buttons.length;buttons[next].focus();buttons[next].click();});
+ if(!filters.dataset.bound){filters.dataset.bound='1';filters.addEventListener('click',e=>{const b=e.target.closest('[data-cs-goal]');if(b)update(b.dataset.csGoal);});filters.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;const buttons=all('button',filters),i=buttons.indexOf(doc().activeElement);if(i<0)return;e.preventDefault();const next=e.key==='Home'?0:e.key==='End'?buttons.length-1:(i+(e.key==='ArrowRight'?1:-1)+buttons.length)%buttons.length;buttons[next].focus();buttons[next].click();});}
  SESSION_ORDER.forEach((id,index)=>{
   const b=all('.ar-session',grid).find(n=>(n.dataset.ctv2Session||n.dataset.arSession)===id);if(!b)return;
   const info=sessionInfo(root.ChiselARCoach,id);if(!info)return;
   b.dataset.csIndex=String(index+1).padStart(2,'0');b.dataset.csTracking=info.tracking;
   text(q('strong',b),info.title);
   text(q('span',b),`${info.movements} moves`);
-  b.setAttribute('aria-label',`${info.title}, ${info.movements} movements, ${info.tracking==='camera'?'camera checked':info.tracking==='guided'?'guided':'guided and camera checked'}`);grid.append(b);
+  b.setAttribute('aria-label',`${info.title}, ${info.movements} movements, ${info.tracking==='camera'?'camera checked':info.tracking==='hand-guided'?'hand guidance with guided fallback':info.tracking==='guided'?'guided':'guided and camera checked'}`);grid.append(b);
  });
  const check=q('.ctv2-trust-card b',modal);if(check)text(check,'Camera-checked movement');
  const hud=q('#arCoachHud');if(hud){const pause=q('#arCoachStop');if(pause)pause.setAttribute('aria-label','Stop training and close camera');}

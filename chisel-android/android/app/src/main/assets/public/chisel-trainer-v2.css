@@ -39,5 +39,46 @@
 @media (prefers-reduced-motion:reduce){
   #arCoachModal .panel{animation:none!important;transition:none!important}
   #arCoachModal .ctv2-motion,#arCoachModal .ctv2-motion *{animation:none!important;transition:none!important}
+  .ct-demo-motion,.ct-demo-hand,.ct-demo-orbit{animation:none!important}
 }
 #arCoachX{min-width:44px;min-height:44px;z-index:1}
+
+/* Compact routine preview + instructional motion layer. Demos are inline SVG
+   so they stay available offline and fail independently from camera tracking. */
+#arCoachModal .ctv2-category-bar{margin-top:2px;overflow-x:auto;scrollbar-width:none}
+#arCoachModal .ctv2-category-bar::-webkit-scrollbar{display:none}
+#arCoachModal .ctv2-category-bar button{white-space:nowrap}
+html[data-chisel-theme] #arCoachModal .ar-session-grid{max-height:min(38dvh,320px);overflow-y:auto;align-content:start;padding-right:4px;scrollbar-width:thin}
+#arCoachModal .ctv2-preview{margin-top:12px;padding:14px;border:1px solid var(--line,rgba(255,255,255,.12));border-radius:18px;background:rgba(255,255,255,.025)}
+#arCoachModal .ctv2-preview[hidden]{display:none}
+#arCoachModal .ctv2-preview-back{border:0;background:none;color:var(--muted,#aaa);padding:4px 0;min-height:36px;font-size:.76rem;cursor:pointer}
+#arCoachModal .ctv2-preview-head h4{margin:8px 0 2px;color:var(--fg,#f4f1eb);font-size:1.1rem}
+#arCoachModal .ctv2-preview-head p{margin:0;color:var(--muted,#aaa);font-size:.74rem}
+#arCoachModal .ctv2-kicker,#arCoachHud .ctv2-complete-kicker{display:block;color:var(--gold,#d7bd8b);font-size:.64rem;letter-spacing:.12em;text-transform:uppercase}
+#arCoachModal .ctv2-preview-demo{display:grid;place-items:center;min-height:178px;margin:10px 0 4px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:#101314}
+#arCoachModal .ctv2-preview-cue{margin:8px 0;color:var(--fg,#f4f1eb);font-size:.79rem;line-height:1.45}
+#arCoachModal .ctv2-preview-meta{display:flex;justify-content:space-between;gap:10px;margin:8px 0;color:var(--muted,#aaa);font-size:.68rem}
+#arCoachModal .ctv2-preview details{border-top:1px solid rgba(255,255,255,.08);padding-top:8px}
+#arCoachModal .ctv2-preview summary{color:var(--muted,#aaa);font-size:.72rem;cursor:pointer}
+#arCoachModal .ctv2-preview ol{margin:8px 0 4px;padding-left:20px;color:var(--muted,#aaa);font-size:.72rem;line-height:1.45}
+#arCoachModal .ctv2-start-routine{width:100%;margin-top:12px;min-height:48px}
+#arCoachModal .ctv2-pressure-note{margin:9px 0 0;color:var(--muted,#aaa);font-size:.66rem;line-height:1.4}
+#arCoachModal .ctv2-demo-svg,#arCoachHud .ctv2-demo-svg{display:block;width:min(100%,240px);height:auto}
+.ct-demo-face{fill:url(#ctDemoFace);fill-opacity:.14;stroke:rgba(226,197,138,.78);stroke-width:1.4}
+.ct-demo-neck,.ct-demo-brow,.ct-demo-eye,.ct-demo-mouth{fill:none;stroke:rgba(226,197,138,.58);stroke-width:1.2;stroke-linecap:round}
+.ct-demo-eye{stroke:rgba(178,212,192,.8)}
+.ct-demo-mouth{stroke:rgba(212,165,165,.85)}
+.ct-demo-motion-halo{fill:none;stroke:rgba(178,212,192,.16);stroke-width:10;stroke-linecap:round}
+.ct-demo-motion{fill:none;stroke:#b2d4c0;stroke-width:2.2;stroke-linecap:round;stroke-dasharray:4 6;animation:ctv2PathPulse 2.4s ease-in-out infinite}
+.ct-demo-hand{fill:#e1d5bb;stroke:#101314;stroke-width:2;filter:drop-shadow(0 0 5px rgba(225,213,187,.5))}
+.ct-demo-orbit{fill:none;stroke:rgba(225,213,187,.36);stroke-width:1;stroke-dasharray:3 4}
+.ct-demo-label{fill:#b8bfbc;font-size:8px;letter-spacing:.1em;text-transform:uppercase}
+@keyframes ctv2PathPulse{0%,100%{stroke-opacity:.55}50%{stroke-opacity:1}}
+#arCoachHud .ctv2-demo{display:grid;place-items:center;margin:-4px 0 8px;padding:4px;border:1px solid rgba(178,212,192,.18);border-radius:14px;background:rgba(16,19,20,.72)}
+#arCoachHud .ctv2-demo[hidden]{display:none}
+#arCoachHud .ctv2-pause{width:100%;min-height:44px;margin:8px 0 6px;border:1px solid rgba(255,255,255,.14);border-radius:12px;background:rgba(255,255,255,.04);color:#f4f3ed;font:600 13px/1.4 inherit;cursor:pointer}
+#arCoachHud.is-complete>:not(.ctv2-complete){display:none}
+#arCoachHud .ctv2-complete{display:grid;gap:6px;padding:4px 0}
+#arCoachHud .ctv2-complete strong{font-size:1.2rem;color:#f4f3ed}
+#arCoachHud .ctv2-complete span:not(.ctv2-complete-kicker){color:#b8bfbc;font-size:.76rem}
+#arCoachHud .ctv2-complete button{margin-top:8px;min-height:48px;border:1px solid #e1d5bb;border-radius:12px;background:#e1d5bb;color:#101314;font:650 14px/1.4 inherit;cursor:pointer}

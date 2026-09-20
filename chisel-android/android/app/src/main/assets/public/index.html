@@ -929,7 +929,7 @@ function deviceId(){
 function isCamOpen(){ return $('#camwrap').classList.contains('on'); }
 function resetCamModeFlags(){
   scanMode=false; deepScan=false; postureMode=false; _postureBuf=null;
-  coachMode=false; _coachBuf=null; trainMode=false; _arState=null; _arForm=null;
+  coachMode=false; _coachBuf=null; trainMode=false; _arState=null; _arForm=null; massageMode=false; _handLandmarker=null; _handModelStatus='off'; _handTracker={}; _handPoint=null; _arDemoUntil=0; _arPaused=false;
   styleMode=false; styleHair=0; styleBeard=0; styleGlass=0; styleMakeup=0;
   styleGender='men'; styleView='match'; _faceShape=null; _shapeBuf=[]; _shapeT=0;
   _lockAt=0; _miss=0; _snapTO=null; manualSnap=false; _scan=0;
@@ -940,7 +940,7 @@ function resetCamModeFlags(){
   const dr=$('#devReadout'); if(dr) dr.style.display='none';
   const pr=$('#photorealSheet'); if(pr) pr.style.display='none';
   const ao=$('#affirmOverlay'); if(ao) ao.style.display='none';
-  const ah=$('#arCoachHud'); if(ah){ ah.hidden=true; ah.classList.remove('locked'); }
+  const ah=$('#arCoachHud'); if(ah){ ah.hidden=true; ah.classList.remove('locked','is-complete'); }
 }
 function hideCameraOverlays(){
   const w=$('#camwrap');
@@ -1078,6 +1078,7 @@ const cam = $('#cam'), cv = $('#overlay'), ctx = cv.getContext('2d');
 let stream=null, facing='user', detLoop=null, manualSnap=null;
 let scanMode=false, deepScan=false, postureMode=false, _lockAt=0, _miss=0;        // auto-capture state (deepScan = longer, more frames)
 let trainMode=false, _arState=null, _arForm=null, _arEvent=''; // AR coach state
+let massageMode=false, _handLandmarker=null, _handModelStatus='off', _handLastTs=0, _handTracker={}, _handPoint=null, _arDemoUntil=0, _arPaused=false;
 let styleMode=false, styleHair=0, styleBeard=0, styleGlass=0, styleMakeup=0, _styleHairCol=null, _styleHairColLock=null; // hair/beard/eyewear/makeup try-on
 let styleGender='men', styleView='match', _faceShape=null;     // gender + match/all + detected shape
 let _openMakeup=false;                                          // when true, try-on opens with makeup preset active
@@ -1274,12 +1275,24 @@ async function startARCoach(sessionId){
   setCamMode('train');
   _arState=AR_COACH.createState(sessionId,performance.now());
   _arForm={accepted:false,correction:'Center your face in the guide',tone:'find'};
-  _arEvent='start';
-  const hud=$('#arCoachHud'); hud.hidden=false; hud.classList.remove('locked');
+  _arEvent='start'; _arPaused=false; _arDemoUntil=performance.now()+2600; _handTracker={}; _handPoint=null;
+  massageMode=!!(AR_COACH.sessionRequiresHand&&AR_COACH.sessionRequiresHand(sessionId));
+  _handModelStatus=massageMode?'loading':'off'; _handLandmarker=null;
+  if(massageMode&&AR_COACH.loadHandLandmarker){
+    AR_COACH.loadHandLandmarker().then(model=>{if(!trainMode)return;_handLandmarker=model;_handModelStatus=model?'ready':'failed';}).catch(()=>{_handModelStatus='failed';});
+  }
+  const hud=$('#arCoachHud'); hud.hidden=false; hud.classList.remove('locked','is-complete');
   const h=$('.tap-hint'); if(h) h.style.display='none';
   renderARCoachHud(performance.now());
   await openCam();
 }
+function readHands(){
+  if(!massageMode||!_handLandmarker||!cam||cam.readyState<2)return null;
+  let t=Math.round(performance.now());if(t<=_handLastTs)t=_handLastTs+1;_handLastTs=t;
+  try{return _handLandmarker.detectForVideo(cam,t);}catch(error){_handModelStatus='failed';return null;}
+}
+window.isARCoachPaused=()=>_arPaused;
+window.toggleARCoachPause=()=>{if(!trainMode)return;_arPaused=!_arPaused;const pause=$('#ctv2Pause');if(pause)pause.textContent=_arPaused?'Resume':'Pause';if(_arPaused){setGuideMsg('','PAUSED · CAMERA STAYS ON');}else{_arDemoUntil=Math.max(_arDemoUntil,performance.now()+500);setGuideMsg('','WATCH THE TECHNIQUE');}};
 function arCoachProgress(ex,now){
   if(!_arState||!ex) return 0;
   const repBase=_arState.rep/ex.reps;
@@ -1290,14 +1303,25 @@ function renderARCoachHud(now){
   const hud=$('#arCoachHud'); if(!hud||!_arState) return;
   const ex=AR_COACH.currentExercise(_arState); if(!ex) return;
   const resting=_arState.restUntil && now<_arState.restUntil;
-  const locked=!!(_arForm&&_arForm.accepted&&!resting);
+  const showingDemo=!_arPaused&&_arDemoUntil>now;
+  const locked=!!(_arForm&&_arForm.accepted&&!resting&&!showingDemo);
   hud.hidden=false; hud.classList.toggle('locked',locked);
+  const demo=$('#ctv2Demo',hud);
+  if(demo){
+    demo.hidden=!showingDemo;
+    if(showingDemo&&demo.dataset.exercise!==ex.id&&window.ChiselTrainerDemos){
+      window.ChiselTrainerDemos.render(ex,demo,{reducedMotion:window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches});
+      demo.dataset.exercise=ex.id;
+    }
+  }
   $('#arCoachExercise').textContent=ex.name;
   $('#arCoachEvidence').textContent=ex.evidence+' evidence';
-  $('#arCoachCue').textContent=resting ? 'Release gently, breathe, and prepare for the next rep.' : (locked ? ex.cue : ((_arForm&&_arForm.correction)||ex.safety));
+  $('#arCoachCue').textContent=_arPaused?'Take a breath. Resume when you are ready.':showingDemo?'Watch the technique once, then follow the path.':resting ? 'Release gently, breathe, and prepare for the next rep.' : (locked ? ex.cue : ((_arForm&&_arForm.correction)||ex.safety));
   $('#arCoachRep').textContent=`Rep ${Math.min(ex.reps,_arState.rep+1)} of ${ex.reps} · ${_arState.exerciseIndex+1}/${_arState.exerciseIds.length}`;
   let status='Finding form';
-  if(resting) status='Reset';
+  if(_arPaused) status='Paused';
+  else if(showingDemo) status='Technique';
+  else if(resting) status='Reset';
   else if(locked&&_arState.holdStartedAt) status='Hold '+Math.max(1,Math.ceil(ex.hold-(now-_arState.holdStartedAt)/1000))+'s';
   else if(locked) status='Form locked';
   $('#arCoachHold').textContent=status;
@@ -1307,20 +1331,37 @@ function renderARCoachHud(now){
 function trainStep(d){
   if(!_arState||!AR_COACH) return;
   const now=performance.now(), before=_arState;
+  if(_arPaused){renderARCoachHud(now);return;}
+  if(_arDemoUntil>now){renderARCoachHud(now);setGuideMsg('','WATCH THE TECHNIQUE');return;}
   const signals=AR_COACH.signalsFromLandmarks(d.pts);
   const pose=quickPose(d); signals.frontal=pose.frontal;
   const ex=AR_COACH.currentExercise(before);
-  _arForm=AR_COACH.evaluateForm(ex,signals);
+  const hands=massageMode?readHands():null;
+  if(ex&&ex.tracking==='hand-guided'){
+    if(_handModelStatus==='ready'&&hands){
+      _arForm=AR_COACH.evaluateHandMovement(ex,hands,d.pts,_handTracker);
+      _handTracker=_arForm.tracker||{};_handPoint=_arForm.handPoint||null;
+    }else if(_handModelStatus==='failed'){
+      const guided=AR_COACH.evaluateForm({...ex,tracking:'guided'},signals);
+      _arForm={...guided,tracking:'guided',fallback:true,score:null,correction:guided.accepted?'Guided mode · follow the illustrated path':'Center your face to continue'};_handPoint=null;
+    }else{
+      _arForm={accepted:false,correction:'Loading hand guidance…',tone:'find',score:null,tracking:'hand-guided',handVisible:false};_handPoint=null;
+    }
+  }else{_arForm=AR_COACH.evaluateForm(ex,signals);_handPoint=null;}
   if(!_arForm.accepted&&pose.msg) _arForm.correction=pose.msg.toLowerCase().replace(/(^|\s)\S/g,c=>c.toUpperCase());
   _arState=AR_COACH.advanceState(before,_arForm,now);
   if(_arState.event!==_arEvent){
     if(_arState.event==='rep'||_arState.event==='exercise'){ try{ navigator.vibrate&&navigator.vibrate(18); }catch{} }
+    if(_arState.event==='exercise') _arDemoUntil=now+2200;
     _arEvent=_arState.event;
   }
   if(_arState.completed){ finishTrain(); return; }
   renderARCoachHud(now);
   const current=AR_COACH.currentExercise(_arState);
   if(_arState.restUntil&&now<_arState.restUntil) setGuideMsg('✓','BREATHE · NEXT REP');
+  else if(ex&&ex.tracking==='hand-guided'&&_handModelStatus==='loading') setGuideMsg('','LOADING HAND GUIDANCE');
+  else if(ex&&ex.tracking==='hand-guided'&&_arForm.fallback) setGuideMsg('','GUIDED MODE · FOLLOW THE PATH');
+  else if(ex&&ex.tracking==='hand-guided'&&!_arForm.handVisible) setGuideMsg('','BRING YOUR HAND INTO VIEW');
   else if(_arForm.accepted){
     const left=_arState.holdStartedAt?Math.max(1,Math.ceil(current.hold-(now-_arState.holdStartedAt)/1000)):current.hold;
     setGuideMsg(String(left),'FORM LOCKED · KEEP BREATHING');
@@ -1328,12 +1369,13 @@ function trainStep(d){
 }
 function finishTrain(){
   const sessionId=_arState&&_arState.sessionId||'full';
+  const completedState=_arState?{..._arState,exerciseIds:_arState.exerciseIds.slice()}:null;
   const sessions=store.get('arCoachSessions',{total:0,byType:{}});
   sessions.total=(sessions.total||0)+1; sessions.byType=sessions.byType||{};
   sessions.byType[sessionId]=(sessions.byType[sessionId]||0)+1; sessions.last=new Date().toISOString();
   store.set('arCoachSessions',sessions);
-  trainMode=false; _arState=null; _arForm=null;
-  $('#arCoachHud').hidden=true;
+  if(completedState&&window.dispatchEvent&&window.CustomEvent)window.dispatchEvent(new CustomEvent('chisel:trainer-complete',{detail:{state:completedState,form:_arForm,exercise:null}}));
+  trainMode=false; massageMode=false; _handModelStatus='off'; _arState=null; _arForm=null; _handPoint=null; _arDemoUntil=0;
   setGuideMsg('✓','AR COACH SESSION COMPLETE');
   bumpStreak(); toast('AR coaching session complete',2600);
   setTimeout(closeCam,1700);
@@ -1976,6 +2018,18 @@ function drawARCoachGuide(d,R){
   line([454,280,330,425,291],3);
   ctx.fillStyle=color;
   [61,291,50,280].forEach(i=>{const p=P(i);ctx.beginPath();ctx.arc(p.x,p.y,5/R.s,0,Math.PI*2);ctx.fill();});
+  const exercise=_arState&&AR_COACH.currentExercise(_arState);
+  if(exercise&&exercise.tracking==='hand-guided'&&AR_COACH.handPathForExercise){
+    const path=AR_COACH.handPathForExercise(exercise,pts);
+    if(path){
+      const sx=path.start.x*w,sy=path.start.y*h,ex=path.end.x*w,ey=path.end.y*h;
+      ctx.save();ctx.setLineDash([5/R.s,7/R.s]);ctx.lineWidth=2/R.s;ctx.strokeStyle='rgba(178,212,192,.95)';ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(ex,ey);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle='rgba(178,212,192,.95)';ctx.beginPath();ctx.arc(sx,sy,6/R.s,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(ex,ey,6/R.s,0,Math.PI*2);ctx.fill();
+      if(exercise.handPath.motion==='circle'){ctx.beginPath();ctx.arc(path.anchor.x*w,path.anchor.y*h,18/R.s,0,Math.PI*2);ctx.strokeStyle='rgba(225,213,187,.82)';ctx.stroke();}
+      if(_handPoint){ctx.beginPath();ctx.arc(_handPoint.x*w,_handPoint.y*h,8/R.s,0,Math.PI*2);ctx.fillStyle='rgba(225,213,187,.98)';ctx.fill();}
+      ctx.restore();
+    }
+  }
   ctx.restore();
 }
 function drawGuide(){

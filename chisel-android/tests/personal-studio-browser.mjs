@@ -54,9 +54,9 @@ try{
   check(`noMadeUpFormScore${width}`,await page.$eval('#cpsLiveForm',n=>n.hidden));
   check(`trainerCloseVisible${width}`,await page.$eval('#arCoachX',n=>{const r=n.getBoundingClientRect();return r.top>=0&&r.bottom<innerHeight&&r.width>=44&&r.height>=44;}));
   await page.screenshot({path:`${out}/trainer-${width}.png`});
-  await page.click('[data-cs-goal="cheeks"]');
-  check(`realFilterUpdatesFeature${width}`,await page.$eval('#cpsSessionTitle',n=>n.textContent==='Cheek activation'));
-  check(`oneCheekSession${width}`,await page.$$eval('.ar-session:not([hidden])',n=>n.length===1));
+ await page.click('[data-cs-goal="massage"]');
+ check(`realFilterUpdatesFeature${width}`,await page.$eval('#cpsSessionTitle',n=>n.textContent.includes('Morning Refresh')));
+ check(`massageSessions${width}`,await page.$$eval('.ar-session:not([hidden])',n=>n.length===7));
   await page.click('[data-cs-goal="all"]');await page.keyboard.press('Escape');
   await page.click('.cs-direct-tools [data-cs-open="skin"]');await page.waitForSelector('#csaShell',{visible:true});
   check(`skinHasOwnPhoto${width}`,await page.$eval('#cpsSkinHero img',n=>!n.hidden&&n.complete&&n.naturalWidth>0));

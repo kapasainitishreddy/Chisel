@@ -32,7 +32,7 @@ test('each exercise declares evidence and whether Chisel can form-track it', () 
   assert.ok(coach.FORM_TRACKING);
   assert.ok(coach.EXERCISES.length >= 7);
   for (const exercise of coach.EXERCISES) {
-    assert.ok(['form', 'guided'].includes(exercise.tracking), `${exercise.id} missing tracking mode`);
+    assert.ok(['form', 'guided', 'hand-guided'].includes(exercise.tracking), `${exercise.id} missing tracking mode`);
     assert.ok(exercise.evidence);
     assert.ok(exercise.safety);
   }
