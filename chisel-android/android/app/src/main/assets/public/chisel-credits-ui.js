@@ -4,6 +4,7 @@
 'use strict';
 let installed=false,session=null,wallet,dialog,returnFocus,configured=false,loggedIn=null,refreshing=null,discovered=false,selectedQuality='standard',productsBusy=false;
 const SESSION='chisel:credit-session',q=s=>document.querySelector(s);
+const billingEnabled=()=>root.CHISEL_RELEASE_CONFIG?.billingEnabled===true;
 function base(){const u=new URL(typeof RENDER_FN_URL==='string'?RENDER_FN_URL:'');if(!/^https:\/\/[a-z0-9]{20}\.supabase\.co$/.test(u.origin))throw Error('server_not_configured');return u.origin;}
 const anon=()=>typeof RENDER_ANON_KEY==='string'?RENDER_ANON_KEY:'';
 const uid=()=>session?.user?.id||null;
@@ -28,6 +29,11 @@ async function purchase(product,owner){const P=await native();if(uid()!==owner)t
 function changed(){root.dispatchEvent(new CustomEvent('chisel:credits-change'));}
 function draw(s){
  if(!dialog)return;
+ if(!billingEnabled()){
+  q('#ccSignIn').hidden=true;q('#ccSignOut').hidden=true;q('#ccPacks').replaceChildren();
+  q('#ccPriceNotice').textContent='';safeMessage('#ccStatus','Credit purchases and paid accounts are disabled in this release.');
+  return;
+ }
  safeMessage('#ccBalance',s.balance===null?'Sign in to see your balance':`${s.balance} credits`);
  safeMessage('#ccEditorBalance',s.balance===null?'Credits':`${Math.max(0,s.balance)} credits`);
  safeMessage('#ccStatus',s.message||(!s.configuration?.ready?'AI edits and purchases are not enabled yet.':!s.salesReady?'Credit purchases are not available yet.':'Credits are added after store verification.'));
@@ -39,8 +45,8 @@ function draw(s){
  if(q('#ccModeGroup'))q('#ccModeGroup').hidden=!discovered;
  changed();
 }
-async function refresh(){try{const s=await wallet.refresh();discovered=s.configuration?.apiVersion===2;if(discovered)root.ChiselLooksStudio?.refreshAvailability?.();if(s.salesReady&&uid()&&!productsBusy){productsBusy=true;try{await wallet.loadProducts();}catch{safeMessage('#ccStatus','Credit purchases are available in the configured Android app.');}finally{productsBusy=false;}}draw(wallet.snapshot());}catch{safeMessage('#ccStatus','Wallet unavailable. No purchase was started.');}}
-function open(){if(!dialog)return;returnFocus=document.activeElement;dialog.showModal();q('#ccClose').focus();refresh();}
+async function refresh(){if(!billingEnabled()){discovered=false;draw({balance:null,offers:[],salesReady:false,configuration:{ready:false}});return;}try{const s=await wallet.refresh();discovered=s.configuration?.apiVersion===2;if(discovered)root.ChiselLooksStudio?.refreshAvailability?.();if(s.salesReady&&uid()&&!productsBusy){productsBusy=true;try{await wallet.loadProducts();}catch{safeMessage('#ccStatus','Credit purchases are available in the configured Android app.');}finally{productsBusy=false;}}draw(wallet.snapshot());}catch{safeMessage('#ccStatus','Wallet unavailable. No purchase was started.');}}
+function open(){if(!dialog||!billingEnabled())return false;returnFocus=document.activeElement;dialog.showModal();q('#ccClose').focus();refresh();return true;}
 async function signOut(){if(wallet.snapshot().busy)return;const old=session;saveSession(null);wallet.reset();loggedIn=null;root.ChiselLooksStudio?.clearAccount?.();changed();try{if(old)await jsonFetch(base()+'/auth/v1/logout?scope=local',{method:'POST',headers:{apikey:anon(),Authorization:`Bearer ${old.access_token}`}});}catch{}refresh();}
 function quote(){const m=root.ChiselCreditPolicy.mode(selectedQuality);return{quality:selectedQuality,credits:m.credits,userId:uid()};}
 function install(){
@@ -53,11 +59,11 @@ function install(){
  q('#ccRefresh').onclick=refresh;q('#ccSignOut').onclick=signOut;
  q('#ccSignIn').onsubmit=async e=>{e.preventDefault();const b=q('#ccSendCode');b.disabled=true;try{await auth('otp',{email:q('#ccEmail').value.trim(),create_user:true});q('#ccCodeStep').hidden=false;safeMessage('#ccStatus','Enter the code from your email.');q('#ccCode').focus();}catch(e){safeMessage('#ccStatus',e.message);}finally{b.disabled=false;}};
  q('#ccVerify').onclick=async()=>{const b=q('#ccVerify');b.disabled=true;try{const s=await auth('verify',{email:q('#ccEmail').value.trim(),token:q('#ccCode').value.trim(),type:'email'});saveSession(s);if(!session)throw Error('Sign-in did not complete.');wallet.reset();q('#ccCode').value='';await refresh();}catch(e){safeMessage('#ccStatus',e.message);}finally{b.disabled=false;}};
- const button=document.createElement('button');button.id='ccEditorBalance';button.className='cc-chip';button.type='button';button.textContent='Credits';button.onclick=open;q('#clsEditor .cls-header').insertBefore(button,q('#clsLibraryOpen'));
+ const button=document.createElement('button');button.id='ccEditorBalance';button.className='cc-chip';button.type='button';button.textContent='Credits';button.hidden=!billingEnabled();button.onclick=open;q('#clsEditor .cls-header').insertBefore(button,q('#clsLibraryOpen'));
  const modes=document.createElement('div');modes.id='ccModeGroup';modes.className='cc-modes';modes.hidden=true;modes.setAttribute('role','group');modes.setAttribute('aria-label','Image editing quality and credit cost');
  for(const [id,m]of Object.entries(root.ChiselCreditPolicy.MODES)){const b=document.createElement('button');b.type='button';b.dataset.creditMode=id;b.textContent=`${m.label} · ${m.credits} ${m.credits===1?'credit':'credits'}`;b.setAttribute('aria-pressed',String(id===selectedQuality));b.onclick=()=>{selectedQuality=id;for(const node of modes.querySelectorAll('button'))node.setAttribute('aria-pressed',String(node===b));changed();};modes.append(b);}
  q('#clsGenerate').parentElement.insertBefore(modes,q('#clsGenerate'));
  root.addEventListener('online',refresh);refresh();document.documentElement.dataset.creditUI='1';return true;
 }
-root.ChiselCredits={install,open,refresh,quote,signOut,isActive:()=>discovered,endpoint:()=>base()+'/functions/v1/credit-studio',headers:authHeaders,snapshot:()=>wallet?.snapshot(),userId:uid};
+root.ChiselCredits={install,open,refresh,quote,signOut,isActive:()=>billingEnabled()&&discovered,endpoint:()=>base()+'/functions/v1/credit-studio',headers:authHeaders,snapshot:()=>wallet?.snapshot(),userId:uid};
 })(globalThis);

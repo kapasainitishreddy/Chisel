@@ -5,6 +5,10 @@ apply plugin: 'com.android.application'
 def keystorePropsFile = rootProject.file("keystore.properties")
 def keystoreProps = new Properties()
 if (keystorePropsFile.exists()) { keystoreProps.load(new FileInputStream(keystorePropsFile)) }
+def requestedRelease = gradle.startParameter.taskNames.any { it.toLowerCase().contains('release') }
+if (requestedRelease && !keystorePropsFile.exists()) {
+    throw new GradleException('Release signing is not configured. Create android/keystore.properties from keystore.properties.example before building a Play artifact.')
+}
 
 android {
     namespace "com.chisel.lookmax"

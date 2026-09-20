@@ -625,7 +625,7 @@
       <div class="card" style="margin-top:18px">
         <div class="eyebrow">Privacy &amp; data</div>
         <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:500">Your data stays on this device</h3>
-        <p style="color:var(--ivory-dim);font-size:13px;line-height:1.6">Scans, photos, streaks, routines and settings are stored only on your phone — no account, no ads, no tracking. The only time anything leaves the device is an optional photoreal render. <a href="https://kapasainitishreddy.github.io/Chisel/privacy-policy.html" target="_blank" rel="noopener" style="color:var(--gold)">Read the privacy policy ↗</a></p>
+        <p style="color:var(--ivory-dim);font-size:13px;line-height:1.6">Scans, photos, streaks, routines and settings are stored only on your phone — no account, no ads, no tracking. The only time anything leaves the device is an optional photoreal render. <a href="https://kapasainitishreddy.github.io/Chisel/privacy-policy.html" target="_blank" rel="noopener" style="color:var(--gold)">Privacy policy ↗</a> · <a href="https://kapasainitishreddy.github.io/Chisel/terms-of-use.html" target="_blank" rel="noopener" style="color:var(--gold)">Terms of use ↗</a></p>
         <div class="btn-row" style="margin-top:14px">
           <button class="btn ghost" id="wipeData">Clear all my data</button>
         </div>
@@ -920,6 +920,10 @@ const toast = (m,t=1800)=>{ const el=$('#toast'); el.textContent=m; el.classList
 const store = { get:(k,d)=>{ try{return JSON.parse(localStorage.getItem('chisel:'+k))??d}catch{return d} }, set:(k,v)=>localStorage.setItem('chisel:'+k, JSON.stringify(v)) };
 const RENDER_FN_URL = 'https://wnzbmmhtdchdqjnskwlo.supabase.co/functions/v1/render-lookmax';
 const RENDER_ANON_KEY = 'sb_publishable_kr_GPQ_vODmXjIxQoV8v6A_FqH8RCts';
+/* Release safety: paid accounts stay unavailable until billing, deletion,
+   retention and Play purchase testing are complete. Optional cloud photo
+   editing remains a separate, consented path. */
+window.CHISEL_RELEASE_CONFIG = Object.freeze({billingEnabled:false,cloudPhotoRendersEnabled:true});
 function deviceId(){
   let id = store.get('deviceId', null);
   if(!id){ id = 'c-'+Math.random().toString(36).slice(2)+Date.now().toString(36); store.set('deviceId', id); }
@@ -3591,7 +3595,7 @@ let _rc=null, rcReady=false;
 function rcPlugin(){ return (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Purchases) || null; }
 async function initRevenueCat(){
   const P=rcPlugin();
-  if(!P || !RC_API_KEY) return;   // no native bridge (browser) or not configured yet
+  if(!window.CHISEL_RELEASE_CONFIG?.billingEnabled || !P || !RC_API_KEY) return;   // no native bridge, not enabled, or not configured yet
   try{ await P.configure({ apiKey: RC_API_KEY, appUserID: deviceId() }); _rc=P; rcReady=true; }
   catch(e){ console.warn('RevenueCat init failed', e); }
 }
@@ -3603,7 +3607,10 @@ async function rcUserIdIfEntitled(){
     return active ? deviceId() : undefined;   // appUserID was set to deviceId() at configure()
   }catch(e){ console.warn('rcUserIdIfEntitled', e); return undefined; }
 }
-function openPaywall(){ $('#paywall').classList.add('on'); renderOfferings(); }
+function openPaywall(){
+  if(!window.CHISEL_RELEASE_CONFIG?.billingEnabled){ toast('Premium purchases are not available in this release'); return; }
+  $('#paywall').classList.add('on'); renderOfferings();
+}
 function closePaywall(){ $('#paywall').classList.remove('on'); }
 async function renderOfferings(){
   const el=$('#paywallOfferings');
@@ -3627,6 +3634,7 @@ async function purchase(pkg){
   catch(e){ if(e && (e.userCancelled||e.code==='PURCHASE_CANCELLED')) return; console.warn('purchase', e); toast('Purchase didn\'t go through — try again'); }
 }
 $('#goPremiumBtn') && $('#goPremiumBtn').addEventListener('click', openPaywall);
+if(!window.CHISEL_RELEASE_CONFIG?.billingEnabled && $('#goPremiumBtn')) $('#goPremiumBtn').hidden=true;
 $('#paywallX') && $('#paywallX').addEventListener('click', closePaywall);
 $('#paywall') && $('#paywall').addEventListener('click', e=>{ if(e.target.id==='paywall') closePaywall(); });
 $('#paywallRestore') && $('#paywallRestore').addEventListener('click', async ()=>{

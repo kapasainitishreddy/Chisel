@@ -13,9 +13,9 @@ uploadable file; C–F are the Play Console side.
 ## A. One-time setup (do once)
 
 ### 1. Confirm tools
-- Android Studio installed, and **Android SDK Platform 35** downloaded
-  (Android Studio → Settings → SDK Manager → tick **Android 15 (API 35)** → Apply).
-- The project now targets **API 35 / AGP 8.6 / Gradle 8.7** (updated for you).
+- Android Studio installed, and **Android SDK Platform 36** downloaded
+  (Android Studio → Settings → SDK Manager → tick **Android 16 (API 36)** → Apply).
+- The project now targets **API 36 / AGP 8.6 / Gradle 8.7**.
 
 ### 2. Create your upload keystore (you choose the passwords)
 Open a terminal in `chisel-android/android/` and run (uses the JDK bundled with
@@ -66,16 +66,30 @@ If you'd rather build in Android Studio: **Build → Generate Signed Bundle / AP
 > **Bump `versionCode`** in `chisel-android/android/app/build.gradle` (currently
 > `1`) by +1 before every *new* upload after the first.
 
+### Current release scope
+
+The checked-in release defaults to **free-first**: paid accounts and credit
+purchases stay disabled until account deletion, retention, Play products,
+RevenueCat, billing webhooks and purchase/refund testing are complete. The
+optional photoreal path remains separately consented and must be included in
+Data safety declarations if it is enabled for the submitted build. Do not set
+`window.CHISEL_RELEASE_CONFIG.billingEnabled` to `true` until those gates have
+evidence.
+
 ---
 
 ## C. Host the privacy policy (required, public URL)
 
-`docs/privacy-policy.html` is ready. Easiest hosting = GitHub Pages:
-1. GitHub repo → **Settings → Pages**.
-2. Source: **Deploy from a branch**, Branch: **main**, Folder: **/docs** → Save.
-3. Your URL becomes: `https://kapasainitishreddy.github.io/Chisel/privacy-policy.html`
+`docs/privacy-policy.html` and `docs/terms-of-use.html` are ready. This repo now
+includes a GitHub Actions Pages deployment at
+`.github/workflows/publish-docs-pages.yml`:
+1. Push/merge it to `main`.
+2. In GitHub repo → **Settings → Pages**, choose **GitHub Actions** as the source
+   if GitHub asks you to select a source.
+3. Wait for the **Publish Chisel policy pages** workflow to finish. The URL is:
+   `https://kapasainitishreddy.github.io/Chisel/privacy-policy.html`
 
-Verify it opens in an incognito window before you paste it into Play Console.
+Verify both pages return HTTP 200 and open in an incognito window before you paste the privacy URL into Play Console and publish the terms URL wherever your store listing or support page references it.
 (Update the contact email inside the file first if you don't want to use the one there.)
 
 ---
@@ -118,13 +132,13 @@ Verify it opens in an incognito window before you paste it into Play Console.
 Paste your hosted URL from step C.
 
 ### Data safety form — answers
-- **Does your app collect or share user data?** → **Yes** (because photoreal sends a photo, and a device ID is sent).
+- **Does your app collect or share user data?** → **Yes** if the optional photoreal path is enabled in the submitted build (a prepared photo is sent to the named provider and a random device identifier is used for the free allowance). If you submit a strictly local-only build, re-check every answer against that exact artifact.
 - **Data types:**
   - **Photos and videos → Photos**: Collected **Yes**, Shared **Yes** (image-generation provider). Processed **ephemerally / not stored**. Purpose: **App functionality**. Optional: **Yes** (only if user uses photoreal).
   - **Device or other IDs**: Collected **Yes**, Shared **No**. Purpose: **App functionality, Fraud prevention** (usage limits).
-  - **Purchase history** (if you enable billing): handled by Google Play — declare **App functionality**.
+  - **Purchase history**: declare only when billing is enabled; handled by Google Play / RevenueCat for the configured purchase flow.
 - **Is all data encrypted in transit?** → **Yes**.
-- **Can users request data deletion?** → **Yes** (email in the privacy policy).
+- **Can users request data deletion?** → The current free-first build provides local “Clear all my data”; do not enable paid account creation until an in-app account-deletion request and backend deletion workflow are implemented and tested.
 - No location, contacts, messages, health-connect, or analytics data collected.
 
 ### Content rating
@@ -167,8 +181,8 @@ Paste your hosted URL from step C.
 
 ## Notes / follow-ups
 - **API 36:** From **31 Aug 2026**, new apps and updates must target **API 36**.
-  You're on 35 (valid now). Bumping to 36 needs a small AGP/SDK bump — do it
-  before your first update after that date.
+  Chisel is configured for API 36; verify the final release artifact uses the
+  same configuration.
 - **RevenueCat/Play Billing:** the paywall **backend and in-app UI are now wired**
   (paywall screen, purchase + restore, "Go Premium" entry, free-limit → paywall
   routing). To turn it on you must, in the dashboards (can't be automated):

@@ -8,7 +8,7 @@ Allowed statuses are **PASS**, **FAIL**, **BLOCKED**, **NOT RUN**, and **N/A**.
 |---|---|---|
 | source / synchronized product test suite | PASS | Current branch inherits the verified synchronized suite and release-hardening merge; rerun before final release if source changes |
 | Android debug build | PASS | Existing API-36 debug/build evidence; rerun against final candidate |
-| release bundle compile | PASS | Existing CI `bundleRelease` artifact proves compile/bundle, not final signed Play upload |
+| release bundle compile | NOT RUN | Release signing now fails closed until the developer-owned keystore is configured; run `bundleRelease` against the final candidate |
 | final upload signing | NOT RUN | Developer-owned upload keystore + signed AAB tied to final commit |
 | Play Internal upload/install | NOT RUN | Internal-test artifact, install/launch and Play-delivered build evidence |
 | physical-device final regression | NOT RUN | Final build: permissions, Analyze, Quick/Deep, Precision, AR coach, try-on, progress, share/export, restart/data deletion |
