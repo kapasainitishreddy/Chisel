@@ -957,6 +957,7 @@ function hideCameraOverlays(){
 function setCamMode(mode='idle'){
   camMode = mode || 'idle';
   resetCamModeFlags();
+  const cameraSurface=$('#camwrap');if(cameraSurface)cameraSurface.dataset.mode=camMode;
   if(mode === 'scan') { scanMode=true; deepScan=false; }
   else if(mode === 'deep') { scanMode=true; deepScan=true; }
   else if(mode === 'train') { trainMode=true; }
@@ -1151,6 +1152,7 @@ function closeCam(){
   hideCameraOverlays();
   resetCamModeFlags();
   camMode = 'idle';
+  const cameraSurface=$('#camwrap');if(cameraSurface)cameraSurface.dataset.mode='idle';
   clearScanWatch();
   if(detLoop) cancelAnimationFrame(detLoop); detLoop=null;
   if(stream) stream.getTracks().forEach(t=>t.stop()); stream=null;
@@ -1315,9 +1317,9 @@ function renderARCoachHud(now){
     }
   }
   $('#arCoachExercise').textContent=ex.name;
-  $('#arCoachEvidence').textContent=ex.evidence+' evidence';
+  $('#arCoachEvidence').textContent=ex.tracking==='form'?'Camera checked':'Guided';
   $('#arCoachCue').textContent=_arPaused?'Take a breath. Resume when you are ready.':showingDemo?'Watch the technique once, then follow the path.':resting ? 'Release gently, breathe, and prepare for the next rep.' : (locked ? ex.cue : ((_arForm&&_arForm.correction)||ex.safety));
-  $('#arCoachRep').textContent=`Rep ${Math.min(ex.reps,_arState.rep+1)} of ${ex.reps} · ${_arState.exerciseIndex+1}/${_arState.exerciseIds.length}`;
+  $('#arCoachRep').textContent=`${_arState.exerciseIndex+1} of ${_arState.exerciseIds.length}`;
   let status='Finding form';
   if(_arPaused) status='Paused';
   else if(showingDemo) status='Technique';

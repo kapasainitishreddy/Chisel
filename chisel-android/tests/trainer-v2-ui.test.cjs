@@ -25,6 +25,8 @@ test('trainer v2 runtime upgrades the existing AR coach instead of creating a se
   assert.match(js, /cps-trainer-body/);
   assert.match(js, /ctv2-preview-open/);
   assert.match(js, /ctv2-actions/);
+  assert.match(js, /syncCompactGrid/);
+  assert.match(js, /ctv2ViewAll/);
   assert.match(js, /benefitCopy/);
   assert.match(js, /form score/i);
   assert.doesNotMatch(js, /male routine|female routine|for men|for women/i);
@@ -34,6 +36,7 @@ test('trainer v2 runtime upgrades the existing AR coach instead of creating a se
   assert.match(css, /min-height:44px/);
   assert.match(css, /ctv2-preview-benefit/);
   assert.match(css, /ctv2-actions/);
+  assert.match(css, /prefers-reduced-motion/);
 });
 
 test('trainer runtime also repairs legacy try-on shortcuts into unisex style families', () => {

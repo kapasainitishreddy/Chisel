@@ -29,4 +29,10 @@ test('skin original handoff invalidates old results and refuses changes during a
 test('photo component assets are mirrored to native app',()=>{
  for(const f of ['chisel-personal-photo.js','chisel-personal-studio.js','chisel-personal-studio.css','chisel-skin-appearance.js','chisel-ar-coach-core.js'])
   assert.equal(read(f),fs.readFileSync(path.join(__dirname,'../android/app/src/main/assets/public',f),'utf8'),f);
+ assert.deepEqual(fs.readFileSync(path.join(w,'chisel-trainer-sculpture.webp')),fs.readFileSync(path.join(__dirname,'../android/app/src/main/assets/public/chisel-trainer-sculpture.webp')));
+});
+test('trainer fallback art stays lightweight and the layout remains editorial',()=>{
+ const css=read('chisel-personal-studio.css'),asset=path.join(w,'chisel-trainer-sculpture.webp');
+ assert.ok(fs.statSync(asset).size<100000,'trainer fallback should remain under 100 KB');
+ assert.match(css,/cps-routine-library/);assert.match(css,/data-mode="train"/);assert.match(css,/Georgia,serif/);
 });
