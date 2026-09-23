@@ -305,7 +305,7 @@ html[data-personal-studio] #arCoachModal #arCoachX{
 }
 html[data-personal-studio] #arCoachModal .cps-trainer-body{padding:0 0 32px;scroll-padding:0;overflow-y:auto;background:var(--trainer-ink)}
 html[data-personal-studio] #arCoachModal .cps-trainer-hero{
- height:min(56dvh,560px);min-height:390px;margin:0;border:0;border-radius:0;background:#0a1511;box-shadow:none;
+ height:330px;min-height:330px;margin:0;border:0;border-radius:0;background:#0a1511;box-shadow:none;
 }
 html[data-personal-studio] #arCoachModal .cps-trainer-fallback{
  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:52% 31%;filter:saturate(.78) contrast(1.04);
@@ -332,7 +332,7 @@ html[data-personal-studio] #arCoachModal #cpsStartSession{
  color:#0a1511;box-shadow:0 10px 28px #0008;font:650 13px/1 var(--sans);
 }
 html[data-personal-studio] #arCoachModal #cpsStartSession svg{width:17px;height:17px}
-html[data-personal-studio] #arCoachModal .cps-routine-library{padding:22px 22px 8px}
+html[data-personal-studio] #arCoachModal .cps-routine-library{padding:14px 22px 8px}
 html[data-personal-studio] #arCoachModal .cps-routine-head{display:flex;align-items:end;justify-content:space-between;margin-bottom:14px}
 html[data-personal-studio] #arCoachModal .cps-routine-head span{color:var(--trainer-brass);font:600 9px/1.2 var(--sans);letter-spacing:.18em;text-transform:uppercase}
 html[data-personal-studio] #arCoachModal .cps-routine-head h4{margin:4px 0 0;color:#f4f0e9;font:400 23px/1.1 Georgia,serif;letter-spacing:-.025em}
@@ -343,7 +343,7 @@ html[data-personal-studio] #arCoachModal #csTrainerFilters{
 html[data-personal-studio] #arCoachModal #csTrainerFilters::-webkit-scrollbar{display:none}
 html[data-personal-studio] #arCoachModal #csTrainerFilters button{
  position:relative;flex:0 0 auto;min-height:42px;padding:0;border:0!important;border-radius:0!important;background:transparent!important;
- color:#77877e;font:550 11px/1.2 var(--sans);box-shadow:none!important;
+ color:#a8b6ad;font:550 12px/1.2 var(--sans);box-shadow:none!important;
 }
 html[data-personal-studio] #arCoachModal #csTrainerFilters button[aria-pressed="true"]{color:#f0eee8}
 html[data-personal-studio] #arCoachModal #csTrainerFilters button[aria-pressed="true"]::after{
@@ -352,15 +352,15 @@ html[data-personal-studio] #arCoachModal #csTrainerFilters button[aria-pressed="
 html[data-personal-studio] #arCoachModal #ctv2GoalBar{display:none}
 html[data-personal-studio] #arCoachModal .ar-session-grid{display:block;max-height:none!important;overflow:visible!important;border:0;padding:0!important}
 html[data-personal-studio] #arCoachModal .ar-session{
- display:grid;grid-template-columns:58px 1fr;grid-template-rows:auto auto;gap:2px 14px;width:100%;min-height:78px;padding:10px 28px 10px 0;
+ display:grid;grid-template-columns:44px 1fr;grid-template-rows:auto auto;gap:2px 12px;width:100%;min-height:64px;padding:8px 28px 8px 0;
  border:0;border-bottom:1px solid #93a1972b;border-radius:0;background:transparent;align-content:center;transition:color 180ms ease,transform 180ms ease;
 }
 html[data-personal-studio] #arCoachModal .ar-session:hover{padding-left:0;background:transparent;transform:translateX(3px)}
 html[data-personal-studio] #arCoachModal .ar-session::after{right:4px;border-color:#aeb9b2}
 html[data-personal-studio] #arCoachModal .ar-session strong{color:#f0eee8;font:500 15px/1.25 var(--sans)}
-html[data-personal-studio] #arCoachModal .ar-session>span{grid-column:2;color:#819087;font:450 10px/1.3 var(--sans);letter-spacing:.01em;text-transform:none}
+html[data-personal-studio] #arCoachModal .ar-session>span{grid-column:2;color:#a8b6ad;font:450 12px/1.3 var(--sans);letter-spacing:.01em;text-transform:none}
 html[data-personal-studio] #arCoachModal .cps-exercise-thumb{
- grid-row:1/3;width:58px;height:58px;border:0;border-radius:1px;background:#142019;
+ grid-row:1/3;width:44px;height:44px;border:0;border-radius:1px;background:#142019;
 }
 html[data-personal-studio] #arCoachModal .cps-exercise-thumb::after{
  content:'';position:absolute;inset:0;background:linear-gradient(145deg,#1d2e25,#09120e);opacity:.62;
@@ -372,21 +372,21 @@ html[data-personal-studio] #arCoachModal .ctv2-view-all{
  width:100%;min-height:48px;margin:10px 0 0;border:0;border-bottom:1px solid #93a1972b;background:transparent;color:#c7d0ca;
  font:550 11px/1.2 var(--sans);letter-spacing:.03em;text-align:left;cursor:pointer;
 }
-html[data-personal-studio] #arCoachModal .ctv2-note{margin:13px 0 0;color:#77877e;font:400 10px/1.55 var(--sans)}
+html[data-personal-studio] #arCoachModal .ctv2-note{margin:10px 0 0;color:#a8b6ad;font:400 12px/1.5 var(--sans)}
 html[data-personal-studio] #arCoachModal :is(.ar-coach-intro,.cs-comfort,.cs-trainer-method){display:none}
 
 html[data-personal-studio] #arCoachModal .panel.ctv2-preview-open .cps-screen-head{display:none}
 html[data-personal-studio] #arCoachModal .ctv2-preview{padding:0 22px max(14px,env(safe-area-inset-bottom));background:var(--trainer-ink)}
 html[data-personal-studio] #arCoachModal .ctv2-preview-back{position:absolute;z-index:5;top:max(12px,env(safe-area-inset-top));left:14px;padding:0 9px;color:#f3efe8;background:#07100dc2;border-radius:20px}
-html[data-personal-studio] #arCoachModal .ctv2-preview-stage{position:relative;height:min(49dvh,470px);margin:0 -22px 20px;overflow:hidden;background:#101a15}
+html[data-personal-studio] #arCoachModal .ctv2-preview-stage{position:relative;height:220px;margin:0 -22px 14px;overflow:hidden;background:#101a15}
 html[data-personal-studio] #arCoachModal .ctv2-preview-stage>img{width:100%;height:100%;object-fit:cover;object-position:52% 30%;filter:saturate(.76)}
 html[data-personal-studio] #arCoachModal .ctv2-preview-shade{position:absolute;inset:0;background:linear-gradient(180deg,#02100a09 34%,var(--trainer-ink) 100%)}
 html[data-personal-studio] #arCoachModal .ctv2-preview-step{position:absolute;left:22px;bottom:20px;color:#e4e6df;font:550 10px/1.2 var(--sans);letter-spacing:.06em}
 html[data-personal-studio] #arCoachModal .ctv2-preview-demo{
- position:absolute;right:18px;bottom:18px;display:grid;place-items:center;width:112px;min-height:126px;margin:0;border:1px solid #d3ad7357;
+ position:absolute;right:18px;bottom:18px;display:grid;place-items:center;width:140px;min-height:160px;margin:0;border:1px solid #d3ad7357;
  border-radius:2px;background:#07100de6;box-shadow:0 14px 30px #0008;
 }
-html[data-personal-studio] #arCoachModal .ctv2-preview-demo .ctv2-demo-svg{width:108px}
+html[data-personal-studio] #arCoachModal .ctv2-preview-demo .ctv2-demo-svg{width:136px}
 html[data-personal-studio] #arCoachModal .ctv2-preview-head{margin:0 0 18px}
 html[data-personal-studio] #arCoachModal .ctv2-kicker{color:var(--trainer-brass);font-size:9px;letter-spacing:.15em}
 html[data-personal-studio] #arCoachModal .ctv2-preview-head h4{max-width:13ch;margin:7px 0 8px;color:#fbf6ee;font:400 36px/.98 Georgia,serif;letter-spacing:-.045em}
@@ -442,11 +442,21 @@ html[data-personal-studio] #camwrap[data-mode="train"] #arCoachHud .ctv2-pause{d
  html[data-personal-studio] #arCoachModal .panel{height:min(900px,calc(100dvh - 36px));border:1px solid #8ea0962e;box-shadow:0 35px 110px #000;border-radius:3px}
 }
 @media(max-width:430px){
- html[data-personal-studio] #arCoachModal .cps-trainer-hero{height:54dvh;min-height:374px}
+ html[data-personal-studio] #arCoachModal .cps-trainer-hero{height:320px;min-height:320px}
  html[data-personal-studio] #arCoachModal .cps-feature-caption{left:18px;right:18px;bottom:18px}
  html[data-personal-studio] #arCoachModal .cps-routine-library{padding-inline:18px}
  html[data-personal-studio] #arCoachModal #csTrainerFilters{margin-inline:-18px;padding-inline:18px;gap:20px}
  html[data-personal-studio] #arCoachModal .ctv2-preview{padding-inline:18px}
- html[data-personal-studio] #arCoachModal .ctv2-preview-stage{margin-inline:-18px;height:46dvh;min-height:330px}
+ html[data-personal-studio] #arCoachModal .ctv2-preview-stage{margin-inline:-18px;height:210px;min-height:210px}
  html[data-personal-studio] #arCoachHud{padding-inline:18px}
 }
+/* Reachable actions and readable supporting copy across the trainer. */
+html[data-personal-studio] #arCoachModal :is(.ctv2-voice-toggle,.ctv2-skin-note button,#csTrainerFilters button){min-height:44px}
+html[data-personal-studio] #arCoachModal :is(.ctv2-pressure-note,.ctv2-frequency-note,.ctv2-skin-note,.ctv2-preview-meta){font-size:12px;line-height:1.45;color:#a8b6ad}
+html[data-personal-studio] #arCoachModal .ctv2-skin-note{margin:8px 0;padding:8px 10px}
+html[data-personal-studio] #arCoachModal .ctv2-skin-note strong{font-size:12px}
+html[data-personal-studio] #arCoachModal .ctv2-preview-head{margin-bottom:12px}
+html[data-personal-studio] #arCoachModal .ctv2-preview-head h4{font-size:30px;max-width:100%}
+html[data-personal-studio] #arCoachHud :is(.ctv2-next,.ctv2-voice-hud,.ctv2-stop-secondary){min-height:44px}
+html[data-personal-studio] #arCoachHud .ctv2-complete-actions .btn.ghost{background:transparent;color:#eee9e1;border-color:#8fa097}
+@media(prefers-reduced-motion:reduce){html[data-personal-studio] #arCoachModal .ar-session:hover{transform:none}}

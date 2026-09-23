@@ -1394,7 +1394,10 @@ function finishTrain(){
   trainMode=false; massageMode=false; _handModelStatus='off'; _arState=null; _arForm=null; _handPoint=null; _arDemoUntil=0;
   setGuideMsg('✓','AR COACH SESSION COMPLETE');
   bumpStreak(); toast('AR coaching session complete',2600);
-  setTimeout(closeCam,1700);
+  // Stop capture now; leave the summary available until Done or Repeat.
+  if(detLoop) cancelAnimationFrame(detLoop); detLoop=null;
+  if(stream) stream.getTracks().forEach(track=>track.stop()); stream=null;
+  cam.srcObject=null;
 }
 $('#arCoachX').addEventListener('click',closeARCoachPicker);
 $('#arCoachModal').addEventListener('click',e=>{ if(e.target===$('#arCoachModal')) closeARCoachPicker(); });

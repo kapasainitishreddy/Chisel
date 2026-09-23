@@ -90,10 +90,14 @@
   const libraryHead=el('div','cps-routine-head','<div><span>Explore</span><h4 id="cpsRoutineTitle">Choose your focus</h4></div>');
   const filters=q('#csTrainerFilters',body),goals=q('#ctv2GoalBar',body),intro=q('.ar-coach-intro',body),note=q('#ctv2MassageNote',body),method=q('.cs-trainer-method',body),comfort=q('.cs-comfort',body);
   library.append(libraryHead);if(filters)library.append(filters);if(goals)library.append(goals);library.append(grid);const viewAll=q('#ctv2ViewAll',body);if(viewAll)library.append(viewAll);if(note)library.append(note);if(comfort)library.append(comfort);if(method)library.append(method);if(intro)library.append(intro);body.append(library);
-  let selected='massage-reset';
+  // One recommendation in the existing hero, not a second competing Today card.
+  q('#ctv2Today',body)?.remove();
+  const recommended=()=>root.ChiselTrainerV2?.todayRecommendation().sessionId||'quick';
+  let selected=recommended();
   const benefits={refresh:'A light reset for a fresher, more awake appearance.','jaw-relax':'Gentle touch and movement for jaw comfort.','full-face':'A balanced pass across the face, jaw and neck.',relax:'A calm routine for facial tension and evening comfort.',tension:'Focused relief after long screen time.',posture:'Head, jaw and neck positioning practice.',all:'Balanced face control and relaxation.'};
   const refresh=()=>{const info=sessionMeta(root.ChiselARCoach,selected),session=root.ChiselARCoach&&root.ChiselARCoach.SESSIONS&&root.ChiselARCoach.SESSIONS[selected];if(!info||!session)return;const first=root.ChiselARCoach.exerciseById(session.exerciseIds[0]);setText(q('#cpsSessionTitle'),info.title.replace(/^\d+-minute\s+/i,''));setText(q('#cpsSessionBenefit'),benefits[session.goal]||'A comfort-first face and neck practice.');setText(q('#cpsSessionMeta'),`${session.duration} · ${info.moves} movements · ${info.tracking}`);if(first&&root.ChiselTrainerDemos)root.ChiselTrainerDemos.render(first,demo,{reducedMotion:root.matchMedia&&root.matchMedia('(prefers-reduced-motion: reduce)').matches});};refresh();
-  q('#cpsStartSession').addEventListener('click',()=>{const b=all('.ar-session',grid).find(n=>(n.dataset.ctv2Session||n.dataset.arSession)===selected);if(b)b.click();});
+  q('#cpsStartSession').addEventListener('click',()=>root.ChiselTrainerV2.openRoutinePreview(selected));
+  new MutationObserver(()=>{if(modal.classList.contains('on')){const active=q('#csTrainerFilters [aria-pressed="true"]');if(!active||active.dataset.csGoal==='all'){selected=recommended();refresh();}}}).observe(modal,{attributes:true,attributeFilter:['class']});
   all('.ar-session',grid).forEach((b,i)=>{const thumb=photoSurface(`cpsExercise${i}`,'cps-exercise-thumb');thumb.setAttribute('aria-hidden','true');b.prepend(thumb);});
   q('#csTrainerFilters')?.addEventListener('click',()=>setTimeout(()=>{const b=all('.ar-session',grid).find(n=>!n.hidden);if(b){selected=b.dataset.ctv2Session||b.dataset.arSession;refresh();}},0));
   const meter=el('div','cps-form-meter');meter.id='cpsLiveForm';meter.hidden=true;meter.innerHTML='<strong id="cpsLiveValue"></strong><span>Movement check</span>';

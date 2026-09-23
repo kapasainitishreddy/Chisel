@@ -25,10 +25,10 @@
       return Array.isArray(history)?history:[];
     }catch{return[];}
   }
-  function todayRecommendation(){
-    const history=completionHistory(),last=history[0],lastAt=last&&Date.parse(last.completedAt),now=Date.now();
-    if(last&&last.sessionId&&Number.isFinite(lastAt)&&now-lastAt<36*60*60*1000)return{sessionId:last.sessionId,label:'Repeat your last routine',reason:'Keep today simple and build consistency.'};
-    const hour=new Date().getHours();
+  function todayRecommendation(now=new Date()){
+    const history=completionHistory(),last=history[0],lastAt=last&&Date.parse(last.completedAt),age=now.getTime()-lastAt;
+    if(last&&core()&&Object.hasOwn(core().SESSIONS,last.sessionId)&&Number.isFinite(lastAt)&&age>=0&&age<36*60*60*1000)return{sessionId:last.sessionId,label:'Repeat your last routine',reason:'Keep today simple and build consistency.'};
+    const hour=now.getHours();
     if(hour<12)return{sessionId:'massage-morning',label:'Start with a morning refresh',reason:'A short, gentle way to begin the day.'};
     if(hour>=18)return{sessionId:'massage-evening',label:'Unwind for the evening',reason:'A quiet reset for jaw and facial tension.'};
     return{sessionId:'quick',label:'Start with a quick reset',reason:'Three minutes is enough to get moving.'};
@@ -81,18 +81,25 @@
     const hud=$('#arCoachHud');if(!hud||!detail||!detail.state)return false;
     const state=detail.state,session=(core()&&core().SESSIONS&&core().SESSIONS[state.sessionId])||null;
     let card=$('#ctv2Complete',hud);if(!card){card=document.createElement('div');card.id='ctv2Complete';card.className='ctv2-complete';hud.appendChild(card);}
-    card.innerHTML=`<span class="ctv2-complete-kicker">Routine complete</span><strong>${session?session.duration:'Session'} complete</strong><span>Completed: ${state.exerciseIds.length}/${state.exerciseIds.length} movements</span><div class="ctv2-complete-actions"><button type="button" class="btn ghost" id="ctv2CompleteRepeat">Repeat</button><button type="button" class="btn solid" id="ctv2CompleteDone">Done</button></div>`;
+    const summary=completionSummary(state);
+    card.innerHTML=`<span class="ctv2-complete-kicker">Session finished</span><strong>${summary.elapsed}</strong><span>Completed: ${summary.completed}/${summary.total} movements${summary.skipped?' · '+summary.skipped+' skipped':''}</span><div class="ctv2-complete-actions"><button type="button" class="btn ghost" id="ctv2CompleteRepeat">Repeat</button><button type="button" class="btn solid" id="ctv2CompleteDone">Done</button></div>`;
     hud.classList.add('is-complete');hud.hidden=false;
     $('#ctv2CompleteDone',card).onclick=()=>{if(root&&typeof root.closeCam==='function')root.closeCam();else if(typeof closeCam==='function')closeCam();};
-    $('#ctv2CompleteRepeat',card).onclick=()=>{if(root&&typeof root.closeCam==='function')root.closeCam();else if(typeof closeCam==='function')closeCam();setTimeout(()=>launchSession(state.sessionId),260);};
+    $('#ctv2CompleteRepeat',card).onclick=()=>{if(root&&typeof root.closeCam==='function')root.closeCam();else if(typeof closeCam==='function')closeCam();launchSession(state.sessionId);};
+    $('#ctv2CompleteDone',card).focus({preventScroll:true});
     return true;
+  }
+  function completionSummary(state){
+    const total=state.exerciseIds.length,skipped=Math.min(total,Math.max(0,Math.floor(Number(state.skippedExercises)||0)));
+    const seconds=Math.max(0,Math.floor(((Number(state.lastSampleAt)||0)-(Number(state.startedAt)||0))/1000));
+    return{total,skipped,completed:Math.max(0,(state.completed?total:state.exerciseIndex)-skipped),elapsed:`${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')} elapsed`};
   }
   function closePreview(){
     const preview=$('#ctv2Preview'),modal=$('#arCoachModal'),panel=$('.panel',modal),body=$('.cps-trainer-body',panel),grid=$('.ar-session-grid',modal);
     if(preview){preview.hidden=true;preview.innerHTML='';}
     if(body)body.hidden=false;if(grid)grid.hidden=false;if(panel)panel.classList.remove('ctv2-preview-open');
     const target=previewReturn;previewReturn=null;previewSessionId='';
-    if(target&&target.isConnected)target.focus({preventScroll:true});
+    if(target&&target.isConnected&&modal&&modal.classList.contains('on'))target.focus({preventScroll:true});
   }
   function benefitCopy(session){
     const goal=session&&session.goal;
@@ -106,7 +113,8 @@
     const moves=session.exerciseIds.map(key=>c.exerciseById(key)).filter(Boolean),first=moves[0];
     const tracking=moves.some(x=>x.tracking==='hand-guided')?'Hand guidance + guided fallback':moves.every(x=>x.tracking==='form')?'Camera checked':'Guided + camera',isMassage=session.category==='massage';
     preview.innerHTML=`<button type="button" class="ctv2-preview-back" id="ctv2PreviewBack" aria-label="Back to routines"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg><span>Routines</span></button><div class="ctv2-preview-stage"><img src="chisel-trainer-sculpture.webp" alt="" decoding="async"><div class="ctv2-preview-shade"></div><span class="ctv2-preview-step">Movement 1 of ${moves.length}</span><div class="ctv2-preview-demo" id="ctv2PreviewDemo"></div></div><div class="ctv2-preview-head"><span class="ctv2-kicker">${session.duration} · ${moves.length} movements</span><h4 id="ctv2PreviewTitle">${session.title.replace(/^\d+-minute\s+/i,'')}</h4><p class="ctv2-preview-benefit">${benefitCopy(session)}</p></div><div class="ctv2-preview-instruction"><span>First movement</span><p class="ctv2-preview-cue">${first?first.instruction:''}</p></div><div class="ctv2-preview-meta"><span>${tracking}</span><span>Private · on-device</span></div>${isMassage?'<div class="ctv2-skin-note"><strong>Touch should feel comfortable</strong><span>Skip massage on irritated or painful skin. Camera guidance cannot measure pressure.</span><button type="button" class="btn ghost" id="ctv2NoTouch">Choose no-touch release</button></div>':''}<button type="button" class="ctv2-voice-toggle" id="ctv2VoiceToggle"></button><details><summary>See all movements</summary><ol>${moves.map(item=>`<li>${item.name}</li>`).join('')}</ol></details><div class="ctv2-preview-footer"><button type="button" class="btn solid ctv2-start-routine" id="ctv2StartRoutine">Start routine</button><p class="ctv2-frequency-note">Once daily is enough. Stop if anything feels painful or uncomfortable.</p><p class="ctv2-pressure-note">Camera guidance checks approximate position and direction. It does not measure finger pressure.</p></div>`;
-    if(root.ChiselTrainerDemos&&first)root.ChiselTrainerDemos.render(first,$('#ctv2PreviewDemo',preview),{reducedMotion:root.matchMedia&&root.matchMedia('(prefers-reduced-motion: reduce)').matches});
+    // Text and Start remain available when an optional illustration fails.
+    try{if(root.ChiselTrainerDemos&&first)root.ChiselTrainerDemos.render(first,$('#ctv2PreviewDemo',preview),{reducedMotion:root.matchMedia&&root.matchMedia('(prefers-reduced-motion: reduce)').matches});}catch{safeText($('#ctv2PreviewDemo',preview),'Follow the written technique below.');}
     const back=$('#ctv2PreviewBack',preview);back.onclick=closePreview;$('#ctv2VoiceToggle',preview).onclick=toggleVoice;$('#ctv2StartRoutine',preview).onclick=()=>{closePreview();launchSession(id);};const noTouch=$('#ctv2NoTouch',preview);if(noTouch)noTouch.onclick=()=>{closePreview();openRoutinePreview('release');};updateVoiceButtons();back.focus({preventScroll:true});
   }
   function matchesCategory(id,category){
@@ -135,6 +143,7 @@
   function install(){
     if(installed||typeof document==='undefined')return installed;const modal=$('#arCoachModal');if(!modal)return false;installed=true;
     modal.dataset.trainerV2='1';const panel=$('.panel',modal),grid=$('.ar-session-grid',modal),title=$('#arCoachTitle',modal),intro=$('.ar-coach-intro',modal);safeText(title,'Face & Neck Trainer');
+    if(typeof MutationObserver!=='undefined')new MutationObserver(()=>{if(!modal.classList.contains('on')&&previewSessionId)closePreview();}).observe(modal,{attributes:true,attributeFilter:['class']});
     safeText(intro,'Choose a short goal-based routine. Chisel keeps camera checks honest and labels hand movements as guided when the phone cannot verify them reliably.');
     if(grid){
       grid.setAttribute('aria-label','Face yoga and face massage routines');upgradeLegacyButton(grid,'jaw','jaw-chin','Jaw & chin posture','6 min · posture + control');upgradeLegacyButton(grid,'cheek','cheek-builder','Cheek activation','5 min · camera checked');upgradeLegacyButton(grid,'full','full','Full face + neck','10 min · mixed guidance');
@@ -159,5 +168,5 @@
     }
     watchUnisexStudio();if(root&&root.addEventListener){root.addEventListener('chisel:coach-state',event=>updateLive(event.detail));root.addEventListener('chisel:trainer-complete',event=>showCompletion(event.detail));root.addEventListener('keydown',event=>{if(event.key==='Escape'&&previewSessionId){event.preventDefault();closePreview();}});}return true;
   }
-  return{install,updateLive,showCompletion,launchSession,openRoutinePreview,closePreview,fixUnisexStudio,voiceEnabled,setVoiceEnabled,speakGuidance,haptic,syncCompactGrid};
+  return{install,updateLive,showCompletion,completionSummary,todayRecommendation,launchSession,openRoutinePreview,closePreview,fixUnisexStudio,voiceEnabled,setVoiceEnabled,speakGuidance,haptic,syncCompactGrid};
 });
