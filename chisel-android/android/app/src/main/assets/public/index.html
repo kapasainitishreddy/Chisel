@@ -630,8 +630,13 @@ catch(error){if(window.ChiselPrivateArchive?.showRecoveryBlock)window.ChiselPriv
 
       <div class="card" style="margin-top:18px">
         <div class="eyebrow">Privacy &amp; data</div>
+<<<<<<< HEAD
         <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:500">Where your data lives</h3>
         <p style="color:var(--ivory-dim);font-size:13px;line-height:1.6">Free scans, routines and settings are stored in this app on your device. While Chisel is installed, live records are not encrypted by Chisel. Android cloud backup is disabled in this build, but this is not a private vault and device-to-device transfer behavior can vary by Android version. The optional encrypted backup protects only its listed records; it excludes your selected portrait and saved AI gallery. A paid image edit sends the photo you select to the disclosed service for processing; optional account and credit records are held by that service. Clear all data removes Chisel's local records, portrait and saved looks; it does not delete an optional cloud account. <a href="https://github.com/kapasainitishreddy/Chisel/blob/main/docs/privacy-policy.html" target="_blank" rel="noopener" style="color:var(--gold)">Privacy policy ↗</a> · <a href="https://github.com/kapasainitishreddy/Chisel/blob/main/docs/terms-of-use.html" target="_blank" rel="noopener" style="color:var(--gold)">Terms of use ↗</a></p>
+=======
+        <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:500">Your data stays on this device</h3>
+        <p style="color:var(--ivory-dim);font-size:13px;line-height:1.6">Free local scans, photos, streaks, routines and settings stay on your phone. Optional cloud photo editing sends a prepared photo after your confirmation. Existing cloud-account management uses email sign-in and a separate deletion request. Credit purchases and new paid accounts are disabled in this release. No ads or analytics tracking. <a href="privacy-policy.html" style="color:var(--gold)">Privacy policy</a> · <a href="https://github.com/kapasainitishreddy/Chisel/blob/main/docs/terms-of-use.html" target="_blank" rel="noopener" style="color:var(--gold)">Terms of use ↗</a></p>
+>>>>>>> c87f20b (fix: harden Play readiness billing backup and privacy paths)
         <div class="btn-row" style="margin-top:14px">
           <button class="btn ghost" id="chiselPrivateToolsSettings" aria-haspopup="dialog">Progress reports &amp; encrypted backup</button>
           <button class="btn ghost" id="wipeData">Clear all my data</button>
@@ -3651,11 +3656,15 @@ async function initRevenueCat(){
   try{ await P.configure({ apiKey: RC_API_KEY, appUserID: deviceId() }); _rc=P; rcReady=true; }
   catch(e){ console.warn('RevenueCat init failed', e); }
 }
+function hasPremiumEntitlement(result){
+  const info=result?.customerInfo||result;
+  return info?.entitlements?.active?.[RC_ENTITLEMENT_ID]?.isActive===true;
+}
 async function rcUserIdIfEntitled(){
   if(!rcReady || !_rc) return undefined;
   try{
     const r=await _rc.getCustomerInfo(); const info=(r&&r.customerInfo)||r||{};
-    const active=info.entitlements && info.entitlements.active && info.entitlements.active[RC_ENTITLEMENT_ID];
+    const active=hasPremiumEntitlement(info);
     return active ? deviceId() : undefined;   // appUserID was set to deviceId() at configure()
   }catch(e){ console.warn('rcUserIdIfEntitled', e); return undefined; }
 }
@@ -3681,8 +3690,10 @@ async function renderOfferings(){
   }catch(e){ console.warn('renderOfferings', e); el.innerHTML='<p class="lede">Couldn\'t load offers — try again shortly.</p>'; }
 }
 async function purchase(pkg){
-  if(!rcReady || !_rc){ toast('Store unavailable here'); return; }
-  try{ await _rc.purchasePackage({ aPackage: pkg }); toast('You\'re in — enjoy Premium'); closePaywall(); }
+  if(!window.CHISEL_RELEASE_CONFIG?.billingEnabled || !rcReady || !_rc){ toast('Store unavailable here'); return; }
+  try{ const result=await _rc.purchasePackage({ aPackage: pkg });
+    if(!hasPremiumEntitlement(result)){ toast('Premium is not active yet. Check your purchase status before trying again.'); return; }
+    toast('You\'re in — enjoy Premium'); closePaywall(); }
   catch(e){ if(e && (e.userCancelled||e.code==='PURCHASE_CANCELLED')) return; console.warn('purchase', e); toast('Purchase didn\'t go through — try again'); }
 }
 $('#goPremiumBtn') && $('#goPremiumBtn').addEventListener('click', openPaywall);
@@ -3690,8 +3701,10 @@ if(!window.CHISEL_RELEASE_CONFIG?.billingEnabled && $('#goPremiumBtn')) $('#goPr
 $('#paywallX') && $('#paywallX').addEventListener('click', closePaywall);
 $('#paywall') && $('#paywall').addEventListener('click', e=>{ if(e.target.id==='paywall') closePaywall(); });
 $('#paywallRestore') && $('#paywallRestore').addEventListener('click', async ()=>{
-  if(!rcReady || !_rc){ toast('Store unavailable here'); return; }
-  try{ await _rc.restorePurchases(); toast('Purchases restored'); closePaywall(); }
+  if(!window.CHISEL_RELEASE_CONFIG?.billingEnabled || !rcReady || !_rc){ toast('Store unavailable here'); return; }
+  try{ const result=await _rc.restorePurchases();
+    if(!hasPremiumEntitlement(result)){ toast('No active Premium purchase was found.'); return; }
+    toast('Purchases restored'); closePaywall(); }
   catch(e){ console.warn('restore', e); toast('Couldn\'t restore — try again'); }
 });
 initRevenueCat();
