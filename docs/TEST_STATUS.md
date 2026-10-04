@@ -1,5 +1,20 @@
 # Test Status
 
+## Current application acceptance, 2026-10-04
+
+Application source: **bf826193988e91c2edc457b3ab405352594857e2**. Subsequent handoff edits are documentation only.
+
+- Node: **312/312 PASS**, zero failures/skips. Fresh archive + frozen install repeats 312/312.
+- Build validation: **46 JavaScript modules PASS**, including inline scripts/assets.
+- Completion browser: **17/17 PASS** with real local controls/downloads/storage; auth/deletion are intercepted fixtures, no emails/cloud deletion.
+- Fitting browser: **6/6 PASS** using actual MediaPipe and fixture camera, no upload/page errors.
+- Embedded PostgreSQL: lifecycle migrations/ownership/retry/refund/tombstone/access-control acceptance PASS; not production Supabase acceptance.
+- Native debug: **BUILD SUCCESSFUL**, 248 tasks. All **58 assets match** APK; v1/v2 debug signature verified.
+- Release command: expected BLOCKED by missing developer-owned upload signing, no AAB produced.
+- Fresh review: seven findings fixed with regression coverage; Precision quota failure also fixed.
+
+Evidence, scope, artifact SHA and reproduction: [completion report](COMPLETION_REPORT.md), `/workspace/chisel-build/evidence/`. Browser QA used only managed-proxy CA pins; production TLS is unchanged. No current physical-device install, live billing/provider output, real account/OTP deletion, new cloud deployment or empirical accuracy claim. Old Frame Fitting MODULE_NOT_FOUND and pristine-checkout failures are fixed at this source; historical CI results below are not a new CI run.
+
 ## Credits and compare, 2026-09-10
 
 Exact application/test head: 4a932d41b5af04f2e52317dcb2946cfac8e599c6.

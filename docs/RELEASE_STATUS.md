@@ -1,5 +1,11 @@
 # Release Status
 
+## Current local artifact, 2026-10-04
+
+**Debug build delivered; public release remains BLOCKED.** Branch `work`, application source bf826193988e91c2edc457b3ab405352594857e2. Actual APK `/workspace/chisel-build/chisel-debug.apk`; SHA-256 `8ed470ae883a70b10681aa1be3d83eb8d4222a6b80329958ead8c8ce5f43461d`. 312 tests, 17 completion browser checks, 6 real-model fixture checks and native compilation pass; 58 packaged assets match canonical source.
+
+The previously missing fitting/build modules are repaired. Account-lifecycle and output-recovery source is implemented, but no new migration/function/scheduler was deployed. Account controls have fixture acceptance only. No new live flag/configuration read is claimed. Signed AAB is blocked by the intentionally absent upload key; the release command rejects unsigned distribution. Play/device/store/empirical gates remain open. Full native biometric vault and local visual fidelity roadmap remain incomplete. No push, publish, payment, paid generation or OTP email occurred. See [full report](COMPLETION_REPORT.md) and [release gate](CHISEL_LAUNCH_GATE.md). Historical release statements below apply only to their dates.
+
 2026-09-20. **Current release candidate:** `main` is merged and pushed; API 36
 is configured; a previous debug APK was installed on a connected Android
 device, and the current compliance-hardened debug APK has been built. The app

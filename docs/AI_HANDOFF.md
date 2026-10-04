@@ -1,5 +1,11 @@
 # AI Development Handoff
 
+## Current: completed local build checkpoint, 2026-10-04
+
+Continue branch `work`, not the historical draft PR referenced below. Application source **bf826193988e91c2edc457b3ab405352594857e2** has 312/312 Node tests, 17/17 completion browser checks, 6/6 real-MediaPipe fixture checks, embedded PostgreSQL lifecycle acceptance and a successful Android debug APK. Clean tracked checkout passes. The missing eyewear modules and cascading loader are repaired. Adaptive programs, conservative progress, encrypted exported backups and discussion reports are wired; account deletion/scheduled recovery source is implemented but not deployed. Seven final review findings were fixed with regressions.
+
+Read [the completion report](COMPLETION_REPORT.md) first for source, APK hash, evidence and remaining scope. APK: `/workspace/chisel-build/chisel-debug.apk`. No push/deployment/purchase/publication occurred. Preserve free local use; no new paid activation. Still required: signed Play artifact, final physical-device and empirical acceptance, cloud lifecycle deployment/live acceptance, provider/billing/retention acceptance and full native private vault. Live stores are not encrypted. Older account-free/framework/test descriptions in AGENTS.md and historical sections are superseded by actual current source and this checkpoint.
+
 ## Current: credit-backed studio and local comparison, 2026-09-10
 
 Continue draft PR #7 on feat/chisel-unisex-trainer-skin. The user explicitly approved actual implementation of reasonable AI-credit pricing, OpenAI editing, comparison and stylist export. Do not restart the app, add another theme controller or substitute ChatGPT Image Gen for app tests. The older AGENTS.md account-free/Replicate-only statements now apply only to the free/legacy paths: paid credits use an optional verified email account and an OpenAI backend. Never expose API keys.

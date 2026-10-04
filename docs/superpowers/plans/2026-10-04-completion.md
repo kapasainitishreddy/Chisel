@@ -26,34 +26,36 @@
 ### Task 1: Build and runtime foundation
 **Files:** package.json, scripts/verify-build.cjs, www/chisel-runtime-loader.js, www/chisel-ar-coach-core.js, www/chisel-eyewear-fit.js, www/chisel-tryon-policy.js, www/index.html, tests/completion-foundation.test.cjs, tests/render-repair-browser.mjs, .github/workflows/android-mobile-build.yml.
 **Interfaces:** ChiselRuntimeLoader.run(groups, load) -> result map; ChiselEyewearFit.fit(landmarks,width,height) -> accepted geometry; ChiselTryonPolicy.preview(kind) -> local guide disclosure.
-- [ ] Add and run regressions for missing modules, invalid fitting inputs, loader failure isolation and build policy; expected RED.
-- [ ] Implement tested module boundaries, frozen CI installs and separate signing job; run tests; expected GREEN.
-- [ ] Sync assets; run full suite and syntax build; attempt native debug build; commit source.
+- [x] Add and run regressions for missing modules, invalid fitting inputs, loader failure isolation and build policy; expected RED.
+- [x] Implement tested module boundaries, frozen CI installs and separate signing job; run tests; expected GREEN.
+- [x] Sync assets; run full suite and syntax build; attempt native debug build; commit source.
 
 ### Task 2: Honest progress and adaptive programs
 **Files:** www/index.html, www/chisel-progress-intelligence.js, www/chisel-programs.js, www/chisel-completion-ui.js, www/chisel-precision.js, tests/completion-programs.test.cjs.
 **Interfaces:** ChiselPrograms.create(goal,days,now), toggle(state,task,now), pause(state,paused,now), view(state,now); ChiselProgressIntelligence.report(records) -> comparable per-metric changes.
-- [ ] Add tests for 30/60/90 days, adherence, pause, invalid tasks, history version mismatch and removed rating surfaces; expected RED.
-- [ ] Implement deterministic reviewed programs and version-aware reports, integrate visible controls; expected GREEN.
-- [ ] Sync, run full suite and commit.
+- [x] Add tests for 30/60/90 days, adherence, pause, invalid tasks, history version mismatch and removed rating surfaces; expected RED.
+- [x] Implement deterministic reviewed programs and version-aware reports, integrate visible controls; expected GREEN.
+- [x] Sync, run full suite and commit.
 
 ### Task 3: Archive and discussion exports
 **Files:** www/chisel-private-archive.js, www/chisel-discussion-export.js, www/chisel-completion-ui.js, tests/completion-privacy.test.cjs.
 **Interfaces:** ChiselPrivateArchive.encrypt(data,passphrase,crypto), decrypt(envelope,passphrase,crypto); ChiselDiscussionExport.render(kind,context) -> safe HTML.
-- [ ] Add tests for encryption roundtrip, wrong password/tampering, bounded import, hostile notes and report limits; expected RED.
-- [ ] Implement portable archive UI and printable reports, accurate lock scope and accessible deletion; expected GREEN.
-- [ ] Sync, test and commit.
+- [x] Add tests for encryption roundtrip, wrong password/tampering, bounded import, hostile notes and report limits; expected RED.
+- [x] Implement portable archive UI and printable reports, accurate lock scope and accessible deletion; expected GREEN.
+- [x] Sync, test and commit.
 
 ### Task 4: Account deletion and scheduled retention
 **Files:** supabase/functions/account-lifecycle/{index.ts,handler.mjs}, supabase/functions/output-cleanup/index.ts, supabase/migrations/20261004000100_account_lifecycle.sql, www/chisel-credits-ui.js, tests/completion-lifecycle.test.cjs.
 **Interfaces:** lifecycle handler injected verified identity and storage/database adapters; scheduled cleanup bounded service-only request.
-- [ ] Add tests for anonymous/foreign account deletion, active jobs, storage failure and retries; expected RED.
-- [ ] Implement authenticated handlers/migration and account deletion UI without enabling sales; expected GREEN.
-- [ ] Run suite and static checks; commit. No deployment.
+- [x] Add tests for anonymous/foreign account deletion, active jobs, storage failure and retries; expected RED.
+- [x] Implement authenticated handlers/migration and account deletion UI without enabling sales; expected GREEN.
+- [x] Run suite and static checks; commit. No deployment.
 
 ### Task 5: Whole-app acceptance and handoff
 **Files:** tests/completion-browser.mjs, docs/AI_HANDOFF.md, FEATURE_MATRIX.md, TEST_STATUS.md, RELEASE_STATUS.md, CHANGE_REQUESTS.md, CHISEL_LAUNCH_GATE.md.
-- [ ] Exercise real local UI, storage and archive/download controls in Chromium; separate fixtures from live checks.
-- [ ] Verify a clean tracked checkout, full tests, syntax validation and native debug build where available.
-- [ ] Request one fresh whole-branch review, fix important findings with regression tests and green suite.
-- [ ] Update docs with exact evidence and remaining external acceptance; leave code locally, no publish/push.
+- [x] Exercise real local UI, storage and archive/download controls in Chromium; separate fixtures from live checks.
+- [x] Verify a clean tracked checkout, full tests, syntax validation and native debug build where available.
+- [x] Request one fresh whole-branch review, fix important findings with regression tests and green suite.
+- [x] Update docs with exact evidence and remaining external acceptance; leave code locally, no publish/push.
+
+Acceptance and external scope limits: [completion report](../../COMPLETION_REPORT.md). Final application source bf826193988e91c2edc457b3ab405352594857e2.

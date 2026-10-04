@@ -1,5 +1,11 @@
 # Change Requests
 
+## CR: Complete approved missing-feature build, 2026-10-04
+
+Implemented the approved five-task plan in real source: reproducible build/runtime fitting, adaptive local programs and conservative progress, encrypted exported backups/discussion sheets, authenticated lifecycle/scheduler source, and whole-branch acceptance/handoff. Explicit beard selections also repaired. User approved continuous execution without further questions; work remains locally committed and no external deployment/publication/push occurred.
+
+Final application commit bf826193988e91c2edc457b3ab405352594857e2: 312 Node, 17 completion browser and 6 real-model fixture checks pass; PostgreSQL lifecycle acceptance and actual debug APK pass. Seven review findings fixed. [Completion report](COMPLETION_REPORT.md) records all implementations and incomplete roadmap/external release work. No claim that every proposed Pro feature or the public release is finished.
+
 ## CR: Build credit-backed Chisel with reasonable pricing and margin, 2026-09-10
 
 Implemented optional account-backed credits, OpenAI Images edits adapter, consumable purchase integration and server receipt settlement, comparison of 2–4 saved looks, and local printable stylist reference export. Keep the existing photo-first near-black/green design. New planned US prices are 10 credits/$3.99, 30/$9.99 and 70/$19.99; Standard edit costs 1 credit, Detail costs 3. Existing-image save/compare/export remains free. Purchased packs do not renew or expire. Pricing is a proposal pending actual store/cost validation, not a profit guarantee.

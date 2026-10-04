@@ -1,5 +1,11 @@
 # Chisel Feature Matrix
 
+## Current build additions, 2026-10-04
+
+[Completion report](COMPLETION_REPORT.md) is the current feature/evidence matrix. Added and wired: dependency-isolated runtime; one confidence-gated eyewear renderer; explicit beard selections across families; 30/60/90-day adaptive local plans; method-aware progress/baselines/JSON; encrypted supported-record backup with validated restore; four discussion sheets; billing-independent existing-account controls. Owner-bound account deletion and bounded cleanup/scheduler are implemented **in source only**. Reproducible clean tests and an actual debug APK are verified. Missing fitting modules are no longer a current source blocker.
+
+312 Node tests, 17 completion-browser checks and 6 real-model fixture checks pass. This is not live cloud/payment, physical-device or empirical measurement acceptance. Native vault/biometrics, learned segmentation, realistic local hair replacement, association UI and all advanced paid roadmap features remain incomplete. Existing generic history caps remain; Precision no longer has its previous 40-record cap. Historical rows below describe their own checkpoints.
+
 ## Credit-backed studio checkpoint, 2026-09-10
 
 | Feature | Implemented and verified | Still required |
