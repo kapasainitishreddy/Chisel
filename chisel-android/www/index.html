@@ -2529,7 +2529,7 @@ function finalizeScan(){
     {k:'Jaw', priority:true, ctrl:true, score:jawScore,
      status:`Taper ${jawTaper.toFixed(2)} · gonial ~${gonial.toFixed(0)}° (frontal proxy)`,
      metrics:[['Taper (jaw/cheek)',jawTaper.toFixed(2)],['fWHR',fWHR.toFixed(2)],['Gonial angle ~',gonial.toFixed(0)+'°']],
-     rem:[jawFrame,R('Strong','Lower body-fat is the biggest lever on a visible jawline. [facial-adiposity research]'),R('Moderate','Firm gum/chewing loads the masseter. [mastication studies]'),R('Moderate','Run Analyze → AR Jaw & Cheek Coach for gentle chin-tuck and neck-alignment form guidance.'),R('Myth','"Mewing" has no controlled evidence of changing bone.')]},
+     rem:[jawFrame,R('Limited','Jaw appearance varies with pose, lighting and natural anatomy. No scan establishes a need to lose weight.'),R('Limited','Keep your jaw relaxed. Repeated forceful chewing can aggravate jaw discomfort; stop for pain.'),R('Moderate','Run Analyze → AR Jaw & Cheek Coach for gentle chin-tuck and neck-alignment form guidance.'),R('Myth','"Mewing" has no controlled evidence of changing bone.')]},
     {k:'Cheekbones', priority:true, ctrl:false, score:cheekScore,
      status:`Mid-face ratio ${midfaceRatio.toFixed(2)} · projection ${(malarProm*100).toFixed(1)}`,
      metrics:[['Mid-face ratio',midfaceRatio.toFixed(2)],['Malar projection',`${(malarProm*100).toFixed(1)} (3D)`],['Cheek : jaw width',(jawTaper>0?(1/jawTaper).toFixed(2):'—')]],
@@ -2562,7 +2562,7 @@ function finalizeScan(){
     {k:'Angles & profile', ctrl:false, score:null,
      status:`Gonial ~${gonial.toFixed(0)}° · nasofrontal ~${nasofrontal.toFixed(0)}° · nasolabial ~${nasolabial.toFixed(0)}°`,
      metrics:[['Gonial (jaw)',gonial.toFixed(0)+'°'],['Canthal tilt',canthal.toFixed(1)+'°'],['Nasofrontal',nasofrontal.toFixed(0)+'° (3D)'],['Nasolabial',nasolabial.toFixed(0)+'° (3D)'],['Mentolabial',mentolabial.toFixed(0)+'° (3D)'],['Chin projection',chinProj.toFixed(1)+' (3D)']],
-     rem:[R('Limited','These are read from the 3D face mesh depth — a real profile-angle estimate from a front scan, but approximate. Turn your head slowly a few degrees during a Deep scan for a steadier read.'),R('Limited','Ideal ranges (guidance, not rules): nasofrontal ~115–135°, nasolabial ~90–110° (men) / ~95–110° (women). These are bone/cartilage — surgical, not trainable.'),R('Moderate','What you CAN move: posture (chin tuck lifts the whole profile) and lower body-fat (sharpens the jaw–neck angle). [posture & adiposity research]')]},
+     rem:[R('Limited','These are read from the 3D face mesh depth — a real profile-angle estimate from a front scan, but approximate. Turn your head slowly a few degrees during a Deep scan for a steadier read.'),R('Limited','Ideal ranges (guidance, not rules): nasofrontal ~115–135°, nasolabial ~90–110° (men) / ~95–110° (women). These are bone/cartilage — surgical, not trainable.'),R('Moderate','Gentle posture practice can change how a photograph is framed. It does not change adult bone structure.')]},
     {k:'Nose', ctrl:false, score:noseScore,
      status:`Nasal index ${nasalIdx.toFixed(2)} (width/length)`,
      metrics:[['Nasal index',nasalIdx.toFixed(2)]],
@@ -2584,29 +2584,17 @@ function finalizeScan(){
     areas.splice(3,0,browArea);
   }
 
-  /* Overall harmony */
-  const core=[symScore,thirdsScore,jawScore,noseScore,lipScore,eyeScore,skinScore];
-  const overall=Math.round(core.reduce((a,b)=>a+b,0)/core.length);
-
-  /* Controllable potential — honest headroom on the things you can actually change
-     (skin, teeth, and the fat-driven part of the jaw), not a rank of you. */
-  const ctrlNowArr=[skinScore]; if(teethScore!=null) ctrlNowArr.push(teethScore); ctrlNowArr.push(jawScore);
-  const ctrlNow=Math.round(ctrlNowArr.reduce((a,b)=>a+b,0)/ctrlNowArr.length);
-  const ctrlCeil=Math.min(95, ctrlNow+Math.round((100-ctrlNow)*0.6));   // ~60% of headroom is realistically reachable
-  const potential=Math.max(0, ctrlCeil-ctrlNow);
-  store.set('lastPotential',{now:ctrlNow,ceil:ctrlCeil,gain:potential});
-
   const prev=store.get('scans',[]).slice(-1)[0];
   const bloatTrend = prev && typeof prev.bloat==='number' ? (bloatIndex>prev.bloat+3?'▲ up':(bloatIndex<prev.bloat-3?'▼ down':'– steady')) : (bloatBase?'tracking':'baseline');
 
-  renderResults(overall, areas, {bloat:`${bloatIndex}/100 ${bloatTrend}`, quality:_qual, potential:{now:ctrlNow,ceil:ctrlCeil,gain:potential}});
-  saveScan({ t:Date.now(), overall, sym:symScore, jaw:jawScore, gonial:+gonial.toFixed(0), nose:noseScore, lips:lipScore, eyes:eyeScore,
+  renderResults(null, areas, {bloat:`${bloatIndex}/100 ${bloatTrend}`, quality:_qual});
+  saveScan({ t:Date.now(), methodVersion:'quick-photo-v2', gonial:+gonial.toFixed(0), lipFullness:lipFull, eyeSpacing:spacing,
     skin:skinScore, teeth:teethScore, hairGloss, redLevel, oilPct, blemish, shape:shapeConf?shape:null, sleep:(typeof sleepForToday==='function'?sleepForToday():null), ita:+ita.toFixed(1),
     undertone:und.label, hue:+und.hue.toFixed(1), wb:wbOn?1:0,
     bloat:bloatIndex, fullness:+fullness.toFixed(3), under:undEyeDark, skinHex:hex(skinCol), lipHex:hex(lipCol) });
-  savePhoto(captureScanThumb(), overall, Date.now());
+  savePhoto(captureScanThumb(), null, Date.now());
   if(deepScan) store.set('deepCount', (store.get('deepCount',0))+1);
-  store.set('lastScore', overall); renderHome(); bumpStreak(); renderTimeline();
+  renderHome(); bumpStreak(); renderTimeline();
   clearScanWatch();
   _burst=[];
   $('#camSheet').style.display='block'; $('#camSheet').scrollTop=0;
@@ -2638,7 +2626,7 @@ function renderResults(overall, areas, extra){
     #camSheet .jaw-focus p{margin:5px 0 0;font-size:12px;color:var(--ivory-dim);line-height:1.45}
   </style>`;
   const blocks=areas.map(a=>{
-    const sc = a.score!=null? `<span class="sc">${a.score}</span>` : (a.ctrl?`<span class="sc" style="font-size:11px;color:var(--ivory-dim)">guided</span>`:'');
+    const sc = a.ctrl?`<span class="sc" style="font-size:11px;color:var(--ivory-dim)">guided</span>`:'';
     const dot = a.swatch? `<span class="cdot" style="background:${a.swatch}"></span>`:'';
     const mets=(a.metrics||[]).map(m=>`<div class="mrow"><span>${m[0]}</span><b>${m[1]}</b></div>`).join('');
     const rems=(a.rem||[]).map(r=>`<div class="rem"><i class="ev ev-${r.t.toLowerCase().split(' ')[0]}">${r.t}</i><span>${r.txt}</span></div>`).join('');
@@ -2650,7 +2638,7 @@ function renderResults(overall, areas, extra){
   const jaw=areas.find(a=>a.k==='Jaw');
   const jawFocus=jaw ? `<div class="jaw-focus">
     <div class="ey">Jawline first</div>
-    <div class="top"><b>Jaw structure</b><span>${jaw.score}/100 signal</span></div>
+    <div class="top"><b>Jaw structure</b><span>photographic guide</span></div>
     <p>${jaw.status}. This is a photographic estimate, so use repeated scans in similar light to track change.</p>
   </div>` : '';
   $('#camSheet').innerHTML = evCss + `
@@ -2671,25 +2659,25 @@ function renderTimeline(){
   const el=$('#scanHistory'); if(!el) return;
   const arr=store.get('scans',[]);
   if(!arr.length){ el.innerHTML='<p class="lede" style="font-size:13px;margin-top:14px">No scans yet. Open the camera and tap ◉ to log your first reading — Chisel tracks the trend over time.</p>'; return; }
-  const bars=arr.slice(-14).map(s=>`<div title="${new Date(s.t).toLocaleDateString()}" style="flex:1;min-width:5px;background:linear-gradient(180deg,var(--gold-bright),var(--gold));height:${Math.max(8,s.overall)}%;border-radius:3px 3px 0 0"></div>`).join('');
+  const bars=arr.slice(-14).map(s=>`<div title="${new Date(s.t).toLocaleDateString()}" style="flex:1;min-width:5px;background:linear-gradient(180deg,var(--gold-bright),var(--gold));height:${Math.max(8,30)}%;border-radius:3px 3px 0 0"></div>`).join('');
   const rows=arr.slice(-8).reverse().map(s=>{
     const dd=new Date(s.t), when=dd.toLocaleDateString([], {month:'short',day:'numeric'})+' · '+dd.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
     const bl = (typeof s.bloat==='number') ? s.bloat+'/100' : (s.fullness??'—');
-    return `<div class="row"><label>${when}</label><span>bloat ${bl} · <span class="gold">${s.overall}</span></span></div>`;
+    return `<div class="row"><label>${when}</label><span>bloat ${bl}</span></div>`;
   }).join('');
   const photos=store.get('photos',[]);
   let photoHtml='';
   if(photos.length){
     const first=photos[0], last=photos[photos.length-1];
-    const strip=photos.slice(-10).map(p=>`<img src="${p.url}" title="${new Date(p.t).toLocaleDateString()} · ${p.overall}/100" style="height:72px;border-radius:8px;border:1px solid var(--line);flex:0 0 auto"/>`).join('');
+    const strip=photos.slice(-10).map(p=>`<img src="${p.url}" title="${new Date(p.t).toLocaleDateString()}" style="height:72px;border-radius:8px;border:1px solid var(--line);flex:0 0 auto"/>`).join('');
     const compare = photos.length>=2 ? `
       <div class="eyebrow" style="margin-top:16px">Before &rarr; now · drag to compare</div>
       <div id="baWrap" style="position:relative;max-width:320px;margin:10px auto 0;border-radius:12px;overflow:hidden;border:1px solid var(--gold);touch-action:none;user-select:none;cursor:ew-resize">
         <img src="${last.url}" style="display:block;width:100%"/>
         <div id="baOver" style="position:absolute;inset:0;width:50%;overflow:hidden;border-right:2px solid var(--gold-bright)"><img src="${first.url}" style="display:block;width:320px;max-width:none;height:100%;object-fit:cover"/></div>
         <div id="baHandle" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:50%;background:rgba(10,10,11,.7);border:1px solid var(--gold);color:var(--gold);display:grid;place-items:center;font-size:13px;pointer-events:none">↔</div>
-        <div style="position:absolute;left:8px;bottom:8px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px">${new Date(first.t).toLocaleDateString([], {month:'short',day:'numeric'})} · ${first.overall}</div>
-        <div style="position:absolute;right:8px;bottom:8px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px">now · ${last.overall}</div>
+        <div style="position:absolute;left:8px;bottom:8px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px">${new Date(first.t).toLocaleDateString([], {month:'short',day:'numeric'})}</div>
+        <div style="position:absolute;right:8px;bottom:8px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px">now</div>
       </div>` : '';
     photoHtml=`<div class="card" style="margin-top:14px">
       <div class="eyebrow">Progress photos · ${photos.length}</div>
@@ -3077,15 +3065,13 @@ function buildShareCard(){
   const c=document.createElement('canvas'); c.width=1080; c.height=1080; const x=c.getContext('2d');
   x.fillStyle='#0A0A0B'; x.fillRect(0,0,1080,1080);
   const g=x.createRadialGradient(780,120,40,780,120,900); g.addColorStop(0,'rgba(201,168,106,.20)'); g.addColorStop(1,'rgba(10,10,11,0)'); x.fillStyle=g; x.fillRect(0,0,1080,1080);
-  const s=store.get('streak',{count:0}), sc=store.get('lastScore',null), scans=store.get('scans',[]);
-  const withSkin=scans.filter(v=>typeof v.skin==='number');
-  const gain=withSkin.length>=2 ? withSkin[withSkin.length-1].skin-withSkin[0].skin : null;
+  const s=store.get('streak',{count:0});
   x.textAlign='center';
   x.fillStyle='#F2EDE4'; x.font='700 46px Georgia,serif'; x.fillText('CHISEL', 540, 155);
   x.fillStyle='#C9A86A'; x.font='500 24px Inter,Arial,sans-serif'; x.fillText('S C U L P T   Y O U R   B E S T   S E L F', 540, 205);
   x.fillStyle='#E2C58A'; x.font='700 260px Georgia,serif'; x.fillText(String(s.count||0), 540, 615);
   x.fillStyle='#F2EDE4'; x.font='500 40px Inter,Arial,sans-serif'; x.fillText('DAY STREAK', 540, 690);
-  const line=[]; if(sc!=null) line.push('Harmony '+sc); if(gain!=null && gain>0) line.push('Skin +'+Math.round(gain));
+  const line=['Private practice · consistent habits'];
   x.fillStyle='#C9C2B4'; x.font='400 34px Inter,Arial,sans-serif'; x.fillText(line.join('    ·    ')||'Evidence-based self-improvement', 540, 820);
   x.strokeStyle='rgba(201,168,106,.45)'; x.lineWidth=2; x.beginPath(); x.moveTo(360,880); x.lineTo(720,880); x.stroke();
   x.fillStyle='#C9A86A'; x.font='italic 500 30px Georgia,serif'; x.fillText('Progress, not a rating.', 540, 955);
@@ -3222,7 +3208,7 @@ function finalizePosture(){
     <h3>Posture · <span class="gold">${cva}°</span> <span style="font-size:13px;color:var(--ivory-dim)">craniovertebral angle</span></h3>
     <p><b>${rating}.</b> ${note} A larger angle means your ear sits back over your shoulder (upright); a smaller angle is forward-head. Measured side-on from your ear and shoulder.</p>
     <div style="margin-top:10px"><div class="mrow"><span>Your angle</span><b>${cva}°</b></div><div class="mrow"><span>Posture reference</span><b>≈ 50°+</b></div></div>
-    <p style="font-size:12px;margin-top:10px"><i style="color:#7CC79A">Moderate–Strong</i> — chin tucks & deep-neck-flexor work improve forward-head posture in RCTs. Chin tucks 3×15 daily; set screens at eye level. [Cervical RCT]</p>
+    <p style="font-size:12px;margin-top:10px"><i style="color:#7CC79A">Moderate–Strong</i> — chin tucks & deep-neck-flexor work improve forward-head posture in RCTs. Gentle posture practice if comfortable daily; set screens at eye level. [Cervical RCT]</p>
     <p style="font-size:11px;margin-top:8px;color:var(--ivory-dim)">Estimate from a 2D side view — not a clinical measurement. Measure at the same distance each time.</p>`;
 }
 
@@ -3496,11 +3482,11 @@ $$('#sodiumSeg .chip').forEach(c=>c.addEventListener('click',()=>{ $$('#sodiumSe
 /* --- 30-day programs --- */
 const PROGRAMS=[
   {id:'skin', name:'Skin Reset', glyph:'○', blurb:'SPF, retinoid and sleep — the strongest-evidence skin stack.',
-   tasks:['SPF 30+ every morning','Gentle cleanse AM/PM','Retinoid at night (build up slowly)','7–9h sleep','2L water']},
-  {id:'jaw', name:'Jaw & Posture', glyph:'◢', blurb:'Leaner face + upright posture — the levers that move the jawline.',
-   tasks:['Chin tucks 3×15','Slight calorie deficit / lower body-fat','Firm gum 10 min','Sleep on your back','Low-sodium day']},
+   tasks:['SPF 30+ every morning','Gentle cleanse AM/PM','Use a simple routine that your skin tolerates','7–9h sleep','Drink according to your needs']},
+  {id:'jaw', name:'Jaw & Posture', glyph:'◢', blurb:'Comfortable posture and consistent rest. No structural change is promised.',
+   tasks:['Gentle posture practice if comfortable','Comfortable movement break','Relax your jaw; stop for discomfort','Sleep on your back','Low-sodium day']},
   {id:'glow', name:'Total Glow-up', glyph:'✦', blurb:'A bit of everything: skin, teeth, grooming, sleep.',
-   tasks:['SPF + moisturiser','Whiten / brush + floss','Groom to your plan','Hydrate 2L','Sleep 8h']}
+   tasks:['SPF + moisturiser','Whiten / brush + floss','Groom to your plan','Drink according to your needs','Sleep 8h']}
 ];
 function programState(){ return store.get('program',null); }
 function programDay(){ const p=programState(); if(!p) return 0; return Math.min(30, Math.floor((Date.now()-p.start)/86400000)+1); }

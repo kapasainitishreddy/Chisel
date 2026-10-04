@@ -342,7 +342,7 @@ if(typeof window!=='undefined'&&typeof document!=='undefined'){
       }},
       {id:'precision',deps:['capture'],run:async()=>{
       addCss('chisel-precision.css');
-      for(const src of ['chisel-precision-stats.js','chisel-precision-protocol.js','chisel-precision-core.js','chisel-precision-face.js','chisel-precision-body.js','chisel-precision-ui.js','chisel-precision.js'])await addScript(src);
+      for(const src of ['chisel-precision-stats.js','chisel-precision-protocol.js','chisel-precision-core.js','chisel-progress-intelligence.js','chisel-precision-face.js','chisel-precision-body.js','chisel-precision-ui.js','chisel-precision.js'])await addScript(src);
       }},
       {id:'scan',deps:['capture'],run:async()=>{
       await addScript('chisel-scan-guard.js');if(window.ChiselScanGuard)window.ChiselScanGuard.installBrowserGuard();
@@ -373,6 +373,7 @@ if(typeof window!=='undefined'&&typeof document!=='undefined'){
       {id:'compare',deps:['looks'],run:async()=>{
       await addScript('chisel-compare-tools.js');if(window.ChiselCompareTools)window.ChiselCompareTools.install();
       }},
+      {id:'completion',deps:[],run:async()=>{await addScript('chisel-programs.js');await addScript('chisel-completion-ui.js');window.ChiselCompletionUI.install();}},
     ],(id,state)=>{if(state.status==='failed')console.warn('[Chisel feature unavailable]',id,state.message);}).then(result=>{
       window.CHISEL_RUNTIME_STATUS=result;
       if(Object.values(result).some(item=>item.status!=='ready')){const notice=document.createElement('p');notice.className='chisel-runtime-notice';notice.setAttribute('role','status');notice.textContent='Some optional tools could not load. Reload to retry; your saved data remains on this device.';document.getElementById('home')?.appendChild(notice);}
