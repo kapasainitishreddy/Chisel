@@ -1,10 +1,10 @@
 {
   "name": "chisel",
   "version": "1.0.0",
-  "description": "Chisel — Lookmax AI Facial Assistant",
+  "description": "Chisel \u2014 Lookmax AI Facial Assistant",
   "main": "www/index.html",
   "scripts": {
-    "build": "echo Chisel is a static HTML app - www is the build output. && exit 0",
+    "build": "node scripts/verify-build.cjs",
     "test": "node --test tests/*.test.cjs",
     "test:enhancements": "node --test tests/enhancements-core.test.cjs tests/enhancements-ui.test.cjs tests/native-integration.test.cjs",
     "test:precision": "node --test tests/precision-core.test.cjs tests/precision-ui.test.cjs tests/precision-native.test.cjs",
@@ -12,7 +12,8 @@
     "sync": "cap sync android",
     "open": "cap open android",
     "android": "cap run android",
-    "serve": "npx http-server www -p 8080 -c-1"
+    "serve": "npx http-server www -p 8080 -c-1",
+    "pretest": "cap sync android"
   },
   "keywords": [
     "lookmax",

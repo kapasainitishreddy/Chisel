@@ -313,8 +313,10 @@ if(typeof window!=='undefined'&&typeof document!=='undefined'){
   window.addEventListener('load',()=>{
     const addCss=href=>{if(document.querySelector(`link[data-chisel-runtime="${href}"]`))return;const link=document.createElement('link');link.rel='stylesheet';link.href=href;link.dataset.chiselRuntime=href;document.head.appendChild(link);};
     if(!document.getElementById('chiselLauncherLayerFix')){const layerFix=document.createElement('style');layerFix.id='chiselLauncherLayerFix';layerFix.textContent='.chl-launcher,.chp-launcher{z-index:180!important}';document.head.appendChild(layerFix);}
-    const addScript=src=>new Promise((resolve,reject)=>{const prior=document.querySelector(`script[data-chisel-runtime="${src}"]`);if(prior){if(prior.dataset.loaded==='1')resolve();else prior.addEventListener('load',resolve,{once:true});return;}const script=document.createElement('script');script.src=src;if(src.endsWith('.mjs'))script.type='module';script.dataset.chiselRuntime=src;script.addEventListener('load',()=>{script.dataset.loaded='1';resolve();},{once:true});script.addEventListener('error',()=>reject(new Error(`Could not load ${src}`)),{once:true});document.body.appendChild(script);});
-    (async()=>{try{
+    const pending=new Map();
+    const addScript=src=>{if(pending.has(src))return pending.get(src);const promise=new Promise((resolve,reject)=>{const prior=document.querySelector(`script[data-chisel-runtime="${src}"]`);if(prior?.dataset.loaded==='1'){resolve();return;}if(prior)prior.remove();const script=document.createElement('script');script.src=src;if(src.endsWith('.mjs'))script.type='module';script.dataset.chiselRuntime=src;const failed=()=>{clearTimeout(timer);script.remove();pending.delete(src);reject(new Error(`Could not load ${src}`));};const timer=setTimeout(failed,15000);script.addEventListener('load',()=>{clearTimeout(timer);script.dataset.loaded='1';resolve();},{once:true});script.addEventListener('error',failed,{once:true});document.body.appendChild(script);});pending.set(src,promise);return promise;};
+    window.ChiselRuntimeLoader.run([
+      {id:'style',deps:[],run:async()=>{
       await addScript('chisel-beauty-studio.js');
       await addScript('chisel-tryon-runtime-fixes.js');if(window.ChiselTryonRuntimeFixes)window.ChiselTryonRuntimeFixes.install();
       await addScript('chisel-tryon-hair-v5.js');if(window.ChiselTryonHairV5)window.ChiselTryonHairV5.install();
@@ -322,25 +324,60 @@ if(typeof window!=='undefined'&&typeof document!=='undefined'){
       await addScript('chisel-style-guide-label.js');if(window.ChiselStyleGuideLabel)window.ChiselStyleGuideLabel.install();
       const fixStyleLabels=()=>{const first=document.querySelector('#styleTop .seg');if(!first)return;const buttons=first.querySelectorAll('button');if(buttons[0]){if(buttons[0].textContent!=='Short / structured')buttons[0].textContent='Short / structured';buttons[0].setAttribute('aria-label','Short structured hairstyle family');}if(buttons[1]){if(buttons[1].textContent!=='Long / layered')buttons[1].textContent='Long / layered';buttons[1].setAttribute('aria-label','Long layered hairstyle family');}first.setAttribute('aria-label','Browse by style family, not gender');};
       fixStyleLabels();const styleTop=document.getElementById('styleTop');if(styleTop&&!styleTop.dataset.styleFamilyObserver){styleTop.dataset.styleFamilyObserver='1';new MutationObserver(fixStyleLabels).observe(styleTop,{childList:true,subtree:true});}
+      await addScript('chisel-eyewear-fit.js');window.ChiselEyewearFit.install();await addScript('chisel-tryon-policy.js');window.ChiselTryonPolicy.install();
+      }},
+      {id:'labs',deps:[],run:async()=>{
       addCss('chisel-enhancements.css');await addScript('chisel-enhancements-core.js');await addScript('chisel-enhancements.js');
+      }},
+      {id:'capture',deps:[],run:async()=>{
       await addScript('chisel-capture-quality.js');
+      }},
+      {id:'trainer',deps:[],run:async()=>{
       addCss('chisel-trainer-v2.css');addCss('chisel-skin-appearance.css');await addScript('chisel-skin-appearance-core.js');
       await addScript('chisel-trainer-demos.js');
       await addScript('chisel-trainer-v2.js');if(window.ChiselTrainerV2)window.ChiselTrainerV2.install();
+      }},
+      {id:'skin',deps:['capture'],run:async()=>{
       await addScript('chisel-skin-appearance.js');if(window.ChiselSkinAppearance)window.ChiselSkinAppearance.install();
+      }},
+      {id:'precision',deps:['capture'],run:async()=>{
       addCss('chisel-precision.css');
       for(const src of ['chisel-precision-stats.js','chisel-precision-protocol.js','chisel-precision-core.js','chisel-precision-face.js','chisel-precision-body.js','chisel-precision-ui.js','chisel-precision.js'])await addScript(src);
+      }},
+      {id:'scan',deps:['capture'],run:async()=>{
       await addScript('chisel-scan-guard.js');if(window.ChiselScanGuard)window.ChiselScanGuard.installBrowserGuard();
+      }},
+      {id:'experience',deps:[],run:async()=>{
       await addScript('chisel-experience-polish.js');if(window.ChiselExperiencePolish)window.ChiselExperiencePolish.install();
+      }},
+      {id:'product',deps:[],run:async()=>{
       await addScript('chisel-product-polish.js');if(window.ChiselProductPolish)window.ChiselProductPolish.install();
+      }},
+      {id:'reliability',deps:[],run:async()=>{
       await addScript('chisel-reliability-runtime.js');if(window.ChiselReliabilityRuntime)window.ChiselReliabilityRuntime.install();
+      }},
+      {id:'theme',deps:[],run:async()=>{
       addCss('chisel-studio-theme.css');await addScript('chisel-studio-theme.js');if(window.ChiselStudioTheme)window.ChiselStudioTheme.install();
+      }},
+      {id:'photo',deps:[],run:async()=>{
       addCss('chisel-personal-studio.css');await addScript('chisel-personal-photo.js');
       await addScript('chisel-personal-studio.js');if(window.ChiselPersonalStudio)window.ChiselPersonalStudio.install();
+      }},
+      {id:'looks',deps:['photo'],run:async()=>{
       await addScript('chisel-look-catalog.mjs');await addScript('chisel-looks-core.js');await addScript('chisel-looks-gallery.js');
       addCss('chisel-looks-studio.css');await addScript('chisel-looks-studio.js');if(window.ChiselLooksStudio)window.ChiselLooksStudio.install();
+      }},
+      {id:'credits',deps:['photo'],run:async()=>{
       addCss('chisel-pro-tools.css');await addScript('chisel-policy-shared.js');await addScript('chisel-comparison-shared.js');await addScript('chisel-wallet-core.js');await addScript('chisel-credits-ui.js');if(window.ChiselCredits)window.ChiselCredits.install();
+      }},
+      {id:'compare',deps:['looks'],run:async()=>{
       await addScript('chisel-compare-tools.js');if(window.ChiselCompareTools)window.ChiselCompareTools.install();
-    }catch(error){console.warn('[Chisel runtime] optional feature module failed to load',error);}})();
+      }},
+    ],(id,state)=>{if(state.status==='failed')console.warn('[Chisel feature unavailable]',id,state.message);}).then(result=>{
+      window.CHISEL_RUNTIME_STATUS=result;
+      if(Object.values(result).some(item=>item.status!=='ready')){const notice=document.createElement('p');notice.className='chisel-runtime-notice';notice.setAttribute('role','status');notice.textContent='Some optional tools could not load. Reload to retry; your saved data remains on this device.';document.getElementById('home')?.appendChild(notice);}
+      window.dispatchEvent(new CustomEvent('chisel-runtime-ready',{detail:result}));
+    });
+
   },{once:true});
 }
