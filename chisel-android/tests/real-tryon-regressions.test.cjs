@@ -60,9 +60,9 @@ test('generic try-on starts clean and face matching preserves a user-selected be
   context.styleGender = 'women';
   context.styleBeard = 2;
   context.applyMatches();
-  assert.equal(context.styleBeard, 0, 'Long-hair catalog mode must not inherit facial hair');
-  assert.equal(nodes.beardLab.style.display, 'none');
-  assert.equal(nodes.beardChips.style.display, 'none');
+  assert.equal(context.styleBeard, 2, 'An explicit beard choice survives either style family');
+  assert.equal(nodes.beardLab.style.display, '');
+  assert.equal(nodes.beardChips.style.display, '');
 });
 
 test('live preview summary follows the selected hair beard and makeup state', () => {
