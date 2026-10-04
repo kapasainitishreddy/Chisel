@@ -13,6 +13,7 @@ if (requestedRelease && !keystorePropsFile.exists()) {
 android {
     namespace "com.chisel.lookmax"
     compileSdk rootProject.ext.compileSdkVersion
+    buildToolsVersion "36.0.0"
     defaultConfig {
         applicationId "com.chisel.lookmax"
         minSdkVersion rootProject.ext.minSdkVersion
