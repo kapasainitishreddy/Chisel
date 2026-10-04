@@ -373,10 +373,10 @@ if(typeof window!=='undefined'&&typeof document!=='undefined'){
       {id:'compare',deps:['looks'],run:async()=>{
       await addScript('chisel-compare-tools.js');if(window.ChiselCompareTools)window.ChiselCompareTools.install();
       }},
-      {id:'completion',deps:[],run:async()=>{await addScript('chisel-programs.js');await addScript('chisel-completion-ui.js');window.ChiselCompletionUI.install();}},
+      {id:'completion',deps:[],run:async()=>{await addScript('chisel-programs.js');await addScript('chisel-private-archive.js');await addScript('chisel-discussion-export.js');await addScript('chisel-completion-ui.js');window.ChiselCompletionUI.install();}},
     ],(id,state)=>{if(state.status==='failed')console.warn('[Chisel feature unavailable]',id,state.message);}).then(result=>{
       window.CHISEL_RUNTIME_STATUS=result;
-      if(Object.values(result).some(item=>item.status!=='ready')){const notice=document.createElement('p');notice.className='chisel-runtime-notice';notice.setAttribute('role','status');notice.textContent='Some optional tools could not load. Reload to retry; your saved data remains on this device.';document.getElementById('home')?.appendChild(notice);}
+      if(Object.values(result).some(item=>item.status!=='ready')){const notice=document.createElement('p');notice.className='chisel-runtime-notice';notice.setAttribute('role','status');notice.textContent='Some optional tools could not load. Reload to retry; your saved data remains on this device.';document.querySelector('[data-screen=home]')?.appendChild(notice);}
       window.dispatchEvent(new CustomEvent('chisel-runtime-ready',{detail:result}));
     });
 
