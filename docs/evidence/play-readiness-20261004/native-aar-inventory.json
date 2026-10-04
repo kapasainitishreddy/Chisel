@@ -1,0 +1,5 @@
+{
+  "scope": "All downloaded Maven AARs used by this QA toolchain; final AAB still required",
+  "aarCount": 61,
+  "sharedObjects": []
+}

@@ -1,0 +1,23 @@
+{
+  "scope": "Real local controls, storage, encrypted-file roundtrip and exports. No live cloud, payment or physical-device acceptance.",
+  "checks": {
+    "realChecklist": true,
+    "pause": true,
+    "secretCleared": true,
+    "encryptedDownload": true,
+    "validatedRestoreAvailable": true,
+    "lock": true,
+    "safeReport": true,
+    "fits360": true,
+    "fits430": true,
+    "fits1280": true,
+    "focusReturned": true,
+    "noPageErrors": true,
+    "accountSignInWithoutBilling": true,
+    "existingAccountOnly": true,
+    "deletionControlWorks": true,
+    "salesRemainDisabled": true,
+    "failureIsolation": true
+  },
+  "errors": []
+}
