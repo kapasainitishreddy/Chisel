@@ -1,0 +1,9 @@
+project_id = "chisel"
+
+# Dedicated scheduler token is checked by output-cleanup itself.
+[functions.output-cleanup]
+verify_jwt = false
+
+# User deletion retains gateway authentication AND explicit getUser validation.
+[functions.account-lifecycle]
+verify_jwt = true

@@ -333,12 +333,12 @@ if(typeof window!=='undefined'&&typeof document!=='undefined'){
       await addScript('chisel-capture-quality.js');
       }},
       {id:'trainer',deps:[],run:async()=>{
-      addCss('chisel-trainer-v2.css');addCss('chisel-skin-appearance.css');await addScript('chisel-skin-appearance-core.js');
+      addCss('chisel-trainer-v2.css');
       await addScript('chisel-trainer-demos.js');
       await addScript('chisel-trainer-v2.js');if(window.ChiselTrainerV2)window.ChiselTrainerV2.install();
       }},
       {id:'skin',deps:['capture'],run:async()=>{
-      await addScript('chisel-skin-appearance.js');if(window.ChiselSkinAppearance)window.ChiselSkinAppearance.install();
+      addCss('chisel-skin-appearance.css');await addScript('chisel-skin-appearance-core.js');await addScript('chisel-skin-appearance.js');if(window.ChiselSkinAppearance)window.ChiselSkinAppearance.install();
       }},
       {id:'precision',deps:['capture'],run:async()=>{
       addCss('chisel-precision.css');
@@ -368,10 +368,10 @@ if(typeof window!=='undefined'&&typeof document!=='undefined'){
       addCss('chisel-looks-studio.css');await addScript('chisel-looks-studio.js');if(window.ChiselLooksStudio)window.ChiselLooksStudio.install();
       }},
       {id:'credits',deps:['photo'],run:async()=>{
-      addCss('chisel-pro-tools.css');await addScript('chisel-policy-shared.js');await addScript('chisel-comparison-shared.js');await addScript('chisel-wallet-core.js');await addScript('chisel-credits-ui.js');if(window.ChiselCredits)window.ChiselCredits.install();
+      addCss('chisel-pro-tools.css');await addScript('chisel-policy-shared.js');await addScript('chisel-wallet-core.js');await addScript('chisel-credits-ui.js');if(window.ChiselCredits)window.ChiselCredits.install();
       }},
       {id:'compare',deps:['looks'],run:async()=>{
-      await addScript('chisel-compare-tools.js');if(window.ChiselCompareTools)window.ChiselCompareTools.install();
+      addCss('chisel-pro-tools.css');await addScript('chisel-comparison-shared.js');await addScript('chisel-compare-tools.js');if(window.ChiselCompareTools)window.ChiselCompareTools.install();
       }},
       {id:'completion',deps:[],run:async()=>{await addScript('chisel-programs.js');await addScript('chisel-private-archive.js');await addScript('chisel-discussion-export.js');await addScript('chisel-completion-ui.js');window.ChiselCompletionUI.install();}},
     ],(id,state)=>{if(state.status==='failed')console.warn('[Chisel feature unavailable]',id,state.message);}).then(result=>{

@@ -2,7 +2,7 @@
    Local/free tools remain account-free; a native purchase callback never grants funds. */
 (function(root){
 'use strict';
-let installed=false,session=null,wallet,dialog,returnFocus,configured=false,loggedIn=null,refreshing=null,discovered=false,selectedQuality='standard',productsBusy=false;
+let installed=false,session=null,wallet,dialog,returnFocus,configured=false,loggedIn=null,refreshing=null,discovered=false,selectedQuality='standard',productsBusy=false,accountManagement=false;
 const SESSION='chisel:credit-session',q=s=>document.querySelector(s);
 const billingEnabled=()=>root.CHISEL_RELEASE_CONFIG?.billingEnabled===true;
 function base(){const u=new URL(typeof RENDER_FN_URL==='string'?RENDER_FN_URL:'');if(!/^https:\/\/[a-z0-9]{20}\.supabase\.co$/.test(u.origin))throw Error('server_not_configured');return u.origin;}
@@ -30,9 +30,10 @@ function changed(){root.dispatchEvent(new CustomEvent('chisel:credits-change'));
 function draw(s){
  if(!dialog)return;
  if(q('#ccDeleteAccount'))q('#ccDeleteAccount').hidden=!uid();
- if(!billingEnabled()){
-  q('#ccSignIn').hidden=true;q('#ccSignOut').hidden=true;q('#ccPacks').replaceChildren();
-  q('#ccPriceNotice').textContent='';safeMessage('#ccStatus','Credit purchases and paid accounts are disabled in this release.');
+ if(q('.cc-rules'))q('.cc-rules').hidden=accountManagement;
+ if(!billingEnabled()||accountManagement){
+  q('#ccSignIn').hidden=!accountManagement||!!uid();q('#ccSignOut').hidden=!uid();q('#ccPacks').replaceChildren();
+  q('#ccPriceNotice').textContent='';safeMessage('#ccBalance',accountManagement?'Existing cloud account':'Credits unavailable');safeMessage('#ccStatus',accountManagement?(uid()?'Manage or delete your existing cloud account. Purchases remain unavailable here.':'Sign in to an existing account to delete it. This flow cannot create an account.'):'Credit purchases and paid accounts are disabled in this release.');
   return;
  }
  safeMessage('#ccBalance',s.balance===null?'Sign in to see your balance':`${s.balance} credits`);
@@ -47,7 +48,7 @@ function draw(s){
  changed();
 }
 async function refresh(){if(!billingEnabled()){discovered=false;draw({balance:null,offers:[],salesReady:false,configuration:{ready:false}});return;}try{const s=await wallet.refresh();discovered=s.configuration?.apiVersion===2;if(discovered)root.ChiselLooksStudio?.refreshAvailability?.();if(s.salesReady&&uid()&&!productsBusy){productsBusy=true;try{await wallet.loadProducts();}catch{safeMessage('#ccStatus','Credit purchases are available in the configured Android app.');}finally{productsBusy=false;}}draw(wallet.snapshot());}catch{safeMessage('#ccStatus','Wallet unavailable. No purchase was started.');}}
-function open(){if(!dialog||!billingEnabled())return false;returnFocus=document.activeElement;dialog.showModal();q('#ccClose').focus();refresh();return true;}
+function open(){if(!dialog||!billingEnabled())return false;accountManagement=false;q('#ccTitle').textContent='AI credits';returnFocus=document.activeElement;dialog.showModal();q('#ccClose').focus();refresh();return true;}
 async function signOut(){if(wallet.snapshot().busy)return;const old=session;saveSession(null);wallet.reset();loggedIn=null;root.ChiselLooksStudio?.clearAccount?.();changed();try{if(old)await jsonFetch(base()+'/auth/v1/logout?scope=local',{method:'POST',headers:{apikey:anon(),Authorization:`Bearer ${old.access_token}`}});}catch{}refresh();}
 async function deleteAccount(){
  if(!uid()){safeMessage('#ccStatus','Sign in to your existing account to delete it.');return false;}
@@ -56,7 +57,7 @@ async function deleteAccount(){
  const owner=uid(),button=q('#ccDeleteAccount');if(button)button.disabled=true;
  try{const result=await jsonFetch(base()+'/functions/v1/account-lifecycle',{method:'DELETE',headers:{apikey:anon(),'Content-Type':'application/json',...await authHeaders(owner)},body:JSON.stringify({confirmation:'DELETE'})});if(!result.deleted){safeMessage('#ccStatus',result.message||'Cleanup is pending. Retry to finish.');return false;}saveSession(null);wallet.reset();loggedIn=null;root.ChiselLooksStudio?.clearAccount?.();changed();safeMessage('#ccStatus','Your cloud account was deleted. Local photos and routines remain on this device.');return true;}catch{safeMessage('#ccStatus','Account deletion could not finish. Wait for active edits, then retry. No new purchase was started.');return false;}finally{if(button)button.disabled=false;}
 }
-function openAccount(){if(!dialog)return false;returnFocus=document.activeElement;dialog.showModal();q('#ccClose').focus();q('#ccDeleteAccount').hidden=!uid();safeMessage('#ccStatus',uid()?'Delete your optional cloud account here. Local data deletion is separate.':'No optional account is signed in on this device.');return true;}
+function openAccount(){if(!dialog)return false;accountManagement=true;q('#ccTitle').textContent='Cloud account';draw(wallet.snapshot());returnFocus=document.activeElement;dialog.showModal();q('#ccClose').focus();q('#ccDeleteAccount').hidden=!uid();safeMessage('#ccStatus',uid()?'Delete your optional cloud account here. Local data deletion is separate.':'Sign in to an existing account to manage or delete it. No account will be created.');return true;}
 function quote(){const m=root.ChiselCreditPolicy.mode(selectedQuality);return{quality:selectedQuality,credits:m.credits,userId:uid()};}
 function install(){
  if(installed||!root.ChiselWalletCore||!q('#clsEditor'))return false;installed=true;
@@ -66,7 +67,7 @@ function install(){
  wallet=root.ChiselWalletCore.createWallet({userId:uid,load,products:getProducts,purchase});wallet.subscribe(draw);
  q('#ccClose').onclick=()=>dialog.close();dialog.addEventListener('close',()=>returnFocus?.isConnected&&returnFocus.focus({preventScroll:true}));
  q('#ccRefresh').onclick=refresh;q('#ccSignOut').onclick=signOut;q('#ccDeleteAccount').onclick=deleteAccount;
- q('#ccSignIn').onsubmit=async e=>{e.preventDefault();const b=q('#ccSendCode');b.disabled=true;try{await auth('otp',{email:q('#ccEmail').value.trim(),create_user:true});q('#ccCodeStep').hidden=false;safeMessage('#ccStatus','Enter the code from your email.');q('#ccCode').focus();}catch(e){safeMessage('#ccStatus',e.message);}finally{b.disabled=false;}};
+ q('#ccSignIn').onsubmit=async e=>{e.preventDefault();const b=q('#ccSendCode');b.disabled=true;try{await auth('otp',{email:q('#ccEmail').value.trim(),create_user:!accountManagement});q('#ccCodeStep').hidden=false;safeMessage('#ccStatus','Enter the code from your email.');q('#ccCode').focus();}catch(e){safeMessage('#ccStatus',e.message);}finally{b.disabled=false;}};
  q('#ccVerify').onclick=async()=>{const b=q('#ccVerify');b.disabled=true;try{const s=await auth('verify',{email:q('#ccEmail').value.trim(),token:q('#ccCode').value.trim(),type:'email'});saveSession(s);if(!session)throw Error('Sign-in did not complete.');wallet.reset();q('#ccCode').value='';await refresh();}catch(e){safeMessage('#ccStatus',e.message);}finally{b.disabled=false;}};
  const button=document.createElement('button');button.id='ccEditorBalance';button.className='cc-chip';button.type='button';button.textContent='Credits';button.hidden=!billingEnabled();button.onclick=open;q('#clsEditor .cls-header').insertBefore(button,q('#clsLibraryOpen'));
  const modes=document.createElement('div');modes.id='ccModeGroup';modes.className='cc-modes';modes.hidden=true;modes.setAttribute('role','group');modes.setAttribute('aria-label','Image editing quality and credit cost');
