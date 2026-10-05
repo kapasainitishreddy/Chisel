@@ -66,16 +66,21 @@
     if(!detail||!detail.state)return;
     const state=detail.state,form=detail.form||{},exercise=detail.exercise||{};
     const score=$('#ctv2FormScore'),phase=$('#ctv2PhaseText'),clean=$('#ctv2CleanReps'),tracking=$('#ctv2TrackingCopy');
-    safeText(score,exercise.tracking==='hand-guided'?(form.fallback?'Guided mode':'Hand path'):(Number.isFinite(Number(form.score))?`${Math.round(Number(form.score))}/100`:`${Math.round(Number(state.lastFormScore)||0)}/100`));
+    safeText(score,formLabel(exercise,form));
     safeText(phase,state.phase||'POSITION');safeText(clean,String(Number(state.cleanReps)||0));
     if(tracking){
       if(exercise.tracking==='hand-guided')tracking.innerHTML=form.fallback?'<b>Guided mode:</b> hand guidance is unavailable, so follow the illustrated path gently.':'<b>Hand guidance:</b> position and movement direction are approximate; pressure is not measured.';
-      else {const formTracked=exercise.tracking==='form';tracking.innerHTML=formTracked?'<b>Camera verified:</b> centering, range and symmetry gates are active.':'<b>Guided movement:</b> camera verifies setup and head position; follow the movement cue gently.';}
+      else {const formTracked=exercise.tracking==='form';tracking.innerHTML=formTracked?'<b>Camera checks:</b> approximate centering, range and symmetry cues.':'<b>Guided movement:</b> camera checks setup and head position; follow the movement cue gently.';}
     }
     all('#arCoachHud .ctv2-phase span').forEach(node=>node.classList.toggle('on',node.dataset.phase===(state.phase||'POSITION')));
-    const pause=$('#ctv2Pause');if(pause)pause.textContent=root&&typeof root.isARCoachPaused==='function'&&root.isARCoachPaused()?'Resume':'Pause';
+    const pause=$('#ctv2Pause');if(pause){const paused=!!(root&&typeof root.isARCoachPaused==='function'&&root.isARCoachPaused());pause.textContent=paused?'Resume':'Pause';pause.setAttribute('aria-pressed',String(paused));}
     const next=$('#ctv2Next');if(next)next.textContent=state.exerciseIndex>=state.exerciseIds.length-1?'End':'Next';
     saveCompletion(detail);
+  }
+  function formLabel(exercise,form){
+    if(exercise.tracking==='hand-guided')return form.fallback?'Guided mode':form.handVisible?'Hand path':'Finding hand';
+    if(exercise.tracking==='guided')return 'Setup only';
+    return Number.isFinite(form.score)?`${Math.round(Math.max(0,Math.min(100,form.score)))}/100`:'Not measured';
   }
   function showCompletion(detail){
     const hud=$('#arCoachHud');if(!hud||!detail||!detail.state)return false;
@@ -157,7 +162,7 @@
     }
     if(panel&&!$('#ctv2GoalBar',panel)){const goals=document.createElement('div');goals.id='ctv2GoalBar';goals.className='ctv2-goalbar';goals.innerHTML='<div class="ctv2-goal"><strong>Relax</strong><span>Jaw, brow and screen-time tension.</span></div><div class="ctv2-goal"><strong>Refresh</strong><span>Short, gentle movement and massage routines.</span></div><div class="ctv2-goal"><strong>Posture</strong><span>Neutral head and neck-control practice.</span></div>';grid&&grid.insertAdjacentElement('beforebegin',goals);}
     const hud=$('#arCoachHud');if(hud){
-      if(!$('#ctv2Live',hud)){const live=document.createElement('div');live.id='ctv2Live';live.className='ctv2-live';live.innerHTML='<div class="ctv2-live-item"><small>Form score</small><strong id="ctv2FormScore">Not measured</strong></div><div class="ctv2-live-item"><small>Phase</small><strong id="ctv2PhaseText">POSITION</strong></div><div class="ctv2-live-item"><small>Clean reps</small><strong id="ctv2CleanReps">0</strong></div>';const status=$('.ar-hud-status',hud);if(status)status.insertAdjacentElement('afterend',live);else hud.appendChild(live);live.insertAdjacentHTML('afterend',phaseMarkup()+'<div class="ctv2-tracking" id="ctv2TrackingCopy"><b>Camera verified:</b> keep your face centered to begin.</div>');}
+      if(!$('#ctv2Live',hud)){const live=document.createElement('div');live.id='ctv2Live';live.className='ctv2-live';live.innerHTML='<div class="ctv2-live-item"><small>Form score</small><strong id="ctv2FormScore">Not measured</strong></div><div class="ctv2-live-item"><small>Phase</small><strong id="ctv2PhaseText">POSITION</strong></div><div class="ctv2-live-item"><small>Clean reps</small><strong id="ctv2CleanReps">0</strong></div>';const status=$('.ar-hud-status',hud);if(status)status.insertAdjacentElement('afterend',live);else hud.appendChild(live);live.insertAdjacentHTML('afterend',phaseMarkup()+'<div class="ctv2-tracking" id="ctv2TrackingCopy"><b>Camera checks:</b> keep your face centered to begin.</div>');}
       if(!$('#ctv2Demo',hud)){const demo=document.createElement('div');demo.id='ctv2Demo';demo.className='ctv2-demo';demo.hidden=true;hud.insertBefore(demo,hud.firstChild);}
       if(!$('#ctv2Pause',hud)){const pause=document.createElement('button');pause.type='button';pause.id='ctv2Pause';pause.className='ctv2-pause';pause.textContent='Pause';pause.onclick=()=>root&&typeof root.toggleARCoachPause==='function'&&root.toggleARCoachPause();hud.appendChild(pause);}
       if(!$('.ctv2-actions',hud)){const actions=document.createElement('div');actions.className='ctv2-actions';hud.appendChild(actions);}
@@ -168,5 +173,5 @@
     }
     watchUnisexStudio();if(root&&root.addEventListener){root.addEventListener('chisel:coach-state',event=>updateLive(event.detail));root.addEventListener('chisel:trainer-complete',event=>showCompletion(event.detail));root.addEventListener('keydown',event=>{if(event.key==='Escape'&&previewSessionId){event.preventDefault();closePreview();}});}return true;
   }
-  return{install,updateLive,showCompletion,completionSummary,todayRecommendation,launchSession,openRoutinePreview,closePreview,fixUnisexStudio,voiceEnabled,setVoiceEnabled,speakGuidance,haptic,syncCompactGrid};
+  return{install,formLabel,updateLive,showCompletion,completionSummary,todayRecommendation,launchSession,openRoutinePreview,closePreview,fixUnisexStudio,voiceEnabled,setVoiceEnabled,speakGuidance,haptic,syncCompactGrid};
 });

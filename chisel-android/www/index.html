@@ -473,6 +473,8 @@
         <div style="font-size:38px;color:var(--gold)">◉</div>
         <h3 class="display" style="font-size:24px;margin:4px 0 0">Ready when you are.</h3>
         <p class="lede" style="font-size:13px;margin:5px auto 0">Face forward in even light. Keep your jaw relaxed.</p>
+        <ul class="scan-prep" aria-label="Before your scan"><li>Even front lighting</li><li>Level chin, relaxed face</li><li>Same camera and distance</li></ul>
+        <p class="scan-prep-note">The countdown starts when framing and lighting pass. Weak captures ask you to retake.</p>
         <div class="btn-row analyze-primary">
           <button class="btn solid" id="openAnalyze">Quick scan</button>
           <button class="btn" id="openTrain">AR Jaw &amp; Cheek Coach</button>
@@ -669,13 +671,13 @@
   <video id="cam" autoplay playsinline muted></video>
   <canvas id="overlay"></canvas>
   <div class="hud">
-    <div class="back" id="camBack" aria-label="close">✕</div>
+    <button type="button" class="back" id="camBack" aria-label="Close camera">✕</button>
     <div class="meta" id="camMeta">Live</div>
     <div style="width:44px"></div>
   </div>
   <div class="controls">
-    <div class="camctrl" id="camFlip" title="Flip camera" role="button" aria-label="Flip camera">⟲</div>
-    <div class="camctrl" id="camShot" title="Capture" role="button" aria-label="Capture">◉</div>
+    <button type="button" class="camctrl" id="camFlip" title="Switch camera" aria-label="Switch camera">⟲</button>
+    <button type="button" class="camctrl" id="camShot" title="Capture" aria-label="Capture scan">◉</button>
   </div>
   <div class="affirm-overlay" id="affirmOverlay" style="display:none">
     <div class="card">
@@ -937,7 +939,9 @@ function resetCamModeFlags(){
   coachMode=false; _coachBuf=null; trainMode=false; _arState=null; _arForm=null; massageMode=false; _handLandmarker=null; _handModelStatus='off'; _handTracker={}; _handPoint=null; _arDemoUntil=0; _arPaused=false;
   styleMode=false; styleHair=0; styleBeard=0; styleGlass=0; styleMakeup=0;
   styleGender='men'; styleView='match'; _faceShape=null; _shapeBuf=[]; _shapeT=0;
-  _lockAt=0; _miss=0; _snapTO=null; manualSnap=false; _scan=0;
+  if(_snapTO) clearTimeout(_snapTO);
+  _lockAt=0; _miss=0; _snapTO=null; manualSnap=false; _scan=0; _burst=[]; _lastSample=0; _lastScanVideoTime=null; _lastScanFrameAt=0;
+  const badge=$('#scanTrustBadge'); if(badge) badge.remove();
   const th=$('.tap-hint'); if(th) th.style.display='';
   const sg=$('#scanGuide'); if(sg) sg.style.display='none';
   const csg=$('#camSheet'); if(csg) csg.style.display='none';
@@ -960,6 +964,7 @@ function hideCameraOverlays(){
   const ah=$('#arCoachHud'); if(ah) ah.hidden=true;
 }
 function setCamMode(mode='idle'){
+  if(isCamOpen() || stream || _cancelCameraConsent) closeCam();
   camMode = mode || 'idle';
   resetCamModeFlags();
   const cameraSurface=$('#camwrap');if(cameraSurface)cameraSurface.dataset.mode=camMode;
@@ -1082,6 +1087,7 @@ function bumpStreak(){
 /* ---------- Camera / FaceDetector ---------- */
 const cam = $('#cam'), cv = $('#overlay'), ctx = cv.getContext('2d');
 let stream=null, facing='user', detLoop=null, manualSnap=null;
+let _cameraRequestId=0, _cancelCameraConsent=null;
 let scanMode=false, deepScan=false, postureMode=false, _lockAt=0, _miss=0;        // auto-capture state (deepScan = longer, more frames)
 let trainMode=false, _arState=null, _arForm=null, _arEvent=''; // AR coach state
 let massageMode=false, _handLandmarker=null, _handModelStatus='off', _handLastTs=0, _handTracker={}, _handPoint=null, _arDemoUntil=0, _arPaused=false;
@@ -1091,6 +1097,7 @@ let _openMakeup=false;                                          // when true, tr
 let _shapeBuf=[], _shapeT=0;                                    // frontal-frame buffer for shape voting
 let devMetrics=false, _devT=0;                                  // live shape-ratio validation overlay
 let _burst=[], _lastSample=0;                   // rolling buffer of measured frames (median → stable scores)
+let _lastScanVideoTime=null, _lastScanFrameAt=0;
 let camMode='idle';
 const COUNT_MS=2600;                            // hold-still countdown before auto-capture
 const DEEP_MS=5200;                             // deep scan holds ~2× as long → ~40 frames for a higher-confidence median
@@ -1104,26 +1111,35 @@ function ensureCameraConsent(){
     const el=$('#camConsent'); if(!el){ resolve(true); return; }
     el.classList.add('on');
     const ok=$('#camConsentOk'), no=$('#camConsentNo');
-    const done=(v)=>{ el.classList.remove('on'); ok.onclick=null; no.onclick=null; resolve(v); };
+    const done=(v)=>{ el.classList.remove('on'); ok.onclick=null; no.onclick=null; _cancelCameraConsent=null; resolve(v); };
+    _cancelCameraConsent=()=>done(false);
     ok.onclick=()=>{ store.set('cameraConsent',true); done(true); };
     no.onclick=()=>done(false);
   });
 }
 async function openCam(){
-  if(isCamOpen()) stopCameraForUI();
-  if(!await ensureCameraConsent()){ toast('Camera stays off until you allow it'); return; }
+  const request=++_cameraRequestId;
+  const allowed=await ensureCameraConsent();
+  if(request!==_cameraRequestId) return false;
+  if(!allowed){ closeCam(); toast('Camera stays off until you allow it'); return false; }
   $('#camwrap').classList.add('on');
   try{
-    stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:facing, width:{ideal:1280}, height:{ideal:720} }, audio:false });
+    const requestedStream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:facing, width:{ideal:1280}, height:{ideal:720} }, audio:false });
+    if(request!==_cameraRequestId){ requestedStream.getTracks().forEach(t=>t.stop()); return false; }
+    if(stream) stream.getTracks().forEach(t=>t.stop());
+    stream=requestedStream;
     cam.srcObject = stream; cam.classList.toggle('mirror', facing==='user'); await cam.play();
+    if(request!==_cameraRequestId) return false;
   }catch(err){
-    toast('Camera blocked: '+err.message, 3000); console.warn(err);
+    if(request!==_cameraRequestId) return false;
+    toast(err.name==='NotAllowedError'?'Camera access is off. Allow camera access in your phone or browser settings, then try again.':err.name==='NotFoundError'?'No camera found. Connect a camera, then try again.':'Camera could not start. Close other camera apps, then try again.',5000); console.warn(err);
     closeCam();
-    return;
+    return false;
   }
   sizeCanvas();
   $('#camMeta').textContent = 'Loading face engine…';
   faceKitReady = window.faceKit ? await window.faceKit.ready() : false;
+  if(request!==_cameraRequestId) return false;
   _lockAt=0; _miss=0;
   if(faceKitReady){
     const arEx=trainMode && window.ChiselARCoach ? window.ChiselARCoach.currentExercise(_arState) : null;
@@ -1131,11 +1147,12 @@ async function openCam(){
     if(scanMode) setGuideMsg('', 'CENTER YOUR FACE IN THE OVAL');
     if(trainMode) setGuideMsg('', 'CENTER YOUR FACE · KEEP YOUR JAW LOOSE');
   }
-  else { const e=window.faceKit&&window.faceKit.error; const msg='Engine: '+(e?String(e.message||e):'no module'); $('#camMeta').textContent='Face engine offline'; toast(msg, 12000); }
+  else { $('#camMeta').textContent='Face scanning unavailable'; toast('Face scanning could not load. Check your connection, then close the camera and try again.',6000); }
   if(detLoop) cancelAnimationFrame(detLoop);
   detLoop = requestAnimationFrame(meshLoop);
   if(scanMode) setScanWatch();
   runDiag();
+  return true;
 }
 function shouldShowScanGuide(){
   const inAffirm = $('#affirmOverlay').style.display==='flex';
@@ -1149,11 +1166,13 @@ function setScanWatch(){
   _scanWatch = setTimeout(()=>{
     if(!isCamOpen() || !scanMode) return;
     setGuideMsg('', 'SCAN TIMED OUT');
-    toast('Scan timed out â€” check lighting and hold still, then try again', 2800);
+    toast('Scan timed out — check lighting and hold still, then try again', 2800);
     closeCam();
   }, deepScan ? SCAN_TIMEOUT_MS + 6000 : SCAN_TIMEOUT_MS);
 }
 function closeCam(){
+  _cameraRequestId++;
+  if(_cancelCameraConsent) _cancelCameraConsent();
   hideCameraOverlays();
   resetCamModeFlags();
   camMode = 'idle';
@@ -1161,6 +1180,7 @@ function closeCam(){
   clearScanWatch();
   if(detLoop) cancelAnimationFrame(detLoop); detLoop=null;
   if(stream) stream.getTracks().forEach(t=>t.stop()); stream=null;
+  cam.srcObject=null;
   if(ctx){ ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,cv.width,cv.height); }
 }
 /* Backing store = displayed CSS size (× dpr), NOT the camera resolution. The
@@ -1182,7 +1202,7 @@ function coverRect(){
 cam.addEventListener('loadedmetadata', sizeCanvas);
 window.addEventListener('resize', sizeCanvas);
 $('#camBack').addEventListener('click', closeCam);
-$('#camFlip').addEventListener('click', async ()=>{ facing = facing==='user'?'environment':'user'; closeCam(); await openCam() });
+$('#camFlip').addEventListener('click', async ()=>{ facing = facing==='user'?'environment':'user'; _burst=[]; _lastSample=0; _lockAt=0; if(_arState)_arState=AR_COACH.advanceState(_arState,{accepted:false,score:null,correction:'Find your position again'},performance.now()); await openCam() });
 let _snapTO=null;
 let _scanWatch=null;
 $('#camShot').addEventListener('click', ()=>{
@@ -1252,14 +1272,21 @@ function poseGate(pts, mat){
 function quickPose(d){ return poseGate(d.pts, d.mat); }
 function collectFrame(d){     // sample ~7–8 frames/sec into the rolling burst
   const now=performance.now();
-  if(now-_lastSample<130) return;
+  if(now-_lastSample<130 || cam.currentTime===_lastScanVideoTime) return false;
+  _lastScanVideoTime=cam.currentTime;
+  _lastScanFrameAt=now;
   _lastSample=now;
-  try{ _burst.push(measureFrame(d)); }catch(e){ console.warn('measure',e); }
+  try{ _burst.push(measureFrame(d)); }catch(e){ console.warn('measure',e); return false; }
   while(_burst.length>(deepScan?BURST_MAX_DEEP:BURST_MAX)) _burst.shift();
+  return true;
 }
 function autoCapture(d){
   const q=quickPose(d);
   if(!q.frontal){ _lockAt=0; setGuideMsg('', q.msg); return; }
+  const quality=window.ChiselScanGuard;
+  if(!quality){ _lockAt=0; setGuideMsg('', 'LOADING CAPTURE CHECKS'); return; }
+  const frame=quality.assessFrame(_burst[_burst.length-1]);
+  if(!frame.accepted){ _lockAt=0; setGuideMsg('', frame.correction.toUpperCase()); return; }
   if(_lockAt===0) _lockAt=performance.now();
   const held=performance.now()-_lockAt;
   const hold=deepScan?DEEP_MS:COUNT_MS;
@@ -1267,13 +1294,14 @@ function autoCapture(d){
     const remain=Math.max(1,Math.ceil((hold-held)/1000));
     setGuideMsg(String(remain), deepScan?'DEEP SCAN — HOLD STILL':'HOLD STILL — KEEP LOOKING');
   } else {
-    _lockAt=0; setGuideMsg('✓','CAPTURED'); finalizeScan();
+    _lockAt=0; finalizeScan();
   }
 }
 /* ---------- AR jaw + cheek coach: safe, live, on-device form guidance ---------- */
 const AR_COACH=window.ChiselARCoach;
 function openTrain(){
   if(!AR_COACH){ toast('AR coach could not load'); return; }
+  $('#toast').classList.remove('on');
   $('#arCoachModal').classList.add('on');
 }
 function closeARCoachPicker(){ $('#arCoachModal').classList.remove('on'); }
@@ -1287,7 +1315,8 @@ async function startARCoach(sessionId){
   massageMode=!!(AR_COACH.sessionRequiresHand&&AR_COACH.sessionRequiresHand(sessionId));
   _handModelStatus=massageMode?'loading':'off'; _handLandmarker=null;
   if(massageMode&&AR_COACH.loadHandLandmarker){
-    AR_COACH.loadHandLandmarker().then(model=>{if(!trainMode)return;_handLandmarker=model;_handModelStatus=model?'ready':'failed';}).catch(()=>{_handModelStatus='failed';});
+    const coachingState=_arState;
+    AR_COACH.loadHandLandmarker().then(model=>{if(!trainMode||_arState?.startedAt!==coachingState.startedAt)return;_handLandmarker=model;_handModelStatus=model?'ready':'failed';}).catch(()=>{if(trainMode&&_arState?.startedAt===coachingState.startedAt)_handModelStatus='failed';});
   }
   const hud=$('#arCoachHud'); hud.hidden=false; hud.classList.remove('locked','is-complete');
   const h=$('.tap-hint'); if(h) h.style.display='none';
@@ -1300,7 +1329,7 @@ function readHands(){
   try{return _handLandmarker.detectForVideo(cam,t);}catch(error){_handModelStatus='failed';return null;}
 }
 window.isARCoachPaused=()=>_arPaused;
-window.toggleARCoachPause=()=>{if(!trainMode)return;_arPaused=!_arPaused;const pause=$('#ctv2Pause');if(pause)pause.textContent=_arPaused?'Resume':'Pause';if(_arPaused){setGuideMsg('','PAUSED · CAMERA STAYS ON');}else{_arDemoUntil=Math.max(_arDemoUntil,performance.now()+500);setGuideMsg('','WATCH THE TECHNIQUE');}};
+window.toggleARCoachPause=()=>{if(!trainMode)return;_arPaused=!_arPaused;const now=performance.now();_arForm={accepted:false,released:false,score:null,correction:'Resume and find your position again'};_arState=AR_COACH.advanceState(_arState,_arForm,now);const pause=$('#ctv2Pause');if(pause){pause.textContent=_arPaused?'Resume':'Pause';pause.setAttribute('aria-pressed',String(_arPaused));}if(_arPaused){setGuideMsg('','PAUSED · CAMERA STAYS ON');}else{_arDemoUntil=Math.max(_arDemoUntil,now+500);setGuideMsg('','WATCH THE TECHNIQUE');}renderARCoachHud(now);};
 window.skipARCoachExercise=()=>{
   if(!trainMode||!_arState||!AR_COACH)return;
   const last=_arState.exerciseIndex>=_arState.exerciseIds.length-1;
@@ -1312,7 +1341,7 @@ window.skipARCoachExercise=()=>{
 function arCoachProgress(ex,now){
   if(!_arState||!ex) return 0;
   const repBase=_arState.rep/ex.reps;
-  const held=_arState.holdStartedAt ? Math.min(1,(now-_arState.holdStartedAt)/(ex.hold*1000)) : 0;
+  const held=_arState.holdStartedAt ? Math.min(1,(_arState.heldMs||0)/(ex.hold*1000)) : 0;
   return Math.max(0,Math.min(1,repBase+held/ex.reps));
 }
 function renderARCoachHud(now){
@@ -1320,7 +1349,7 @@ function renderARCoachHud(now){
   const ex=AR_COACH.currentExercise(_arState); if(!ex) return;
   const resting=_arState.restUntil && now<_arState.restUntil;
   const showingDemo=!_arPaused&&_arDemoUntil>now;
-  const locked=!!(_arForm&&_arForm.accepted&&!resting&&!showingDemo);
+  const locked=!!(_arForm&&_arForm.accepted&&!resting&&!showingDemo&&!_arPaused);
   hud.hidden=false; hud.classList.toggle('locked',locked);
   const demo=$('#ctv2Demo',hud);
   if(demo){
@@ -1338,7 +1367,7 @@ function renderARCoachHud(now){
   if(_arPaused) status='Paused';
   else if(showingDemo) status='Technique';
   else if(resting) status='Reset';
-  else if(locked&&_arState.holdStartedAt) status='Hold '+Math.max(1,Math.ceil(ex.hold-(now-_arState.holdStartedAt)/1000))+'s';
+  else if(locked&&_arState.holdStartedAt) status='Hold '+Math.max(1,Math.ceil(ex.hold-(_arState.heldMs||0)/1000))+'s';
   else if(locked) status='Form locked';
   $('#arCoachHold').textContent=status;
   $('#arCoachProgress').style.width=Math.round(arCoachProgress(ex,now)*100)+'%';
@@ -1364,7 +1393,7 @@ function trainStep(d){
       _arForm={accepted:false,correction:'Loading hand guidance…',tone:'find',score:null,tracking:'hand-guided',handVisible:false};_handPoint=null;
     }
   }else{_arForm=AR_COACH.evaluateForm(ex,signals);_handPoint=null;}
-  if(!_arForm.accepted&&pose.msg) _arForm.correction=pose.msg.toLowerCase().replace(/(^|\s)\S/g,c=>c.toUpperCase());
+  if(!_arForm.accepted&&!pose.frontal&&pose.msg) _arForm.correction=pose.msg.toLowerCase().replace(/(^|\s)\S/g,c=>c.toUpperCase());
   _arState=AR_COACH.advanceState(before,_arForm,now);
   if(_arState.event!==_arEvent){
     if(_arState.event==='rep'||_arState.event==='exercise'){ if(window.ChiselTrainerV2)window.ChiselTrainerV2.haptic(_arState.event==='exercise'?'exercise':'rep'); }
@@ -1379,7 +1408,7 @@ function trainStep(d){
   else if(ex&&ex.tracking==='hand-guided'&&_arForm.fallback) setGuideMsg('','GUIDED MODE · FOLLOW THE PATH');
   else if(ex&&ex.tracking==='hand-guided'&&!_arForm.handVisible) setGuideMsg('','BRING YOUR HAND INTO VIEW');
   else if(_arForm.accepted){
-    const left=_arState.holdStartedAt?Math.max(1,Math.ceil(current.hold-(now-_arState.holdStartedAt)/1000)):current.hold;
+    const left=_arState.holdStartedAt?Math.max(1,Math.ceil(current.hold-(_arState.heldMs||0)/1000)):current.hold;
     setGuideMsg(String(left),'FORM LOCKED · KEEP BREATHING');
   } else setGuideMsg('',(_arForm.correction||'Center your face').toUpperCase());
 }
@@ -1948,15 +1977,16 @@ function meshLoop(){
     if(active){
       if(trainMode){ trainStep(d); }
       else {
-        collectFrame(d);
+        const sampled=collectFrame(d);
         if(manualSnap){ manualSnap=false; clearTimeout(_snapTO); _lockAt=0; finalizeScan(); }
-        else autoCapture(d);
+        else if(sampled) autoCapture(d);
+        else if(performance.now()-_lastScanFrameAt>350){ _lockAt=0; _burst=[]; setGuideMsg('','WAITING FOR A FRESH CAMERA FRAME'); }
       }
     }
   } else {
     if(active){
       _miss++;
-      if(_miss>10){ _lockAt=0; setGuideMsg('', trainMode?'CENTER YOUR FACE — JAW TRAINING':'CENTER YOUR FACE IN THE OVAL'); }
+      if(_miss>10){ _lockAt=0; setGuideMsg('', trainMode?(_arPaused?'PAUSED · CAMERA STAYS ON':'CENTER YOUR FACE — JAW TRAINING'):'CENTER YOUR FACE IN THE OVAL'); }
     }
     if(!inAffirm) drawGuide();
   }
@@ -1964,7 +1994,8 @@ function meshLoop(){
 }
 function rescan(){
   $('#camSheet').style.display='none';
-  _lockAt=0; _miss=0; _burst=[];
+  const badge=$('#scanTrustBadge');if(badge)badge.remove();
+  _lockAt=0; _miss=0; _burst=[]; _lastSample=0;
   if(scanMode) setScanWatch();
   setGuideMsg('','CENTER YOUR FACE IN THE OVAL');
 }
@@ -2365,6 +2396,7 @@ function measureFrame(d){
 
 /* ---------- Aggregate the burst → stable, repeatable scores ---------- */
 function finalizeScan(){
+  if(!window.ChiselScanGuard || !finalizeScan.__chiselGuarded){ toast('Capture checks are loading. Wait a moment, then try again.'); return; }
   let frames=_burst.slice();
   if(!frames.length){ toast('Hold still and face the camera, then try again', 2600); return; }
   const fr=frames.filter(f=>f.frontal);
@@ -2424,7 +2456,7 @@ function finalizeScan(){
   const _conf = Math.max(40, Math.min(99, Math.round(100*(
     0.55*Math.min(1,frames.length/_target) + 0.20*(usedFrontal?1:0.4) +
     0.12*(usedExp?1:0.5) + 0.08*(usedBlink?1:0.5) + 0.05*(shapeConf?1:0.4)))));
-  const _qual=`${deepScan?'Deep · ':''}${frames.length} frame${frames.length>1?'s':''}${usedFrontal?' · frontal-locked':''}${usedExp?' · exposure-checked':''} · ${_conf}% confidence`;
+  const _qual=`${deepScan?'Deep · ':''}${frames.length} frame${frames.length>1?'s':''}${usedFrontal?' · frontal-locked':''}${usedExp?' · exposure-checked':''} · ${_conf}/100 capture score`;
 
   /* ---------- Per-area report with science-backed remedies ---------- */
   const R=(t,txt)=>({t,txt});
@@ -2639,7 +2671,7 @@ function renderResults(overall, areas, extra){
   const jawFocus=jaw ? `<div class="jaw-focus">
     <div class="ey">Jawline first</div>
     <div class="top"><b>Jaw structure</b><span>photographic guide</span></div>
-    <p>${jaw.status}. This is a photographic estimate, so use repeated scans in similar light to track change.</p>
+    <p>${jaw.status}. This is a photographic estimate. Use matched Precision batches with uncertainty ranges for progress comparisons.</p>
   </div>` : '';
   $('#camSheet').innerHTML = evCss + `
     <div style="display:flex;gap:8px;justify-content:flex-end;margin-bottom:8px">
@@ -2658,12 +2690,11 @@ function saveScan(rec){ const arr=store.get('scans',[]); arr.push(rec); while(ar
 function renderTimeline(){
   const el=$('#scanHistory'); if(!el) return;
   const arr=store.get('scans',[]);
-  if(!arr.length){ el.innerHTML='<p class="lede" style="font-size:13px;margin-top:14px">No scans yet. Open the camera and tap ◉ to log your first reading — Chisel tracks the trend over time.</p>'; return; }
-  const bars=arr.slice(-14).map(s=>`<div title="${new Date(s.t).toLocaleDateString()}" style="flex:1;min-width:5px;background:linear-gradient(180deg,var(--gold-bright),var(--gold));height:${Math.max(8,30)}%;border-radius:3px 3px 0 0"></div>`).join('');
+  if(!arr.length){ el.innerHTML='<p class="lede" style="font-size:13px;margin-top:14px">No scans yet. Take one clear scan to start your local photo history.</p>'; return; }
   const rows=arr.slice(-8).reverse().map(s=>{
     const dd=new Date(s.t), when=dd.toLocaleDateString([], {month:'short',day:'numeric'})+' · '+dd.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
     const bl = (typeof s.bloat==='number') ? s.bloat+'/100' : (s.fullness??'—');
-    return `<div class="row"><label>${when}</label><span>bloat ${bl}</span></div>`;
+    return `<div class="row"><label>${when}</label><span>Fullness estimate ${bl}</span></div>`;
   }).join('');
   const photos=store.get('photos',[]);
   let photoHtml='';
@@ -2671,10 +2702,10 @@ function renderTimeline(){
     const first=photos[0], last=photos[photos.length-1];
     const strip=photos.slice(-10).map(p=>`<img src="${p.url}" title="${new Date(p.t).toLocaleDateString()}" style="height:72px;border-radius:8px;border:1px solid var(--line);flex:0 0 auto"/>`).join('');
     const compare = photos.length>=2 ? `
-      <div class="eyebrow" style="margin-top:16px">Before &rarr; now · drag to compare</div>
-      <div id="baWrap" style="position:relative;max-width:320px;margin:10px auto 0;border-radius:12px;overflow:hidden;border:1px solid var(--gold);touch-action:none;user-select:none;cursor:ew-resize">
-        <img src="${last.url}" style="display:block;width:100%"/>
-        <div id="baOver" style="position:absolute;inset:0;width:50%;overflow:hidden;border-right:2px solid var(--gold-bright)"><img src="${first.url}" style="display:block;width:320px;max-width:none;height:100%;object-fit:cover"/></div>
+      <div class="eyebrow" style="margin-top:16px">First &rarr; latest · slide to compare</div>
+      <div id="baWrap" aria-label="First and latest scan photos" style="position:relative;max-width:320px;margin:10px auto 0;border-radius:12px;overflow:hidden;border:1px solid var(--gold);touch-action:none;user-select:none;cursor:ew-resize">
+        <img src="${last.url}" alt="Latest saved scan" style="display:block;width:100%"/>
+        <div id="baOver" style="position:absolute;inset:0;width:50%;overflow:hidden;border-right:2px solid var(--gold-bright)"><img src="${first.url}" alt="First saved scan" style="display:block;width:320px;max-width:none;height:100%;object-fit:cover"/></div>
         <div id="baHandle" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:50%;background:rgba(10,10,11,.7);border:1px solid var(--gold);color:var(--gold);display:grid;place-items:center;font-size:13px;pointer-events:none">↔</div>
         <div style="position:absolute;left:8px;bottom:8px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px">${new Date(first.t).toLocaleDateString([], {month:'short',day:'numeric'})}</div>
         <div style="position:absolute;right:8px;bottom:8px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px">now</div>
@@ -2683,25 +2714,25 @@ function renderTimeline(){
       <div class="eyebrow">Progress photos · ${photos.length}</div>
       <div style="display:flex;gap:6px;overflow-x:auto;margin-top:12px;padding-bottom:4px">${strip}</div>
       ${compare}
+      ${photos.length>=2?'<label class="scan-compare-control" for="baRange">Photo comparison<input id="baRange" type="range" min="0" max="100" value="50" aria-label="First photo coverage" aria-valuetext="First photo covers 50 percent"></label>':''}
       <p class="lede" style="font-size:11px;margin-top:12px">Snapshots stay on your device only. For a fair comparison, scan in similar light, distance and time of day each time.</p>
     </div>`;
   }
   el.innerHTML=`<div class="card" style="margin-top:18px">
     <div class="eyebrow">Your timeline · ${arr.length} scan${arr.length>1?'s':''}</div>
-    <div style="display:flex;align-items:flex-end;gap:4px;height:74px;margin:14px 0 8px">${bars}</div>
+    <p class="lede" style="font-size:12px;margin:10px 0">Quick scans are appearance snapshots. Use matched Precision batches to assess changes with uncertainty ranges.</p>
     <div>${rows}</div></div>${photoHtml}`;
   wireBASlider();
 }
 function wireBASlider(){
-  const wrap=$('#baWrap'); if(!wrap) return;
-  const over=$('#baOver'), handle=$('#baHandle'), innerImg=over&&over.querySelector('img');
-  if(innerImg) innerImg.style.width=wrap.clientWidth+'px';
-  const setPct=p=>{ p=Math.max(2,Math.min(98,p)); over.style.width=p+'%'; handle.style.left=p+'%'; };
-  const move=e=>{ const r=wrap.getBoundingClientRect(); const x=(e.touches?e.touches[0].clientX:e.clientX)-r.left; setPct(x/r.width*100); };
-  let drag=false;
-  wrap.addEventListener('pointerdown',e=>{ drag=true; move(e); });
-  window.addEventListener('pointermove',e=>{ if(drag) move(e); });
-  window.addEventListener('pointerup',()=>{ drag=false; });
+  const wrap=$('#baWrap'),range=$('#baRange'); if(!wrap||!range) return;
+  const over=$('#baOver'),handle=$('#baHandle'),innerImg=over&&over.querySelector('img');
+  const paint=()=>{const p=Math.max(0,Math.min(100,Number(range.value)));if(innerImg)innerImg.style.width=wrap.clientWidth+'px';over.style.width=p+'%';handle.style.left=p+'%';range.setAttribute('aria-valuetext',`First photo covers ${p} percent`);};
+  range.addEventListener('input',paint);
+  const move=e=>{const r=wrap.getBoundingClientRect();range.value=Math.round(Math.max(0,Math.min(100,(e.clientX-r.left)/r.width*100)));paint();};
+  wrap.addEventListener('pointerdown',e=>{if(e.button!==0)return;wrap.setPointerCapture(e.pointerId);move(e);});
+  wrap.addEventListener('pointermove',e=>{if(wrap.hasPointerCapture(e.pointerId))move(e);});
+  paint();
 }
 
 $('#openAnalyze').addEventListener('click', async ()=>{

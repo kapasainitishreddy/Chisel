@@ -5,10 +5,11 @@ const node=id=>root.document.getElementById(id);
 function notice(message){const n=node('chiselCaptureTruth');if(n)n.textContent=message;if(typeof toast==='function')toast(message,5000);}
 function paintTrainer(){
  if(typeof _arState==='undefined'||!_arState)return;
+ if(typeof _arPaused!=='undefined'&&_arPaused){if(node('arCoachHold'))node('arCoachHold').textContent='Paused';return;}
  const ex=root.ChiselARCoach.currentExercise(_arState);
  if(ex&&ex.tracking==='guided'){
   if(node('ctv2FormScore'))node('ctv2FormScore').textContent='Setup only';
-  if(node('arCoachHold'))node('arCoachHold').textContent='Guided hold';
+  if(node('arCoachHold')&&_arState.phase==='HOLD')node('arCoachHold').textContent='Guided hold';
  }
  if(_arState.needsRelease){
   if(node('arCoachHold'))node('arCoachHold').textContent='Return to neutral';
