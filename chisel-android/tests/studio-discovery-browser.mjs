@@ -11,7 +11,7 @@ try{
  await page.emulateMediaFeatures([{name:'prefers-reduced-motion',value:'reduce'}]);
  await page.goto(`${base}/www/index.html`,{waitUntil:'load',timeout:30000});
  await page.waitForFunction(()=>document.documentElement.dataset.chiselTheme==='quiet-studio',{timeout:20000});
- await page.waitForSelector('#idModal.on',{visible:true});await page.click('#idX');
+ await page.waitForFunction(()=>{const b=document.getElementById('boot');return !b||getComputedStyle(b).opacity==='0';});await page.evaluate(()=>openIdentity());await page.waitForSelector('#idModal.on',{visible:true});await page.click('#idX');
  await page.waitForFunction(()=>!document.querySelector('#idModal.on'));
  check('priorityToolsOnMobile',await page.evaluate(()=>document.querySelector('.cs-direct-tools').getBoundingClientRect().top<document.getElementById('cxpHomeHub').getBoundingClientRect().top));
  for(const width of [360,430,768,1280]){

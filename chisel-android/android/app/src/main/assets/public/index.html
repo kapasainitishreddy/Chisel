@@ -5,11 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
 <meta name="format-detection" content="telephone=no" />
 <meta name="msapplication-tap-highlight" content="no" />
-<meta name="theme-color" content="#0A0A0B" />
+<meta name="theme-color" content="#102821" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: gap: content:; media-src * blob: filesystem:; img-src * data: blob: content:;" />
-<title>Chisel — Sculpt your best self</title>
+<title>Chisel — Your private style studio</title>
+<link rel="icon" type="image/svg+xml" href="chisel-icon.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -324,6 +325,7 @@
 <body>
 
 <div id="boot">
+  <img src="chisel-logo.png" alt="" width="88" height="88" style="object-fit:contain;margin-bottom:16px">
   <div class="mark">Chisel</div>
   <div class="tag">Sculpt your best self</div>
   <div class="bar"></div>
@@ -626,6 +628,7 @@
 
       <div class="card" style="margin-top:18px">
         <div class="eyebrow">Privacy &amp; data</div>
+        <p><a href="https://play.google.com/store/account/subscriptions" target="_blank" rel="noopener">Manage or cancel Google Play subscriptions ↗</a></p>
         <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:500">Your data stays on this device</h3>
         <p style="color:var(--ivory-dim);font-size:13px;line-height:1.6">Free local scans, photos, streaks, routines and settings stay on your phone. Optional cloud photo editing sends a prepared photo after your confirmation. Existing cloud-account management uses email sign-in and a separate deletion request. Credit purchases and new paid accounts are disabled in this release. No ads or analytics tracking. <a href="privacy-policy.html" style="color:var(--gold)">Privacy policy</a> · <a href="https://github.com/kapasainitishreddy/Chisel/blob/main/docs/terms-of-use.html" target="_blank" rel="noopener" style="color:var(--gold)">Terms of use ↗</a></p>
         <div class="btn-row" style="margin-top:14px">
@@ -778,9 +781,9 @@
 <!-- IDENTITY MODAL -->
 <div class="modal" id="idModal">
   <div class="panel">
-    <div class="x" id="idX">✕</div>
+    <button class="x" type="button" id="idX" aria-label="Close personalization">✕</button>
     <div class="eyebrow">You</div>
-    <h3>Who is Chisel for?</h3>
+    <h3>Personalize your advice</h3>
     <p class="lede">This tailors your affirmations, the way your scan is framed, grooming advice and the try-on. Your measurements stay the same honest geometry either way. Stored only on your device — change it anytime.</p>
     <div id="idChips" style="display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 6px">
       <button class="chip" data-gender="male">Male</button>
@@ -870,7 +873,7 @@
 <!-- PAYWALL MODAL -->
 <div class="modal" id="paywall">
   <div class="panel">
-    <div class="x" id="paywallX">✕</div>
+    <button class="x" type="button" id="paywallX" aria-label="Close premium offers">✕</button>
     <div class="eyebrow">Go Premium</div>
     <h3>Photoreal, unlocked.</h3>
     <p class="lede">The whole on-device app — scans, try-on, routine, tracking, reminders, exports — stays free. Premium unlocks more photoreal cloud renders after your daily free allowance.</p>
@@ -878,7 +881,9 @@
       <p class="lede" id="paywallLoading">Loading offers…</p>
     </div>
     <button class="btn ghost" id="paywallRestore" style="width:100%">Restore purchases</button>
-    <p style="font-size:10px;color:var(--ivory-dim);margin-top:10px">Billed through Google Play. Cancel anytime in Play Store → Subscriptions.</p>
+    <p id="paywallStatus" class="lede" role="status" aria-live="polite"></p>
+    <p class="lede">Local tools stay free. <a href="privacy-policy.html">Privacy policy</a></p>
+    <p style="font-size:10px;color:var(--ivory-dim);margin-top:10px">Billed through Google Play. <a href="https://play.google.com/store/account/subscriptions" target="_blank" rel="noopener">Manage or cancel subscriptions ↗</a></p>
   </div>
 </div>
 
@@ -3626,7 +3631,7 @@ bindIconButtons();
    and the paywall shows a friendly "store unavailable" message — nothing breaks. */
 const RC_API_KEY = '';                 // RevenueCat PUBLIC Android SDK key — safe to embed client-side
 const RC_ENTITLEMENT_ID = 'premium';   // the entitlement id you create in RevenueCat
-let _rc=null, rcReady=false;
+let _rc=null, rcReady=false, rcBusy=false, rcOfferRequest=0;
 function rcPlugin(){ return (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Purchases) || null; }
 async function initRevenueCat(){
   const P=rcPlugin();
@@ -3648,42 +3653,71 @@ async function rcUserIdIfEntitled(){
 }
 function openPaywall(){
   if(!window.CHISEL_RELEASE_CONFIG?.billingEnabled){ toast('Premium purchases are not available in this release'); return; }
+  if(window.ChiselCredits?.isActive()){window.ChiselCredits.open();return;}
   $('#paywall').classList.add('on'); renderOfferings();
 }
-function closePaywall(){ $('#paywall').classList.remove('on'); }
+function closePaywall(){ rcOfferRequest++; $('#paywall').classList.remove('on'); }
+function rcStatus(message){ const node=$('#paywallStatus'); if(node)node.textContent=message; }
+function setRcBusy(value){
+  rcBusy=value;
+  if(document.querySelectorAll)document.querySelectorAll('#paywallOfferings button,#paywallRestore').forEach(button=>{button.disabled=value||button.dataset.unavailable==='true';});
+}
+function premiumOffer(pkg){
+  const product=pkg?.product||pkg?.storeProduct||{};
+  const period=String(product.subscriptionPeriod||'').match(/^P([1-9][0-9]*)([DWMY])$/);
+  const units={D:'day',W:'week',M:'month',Y:'year'};
+  const price=typeof product.priceString==='string'?product.priceString.trim():'';
+  const option=product.defaultOption;
+  // Complex offers need their full phase/commitment disclosure before checkout.
+  const simple=!product.introPrice&&!option?.isPrepaid&&!option?.installmentsInfo&&!option?.freePhase&&!option?.introPhase;
+  const valid=!!price&&!!period&&simple&&product.productCategory!=='NON_SUBSCRIPTION';
+  const term=period?`${period[1]} ${units[period[2]]}${period[1]==='1'?'':'s'}`:'';
+  return {valid,price,title:String(product.title||'Premium'),detail:valid?`${price} every ${term}. Automatically renews until cancelled in Google Play. Google Play confirms the total before purchase.`:'Offer details unavailable. No purchase can be started.'};
+}
 async function renderOfferings(){
-  const el=$('#paywallOfferings');
-  if(!rcReady || !_rc){ el.innerHTML='<p class="lede">The store isn\'t available here — it activates in the installed app. Free photoreal renders stay limited by server allowance; premium unlocks additional renders.</p>'; return; }
+  const el=$('#paywallOfferings'),request=++rcOfferRequest;
+  rcStatus('');
+  if(!rcReady || !_rc){ el.innerHTML='<p class="lede">Premium offers are unavailable. You can keep using local tools for free.</p>'; return; }
+  el.innerHTML='<p class="lede">Loading store offers…</p>';
   try{
-    const off=await _rc.getOfferings(); const cur=(off&&off.current)||off||{}; const pkgs=(cur&&cur.availablePackages)||[];
-    if(!pkgs.length){ el.innerHTML='<p class="lede">No offers available right now.</p>'; return; }
+    const off=await _rc.getOfferings();
+    if(request!==rcOfferRequest)return;
+    const pkgs=off?.current?.availablePackages||[];
+    if(!pkgs.length){ el.innerHTML='<p class="lede">No offers available right now. Local tools stay free.</p>'; return; }
     el.innerHTML='';
     pkgs.forEach(pkg=>{
-      const prod=pkg.product||pkg.storeProduct||{}, price=prod.priceString||prod.price_string||'', title=prod.title||pkg.identifier||'Plan';
-      const card=document.createElement('div'); card.className='card gold';
-      card.innerHTML=`<div class="eyebrow">${title}</div><div style="font-family:var(--display);font-size:26px;margin:6px 0">${price}</div><button class="btn solid" style="width:100%">Choose</button>`;
-      card.querySelector('button').addEventListener('click', ()=>purchase(pkg));
-      el.appendChild(card);
+      const offer=premiumOffer(pkg),card=document.createElement('div');card.className='card gold';
+      const title=document.createElement('h4');title.textContent=offer.title;
+      const detail=document.createElement('p');detail.className='lede';detail.textContent=offer.detail;
+      const button=document.createElement('button');button.type='button';button.className='btn solid';button.style.width='100%';button.textContent=offer.valid?'Continue with '+offer.price:'Unavailable';button.dataset.unavailable=String(!offer.valid);button.disabled=!offer.valid||rcBusy;
+      button.addEventListener('click',()=>purchase(pkg));card.append(title,detail,button);el.appendChild(card);
     });
-  }catch(e){ console.warn('renderOfferings', e); el.innerHTML='<p class="lede">Couldn\'t load offers — try again shortly.</p>'; }
+  }catch(e){if(request!==rcOfferRequest)return;console.warn('renderOfferings',e);el.innerHTML='<p class="lede">Could not load offers. Close and reopen to try again. No purchase was started.</p>';}
 }
 async function purchase(pkg){
+  if(rcBusy)return;
   if(!window.CHISEL_RELEASE_CONFIG?.billingEnabled || !rcReady || !_rc){ toast('Store unavailable here'); return; }
-  try{ const result=await _rc.purchasePackage({ aPackage: pkg });
-    if(!hasPremiumEntitlement(result)){ toast('Premium is not active yet. Check your purchase status before trying again.'); return; }
-    toast('You\'re in — enjoy Premium'); closePaywall(); }
-  catch(e){ if(e && (e.userCancelled||e.code==='PURCHASE_CANCELLED')) return; console.warn('purchase', e); toast('Purchase didn\'t go through — try again'); }
+  if(!premiumOffer(pkg).valid){rcStatus('Store price and renewal details are unavailable. No purchase was started.');return;}
+  setRcBusy(true);rcStatus('Opening Google Play…');
+  try{const result=await _rc.purchasePackage({aPackage:pkg});
+    if(!hasPremiumEntitlement(result)){rcStatus('Purchase not confirmed yet. Check Google Play before trying again.');toast('Premium is not active yet. Check your purchase status before trying again.');return;}
+    rcStatus('Premium is active.');toast('You\'re in — enjoy Premium');closePaywall();
+  }catch(e){if(e&&(e.userCancelled||e.code==='PURCHASE_CANCELLED')){rcStatus('Purchase cancelled. Nothing was unlocked.');return;}console.warn('purchase',e);rcStatus('Purchase not confirmed. Check Google Play before trying again.');toast('Purchase not confirmed. Check Google Play before trying again');}
+  finally{setRcBusy(false);}
 }
 $('#goPremiumBtn') && $('#goPremiumBtn').addEventListener('click', openPaywall);
 if(!window.CHISEL_RELEASE_CONFIG?.billingEnabled && $('#goPremiumBtn')) $('#goPremiumBtn').hidden=true;
 $('#paywallX') && $('#paywallX').addEventListener('click', closePaywall);
 $('#paywall') && $('#paywall').addEventListener('click', e=>{ if(e.target.id==='paywall') closePaywall(); });
-$('#paywallRestore') && $('#paywallRestore').addEventListener('click', async ()=>{
-  if(!window.CHISEL_RELEASE_CONFIG?.billingEnabled || !rcReady || !_rc){ toast('Store unavailable here'); return; }
-  try{ const result=await _rc.restorePurchases();
-    if(!hasPremiumEntitlement(result)){ toast('No active Premium purchase was found.'); return; }
-    toast('Purchases restored'); closePaywall(); }
-  catch(e){ console.warn('restore', e); toast('Couldn\'t restore — try again'); }
+$('#paywallRestore') && $('#paywallRestore').addEventListener('click',async()=>{
+  if(rcBusy)return;
+  if(!window.CHISEL_RELEASE_CONFIG?.billingEnabled||!rcReady||!_rc){toast('Store unavailable here');return;}
+  setRcBusy(true);rcStatus('Checking existing Premium purchases…');
+  try{const result=await _rc.restorePurchases();
+    if(!hasPremiumEntitlement(result)){rcStatus('No active Premium purchase was found for this Google Play account. Credit balances use your cloud account instead.');toast('No active Premium purchase was found.');return;}
+    rcStatus('Premium restored.');toast('Purchases restored');closePaywall();
+  }catch(e){console.warn('restore',e);rcStatus('Could not restore. Check your connection and Google Play account.');toast('Could not restore — try again');}
+  finally{setRcBusy(false);}
 });
 initRevenueCat();
 
@@ -3694,7 +3728,7 @@ applyIdentity();
 renderPrograms();
 renderTimeline();
 renderMakeupPhotos();
-if(!identityChosen()) setTimeout(openIdentity, 1700);   // first-run identity picker
+// Personalization is optional and opened explicitly from getting started or Settings.
 go(location.hash.slice(1) || 'home');
 setTimeout(()=>{ $('#boot').classList.add('gone'); setTimeout(()=>$('#boot').remove(),900) }, 1300);
 </script>

@@ -8,7 +8,7 @@ try{
  browser=await puppeteer.launch({executablePath:process.env.CHROME||'/usr/bin/chromium',headless:true,args:['--no-sandbox','--disable-dev-shm-usage']});
  page=await browser.newPage();page.on('pageerror',e=>errors.push(e.message));await page.setViewport({width:430,height:900});
  await page.goto(base+'/www/index.html',{waitUntil:'load'});await page.waitForFunction(()=>window.CHISEL_RUNTIME_STATUS?.completion?.status==='ready');
- await page.waitForSelector('#idModal.on');await page.click('#idX');await page.evaluate(()=>go('analyze'));
+ await page.waitForFunction(()=>{const b=document.getElementById('boot');return !b||getComputedStyle(b).opacity==='0';});await page.evaluate(()=>openIdentity());await page.waitForSelector('#idModal.on');await page.click('#idX');await page.evaluate(()=>go('analyze'));
  if(process.env.CHISEL_BASELINE){
   for(const width of [360,430,1280]){await page.setViewport({width,height:900});await page.screenshot({path:`${out}/scan-${width}.png`});await page.evaluate(()=>openTrain());await page.screenshot({path:`${out}/trainer-${width}.png`});await page.evaluate(()=>closeARCoachPicker());}
   checks.baselineCaptured=true;

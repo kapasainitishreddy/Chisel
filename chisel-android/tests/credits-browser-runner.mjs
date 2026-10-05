@@ -24,7 +24,7 @@ try{
   if(data.action==='output')return r.respond({status:200,headers:{...headers,'Content-Type':'image/jpeg'},body:bytes});
   return json({error:'invalid_request'},400);
  }catch(e){report.errors.push(e.message);if(!r.isInterceptResolutionHandled())await r.abort();}});
- await page.goto(base+'/www/index.html',{waitUntil:'load',timeout:30000});await page.waitForFunction(()=>document.documentElement.dataset.creditUI==='1'&&document.documentElement.dataset.chiselCompare==='1',{timeout:20000});try{await page.waitForSelector('#idModal.on',{timeout:2500});await page.click('#idX');}catch{}
+ await page.goto(base+'/www/index.html',{waitUntil:'load',timeout:30000});await page.waitForFunction(()=>document.documentElement.dataset.creditUI==='1'&&document.documentElement.dataset.chiselCompare==='1',{timeout:20000});try{await page.waitForFunction(()=>{const b=document.getElementById('boot');return !b||getComputedStyle(b).opacity==='0';});await page.evaluate(()=>openIdentity());await page.waitForSelector('#idModal.on',{timeout:2500});await page.click('#idX');}catch{}
  check('appIdentity',await page.title().then(s=>s.includes('Chisel')));
  await page.click('.cps-avatar');await(await page.$('#cpsPhotoFile')).uploadFile(fixture);await page.waitForFunction(()=>ChiselPersonalPhoto.getStore().snapshot().hasPhoto);await page.click('#cpsPhotoClose');await page.evaluate(()=>ChiselStudioTheme.openSurface('style'));await page.click('#clsPanel>summary');await page.waitForSelector('#clsEditor[open]');
  await page.waitForFunction(()=>ChiselCredits.isActive());check('signedOutNoBalance',await page.$eval('#ccEditorBalance',n=>n.textContent==='Credits'));

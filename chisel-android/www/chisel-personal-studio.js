@@ -76,7 +76,19 @@
   const avatar=el('button','cps-avatar',photoMarkup()+svg('person'));avatar.type='button';avatar.dataset.cpsEditPhoto='1';avatar.setAttribute('aria-label','Your photo');masthead.append(avatar);
   // Keep Settings in the existing tools dialog, without a third header button.
   const settings=q('#openSettings');if(settings){settings.classList.add('cps-settings-in-tools');q('#csOrbit').append(settings);settings.innerHTML=svg('person')+'<span>Settings</span>';}
-  setText(q('.cs-wordmark',masthead),'CHISEL');
+  const wordmark=q('.cs-wordmark',masthead);
+  wordmark.innerHTML='<img class="cps-brand-mark" src="chisel-logo.png" alt="" width="32" height="32"><span>CHISEL</span>';
+  installWelcome(intro,start);
+ }
+ function installWelcome(intro,start){
+  let dismissed=false;try{dismissed=localStorage.getItem('chisel:welcome-dismissed')==='1';}catch{}
+  if(dismissed)return;
+  const welcome=el('section','cps-welcome');welcome.id='cpsWelcome';welcome.setAttribute('aria-labelledby','cpsWelcomeTitle');
+  welcome.innerHTML='<div class="cps-welcome-heading"><h2 id="cpsWelcomeTitle">Make it yours.</h2><button type="button" id="cpsWelcomeDismiss" aria-label="Dismiss getting started">×</button></div><p>Start with a scan, a gentle routine, or a new style. No account needed for local tools.</p><div class="cps-welcome-actions"><button type="button" data-cps-start="scan">Explore scanning</button><button type="button" data-cps-start="train">Try a routine</button><button type="button" data-cps-start="style">Explore styles</button></div><button type="button" id="cpsPersonalize">Personalize advice</button><small>Optional. Your measurements stay the same.</small>';
+  intro.insertBefore(welcome,start);
+  q('#cpsWelcomeDismiss').onclick=()=>{try{localStorage.setItem('chisel:welcome-dismissed','1');}catch{}welcome.remove();q('[data-cs-open]',start)?.focus();};
+  welcome.addEventListener('click',e=>{const b=e.target.closest('[data-cps-start]');if(b)root.ChiselStudioTheme.openSurface(b.dataset.cpsStart);});
+  q('#cpsPersonalize').onclick=()=>{if(typeof root.openIdentity==='function')root.openIdentity();};
  }
  function installTrainer(){
   const modal=q('#arCoachModal'),panel=q('.panel',modal),grid=q('.ar-session-grid',modal);if(!panel||!grid)return;

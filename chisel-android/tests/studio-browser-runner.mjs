@@ -14,7 +14,7 @@ try{
  page.on('pageerror',e=>report.errors.push(e.message));
  await page.goto(`${base}/www/index.html`,{waitUntil:'load',timeout:30000});
  await page.waitForFunction(()=>document.documentElement.dataset.chiselTheme==='quiet-studio',{timeout:20000});
- await page.waitForSelector('#idModal.on',{visible:true,timeout:10000});
+ await page.waitForFunction(()=>{const b=document.getElementById('boot');return !b||getComputedStyle(b).opacity==='0';});await page.evaluate(()=>openIdentity());await page.waitForSelector('#idModal.on',{visible:true,timeout:10000});
  await page.click('#idX');await page.waitForFunction(()=>!document.querySelector('#idModal.on'));
  check('identityAndMeaningfulContent',(await page.title()).startsWith('Chisel')&&await page.$('#cxpHomeHub'));
  check('noFrameworkErrorOverlay',await page.evaluate(()=>!document.querySelector('vite-error-overlay,nextjs-portal')));

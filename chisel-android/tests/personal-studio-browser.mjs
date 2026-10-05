@@ -10,7 +10,7 @@ function check(name,v){report.checks[name]=!!v;if(!v)throw Error(name);}
 async function ready(p){
  await p.goto(base+'/www/index.html',{waitUntil:'load',timeout:30000});
  await p.waitForFunction(()=>document.documentElement.dataset.personalStudio==='1',{timeout:20000});
- if(await p.$('#idModal')){try{await p.waitForSelector('#idModal.on',{visible:true,timeout:2500});await p.click('#idX');}catch{}}
+ if(await p.$('#idModal')){try{await p.waitForFunction(()=>{const b=document.getElementById('boot');return !b||getComputedStyle(b).opacity==='0';});await p.evaluate(()=>openIdentity());await p.waitForSelector('#idModal.on',{visible:true,timeout:2500});await p.click('#idX');}catch{}}
  await p.waitForFunction(()=>!document.querySelector('#idModal.on'));
 }
 const fixture=path.resolve('tests/fixtures/portrait-male.jpg');

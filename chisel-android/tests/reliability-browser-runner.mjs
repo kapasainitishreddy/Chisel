@@ -18,7 +18,7 @@ try {
  report.checks.runtimeInstalled=true;
  // Complete the real first-run UI before testing tools behind it. The popup
  // is scheduled after boot and otherwise races the trainer's Close click.
- await page.waitForSelector('#idModal.on',{visible:true,timeout:10000});
+ await page.waitForFunction(()=>{const b=document.getElementById('boot');return !b||getComputedStyle(b).opacity==='0';});await page.evaluate(()=>openIdentity());await page.waitForSelector('#idModal.on',{visible:true,timeout:10000});
  await page.evaluate(async()=>{
   const panel=document.querySelector('#idModal .panel');
   await Promise.all(panel.getAnimations().map(animation=>animation.finished.catch(()=>{})));

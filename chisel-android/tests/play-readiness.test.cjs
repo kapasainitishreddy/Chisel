@@ -8,9 +8,10 @@ function paywall(plugin){
  vm.createContext(context);vm.runInContext(code.replace("const RC_API_KEY = '';","const RC_API_KEY = 'public-test';"),context);
  return{context,$,messages,ready:async()=>{await new Promise(r=>setImmediate(r));}};
 }
+const packageOffer={identifier:'plan',product:{title:'Premium',priceString:'₹499',subscriptionPeriod:'P1M',productCategory:'SUBSCRIPTION'}};
 const info=active=>({customerInfo:{entitlements:{active:active?{premium:{isActive:true}}:{}}}});
 test('purchase without an active entitlement does not announce Premium or close the paywall',async()=>{
- const h=paywall({configure:async()=>{},purchasePackage:async()=>info(false)});await h.ready();await h.context.purchase({identifier:'plan'});
+ const h=paywall({configure:async()=>{},purchasePackage:async()=>info(false)});await h.ready();await h.context.purchase(packageOffer);
  assert.ok(h.messages.some(m=>/not.*active|not.*confirmed|pending/i.test(m)));assert.ok(!h.messages.some(m=>/enjoy Premium/.test(m)));assert.ok(!h.$('#paywall').classList.closed);
 });
 test('restore without active entitlement stays open and explains the result',async()=>{
@@ -18,11 +19,11 @@ test('restore without active entitlement stays open and explains the result',asy
  assert.ok(h.messages.some(m=>/no active|not.*active/i.test(m)));assert.ok(!h.$('#paywall').classList.closed);
 });
 test('confirmed purchase and restore close the paywall, cancelled purchases do not',async()=>{
- for(const method of ['purchasePackage','restorePurchases']){const h=paywall({configure:async()=>{},[method]:async()=>info(true)});await h.ready();if(method==='purchasePackage')await h.context.purchase({});else await h.$('#paywallRestore').click();assert.equal(h.$('#paywall').classList.closed,true);}
- const h=paywall({configure:async()=>{},purchasePackage:async()=>{throw {userCancelled:true};}});await h.ready();await h.context.purchase({});assert.equal(h.messages.length,0);assert.ok(!h.$('#paywall').classList.closed);
+ for(const method of ['purchasePackage','restorePurchases']){const h=paywall({configure:async()=>{},[method]:async()=>info(true)});await h.ready();if(method==='purchasePackage')await h.context.purchase(packageOffer);else await h.$('#paywallRestore').click();assert.equal(h.$('#paywall').classList.closed,true);}
+ const h=paywall({configure:async()=>{},purchasePackage:async()=>{throw {userCancelled:true};}});await h.ready();await h.context.purchase(packageOffer);assert.equal(h.messages.length,0);assert.ok(!h.$('#paywall').classList.closed);
 });
 test('release disabled flag prevents direct purchase and restore even after SDK setup',async()=>{
- let calls=0;const h=paywall({configure:async()=>{},purchasePackage:async()=>{calls++;return info(true);},restorePurchases:async()=>{calls++;return info(true);}});await h.ready();h.context.window.CHISEL_RELEASE_CONFIG.billingEnabled=false;await h.context.purchase({});await h.$('#paywallRestore').click();assert.equal(calls,0);
+ let calls=0;const h=paywall({configure:async()=>{},purchasePackage:async()=>{calls++;return info(true);},restorePurchases:async()=>{calls++;return info(true);}});await h.ready();h.context.window.CHISEL_RELEASE_CONFIG.billingEnabled=false;await h.context.purchase(packageOffer);await h.$('#paywallRestore').click();assert.equal(calls,0);
 });
 test('cloud and device transfer exclude private WebView and preference data in every backup domain',()=>{
  const manifest=read('android/app/src/main/AndroidManifest.xml');assert.match(manifest,/android:dataExtractionRules="@xml\/data_extraction_rules"/);assert.match(manifest,/android:fullBackupContent="@xml\/backup_rules"/);

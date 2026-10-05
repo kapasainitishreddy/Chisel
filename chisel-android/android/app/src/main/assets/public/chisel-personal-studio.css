@@ -25,7 +25,7 @@ html[data-personal-studio] .cps-photo-empty{display:grid;place-items:center;posi
 html[data-personal-studio] .cps-photo-empty svg{width:52px;height:52px}
 html[data-personal-studio] .has-photo>.cps-photo-empty{display:none!important}
 html[data-personal-studio] .cps-edge-fade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 30%,#080b0c12 48%,#080b0ca6 72%,#080b0cf7 100%)}
-html[data-personal-studio] .cps-home-hero{height:354px;margin:0 -4px;border-radius:20px;box-shadow:var(--cps-shadow)}
+html[data-personal-studio] .cps-home-hero{height:354px;margin:0;border-radius:20px;box-shadow:var(--cps-shadow)}
 html[data-personal-studio] .cps-home-hero h1{position:absolute;left:24px;bottom:20px;margin:0;font:400 43px/1.04 Georgia,serif;letter-spacing:-.035em;color:#fffef9}
 html[data-personal-studio] .cps-home-hero:not(.has-photo){height:300px}
 html[data-personal-studio] .cps-home-hero:not(.has-photo) h1{font-size:36px;bottom:24px}
@@ -486,3 +486,19 @@ html[data-personal-studio] #arCoachHud .ar-hud-cue{font-size:14px;line-height:1.
 html[data-personal-studio] #arCoachHud .ctv2-tracking{font-size:12px;line-height:1.5;color:var(--ivory-dim)}
 html[data-personal-studio] #arCoachHud .ctv2-demo{position:static;width:98px;height:112px;margin:0 0 14px;box-shadow:none}
 @media(max-width:430px){.chc-progress-row{grid-template-columns:1fr;gap:8px}.chc-progress-reading{text-align:left}html[data-personal-studio] #chiselJawlineProgress .btn-row{display:grid;grid-template-columns:1fr}}
+
+/* Brand and optional first-use guidance stay inside the existing home flow. */
+.cs-wordmark{display:inline-flex;align-items:center;gap:9px}
+.cps-brand-mark{object-fit:contain;flex:none}
+.cps-welcome{margin:20px 0 8px;padding:18px;border:1px solid var(--line);border-radius:18px;background:rgba(244,239,227,.035)}
+.cps-welcome-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.cps-welcome h2{margin:0;font:500 26px/1.15 var(--display)}
+.cps-welcome p{font-size:13px;line-height:1.6;color:var(--ivory-dim);margin:10px 0 14px}
+.cps-welcome button{min-height:44px;font-family:var(--sans);cursor:pointer;color:var(--ivory)}
+#cpsWelcomeDismiss{width:44px;border:0;background:transparent;font-size:24px}
+.cps-welcome-actions{display:flex;flex-wrap:wrap;gap:8px}
+.cps-welcome-actions button{flex:1 1 120px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:transparent;font-size:12px}
+#cpsPersonalize{display:block;padding:8px 0;border:0;background:transparent;font-size:12px;text-decoration:underline;text-underline-offset:4px}
+.cps-welcome small{display:block;color:var(--ivory-dim);font-size:11px;line-height:1.5}
+#paywallOfferings .card{min-width:0;overflow-wrap:anywhere}
+#paywallStatus:empty{display:none}

@@ -221,6 +221,9 @@ function installDialogAccess(){
  const observer=new root.MutationObserver(sync);
  all('.modal,.camwrap,#chiselLabsRoot,#chiselPrecisionRoot').forEach(n=>observer.observe(n,{attributes:true,attributeFilter:['class','hidden','style']}));
  doc().addEventListener('keydown',e=>{
+  // A native top-layer dialog owns its keyboard focus and Escape behavior.
+  // Parent overlays must not trap Tab or close behind credits/photo/compare.
+  if(q('dialog[open]')){e.stopImmediatePropagation();return;}
   const orbit=q('#csOrbit'),active=orbit&&orbit.open?orbit:activeOverlay();if(!active)return;
   if(e.key==='Escape'&&active!==orbit){e.preventDefault();e.stopImmediatePropagation();
    if(active.id==='chiselLabsRoot')root.ChiselEnhancements.closeLabs();
