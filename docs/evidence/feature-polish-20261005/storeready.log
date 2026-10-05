@@ -1,0 +1,29 @@
+Wrote /workspace/chisel-feature-polish-evidence/storeready/release-pack.zip
+
+StoreReady completed
+
+Final status: BLOCKED
+SEO: AUTOMATION_PENDING
+Global audit: AUTOMATION_PENDING
+Autonomous assurance: BLOCKED
+Trust: AUTOMATION_PENDING
+PASS: 3
+BLOCKED: 5
+ACTION_REQUIRED: 5
+PLATFORM_REQUIRED: 9
+AUTOMATION_PENDING: 40
+
+Critical blockers:
+1. Potential embedded secret detected
+2. Privacy policy is present and machine-verified
+3. Data categories collected is not automatically verified
+4. Consent withdrawal/revocation is not automatically verified
+5. Third parties receive equivalent/contractual data protection is not automatically verified
+
+Autofixable: 0
+Automation/platform evidence remaining: 49
+Concrete action gates remaining: 5
+
+Report: /workspace/chisel-feature-polish-evidence/storeready
+Release pack: /workspace/chisel-feature-polish-evidence/storeready/release-pack.zip
+

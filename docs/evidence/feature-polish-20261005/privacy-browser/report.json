@@ -1,0 +1,8 @@
+{
+  "scope": "Chromium local navigation with external requests denied; not Android/device acceptance.",
+  "checks": {
+    "offlinePolicy": true,
+    "returnToApp": true
+  },
+  "errors": []
+}

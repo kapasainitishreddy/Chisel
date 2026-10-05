@@ -1,0 +1,25 @@
+{
+  "source": "1d3f069b99499e7c6fd9c4e5e28af93592debcd2",
+  "applicationSha": "e2f1501ce3bc529aef9c2910c468740252718071",
+  "branch": "fix/tracker-trainer-scan-polish-20261005",
+  "node": "24.19.0",
+  "tests": 329,
+  "featureRegressions": 10,
+  "browserChecks": 33,
+  "completionBrowserChecks": 17,
+  "privacyBrowserChecks": 2,
+  "native": "debug/release source compilation and manifest processing only; no APK/AAB/device test",
+  "storeReady": {
+    "sha": "16e71ad3dcf32daa782ad9294ff85f668747e9ac",
+    "status": "BLOCKED",
+    "counts": {
+      "PASS": 3,
+      "BLOCKED": 5,
+      "ACTION_REQUIRED": 5,
+      "PLATFORM_REQUIRED": 9,
+      "AUTOMATION_PENDING": 40,
+      "NOT_APPLICABLE": 0
+    },
+    "invocation": "node /workspace/StoreReady/packages/cli/bin/storeready.mjs assure /workspace/Chisel --stores google-play --privacy-policy-file /workspace/Chisel/docs/privacy-policy.html --home /workspace/chisel-feature-polish-evidence/store-home --out /workspace/chisel-feature-polish-evidence/storeready"
+  }
+}

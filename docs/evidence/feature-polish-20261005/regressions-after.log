@@ -1,0 +1,18 @@
+✔ scan quality rejects missing and nonfinite required measurements (3.604983ms)
+✔ live scan frame assessment shares final quality framing and exposure (0.223634ms)
+✔ camera mode reset discards previous scan samples (1.490955ms)
+✔ closing while camera permission is pending stops a late stream (3.541779ms)
+✔ trainer progress uses observed hold time (0.854601ms)
+✔ trainer labels no measurement honestly and distinguishes guided setup (1.189499ms)
+✔ progress reports expose the chosen baseline and its uncertainty (2.606085ms)
+✔ a frozen video frame cannot fill a scan burst (1.888024ms)
+✔ final capture refuses a stale burst even when the stored frames pass quality (0.658385ms)
+✔ progress copy keeps small nonzero uncertainty visible (1.365223ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 23.857948

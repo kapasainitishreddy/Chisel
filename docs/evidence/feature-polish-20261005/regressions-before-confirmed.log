@@ -1,0 +1,172 @@
+✖ scan quality rejects missing and nonfinite required measurements (2.84136ms)
+✖ live scan frame assessment shares final quality framing and exposure (0.247695ms)
+✖ camera mode reset discards previous scan samples (1.538186ms)
+✖ closing while camera permission is pending stops a late stream (4.409322ms)
+✖ trainer progress uses observed hold time (0.969195ms)
+✖ trainer labels no measurement honestly and distinguishes guided setup (1.02679ms)
+✖ progress reports expose the chosen baseline and its uncertainty (2.612274ms)
+✖ a frozen video frame cannot fill a scan burst (1.031438ms)
+✖ final capture refuses a stale burst even when the stored frames pass quality (0.293012ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 0
+ℹ fail 9
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 21.738675
+
+✖ failing tests:
+
+test at tests/feature-polish.test.cjs:5:1
+✖ scan quality rejects missing and nonfinite required measurements (2.84136ms)
+  AssertionError [ERR_ASSERTION]: rollDeg=undefined
+  
+  true !== false
+  
+      at TestContext.<anonymous> (/workspace/chisel-play-clean/chisel-android/tests/feature-polish.test.cjs:5:267)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/feature-polish.test.cjs:6:1
+✖ live scan frame assessment shares final quality framing and exposure (0.247695ms)
+  TypeError: guard.assessFrame is not a function
+      at TestContext.<anonymous> (/workspace/chisel-play-clean/chisel-android/tests/feature-polish.test.cjs:6:152)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+
+test at tests/feature-polish.test.cjs:8:1
+✖ camera mode reset discards previous scan samples (1.538186ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (/workspace/chisel-play-clean/chisel-android/tests/feature-polish.test.cjs:8:137)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/feature-polish.test.cjs:10:1
+✖ closing while camera permission is pending stops a late stream (4.409322ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (/workspace/chisel-play-clean/chisel-android/tests/feature-polish.test.cjs:10:267)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/feature-polish.test.cjs:11:1
+✖ trainer progress uses observed hold time (0.969195ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  0.5 !== 0.0625
+  
+      at TestContext.<anonymous> (/workspace/chisel-play-clean/chisel-android/tests/feature-polish.test.cjs:11:184)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0.5,
+    expected: 0.0625,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/feature-polish.test.cjs:12:1
+✖ trainer labels no measurement honestly and distinguishes guided setup (1.02679ms)
+  TypeError: ui.formLabel is not a function
+      at TestContext.<anonymous> (/workspace/chisel-play-clean/chisel-android/tests/feature-polish.test.cjs:12:147)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at tests/feature-polish.test.cjs:13:1
+✖ progress reports expose the chosen baseline and its uncertainty (2.612274ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  undefined !== 0.8
+  
+      at TestContext.<anonymous> (/workspace/chisel-play-clean/chisel-android/tests/feature-polish.test.cjs:13:445)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 0.8,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/feature-polish.test.cjs:14:1
+✖ a frozen video frame cannot fill a scan burst (1.031438ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 1
+  
+      at TestContext.<anonymous> (/workspace/chisel-play-clean/chisel-android/tests/feature-polish.test.cjs:14:439)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/feature-polish.test.cjs:15:1
+✖ final capture refuses a stale burst even when the stored frames pass quality (0.293012ms)
+  TypeError: guard.assessCapture is not a function
+      at TestContext.<anonymous> (/workspace/chisel-play-clean/chisel-android/tests/feature-polish.test.cjs:15:207)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)

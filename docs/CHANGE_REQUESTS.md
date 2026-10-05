@@ -1,5 +1,11 @@
 # Change Requests
 
+## Jawline tracker, trainer and face scan polish — 2026-10-05
+
+Continue `fix/tracker-trainer-scan-polish-20261005`, tested application **e2f1501ce3bc529aef9c2910c468740252718071**, from published StoreReady source 1d3f069b. [Polish report](FEATURE_POLISH_REPORT.md) and [evidence](evidence/feature-polish-20261005/source-and-results.json) record the current behavior and limits. Jawline progress now shows actual Precision baseline/current uncertainty and honest comparison states; quick photo comparison is keyboard accessible. Trainer score/guided labels, observed hold progress, pause and corrections are repaired. Scans use fresh frames, consistent live/final gates, fail-closed missing metrics, cancellation cleanup, and readable preparation/recovery.
+
+329/329 tests, ten new regressions, clean-source frozen install/build, 33 feature-browser + 17 private-tools + two privacy-browser checks PASS. Android debug/release source compilation and manifest processing PASS (220 Gradle tasks). Actual StoreReady assurance rerun remains BLOCKED (3 PASS / 5 BLOCKED / 5 ACTION_REQUIRED / 9 PLATFORM_REQUIRED / 40 AUTOMATION_PENDING). Browser camera/model/account replies are explicit fixtures; no current signed APK/AAB, native-device or empirical accuracy/efficacy validation is implied. Existing billing-off/privacy/account/provider/Play blockers remain. No deployment, purchase, key creation, console change, merge or force push. Non-default publication only, following secret scanning.
+
 ## StoreReady Play audit and fixes — 2026-10-04
 
 Continue `fix/storeready-play-readiness-20261004`, application/test SHA **c87f20b8239c9e41b62ec33b72e0e02081054057**. The later retained task source was recovered: work efebe818 / application bf826193, nine commits ahead of remote main. All 13 remote branches and nine PRs were compared. Read [Play readiness report](PLAY_READINESS_REPORT.md) and [durable evidence](evidence/play-readiness-20261004/source-and-tool-version.json).
