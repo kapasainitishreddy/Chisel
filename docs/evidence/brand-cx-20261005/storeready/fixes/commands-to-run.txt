@@ -1,0 +1,3 @@
+storeready assure . --out ./App_StoreReady_Report --pack ./App_store-ready.zip
+storeready test detect . --out ./runtime-detect.json
+storeready fix . --safe

@@ -1,0 +1,134 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "StoreReady"
+        }
+      },
+      "results": [
+        {
+          "ruleId": "security.embedded-secret",
+          "level": "error",
+          "message": {
+            "text": "Secret-shaped credential material appears in source."
+          }
+        },
+        {
+          "ruleId": "security.insecure-http",
+          "level": "error",
+          "message": {
+            "text": "Plain HTTP may expose user or device data in transit."
+          }
+        },
+        {
+          "ruleId": "pain.sdk.revenuecat",
+          "level": "warning",
+          "message": {
+            "text": "Detected SDK category: purchases."
+          }
+        },
+        {
+          "ruleId": "android.app-protection.obfuscation",
+          "level": "warning",
+          "message": {
+            "text": "No enabled Android minify/R8 marker was found in parsed Gradle files. Source inspection cannot determine the final AAB/APK protection configuration."
+          }
+        },
+        {
+          "ruleId": "android.app-protection.play-integrity",
+          "level": "warning",
+          "message": {
+            "text": "No Play Integrity client integration was found in the scanned source. This is not a store requirement, but high-value actions remain easier to abuse from modified, repackaged, rooted, or emulated clients without server-verified integrity evidence."
+          }
+        },
+        {
+          "ruleId": "autonomous.compliance.security-baseline",
+          "level": "warning",
+          "message": {
+            "text": "The required evidence was not supplied."
+          }
+        },
+        {
+          "ruleId": "autonomous.security.coverage:0",
+          "level": "warning",
+          "message": {
+            "text": "gitleaks: not installed"
+          }
+        },
+        {
+          "ruleId": "autonomous.security.coverage:1",
+          "level": "warning",
+          "message": {
+            "text": "osv: not installed"
+          }
+        },
+        {
+          "ruleId": "autonomous.security.coverage:2",
+          "level": "warning",
+          "message": {
+            "text": "trivy: not installed"
+          }
+        },
+        {
+          "ruleId": "autonomous.security.coverage:3",
+          "level": "warning",
+          "message": {
+            "text": "opengrep: not installed"
+          }
+        },
+        {
+          "ruleId": "autonomous.security.coverage:4",
+          "level": "warning",
+          "message": {
+            "text": "syft: unavailable"
+          }
+        },
+        {
+          "ruleId": "autonomous.security.coverage:5",
+          "level": "warning",
+          "message": {
+            "text": "grype: unavailable"
+          }
+        },
+        {
+          "ruleId": "autonomous.security.coverage:6",
+          "level": "warning",
+          "message": {
+            "text": "zizmor: unavailable"
+          }
+        },
+        {
+          "ruleId": "autonomous.security.coverage:7",
+          "level": "warning",
+          "message": {
+            "text": "actionlint: unavailable"
+          }
+        },
+        {
+          "ruleId": "autonomous.security.coverage:artifact",
+          "level": "warning",
+          "message": {
+            "text": "Inspect the exact APK/AAB/IPA used for release."
+          }
+        },
+        {
+          "ruleId": "autonomous.security.coverage:runtime",
+          "level": "warning",
+          "message": {
+            "text": "Execute the release build and import runtime/network evidence."
+          }
+        },
+        {
+          "ruleId": "autonomous.security.exported-components",
+          "level": "warning",
+          "message": {
+            "text": "activity:.MainActivity"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,298 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-05T03:03:01.535Z",
+  "files": {
+    "00_EXECUTIVE_SUMMARY.md": {
+      "sha256": "87468f8bdf89807d9d178b7216b1d087d61c01df9f15778c097a820dd5145e7c",
+      "sizeBytes": 944
+    },
+    "01_RELEASE_SCORECARD.md": {
+      "sha256": "657cfbb96764c9d8a7ea430a649eab200fbeb65ec9dad5c4568f3df4076af53d",
+      "sizeBytes": 538
+    },
+    "02_MASTER_CHECKLIST.md": {
+      "sha256": "128ac1ca790f9a58c8b67349deda1a8187c250a97d3234f86a3256483464a0c1",
+      "sizeBytes": 20420
+    },
+    "03_BLOCKERS_TO_FIX.md": {
+      "sha256": "1c59ce3c2aadd67366ea1adfcacb97bfe823d395a6df788fdf7649e6f16a8595",
+      "sizeBytes": 4155
+    },
+    "04_IMPROVEMENTS.md": {
+      "sha256": "5977c54ac1bf79690991f44aba33620c047a9c8f8b551561e85e53d23f3ecad1",
+      "sizeBytes": 45879
+    },
+    "05_AUTOMATIC_FIXES.md": {
+      "sha256": "f325fba697c86f10c5d26b63fd6c61a3ea1194ec15eb94583e21e3c04153f2c4",
+      "sizeBytes": 168
+    },
+    "06_MANUAL_FIXES.md": {
+      "sha256": "5576f488f6199bc3f7f1b26566844c0c1c644133bd5de5e79a084fc02cd32bf1",
+      "sizeBytes": 4166
+    },
+    "07_DEVICE_TEST_CHECKLIST.md": {
+      "sha256": "33dfa1f49717a5d4b1c11297e6d04b123867442929b8f3ecef654563b18b226c",
+      "sizeBytes": 1950
+    },
+    "08_STORE_SUBMISSION_CHECKLIST.md": {
+      "sha256": "fa60ce93232a5ccf3be60a32fd0dc9fe5a83cf90195d73db3b248e579590fbf6",
+      "sizeBytes": 144
+    },
+    "09_AUTOMATION_GATES.md": {
+      "sha256": "6c72147b9218d7f00949408e484f64f72abef973ff2fcd17845b67f759b1f364",
+      "sizeBytes": 41425
+    },
+    "automation/EVIDENCE_GAPS.json": {
+      "sha256": "19b6478699c21c431bcf0cd88aedb4803e0db821a1465aa6632551f121f9630c",
+      "sizeBytes": 7571
+    },
+    "autonomous/AUTONOMOUS_REPORT.json": {
+      "sha256": "d85774ba993fd14f8344e20dc819d4c0cd4da21be77e4438ddc9e8aa1b3e6320",
+      "sizeBytes": 70658
+    },
+    "autonomous/AUTONOMOUS_SUMMARY.md": {
+      "sha256": "2eaea4beafd152f190d47fdc576a9f49db339b1e649609ba25e64f144b80b5dc",
+      "sizeBytes": 3760
+    },
+    "compliance/COMPLIANCE_AUTOMATION.json": {
+      "sha256": "efa224ef965caeebca59d132408933496b4343b6e42ff587915e28dc738fae5f",
+      "sizeBytes": 22432
+    },
+    "compliance/COMPLIANCE_AUTOMATION.md": {
+      "sha256": "c07b8fa6b914f9ed913230464e651aaac27323bedcfb63f4482134bdf1c186e6",
+      "sizeBytes": 3011
+    },
+    "fixes/AI_FIX_BRIEFS.json": {
+      "sha256": "261c94053ab5778e5c19ac16183268090dbb396f96febfa78ab129777b0c6214",
+      "sizeBytes": 83939
+    },
+    "fixes/AI_FIX_BRIEFS.md": {
+      "sha256": "16eb248b21a0996ef95d68f8e2387e24b23b247122c6ecb8b5be75a8985a26b2",
+      "sizeBytes": 76643
+    },
+    "fixes/AUTOFIX_LOG.md": {
+      "sha256": "2bc3b72878b2b901f5048b439a0ac57c157d99663f5db2413d7ab095fd239cc9",
+      "sizeBytes": 54
+    },
+    "fixes/CODEX_FIX_PROMPT.md": {
+      "sha256": "faec761ec8711b16663fb9b577095a125b15e511c5787234e72e4c8643112300",
+      "sizeBytes": 4461
+    },
+    "fixes/commands-to-run.txt": {
+      "sha256": "80a06255684d159d5b248ae33d3d1f3698e6c86686bcd1d9db0a827511164f8c",
+      "sizeBytes": 156
+    },
+    "fixes/FIX_PLAN.md": {
+      "sha256": "46a9cce78b6a817d9f5c28497666eae68b587ceb5d42bf9eda24fc613a774bec",
+      "sizeBytes": 7942
+    },
+    "fixes/PATCH_SUGGESTIONS.md": {
+      "sha256": "2534408667d591047630705eb6b43cf932778a528462ade0c59c025e5cb64d4f",
+      "sizeBytes": 148
+    },
+    "google-play/assets-review/README.md": {
+      "sha256": "f17dd2ab8e9ae7fe4ccfc05b89da3a1a3e517e5711a250301938a6eeb8b3587d",
+      "sizeBytes": 163
+    },
+    "google-play/BILLING_CHECKLIST.md": {
+      "sha256": "cfd3b9d6e294d93c96f686d632763ed05785b7e11bca146d1d1791828038ce27",
+      "sizeBytes": 204
+    },
+    "google-play/DATA_SAFETY_WORKSHEET.md": {
+      "sha256": "cacad587e7e8ab62988d8f93a1f02ce2cdf439007efefaee1a57f7ccfe55e40e",
+      "sizeBytes": 183
+    },
+    "google-play/LISTING_CHECKLIST.md": {
+      "sha256": "c673d5e58ca4815fea2c5b128cab0d51f0a3c5931788bcdd416e5ead3f192316",
+      "sizeBytes": 211
+    },
+    "google-play/PERMISSIONS_REVIEW.md": {
+      "sha256": "5503a36737dce2044a24fd1d48c53ea3e228a6048eab9ec475d116da49a20867",
+      "sizeBytes": 157
+    },
+    "google-play/PLAY_STORE_CHECKLIST.md": {
+      "sha256": "1d91a5fda70356b657face3b9c60027f3c8fcba80a1dbd50e90f064364d1675d",
+      "sizeBytes": 18105
+    },
+    "google-play/RELEASE_ARTIFACT_CHECKLIST.md": {
+      "sha256": "f1794e3290a1873454a5e7fc3bc4c632f9ecea3878bb9a12031f5dca81087070",
+      "sizeBytes": 219
+    },
+    "google-play/REPORT.html": {
+      "sha256": "53017d38055744501b644e9e3d87ee36e9c742d78aa4ce38d2ba07252d5b5c54",
+      "sizeBytes": 14368
+    },
+    "google-play/REPORT.json": {
+      "sha256": "1a1fea079320be53cdb104a9913275b9798b0e2b32ac56d61452d3044066e174",
+      "sizeBytes": 22771
+    },
+    "index.html": {
+      "sha256": "46abe367c0c292cbf5448e07fda13de67136dca853c18657a2e85374017b1ba6",
+      "sizeBytes": 40845
+    },
+    "painpoints/ANDROID_DEVELOPER_VERIFICATION.md": {
+      "sha256": "3629fd302d4ceb9fa3fb0b54046ad61fd5e5891f51932b13244c435c7fd4a5ff",
+      "sizeBytes": 470
+    },
+    "painpoints/ANDROID_TECHNICAL_QUALITY.md": {
+      "sha256": "c3145ef84b258ef0d2fd92bd79438df0ecf239d4211677d35839941ab7c87fbc",
+      "sizeBytes": 812
+    },
+    "painpoints/APPLE_ACCESSIBILITY_DECLARATION.md": {
+      "sha256": "17c613312f971accbfca3b80f221fd662d0fed7511ce716f8ddd8b928fc085df",
+      "sizeBytes": 708
+    },
+    "painpoints/APPLE_EU_DSA.md": {
+      "sha256": "e4dc1920e0320aae8da6ad403143169db653b64f3c221b70b623d2954212a398",
+      "sizeBytes": 1176
+    },
+    "painpoints/APPLE_SUBMISSION_QUESTIONNAIRE.md": {
+      "sha256": "e4dc1920e0320aae8da6ad403143169db653b64f3c221b70b623d2954212a398",
+      "sizeBytes": 1176
+    },
+    "painpoints/CRITICAL_RELEASE_JOURNEYS.md": {
+      "sha256": "6fb44af4376ae972ad54fd274bcfde4783880a45caec00ca11a01651f246a699",
+      "sizeBytes": 841
+    },
+    "painpoints/EVIDENCE_RECORDER.md": {
+      "sha256": "7db3c4baa48e34e6556b0fc274f190a8cda1ca4dde1f94c5541521fc8cb9cad0",
+      "sizeBytes": 630
+    },
+    "painpoints/GOOGLE_PRODUCTION_ACCESS.md": {
+      "sha256": "e3f2a43277d7b830c0b0a0d3e3ce5fbfb68fd53fda7603b5072d5300324fcb2a",
+      "sizeBytes": 390
+    },
+    "painpoints/OWASP_MOBILE_MATRIX.md": {
+      "sha256": "9b88ecd44cec529fc878326ad3e88b44df995a49d2fc4023fad87b3534f1135e",
+      "sizeBytes": 262
+    },
+    "painpoints/PAIN_POINT_COVERAGE.md": {
+      "sha256": "ad5ea060b1a01ec26db0b8b01de14aa1deafbeb336fe005dfd166afa7a496b6b",
+      "sizeBytes": 2769
+    },
+    "painpoints/PAIN_POINT_REPORT.json": {
+      "sha256": "a3698b08a75335fe40c518a23609a306c292ee85768566b41ad54bd74c02ce9a",
+      "sizeBytes": 47567
+    },
+    "painpoints/PERMISSION_NECESSITY.md": {
+      "sha256": "223296b14e9b2a3992d872159833c55d8685051abc90e04e5046780a4ffe2b07",
+      "sizeBytes": 334
+    },
+    "painpoints/POLICY_WATCH.md": {
+      "sha256": "80a5fb283a661ad13ce6bab83c2eba79829c741cd723a5ef5c2d101c5b581944",
+      "sizeBytes": 1066
+    },
+    "painpoints/POST_RELEASE_WATCH.md": {
+      "sha256": "484262eae5855ddc7d19d7a0530a5f007f0eef063628c95114721cb62ff32d74",
+      "sizeBytes": 226
+    },
+    "painpoints/PRIVACY_DATA_FLOW.md": {
+      "sha256": "55fec276508be54a94c68a5d0ba56e1cf5316a5ea723754b50608fbcca31e5b3",
+      "sizeBytes": 239
+    },
+    "painpoints/REJECTION_ANALYSIS.md": {
+      "sha256": "6eef554062d4033ada20552b222b854c2ca35e6d3b222cab598c4feabc58aa94",
+      "sizeBytes": 342
+    },
+    "painpoints/RELEASE_BUILD_QUALITY.md": {
+      "sha256": "4285d4028617dfbca356ba2c0b9b8252d04d9d678245ee98e11a41e3e63e170f",
+      "sizeBytes": 296
+    },
+    "painpoints/RELEASE_REGRESSION.md": {
+      "sha256": "ff3aa93e6d82b71f072f9b673b2c34b73ad184db060e3b728c3c2b142c4bfba7",
+      "sizeBytes": 127
+    },
+    "painpoints/SDK_RISK_INTELLIGENCE.md": {
+      "sha256": "6fbdb673937cf499d9f308fe6b1c722a7fc07288b438d10546f4c02644088398",
+      "sizeBytes": 300
+    },
+    "painpoints/STORE_DECLARATION_RECONCILIATION.md": {
+      "sha256": "864259dc984c8d1ba36b5cf8f5d0d2abc38ec207e8776656c5c1fd92a218409b",
+      "sizeBytes": 481
+    },
+    "privacy/PRIVACY_POLICY_CHECK.json": {
+      "sha256": "90184b96d78c38a10d20fad27aadfe7ab0f656a7b5a72301a41c03114a0162d4",
+      "sizeBytes": 9465
+    },
+    "privacy/PRIVACY_POLICY_CHECK.md": {
+      "sha256": "8d7b57903197fb5375268e9bf533cad3b84a9e22a35e40c46abf786d2d4bbf2c",
+      "sizeBytes": 1358
+    },
+    "quality/ACCESSIBILITY.md": {
+      "sha256": "68288acd46eaa598277d829b2ebcb94b8b67aed60fac39b44ff5079fb25db044",
+      "sizeBytes": 108
+    },
+    "quality/CRASHES.md": {
+      "sha256": "0658d0cc6475ef99753fbd86dabb194bd609afc2cf42f185ae9af0344ef00dfa",
+      "sizeBytes": 84
+    },
+    "quality/DEVICE_MATRIX.md": {
+      "sha256": "fa8eedacbc19a1537df37b76387e09611c5076d295ef82620af788bd754220fc",
+      "sizeBytes": 144
+    },
+    "quality/PERFORMANCE.md": {
+      "sha256": "a7df047ac599b737bedd54d9fe663493b09bc5656a376958b23052b2e882768f",
+      "sizeBytes": 105
+    },
+    "quality/PRIVACY_RUNTIME.md": {
+      "sha256": "2614287956941cabdbee108d58870fbc97d0c406105798e7819e1bd1f662b4f5",
+      "sizeBytes": 116
+    },
+    "quality/UI_UX_FINDINGS.md": {
+      "sha256": "cfd6e7e0a5147a0df5814fd8942e8dacbee676be0894c21b77de41fcb625e93f",
+      "sizeBytes": 9695
+    },
+    "report.json": {
+      "sha256": "c802072519928dfe9a1fb75bdc09ad86dbc67f506b9805db0297d20ad39015ba",
+      "sizeBytes": 191622
+    },
+    "resubmission/RESUBMISSION_PACK.md": {
+      "sha256": "d1776d6923ccdc997c611c78986d5d05818653fd3260e261c0e82445658dd6fc",
+      "sizeBytes": 12888
+    },
+    "resubmission/REVIEWER_RESPONSE_DRAFT.md": {
+      "sha256": "851fb61ea42eb272d40fb4b334e97297f3559a1b57f137504ee93bab7227a30d",
+      "sizeBytes": 1558
+    },
+    "security/AUTONOMOUS_SECURITY_CHECK.json": {
+      "sha256": "3eb3c61eb5f57d6f9d94367b81b234493cbee56ea8719f907101f0acb4dbcc14",
+      "sizeBytes": 14278
+    },
+    "security/AUTONOMOUS_SECURITY_CHECK.md": {
+      "sha256": "a2cab0bf3bcefc928713ee6d26f481e27dc19fd6cf90a7003ff678a48435fb71",
+      "sizeBytes": 2993
+    },
+    "security/DEPENDENCY_ISSUES.md": {
+      "sha256": "af33263eed0d56db091104736c7f23eaca9cf48a54dd432792b341975130d75f",
+      "sizeBytes": 103
+    },
+    "security/PENTEST_REPORT.md": {
+      "sha256": "2e9d3788ca045d7a65095c2cfb82890da882c49a06ab6c6e3efd438aec58930f",
+      "sizeBytes": 97
+    },
+    "security/SECRETS_CHECK.md": {
+      "sha256": "0d3c6f795775c4b7843de6ab00929f012fa81304a386e303d5cc824a4f4b40d5",
+      "sizeBytes": 109
+    },
+    "security/SECURITY_REPORT.json": {
+      "sha256": "133ee7f45902e0e9fa23790f136fdd358c9e75159170e84f861966bdf8bed215",
+      "sizeBytes": 25487
+    },
+    "security/SECURITY_REPORT.md": {
+      "sha256": "6d12b8a31256fa5af924adb426d7fb39cc30a44e337844d11350aea5978cfe4e",
+      "sizeBytes": 14868
+    },
+    "security/SECURITY_REPORT.sarif": {
+      "sha256": "a799737a54402a41ae1c7f03fb684c053a65a8b3ee5e1649bb8d8c9e197882ba",
+      "sizeBytes": 3876
+    },
+    "security/SUPPLY_CHAIN.md": {
+      "sha256": "141b539f48d370945d3ea51716779a3de8e07ba0c07f0704ccc2c8162589ed0d",
+      "sizeBytes": 114
+    },
+    "universal/INDEX.html": {
+      "sha256": "06de4fea669279bb6469d8954b5ed5aa9158b1833980bff39c80644115ccebd2",
+      "sizeBytes": 6924
+    }
+  }
+}

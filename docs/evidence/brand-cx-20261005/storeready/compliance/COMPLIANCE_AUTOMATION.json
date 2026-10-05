@@ -1,0 +1,398 @@
+{
+  "schemaVersion": 1,
+  "status": "BLOCKED",
+  "jurisdictions": [],
+  "signals": {
+    "accounts": true,
+    "health": true,
+    "children": true,
+    "ugc": true,
+    "ai": true,
+    "payments": true,
+    "location": false,
+    "contacts": false,
+    "targetSdk": null,
+    "privacyPolicy": {
+      "source": "project-file",
+      "path": "chisel-android/android/app/src/main/assets/public/privacy-policy.html",
+      "text": "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\"/>\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>\n<title>Chisel — Privacy Policy</title>\n<style>\n  body{margin:0;background:#0A0A0B;color:#F2EDE4;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;line-height:1.65}\n  .wrap{max-width:760px;margin:0 auto;padding:48px 22px 80px}\n  h1{font-family:Georgia,serif;font-size:40px;margin:0 0 4px;color:#E2C58A}\n  h2{font-family:Georgia,serif;font-size:24px;margin:32px 0 8px;color:#C9A86A}\n  .meta{color:#C9C2B4;font-size:13px;margin-bottom:8px}\n  p,li{color:#DCD6C9}\n  a{color:#C9A86A}\n  code{background:rgba(201,168,106,.1);padding:1px 5px;border-radius:4px;color:#E2C58A}\n  hr{border:0;border-top:1px solid rgba(201,168,106,.2);margin:28px 0}\n</style>\n</head>\n<body>\n<div class=\"wrap\">\n  <h1>Chisel — Privacy Policy</h1>\n  <p class=\"meta\">Last updated: 4 October 2026</p>\n  <p>Chisel (\"the app\", \"we\") is a facial self-improvement app: on-device facial analysis, grooming and makeup guidance, affirmations, face and neck routines, and progress tracking. This policy explains what data the app handles. Core analysis and personal photos stay local unless you explicitly submit a photo for optional cloud editing. Paid accounts and credit purchases are disabled in the current free-first release; they must not be enabled until the account-deletion, retention, billing and production-service gates described below are complete.</p>\n\n  <h2>Who we are</h2>\n  <p>Developer contact: <a href=\"mailto:nittureddy26@gmail.com\">nittureddy26@gmail.com</a>. Chisel is intended for users aged 17 and over and is not directed to children.</p>\n\n  <h2>Data processed on your device only</h2>\n  <p>Your camera feed, facial measurements, scan history, progress photos, makeup looks, routines, streaks, sleep/water/salt logs, and identity setting are processed and stored <strong>locally on your device</strong> (in the app's local storage). They are not uploaded to us and are not visible to us.</p>\n  <p><strong>Your personal photo.</strong> When you choose or take a photo in the Your photo control, Chisel saves the original file and a smaller display copy in local browser/app storage (IndexedDB). The display copy personalizes Home, Training, Skin and Style. Saving this photo does not automatically upload it or run analysis. Use my photo in Skin explicitly selects the original for on-device analysis. Any optional cloud rendering uses the separate consent flow described below.</p>\n\n  <h2>Encrypted backup files and local reports</h2>\n  <p>Private tools can export selected local records as a passphrase-encrypted file. Supported groups include scans, progress thumbnails, Precision records, programs, hydration, sleep and streak history. Original personal portraits, the AI-look gallery and account credentials are not included. Live app storage is not encrypted by this feature, and Chisel does not provide native PIN or biometric vault locking. The file uses AES-256-GCM with a passphrase-derived key. We cannot recover a forgotten passphrase. Downloaded backups and discussion reports remain wherever you save or share them; local or cloud-account deletion does not remove those copies. Restore requires an explicit confirmation and replaces the supported groups present in that file.</p>\n\n  <h2>Data sent off your device</h2>\n  <ul>\n    <li><strong>Cloud photo editing (optional).</strong> After confirmation, a prepared photo is sent over an encrypted connection to our backend and the image provider named in the confirmation. The legacy path uses Replicate. The optional credit-backed path uses OpenAI after a provider-and-credit confirmation. Its generated result is stored in private backend storage for authenticated retrieval; the original input is not saved to that output bucket. AI results can contain artifacts and are not measurements of progress.</li>\n    <li><strong>Device identifier.</strong> A random identifier is used by the legacy free-render path for usage limits. Paid credit ownership comes from your verified account, not this device identifier.</li>\n    <li><strong>Purchases.</strong> If you buy a credit pack, subscription or trial, the transaction is handled by <strong>Google Play Billing</strong> via RevenueCat. We do not receive or store your payment card details.</li>\n  </ul>\n\n  <h2>Accounts and data minimization</h2>\n  <p>Free local tools do not require an account. New paid credit accounts and purchases remain disabled. The existing-account management control can request an email code without creating an account, and offers sign-out and account deletion when the configured backend is available. These new backend lifecycle services are not yet deployed or accepted for live use. If that feature is enabled in a later release, it will use an email sign-in account and this policy, the in-app account controls, the deletion workflow and the Play Data safety answers will be updated and re-verified before activation. We do not receive card details or access your contacts or location through this feature. No advertising or third-party analytics SDK is added by the credit feature.</p>\n\n  <h2>How data is shared</h2>\n  <p>We do not sell your data. Data is shared only as described above: the photo you explicitly submit for cloud editing is shared with the named provider, OpenAI or Replicate, for that purpose, and purchase data is handled by Google Play / RevenueCat.</p>\n\n  <h2>Data retention &amp; deletion</h2>\n  <p>You can remove your saved personal photo using Remove photo in Your photo. Clear all data in the app includes the stored personal original and display copy. These controls remove Chisel's copies, not the original file in your phone's gallery. On-device data is also removed when you uninstall the app or clear its storage in your device settings. Clear all data removes local photos, saved looks and local settings; it does not delete your cloud account or revoke downloaded copies. The existing-account control is a separate action: its new backend deletion and output-cleanup implementation remains undeployed and requires live acceptance. Before paid services are enabled, the web/email request path, provider deletion requests, retention exceptions and Play disclosures will also be completed and tested; backend records would include the credit ledger and render-job metadata needed to fulfill and reconcile purchases. You can contact <a href=\"mailto:nittureddy26@gmail.com\">nittureddy26@gmail.com</a> about cloud data requests; we will handle them subject to fraud-prevention and legal-retention requirements.</p>\n\n  <h2>Security</h2>\n  <p>Data sent off the device is transmitted over TLS (HTTPS). Paid requests are not enabled in the current release. API secrets remain on the backend, not in the Android app. Provider retention rules are separate from Chisel's local deletion controls. Cloud rendering is an optional, separately disclosed path; paid sales remain disabled until production configuration, deletion, retention, billing and review are complete.</p>\n\n  <h2>Permissions</h2>\n  <p><strong>Camera</strong> — required for live facial analysis, affirmations, try-on and makeup features. The camera is used only while you are in those screens. The optional Take photo action uses your device's photo-capture interface; Choose photo opens its file or photo picker.</p>\n  <p><strong>Notifications (optional).</strong> When you turn on local reminders, Chisel requests notification permission on Android versions that require it. Reminders are scheduled on your device; they do not upload your routines or logs. You can turn reminders off in the app and change permission in Android Settings.</p>\n\n  <h2>Medical disclaimer</h2>\n  <p>Chisel provides cosmetic and educational guidance only. It is not a medical device and does not diagnose, treat, or cure any condition. For skin, hair, dental or health concerns, consult a qualified professional.</p>\n\n  <h2>Changes</h2>\n  <p>We may update this policy; the \"last updated\" date above will change. Continued use after an update constitutes acceptance.</p>\n\n  <hr/>\n  <p class=\"meta\">Contact: nittureddy26@gmail.com</p>\n</div>\n</body>\n</html>\n"
+    },
+    "deletion": true,
+    "ugcControls": true,
+    "contactPicker": false
+  },
+  "controls": [
+    {
+      "id": "privacy-policy",
+      "title": "Privacy policy is present and machine-verified",
+      "status": "BLOCKED",
+      "severity": "HIGH",
+      "source": "https://developer.apple.com/app-store/review/guidelines/",
+      "summary": "",
+      "blocking": true
+    },
+    {
+      "id": "public-privacy-url",
+      "title": "Public HTTPS privacy-policy URL is verified",
+      "status": "PLATFORM_REQUIRED",
+      "severity": "CRITICAL",
+      "source": "https://developer.apple.com/help/app-store-connect/manage-app-information/manage-app-privacy",
+      "summary": "Apple requires a privacy policy URL for all apps; Google requires a complete privacy policy where applicable.",
+      "blocking": false
+    },
+    {
+      "id": "in-app-privacy-link",
+      "title": "Privacy policy is reachable from the app/product source",
+      "status": "AUTOMATION_PENDING",
+      "severity": "HIGH",
+      "source": "https://developer.apple.com/app-store/review/guidelines/",
+      "summary": "",
+      "blocking": false
+    },
+    {
+      "id": "security-baseline",
+      "title": "Security checker has no blocking findings",
+      "status": "AUTOMATION_PENDING",
+      "severity": "HIGH",
+      "source": "https://mas.owasp.org/MASVS/",
+      "summary": "",
+      "blocking": false
+    },
+    {
+      "id": "account-deletion",
+      "title": "Account deletion works end to end and the external deletion route is reachable",
+      "status": "AUTOMATION_PENDING",
+      "severity": "CRITICAL",
+      "source": "https://support.google.com/googleplay/android-developer/answer/13327111",
+      "summary": "Source evidence exists, but runtime deletion and public web-route evidence are still required.",
+      "blocking": false
+    },
+    {
+      "id": "ugc-safety",
+      "title": "UGC report/block controls work on the release build",
+      "status": "AUTOMATION_PENDING",
+      "severity": "CRITICAL",
+      "source": "https://support.google.com/googleplay/android-developer/answer/10144311",
+      "summary": "Static controls were detected; automated runtime evidence is still required.",
+      "blocking": false
+    },
+    {
+      "id": "health-platform",
+      "title": "Google Play Health apps declaration is imported",
+      "status": "PLATFORM_REQUIRED",
+      "severity": "CRITICAL",
+      "source": "https://support.google.com/googleplay/android-developer/answer/14738291",
+      "summary": "Google Play requires the Health apps declaration for published apps, including apps that declare no health features.",
+      "blocking": false
+    },
+    {
+      "id": "billing-runtime",
+      "title": "Purchase/restore/cancel lifecycle evidence is available",
+      "status": "AUTOMATION_PENDING",
+      "severity": "HIGH",
+      "source": null,
+      "summary": "",
+      "blocking": false
+    },
+    {
+      "id": "ai-privacy",
+      "title": "AI data handling is disclosed and runtime data flow is verified",
+      "status": "AUTOMATION_PENDING",
+      "severity": "HIGH",
+      "source": "https://support.google.com/googleplay/android-developer/answer/10144311",
+      "summary": "",
+      "blocking": false
+    },
+    {
+      "id": "jurisdiction-scope",
+      "title": "Release jurisdictions are configured",
+      "status": "AUTOMATION_PENDING",
+      "severity": "HIGH",
+      "source": null,
+      "summary": "StoreReady cannot run jurisdiction-specific privacy controls without declared release markets.",
+      "blocking": false
+    }
+  ],
+  "findings": [
+    {
+      "id": "autonomous.compliance.privacy-policy",
+      "store": "cross-store",
+      "category": "policy",
+      "severity": "HIGH",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "BLOCKED",
+      "title": "Privacy policy is present and machine-verified",
+      "summary": "",
+      "evidence": [],
+      "remediation": [
+        "Correct the detected compliance mismatch and rerun the checker."
+      ],
+      "references": [
+        "https://developer.apple.com/app-store/review/guidelines/"
+      ],
+      "sourceTool": "storeready.autonomous",
+      "sourceVersion": "1",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": true,
+      "requiresManualVerification": false,
+      "automationState": "BLOCKED",
+      "corroboratedBy": [
+        "storeready.autonomous"
+      ]
+    },
+    {
+      "id": "autonomous.compliance.public-privacy-url",
+      "store": "cross-store",
+      "category": "policy",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Public HTTPS privacy-policy URL is verified",
+      "summary": "Apple requires a privacy policy URL for all apps; Google requires a complete privacy policy where applicable.",
+      "evidence": [],
+      "remediation": [
+        "Connect/import the platform evidence so StoreReady can verify it automatically."
+      ],
+      "references": [
+        "https://developer.apple.com/help/app-store-connect/manage-app-information/manage-app-privacy"
+      ],
+      "sourceTool": "storeready.autonomous",
+      "sourceVersion": "1",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "automationState": "PLATFORM_REQUIRED",
+      "corroboratedBy": [
+        "storeready.autonomous"
+      ]
+    },
+    {
+      "id": "autonomous.compliance.in-app-privacy-link",
+      "store": "cross-store",
+      "category": "policy",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Privacy policy is reachable from the app/product source",
+      "summary": "",
+      "evidence": [],
+      "remediation": [
+        "Enable the missing automated evidence source or connector."
+      ],
+      "references": [
+        "https://developer.apple.com/app-store/review/guidelines/"
+      ],
+      "sourceTool": "storeready.autonomous",
+      "sourceVersion": "1",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "automationState": "AUTOMATION_PENDING",
+      "corroboratedBy": [
+        "storeready.autonomous"
+      ]
+    },
+    {
+      "id": "autonomous.compliance.security-baseline",
+      "store": "cross-store",
+      "category": "security",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Security checker has no blocking findings",
+      "summary": "",
+      "evidence": [],
+      "remediation": [
+        "Enable the missing automated evidence source or connector."
+      ],
+      "references": [
+        "https://mas.owasp.org/MASVS/"
+      ],
+      "sourceTool": "storeready.autonomous",
+      "sourceVersion": "1",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "automationState": "AUTOMATION_PENDING",
+      "corroboratedBy": [
+        "storeready.autonomous"
+      ]
+    },
+    {
+      "id": "autonomous.compliance.account-deletion",
+      "store": "cross-store",
+      "category": "policy",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Account deletion works end to end and the external deletion route is reachable",
+      "summary": "Source evidence exists, but runtime deletion and public web-route evidence are still required.",
+      "evidence": [],
+      "remediation": [
+        "Enable the missing automated evidence source or connector."
+      ],
+      "references": [
+        "https://support.google.com/googleplay/android-developer/answer/13327111"
+      ],
+      "sourceTool": "storeready.autonomous",
+      "sourceVersion": "1",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "automationState": "AUTOMATION_PENDING",
+      "corroboratedBy": [
+        "storeready.autonomous"
+      ]
+    },
+    {
+      "id": "autonomous.compliance.ugc-safety",
+      "store": "cross-store",
+      "category": "policy",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "UGC report/block controls work on the release build",
+      "summary": "Static controls were detected; automated runtime evidence is still required.",
+      "evidence": [],
+      "remediation": [
+        "Enable the missing automated evidence source or connector."
+      ],
+      "references": [
+        "https://support.google.com/googleplay/android-developer/answer/10144311"
+      ],
+      "sourceTool": "storeready.autonomous",
+      "sourceVersion": "1",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "automationState": "AUTOMATION_PENDING",
+      "corroboratedBy": [
+        "storeready.autonomous"
+      ]
+    },
+    {
+      "id": "autonomous.compliance.health-platform",
+      "store": "cross-store",
+      "category": "policy",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Google Play Health apps declaration is imported",
+      "summary": "Google Play requires the Health apps declaration for published apps, including apps that declare no health features.",
+      "evidence": [],
+      "remediation": [
+        "Connect/import the platform evidence so StoreReady can verify it automatically."
+      ],
+      "references": [
+        "https://support.google.com/googleplay/android-developer/answer/14738291"
+      ],
+      "sourceTool": "storeready.autonomous",
+      "sourceVersion": "1",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "automationState": "PLATFORM_REQUIRED",
+      "corroboratedBy": [
+        "storeready.autonomous"
+      ]
+    },
+    {
+      "id": "autonomous.compliance.billing-runtime",
+      "store": "cross-store",
+      "category": "policy",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Purchase/restore/cancel lifecycle evidence is available",
+      "summary": "",
+      "evidence": [],
+      "remediation": [
+        "Enable the missing automated evidence source or connector."
+      ],
+      "references": [],
+      "sourceTool": "storeready.autonomous",
+      "sourceVersion": "1",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "automationState": "AUTOMATION_PENDING",
+      "corroboratedBy": [
+        "storeready.autonomous"
+      ]
+    },
+    {
+      "id": "autonomous.compliance.ai-privacy",
+      "store": "cross-store",
+      "category": "policy",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "AI data handling is disclosed and runtime data flow is verified",
+      "summary": "",
+      "evidence": [],
+      "remediation": [
+        "Enable the missing automated evidence source or connector."
+      ],
+      "references": [
+        "https://support.google.com/googleplay/android-developer/answer/10144311"
+      ],
+      "sourceTool": "storeready.autonomous",
+      "sourceVersion": "1",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "automationState": "AUTOMATION_PENDING",
+      "corroboratedBy": [
+        "storeready.autonomous"
+      ]
+    },
+    {
+      "id": "autonomous.compliance.jurisdiction-scope",
+      "store": "cross-store",
+      "category": "policy",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Release jurisdictions are configured",
+      "summary": "StoreReady cannot run jurisdiction-specific privacy controls without declared release markets.",
+      "evidence": [],
+      "remediation": [
+        "Enable the missing automated evidence source or connector."
+      ],
+      "references": [],
+      "sourceTool": "storeready.autonomous",
+      "sourceVersion": "1",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "automationState": "AUTOMATION_PENDING",
+      "corroboratedBy": [
+        "storeready.autonomous"
+      ]
+    }
+  ],
+  "sources": {
+    "applePrivacy": "https://developer.apple.com/app-store/review/guidelines/",
+    "appleAppPrivacy": "https://developer.apple.com/help/app-store-connect/manage-app-information/manage-app-privacy",
+    "googleUserData": "https://support.google.com/googleplay/android-developer/answer/10144311",
+    "googleDisclosure": "https://support.google.com/googleplay/android-developer/answer/11150561",
+    "googleContacts": "https://support.google.com/googleplay/android-developer/answer/16935362",
+    "gdpr": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679",
+    "ccpa": "https://cppa.ca.gov/regulations/pdf/ccpa_statute_eff_20260101.pdf",
+    "owaspMasvs": "https://mas.owasp.org/MASVS/",
+    "nistSsdf": "https://csrc.nist.gov/pubs/sp/800/218/final"
+  },
+  "limitations": [
+    "This checker verifies machine-observable release evidence. It does not certify legal compliance or determine whether a law applies to a business when applicability depends on facts StoreReady cannot observe."
+  ]
+}

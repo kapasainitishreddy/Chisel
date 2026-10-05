@@ -1,0 +1,1 @@
+No safe automatic fixes were identified. StoreReady will not guess product intent, legal declarations, pricing, credentials, or publishing settings.

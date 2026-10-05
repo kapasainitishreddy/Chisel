@@ -1,0 +1,334 @@
+{
+  "schemaVersion": 1,
+  "status": "BLOCKED",
+  "policy": {
+    "status": "PASS",
+    "source": "provided-text",
+    "text": null,
+    "url": null,
+    "error": null,
+    "textLength": 8119
+  },
+  "jurisdictions": [],
+  "controls": [
+    {
+      "id": "identity",
+      "title": "Controller/developer identity",
+      "patterns": [
+        {}
+      ],
+      "required": true,
+      "source": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679",
+      "why": "",
+      "severity": "HIGH",
+      "status": "PASS",
+      "evidence": "\\b(company|developer|controller|we are|operated by|provided by)\\b"
+    },
+    {
+      "id": "contact",
+      "title": "Privacy contact method",
+      "patterns": [
+        {},
+        {},
+        {}
+      ],
+      "required": true,
+      "source": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679",
+      "why": "",
+      "severity": "HIGH",
+      "status": "PASS",
+      "evidence": "\\bcontact\\b"
+    },
+    {
+      "id": "collection",
+      "title": "Data categories collected",
+      "patterns": [
+        {},
+        {}
+      ],
+      "required": true,
+      "source": "https://developer.apple.com/app-store/review/guidelines/",
+      "why": "",
+      "severity": "HIGH",
+      "status": "BLOCKED",
+      "evidence": null
+    },
+    {
+      "id": "collection-method",
+      "title": "How data is collected",
+      "patterns": [
+        {}
+      ],
+      "required": true,
+      "source": "https://developer.apple.com/app-store/review/guidelines/",
+      "why": "",
+      "severity": "HIGH",
+      "status": "PASS",
+      "evidence": "\\b(provide directly|automatically collect|when you|through the app|from your device|from third parties)\\b"
+    },
+    {
+      "id": "purposes",
+      "title": "Purposes/uses of data",
+      "patterns": [
+        {},
+        {}
+      ],
+      "required": true,
+      "source": "https://developer.apple.com/app-store/review/guidelines/",
+      "why": "",
+      "severity": "HIGH",
+      "status": "PASS",
+      "evidence": "\\bpurpose(s)?\\b"
+    },
+    {
+      "id": "third-parties",
+      "title": "Third-party sharing/processors",
+      "patterns": [
+        {},
+        {},
+        {},
+        {}
+      ],
+      "required": true,
+      "source": "https://developer.apple.com/app-store/review/guidelines/",
+      "why": "",
+      "severity": "HIGH",
+      "status": "PASS",
+      "evidence": "\\bthird[- ]party\\b"
+    },
+    {
+      "id": "third-party-protection",
+      "title": "Third parties receive equivalent/contractual data protection",
+      "patterns": [
+        {},
+        {},
+        {},
+        {}
+      ],
+      "required": true,
+      "source": "https://developer.apple.com/app-store/review/guidelines/",
+      "why": "",
+      "severity": "HIGH",
+      "status": "BLOCKED",
+      "evidence": null
+    },
+    {
+      "id": "protection",
+      "title": "Security/protection statement",
+      "patterns": [
+        {},
+        {},
+        {}
+      ],
+      "required": true,
+      "source": "https://developer.apple.com/app-store/review/guidelines/",
+      "why": "",
+      "severity": "HIGH",
+      "status": "PASS",
+      "evidence": "\\bsecurity\\b"
+    },
+    {
+      "id": "retention",
+      "title": "Retention period or criteria",
+      "patterns": [
+        {},
+        {},
+        {}
+      ],
+      "required": true,
+      "source": "https://developer.apple.com/app-store/review/guidelines/",
+      "why": "",
+      "severity": "HIGH",
+      "status": "PASS",
+      "evidence": "\\bretention\\b"
+    },
+    {
+      "id": "deletion",
+      "title": "Deletion/erasure process",
+      "patterns": [
+        {},
+        {},
+        {}
+      ],
+      "required": true,
+      "source": "https://developer.apple.com/app-store/review/guidelines/",
+      "why": "",
+      "severity": "HIGH",
+      "status": "PASS",
+      "evidence": "\\bdelete\\b"
+    },
+    {
+      "id": "consent",
+      "title": "Consent withdrawal/revocation",
+      "patterns": [
+        {},
+        {},
+        {}
+      ],
+      "required": true,
+      "source": "https://developer.apple.com/app-store/review/guidelines/",
+      "why": "",
+      "severity": "HIGH",
+      "status": "BLOCKED",
+      "evidence": null
+    },
+    {
+      "id": "feature-ai",
+      "title": "AI/third-party AI disclosure",
+      "patterns": [
+        {},
+        {},
+        {},
+        {},
+        {}
+      ],
+      "required": true,
+      "source": "https://support.google.com/googleplay/android-developer/answer/10144311",
+      "why": "",
+      "severity": "HIGH",
+      "status": "PASS",
+      "evidence": "\\bAI\\b"
+    },
+    {
+      "id": "feature-camera",
+      "title": "Camera/photo disclosure",
+      "patterns": [
+        {},
+        {},
+        {}
+      ],
+      "required": true,
+      "source": "https://support.google.com/googleplay/android-developer/answer/10144311",
+      "why": "",
+      "severity": "HIGH",
+      "status": "PASS",
+      "evidence": "\\bcamera\\b"
+    },
+    {
+      "id": "feature-health",
+      "title": "Health/medical data disclosure",
+      "patterns": [
+        {},
+        {},
+        {},
+        {}
+      ],
+      "required": true,
+      "source": "https://support.google.com/googleplay/android-developer/answer/10144311",
+      "why": "",
+      "severity": "HIGH",
+      "status": "PASS",
+      "evidence": "\\bhealth\\b"
+    },
+    {
+      "id": "feature-biometric",
+      "title": "Biometric/authentication disclosure",
+      "patterns": [
+        {},
+        {},
+        {},
+        {}
+      ],
+      "required": true,
+      "source": "https://developer.apple.com/app-store/review/guidelines/",
+      "why": "",
+      "severity": "HIGH",
+      "status": "PASS",
+      "evidence": "\\bbiometric\\b"
+    }
+  ],
+  "findings": [
+    {
+      "id": "autonomous.privacy.collection",
+      "store": "cross-store",
+      "category": "privacy",
+      "severity": "HIGH",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "BLOCKED",
+      "title": "Data categories collected is not automatically verified",
+      "summary": "The current privacy policy text did not provide machine-detectable evidence for this requirement.",
+      "evidence": [],
+      "remediation": [
+        "Update the privacy policy so this requirement is stated clearly and truthfully."
+      ],
+      "references": [
+        "https://developer.apple.com/app-store/review/guidelines/"
+      ],
+      "sourceTool": "storeready.autonomous",
+      "sourceVersion": "1",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": true,
+      "requiresManualVerification": false,
+      "automationState": "BLOCKED",
+      "corroboratedBy": [
+        "storeready.autonomous"
+      ]
+    },
+    {
+      "id": "autonomous.privacy.third-party-protection",
+      "store": "cross-store",
+      "category": "privacy",
+      "severity": "HIGH",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "BLOCKED",
+      "title": "Third parties receive equivalent/contractual data protection is not automatically verified",
+      "summary": "The current privacy policy text did not provide machine-detectable evidence for this requirement.",
+      "evidence": [],
+      "remediation": [
+        "Update the privacy policy so this requirement is stated clearly and truthfully."
+      ],
+      "references": [
+        "https://developer.apple.com/app-store/review/guidelines/"
+      ],
+      "sourceTool": "storeready.autonomous",
+      "sourceVersion": "1",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "automationState": "BLOCKED",
+      "corroboratedBy": [
+        "storeready.autonomous"
+      ]
+    },
+    {
+      "id": "autonomous.privacy.consent",
+      "store": "cross-store",
+      "category": "privacy",
+      "severity": "HIGH",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "BLOCKED",
+      "title": "Consent withdrawal/revocation is not automatically verified",
+      "summary": "The current privacy policy text did not provide machine-detectable evidence for this requirement.",
+      "evidence": [],
+      "remediation": [
+        "Update the privacy policy so this requirement is stated clearly and truthfully."
+      ],
+      "references": [
+        "https://developer.apple.com/app-store/review/guidelines/"
+      ],
+      "sourceTool": "storeready.autonomous",
+      "sourceVersion": "1",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "automationState": "BLOCKED",
+      "corroboratedBy": [
+        "storeready.autonomous"
+      ]
+    }
+  ],
+  "sources": {
+    "applePrivacy": "https://developer.apple.com/app-store/review/guidelines/",
+    "appleAppPrivacy": "https://developer.apple.com/help/app-store-connect/manage-app-information/manage-app-privacy",
+    "googleUserData": "https://support.google.com/googleplay/android-developer/answer/10144311",
+    "googleDisclosure": "https://support.google.com/googleplay/android-developer/answer/11150561",
+    "googleContacts": "https://support.google.com/googleplay/android-developer/answer/16935362",
+    "gdpr": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679",
+    "ccpa": "https://cppa.ca.gov/regulations/pdf/ccpa_statute_eff_20260101.pdf",
+    "owaspMasvs": "https://mas.owasp.org/MASVS/",
+    "nistSsdf": "https://csrc.nist.gov/pubs/sp/800/218/final"
+  }
+}

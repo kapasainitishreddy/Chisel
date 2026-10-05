@@ -1,5 +1,13 @@
 # Release Status
 
+## Brand, RevenueCat and customer experience — 2026-10-05
+
+Continue `fix/brand-revenuecat-customer-experience-20261005`, tested application **3ace5b5c845c2d3beadf77b492f8f8e41626b62d**, from remotely verified 67486b7. [CX report](CUSTOMER_EXPERIENCE_REPORT.md), [growth strategy](GROWTH_STRATEGY.md), [brand](BRAND.md) and [evidence](evidence/brand-cx-20261005/source-and-results.json) supersede the prior task's latest pointers while retaining its implementation.
+
+New actual branding, optional inline onboarding, native-dialog focus, phone fit, serialized Premium purchase/restore, actual price/renewal disclosures, blocked unsupported complex offers, cancellation links, honest unavailable credit prices and separate credit recovery are implemented. Billing remains OFF; public legacy SDK key is empty. RevenueCat dashboard/live offerings/receipts are not verified. Growth experiments are prepared hypotheses; no analytics SDK, marketing send, ad spend or sales activation occurred.
+
+333/333 tests and clean-source frozen install/build PASS; four new regressions fail on original source and pass after. 21 CX + 33 feature + 17 completion + two privacy browser checks PASS. Android source/resources/release-manifest tasks PASS (220); no signed APK/AAB, instrumented/device or accuracy validation. Actual StoreReady remains BLOCKED (3 PASS / 5 BLOCKED / 5 ACTION_REQUIRED / 9 PLATFORM_REQUIRED / 40 AUTOMATION_PENDING), version/invocation recorded in evidence. Existing policy, account/provider, device/16 KB, billing and empirical validation gates remain. Code/doc branch publication only after secret scanning; no deploy, purchase, credential/key, console, merge or force push.
+
 ## Jawline tracker, trainer and face scan polish — 2026-10-05
 
 Continue `fix/tracker-trainer-scan-polish-20261005`, tested application **e2f1501ce3bc529aef9c2910c468740252718071**, from published StoreReady source 1d3f069b. [Polish report](FEATURE_POLISH_REPORT.md) and [evidence](evidence/feature-polish-20261005/source-and-results.json) record the current behavior and limits. Jawline progress now shows actual Precision baseline/current uncertainty and honest comparison states; quick photo comparison is keyboard accessible. Trainer score/guided labels, observed hold progress, pause and corrections are repaired. Scans use fresh frames, consistent live/final gates, fail-closed missing metrics, cancellation cleanup, and readable preparation/recovery.

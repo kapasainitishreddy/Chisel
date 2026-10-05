@@ -1,0 +1,5 @@
+
+> chisel@1.0.0 build
+> node scripts/verify-build.cjs
+
+Validated 46 modules, inline app scripts and runtime assets.

@@ -1,0 +1,27 @@
+{
+  "scope": "Chromium CX/keyboard/responsive controls; explicit store fixtures, no real purchase, auth, Android device or attribution experiment.",
+  "checks": {
+    "noInterruptingIdentity": true,
+    "brandLoaded": true,
+    "homeFits360": true,
+    "homeFits430": true,
+    "homeFits1280": true,
+    "personalizationExplicit": true,
+    "personalizationCloses": true,
+    "scanRoute": true,
+    "trainingConnected": true,
+    "nestedFocus": true,
+    "escapeClosesOnlyTop": true,
+    "parentThenCloses": true,
+    "stylesConnected": true,
+    "dismissalPersists": true,
+    "billingStaysDisabled": true,
+    "localPricePreserved": true,
+    "renewalDisclosed": true,
+    "offerFits360": true,
+    "offerFits430": true,
+    "offerFits1280": true,
+    "noPageErrors": true
+  },
+  "errors": []
+}

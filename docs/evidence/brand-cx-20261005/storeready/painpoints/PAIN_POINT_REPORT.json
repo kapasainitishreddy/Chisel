@@ -1,0 +1,1512 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-05T03:03:01.357Z",
+  "asOf": "2026-10-05T03:03:01.330Z",
+  "policyReviewedAt": "2026-09-21",
+  "modules": [
+    {
+      "id": "google-production-access",
+      "title": "Google Production Access",
+      "painPoint": "Closed-test and production-access evidence",
+      "status": "AUTOMATION_PENDING"
+    },
+    {
+      "id": "android-developer-verification",
+      "title": "Android Developer Verification",
+      "painPoint": "Identity, package and signing-key registration",
+      "status": "AUTOMATION_PENDING"
+    },
+    {
+      "id": "policy-watch",
+      "title": "Policy Change Watch",
+      "painPoint": "Versioned policy source and effective-date tracking",
+      "status": "AUTOMATION_PENDING"
+    },
+    {
+      "id": "rejection-analyzer",
+      "title": "Store Rejection Analyzer",
+      "painPoint": "Translate reviewer text into scoped engineering work",
+      "status": "AUTOMATION_PENDING"
+    },
+    {
+      "id": "resubmission-pack",
+      "title": "Resubmission Pack",
+      "painPoint": "Preserve fixes, evidence and reviewer notes",
+      "status": "AUTOMATION_PENDING"
+    },
+    {
+      "id": "declaration-reconciliation",
+      "title": "Store Declaration Reconciliation",
+      "painPoint": "Catch code/runtime versus console declaration mismatches",
+      "status": "AUTOMATION_PENDING"
+    },
+    {
+      "id": "release-build-quality",
+      "title": "Release Build Quality Gate",
+      "painPoint": "Verify the actual release build, not only source",
+      "status": "AUTOMATION_PENDING"
+    },
+    {
+      "id": "android-technical-quality",
+      "title": "Android Technical Quality",
+      "painPoint": "16 KB, vitals, DEX optimization and restore-credentials readiness",
+      "status": "AUTOMATION_PENDING"
+    },
+    {
+      "id": "apple-questionnaire",
+      "title": "Apple Submission Questionnaire",
+      "painPoint": "Age rating, export, accessibility and regulated feature review",
+      "status": "NOT_APPLICABLE"
+    },
+    {
+      "id": "eu-dsa",
+      "title": "EU DSA Trader Gate",
+      "painPoint": "Trader status and verified public contact evidence",
+      "status": "NOT_APPLICABLE"
+    },
+    {
+      "id": "owasp-mobile",
+      "title": "OWASP Mobile Matrix",
+      "painPoint": "Map security evidence to MASVS control groups",
+      "status": "AUTOMATION_PENDING"
+    },
+    {
+      "id": "sdk-risk",
+      "title": "SDK Risk Intelligence",
+      "painPoint": "Surface third-party SDK privacy/security/policy risk",
+      "status": "AUTOMATION_PENDING"
+    },
+    {
+      "id": "permission-necessity",
+      "title": "Permission Necessity Analyzer",
+      "painPoint": "Keep, remove or justify sensitive permissions",
+      "status": "AUTOMATION_PENDING"
+    },
+    {
+      "id": "privacy-data-flow",
+      "title": "Privacy Data Flow",
+      "painPoint": "Map collected data to SDK/backend destinations",
+      "status": "AUTOMATION_PENDING"
+    },
+    {
+      "id": "account-lifecycle",
+      "title": "Account Lifecycle Journey",
+      "painPoint": "Signup, recovery, logout, export and deletion",
+      "status": "AUTOMATION_PENDING"
+    },
+    {
+      "id": "subscription-journey",
+      "title": "Subscription Journey",
+      "painPoint": "Purchase, restore, cancel, expire and entitlement checks",
+      "status": "AUTOMATION_PENDING"
+    },
+    {
+      "id": "reviewer-mode",
+      "title": "Reviewer Mode",
+      "painPoint": "Prove a store reviewer can reach required functionality",
+      "status": "AUTOMATION_PENDING"
+    },
+    {
+      "id": "adverse-network",
+      "title": "Adverse Network QA",
+      "painPoint": "Cold start, offline, poor network and recovery",
+      "status": "AUTOMATION_PENDING"
+    },
+    {
+      "id": "accessibility-labels",
+      "title": "Accessibility Declaration Builder",
+      "painPoint": "Convert tested accessibility evidence into declaration inputs",
+      "status": "NOT_APPLICABLE"
+    },
+    {
+      "id": "deep-link-notification",
+      "title": "Deep Link and Notification QA",
+      "painPoint": "Verify release-build entry points and routing",
+      "status": "AUTOMATION_PENDING"
+    },
+    {
+      "id": "evidence-recorder",
+      "title": "Policy Evidence Recorder",
+      "painPoint": "Record hashes, screenshots and manual owner sign-off",
+      "status": "AUTOMATION_PENDING"
+    },
+    {
+      "id": "release-regression",
+      "title": "Release Regression Diff",
+      "painPoint": "Compare current and previous release gates",
+      "status": "AUTOMATION_PENDING"
+    },
+    {
+      "id": "portfolio-risk",
+      "title": "Portfolio Risk Board",
+      "painPoint": "Summarize release risk across many apps",
+      "status": "AUTOMATION_PENDING"
+    },
+    {
+      "id": "post-release-watch",
+      "title": "Post-release Watch",
+      "painPoint": "Import crash, ANR, review and policy warning signals",
+      "status": "AUTOMATION_PENDING"
+    },
+    {
+      "id": "complaint-intelligence",
+      "title": "Complaint Intelligence",
+      "painPoint": "Turn recurring competitor/user complaints into product evidence",
+      "status": "AUTOMATION_PENDING"
+    }
+  ],
+  "signals": {
+    "accounts": true,
+    "subscriptions": true,
+    "notifications": true,
+    "deepLinks": true,
+    "deletion": true,
+    "dataExport": true,
+    "restoreCredentials": true,
+    "ugc": true,
+    "health": true,
+    "nativeLibraries": true,
+    "minified": true,
+    "permissions": [
+      "android.permission.INTERNET",
+      "android.permission.CAMERA"
+    ],
+    "targetSdk": null,
+    "sdks": [
+      {
+        "name": "RevenueCat",
+        "category": "purchases"
+      }
+    ],
+    "ai": false,
+    "ads": false,
+    "analytics": false,
+    "purchases": true
+  },
+  "findings": [
+    {
+      "id": "pain.google.production-access.applicability",
+      "store": "google-play",
+      "category": "policy",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Confirm whether the Google closed-testing production-access gate applies",
+      "summary": "StoreReady does not guess developer-account type or creation date.",
+      "remediation": [],
+      "references": [
+        "https://support.google.com/googleplay/android-developer/answer/14151465"
+      ],
+      "evidence": [],
+      "sourceTool": "storeready.painpoints",
+      "sourceVersion": "3",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "corroboratedBy": [
+        "storeready.painpoints"
+      ]
+    },
+    {
+      "id": "pain.android.developer-verification",
+      "store": "google-play",
+      "category": "policy",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Android developer verification must be tracked",
+      "summary": "Phase-one enforcement begins September 30, 2026 in Brazil, Indonesia, Singapore and Thailand. Google has announced broader rollout during 2027 without StoreReady inventing an exact global date.",
+      "remediation": [],
+      "references": [
+        "https://developer.android.com/developer-verification"
+      ],
+      "evidence": [],
+      "sourceTool": "storeready.painpoints",
+      "sourceVersion": "3",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "corroboratedBy": [
+        "storeready.painpoints"
+      ]
+    },
+    {
+      "id": "pain.google.64bit",
+      "store": "google-play",
+      "category": "policy",
+      "severity": "HIGH",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "64-bit native support is not evidenced",
+      "summary": "",
+      "remediation": [],
+      "references": [
+        "https://support.google.com/googleplay/android-developer/answer/17492799"
+      ],
+      "evidence": [],
+      "sourceTool": "storeready.painpoints",
+      "sourceVersion": "3",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "corroboratedBy": [
+        "storeready.painpoints"
+      ]
+    },
+    {
+      "id": "pain.google.vitals.current",
+      "store": "google-play",
+      "category": "policy",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Current Android vitals evidence is not imported",
+      "summary": "Crash, ANR and wake-lock bad-behavior thresholds can affect Play visibility and quality status.",
+      "remediation": [],
+      "references": [
+        "https://support.google.com/googleplay/android-developer/answer/17492799"
+      ],
+      "evidence": [],
+      "sourceTool": "storeready.painpoints",
+      "sourceVersion": "3",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "corroboratedBy": [
+        "storeready.painpoints"
+      ]
+    },
+    {
+      "id": "pain.google.memory-vitals",
+      "store": "google-play",
+      "category": "policy",
+      "severity": "HIGH",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Google Play memory-vitals compliance is not evidenced",
+      "summary": "Google evaluates memory and bitmap memory using the last 28 days of Play vitals and RAM-tier thresholds.",
+      "remediation": [],
+      "references": [
+        "https://support.google.com/googleplay/android-developer/answer/17492799"
+      ],
+      "evidence": [],
+      "sourceTool": "storeready.painpoints",
+      "sourceVersion": "3",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "corroboratedBy": [
+        "storeready.painpoints"
+      ]
+    },
+    {
+      "id": "pain.declaration.accounts",
+      "store": "cross-store",
+      "category": "policy",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Detected feature is missing from supplied store declaration evidence: accounts",
+      "summary": "",
+      "remediation": [],
+      "references": [],
+      "evidence": [],
+      "sourceTool": "storeready.painpoints",
+      "sourceVersion": "3",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "corroboratedBy": [
+        "storeready.painpoints"
+      ]
+    },
+    {
+      "id": "pain.declaration.subscriptions",
+      "store": "cross-store",
+      "category": "policy",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Detected feature is missing from supplied store declaration evidence: subscriptions",
+      "summary": "",
+      "remediation": [],
+      "references": [],
+      "evidence": [],
+      "sourceTool": "storeready.painpoints",
+      "sourceVersion": "3",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "corroboratedBy": [
+        "storeready.painpoints"
+      ]
+    },
+    {
+      "id": "pain.declaration.health",
+      "store": "cross-store",
+      "category": "policy",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Detected feature is missing from supplied store declaration evidence: health",
+      "summary": "",
+      "remediation": [],
+      "references": [],
+      "evidence": [],
+      "sourceTool": "storeready.painpoints",
+      "sourceVersion": "3",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "corroboratedBy": [
+        "storeready.painpoints"
+      ]
+    },
+    {
+      "id": "pain.declaration.ugc",
+      "store": "cross-store",
+      "category": "policy",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Detected feature is missing from supplied store declaration evidence: ugc",
+      "summary": "",
+      "remediation": [],
+      "references": [],
+      "evidence": [],
+      "sourceTool": "storeready.painpoints",
+      "sourceVersion": "3",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "corroboratedBy": [
+        "storeready.painpoints"
+      ]
+    },
+    {
+      "id": "pain.permission.camera",
+      "store": "google-play",
+      "category": "privacy",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Sensitive permission needs necessity evidence: android.permission.CAMERA",
+      "summary": "",
+      "remediation": [],
+      "references": [],
+      "evidence": [
+        {
+          "snippet": "android.permission.CAMERA"
+        }
+      ],
+      "sourceTool": "storeready.painpoints",
+      "sourceVersion": "3",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "corroboratedBy": [
+        "storeready.painpoints"
+      ]
+    },
+    {
+      "id": "pain.sdk.revenuecat",
+      "store": "cross-store",
+      "category": "security",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Third-party SDK needs release review: RevenueCat",
+      "summary": "Detected SDK category: purchases.",
+      "remediation": [],
+      "references": [],
+      "evidence": [],
+      "sourceTool": "storeready.painpoints",
+      "sourceVersion": "3",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "corroboratedBy": [
+        "storeready.painpoints"
+      ]
+    },
+    {
+      "id": "pain.privacy.data-flow",
+      "store": "cross-store",
+      "category": "privacy",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Runtime privacy data-flow map is missing",
+      "summary": "",
+      "remediation": [],
+      "references": [],
+      "evidence": [],
+      "sourceTool": "storeready.painpoints",
+      "sourceVersion": "3",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "corroboratedBy": [
+        "storeready.painpoints"
+      ]
+    },
+    {
+      "id": "pain.journey.adverse-network",
+      "store": "cross-store",
+      "category": "quality",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Critical release journey is not fully evidenced: adverse-network",
+      "summary": "Missing steps: cold-launch, offline-launch, poor-network, recovery.",
+      "remediation": [],
+      "references": [],
+      "evidence": [],
+      "sourceTool": "storeready.painpoints",
+      "sourceVersion": "3",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "corroboratedBy": [
+        "storeready.painpoints"
+      ]
+    },
+    {
+      "id": "pain.journey.account-lifecycle",
+      "store": "cross-store",
+      "category": "quality",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Critical release journey is not fully evidenced: account-lifecycle",
+      "summary": "Missing steps: signup, login, logout, recovery, data-export, account-deletion.",
+      "remediation": [],
+      "references": [],
+      "evidence": [],
+      "sourceTool": "storeready.painpoints",
+      "sourceVersion": "3",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "corroboratedBy": [
+        "storeready.painpoints"
+      ]
+    },
+    {
+      "id": "pain.journey.reviewer-mode",
+      "store": "cross-store",
+      "category": "quality",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Critical release journey is not fully evidenced: reviewer-mode",
+      "summary": "Missing steps: reviewer-login, core-feature, premium-path, privacy, account-settings.",
+      "remediation": [],
+      "references": [],
+      "evidence": [],
+      "sourceTool": "storeready.painpoints",
+      "sourceVersion": "3",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "corroboratedBy": [
+        "storeready.painpoints"
+      ]
+    },
+    {
+      "id": "pain.journey.subscription-journey",
+      "store": "cross-store",
+      "category": "quality",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Critical release journey is not fully evidenced: subscription-journey",
+      "summary": "Missing steps: purchase, entitlement, restart, restore, cancel, expire.",
+      "remediation": [],
+      "references": [],
+      "evidence": [],
+      "sourceTool": "storeready.painpoints",
+      "sourceVersion": "3",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "corroboratedBy": [
+        "storeready.painpoints"
+      ]
+    },
+    {
+      "id": "pain.journey.deep-link-notification",
+      "store": "cross-store",
+      "category": "quality",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Critical release journey is not fully evidenced: deep-link-notification",
+      "summary": "Missing steps: deep-link, notification-open, invalid-link, logged-out-link.",
+      "remediation": [],
+      "references": [],
+      "evidence": [],
+      "sourceTool": "storeready.painpoints",
+      "sourceVersion": "3",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "corroboratedBy": [
+        "storeready.painpoints"
+      ]
+    },
+    {
+      "id": "pain.journey.privacy-permission",
+      "store": "cross-store",
+      "category": "quality",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Critical release journey is not fully evidenced: privacy-permission",
+      "summary": "Missing steps: deny, continue-after-denial, grant, revoke, restart.",
+      "remediation": [],
+      "references": [],
+      "evidence": [],
+      "sourceTool": "storeready.painpoints",
+      "sourceVersion": "3",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "corroboratedBy": [
+        "storeready.painpoints"
+      ]
+    }
+  ],
+  "google": {
+    "productionAccess": {
+      "status": "AUTOMATION_PENDING",
+      "testers": 0,
+      "continuousDays": 0,
+      "findings": [
+        {
+          "id": "pain.google.production-access.applicability",
+          "store": "google-play",
+          "category": "policy",
+          "severity": "REVIEW",
+          "confidence": "high",
+          "evidenceQuality": "DERIVED",
+          "status": "AUTOMATION_PENDING",
+          "title": "Confirm whether the Google closed-testing production-access gate applies",
+          "summary": "StoreReady does not guess developer-account type or creation date.",
+          "remediation": [],
+          "references": [
+            "https://support.google.com/googleplay/android-developer/answer/14151465"
+          ],
+          "evidence": [],
+          "sourceTool": "storeready.painpoints",
+          "sourceVersion": "3",
+          "policyVersion": "2026-09-21",
+          "releaseBlocking": false,
+          "requiresManualVerification": false,
+          "corroboratedBy": [
+            "storeready.painpoints"
+          ]
+        }
+      ]
+    },
+    "developerVerification": {
+      "status": "AUTOMATION_PENDING",
+      "regions": [],
+      "complete": false,
+      "findings": [
+        {
+          "id": "pain.android.developer-verification",
+          "store": "google-play",
+          "category": "policy",
+          "severity": "REVIEW",
+          "confidence": "high",
+          "evidenceQuality": "DERIVED",
+          "status": "AUTOMATION_PENDING",
+          "title": "Android developer verification must be tracked",
+          "summary": "Phase-one enforcement begins September 30, 2026 in Brazil, Indonesia, Singapore and Thailand. Google has announced broader rollout during 2027 without StoreReady inventing an exact global date.",
+          "remediation": [],
+          "references": [
+            "https://developer.android.com/developer-verification"
+          ],
+          "evidence": [],
+          "sourceTool": "storeready.painpoints",
+          "sourceVersion": "3",
+          "policyVersion": "2026-09-21",
+          "releaseBlocking": false,
+          "requiresManualVerification": false,
+          "corroboratedBy": [
+            "storeready.painpoints"
+          ]
+        }
+      ],
+      "globalRollout": "2027 (exact date not assumed)"
+    },
+    "technicalQuality": {
+      "status": "AUTOMATION_PENDING",
+      "currentVitals": {
+        "crashRateOverall": {
+          "value": null,
+          "threshold": 1.09
+        },
+        "anrRateOverall": {
+          "value": null,
+          "threshold": 0.47
+        },
+        "wakeLockRateOverall": {
+          "value": null,
+          "threshold": 5
+        }
+      },
+      "effectiveDates": {
+        "memoryAndDex": "2027-02-01",
+        "zeroTap": "2027-04-01"
+      },
+      "findings": [
+        {
+          "id": "pain.google.64bit",
+          "store": "google-play",
+          "category": "policy",
+          "severity": "HIGH",
+          "confidence": "high",
+          "evidenceQuality": "DERIVED",
+          "status": "AUTOMATION_PENDING",
+          "title": "64-bit native support is not evidenced",
+          "summary": "",
+          "remediation": [],
+          "references": [
+            "https://support.google.com/googleplay/android-developer/answer/17492799"
+          ],
+          "evidence": [],
+          "sourceTool": "storeready.painpoints",
+          "sourceVersion": "3",
+          "policyVersion": "2026-09-21",
+          "releaseBlocking": false,
+          "requiresManualVerification": false,
+          "corroboratedBy": [
+            "storeready.painpoints"
+          ]
+        },
+        {
+          "id": "pain.google.vitals.current",
+          "store": "google-play",
+          "category": "policy",
+          "severity": "REVIEW",
+          "confidence": "high",
+          "evidenceQuality": "DERIVED",
+          "status": "AUTOMATION_PENDING",
+          "title": "Current Android vitals evidence is not imported",
+          "summary": "Crash, ANR and wake-lock bad-behavior thresholds can affect Play visibility and quality status.",
+          "remediation": [],
+          "references": [
+            "https://support.google.com/googleplay/android-developer/answer/17492799"
+          ],
+          "evidence": [],
+          "sourceTool": "storeready.painpoints",
+          "sourceVersion": "3",
+          "policyVersion": "2026-09-21",
+          "releaseBlocking": false,
+          "requiresManualVerification": false,
+          "corroboratedBy": [
+            "storeready.painpoints"
+          ]
+        },
+        {
+          "id": "pain.google.memory-vitals",
+          "store": "google-play",
+          "category": "policy",
+          "severity": "HIGH",
+          "confidence": "high",
+          "evidenceQuality": "DERIVED",
+          "status": "AUTOMATION_PENDING",
+          "title": "Google Play memory-vitals compliance is not evidenced",
+          "summary": "Google evaluates memory and bitmap memory using the last 28 days of Play vitals and RAM-tier thresholds.",
+          "remediation": [],
+          "references": [
+            "https://support.google.com/googleplay/android-developer/answer/17492799"
+          ],
+          "evidence": [],
+          "sourceTool": "storeready.painpoints",
+          "sourceVersion": "3",
+          "policyVersion": "2026-09-21",
+          "releaseBlocking": false,
+          "requiresManualVerification": false,
+          "corroboratedBy": [
+            "storeready.painpoints"
+          ]
+        }
+      ]
+    }
+  },
+  "apple": {
+    "submission": {
+      "status": "AUTOMATION_PENDING",
+      "findings": [
+        {
+          "id": "pain.apple.toolchain",
+          "store": "apple-app-store",
+          "category": "policy",
+          "severity": "REVIEW",
+          "confidence": "high",
+          "evidenceQuality": "DERIVED",
+          "status": "AUTOMATION_PENDING",
+          "title": "App Store upload toolchain evidence is missing",
+          "summary": "",
+          "remediation": [],
+          "references": [
+            "https://developer.apple.com/news/upcoming-requirements/"
+          ],
+          "evidence": [],
+          "sourceTool": "storeready.painpoints",
+          "sourceVersion": "3",
+          "policyVersion": "2026-09-21",
+          "releaseBlocking": false,
+          "requiresManualVerification": false,
+          "corroboratedBy": [
+            "storeready.painpoints"
+          ]
+        },
+        {
+          "id": "pain.apple.age-rating",
+          "store": "apple-app-store",
+          "category": "policy",
+          "severity": "REVIEW",
+          "confidence": "high",
+          "evidenceQuality": "DERIVED",
+          "status": "AUTOMATION_PENDING",
+          "title": "Age-rating questionnaire is incomplete",
+          "summary": "",
+          "remediation": [],
+          "references": [
+            "https://developer.apple.com/help/app-store-connect/manage-app-information/set-an-app-age-rating"
+          ],
+          "evidence": [],
+          "sourceTool": "storeready.painpoints",
+          "sourceVersion": "3",
+          "policyVersion": "2026-09-21",
+          "releaseBlocking": false,
+          "requiresManualVerification": false,
+          "corroboratedBy": [
+            "storeready.painpoints"
+          ]
+        },
+        {
+          "id": "pain.apple.export",
+          "store": "apple-app-store",
+          "category": "policy",
+          "severity": "REVIEW",
+          "confidence": "high",
+          "evidenceQuality": "DERIVED",
+          "status": "AUTOMATION_PENDING",
+          "title": "Export-compliance questionnaire is incomplete",
+          "summary": "",
+          "remediation": [],
+          "references": [
+            "https://developer.apple.com/help/app-store-connect/manage-app-information/overview-of-export-compliance"
+          ],
+          "evidence": [],
+          "sourceTool": "storeready.painpoints",
+          "sourceVersion": "3",
+          "policyVersion": "2026-09-21",
+          "releaseBlocking": false,
+          "requiresManualVerification": false,
+          "corroboratedBy": [
+            "storeready.painpoints"
+          ]
+        },
+        {
+          "id": "pain.apple.accessibility-labels",
+          "store": "apple-app-store",
+          "category": "policy",
+          "severity": "REVIEW",
+          "confidence": "high",
+          "evidenceQuality": "DERIVED",
+          "status": "AUTOMATION_PENDING",
+          "title": "Accessibility Nutrition Label evidence is incomplete",
+          "summary": "",
+          "remediation": [],
+          "references": [
+            "https://developer.apple.com/help/app-store-connect/manage-app-accessibility/overview-of-accessibility-nutrition-labels"
+          ],
+          "evidence": [],
+          "sourceTool": "storeready.painpoints",
+          "sourceVersion": "3",
+          "policyVersion": "2026-09-21",
+          "releaseBlocking": false,
+          "requiresManualVerification": false,
+          "corroboratedBy": [
+            "storeready.painpoints"
+          ]
+        },
+        {
+          "id": "pain.apple.regulated-feature",
+          "store": "apple-app-store",
+          "category": "policy",
+          "severity": "REVIEW",
+          "confidence": "high",
+          "evidenceQuality": "DERIVED",
+          "status": "AUTOMATION_PENDING",
+          "title": "Health/medical feature declaration needs owner review",
+          "summary": "",
+          "remediation": [],
+          "references": [],
+          "evidence": [],
+          "sourceTool": "storeready.painpoints",
+          "sourceVersion": "3",
+          "policyVersion": "2026-09-21",
+          "releaseBlocking": false,
+          "requiresManualVerification": false,
+          "corroboratedBy": [
+            "storeready.painpoints"
+          ]
+        }
+      ]
+    },
+    "accessibilityDeclarations": {
+      "status": "PASS",
+      "rows": [
+        {
+          "id": "voiceOver",
+          "supported": false,
+          "commonTasksVerified": false,
+          "status": "AUTOMATION_PENDING"
+        },
+        {
+          "id": "voiceControl",
+          "supported": false,
+          "commonTasksVerified": false,
+          "status": "AUTOMATION_PENDING"
+        },
+        {
+          "id": "largerText",
+          "supported": false,
+          "commonTasksVerified": false,
+          "status": "AUTOMATION_PENDING"
+        },
+        {
+          "id": "darkInterface",
+          "supported": false,
+          "commonTasksVerified": false,
+          "status": "AUTOMATION_PENDING"
+        },
+        {
+          "id": "differentiateWithoutColor",
+          "supported": false,
+          "commonTasksVerified": false,
+          "status": "AUTOMATION_PENDING"
+        },
+        {
+          "id": "sufficientContrast",
+          "supported": false,
+          "commonTasksVerified": false,
+          "status": "AUTOMATION_PENDING"
+        },
+        {
+          "id": "reducedMotion",
+          "supported": false,
+          "commonTasksVerified": false,
+          "status": "AUTOMATION_PENDING"
+        },
+        {
+          "id": "captions",
+          "supported": false,
+          "commonTasksVerified": false,
+          "status": "AUTOMATION_PENDING"
+        },
+        {
+          "id": "audioDescriptions",
+          "supported": false,
+          "commonTasksVerified": false,
+          "status": "AUTOMATION_PENDING"
+        }
+      ],
+      "findings": []
+    },
+    "dsa": {
+      "status": "AUTOMATION_PENDING",
+      "findings": [
+        {
+          "id": "pain.apple.dsa-status",
+          "store": "apple-app-store",
+          "category": "policy",
+          "severity": "REVIEW",
+          "confidence": "high",
+          "evidenceQuality": "DERIVED",
+          "status": "AUTOMATION_PENDING",
+          "title": "EU DSA trader status is not evidenced",
+          "summary": "",
+          "remediation": [],
+          "references": [
+            "https://developer.apple.com/help/app-store-connect/manage-compliance-information/manage-european-union-digital-services-act-trader-requirements"
+          ],
+          "evidence": [],
+          "sourceTool": "storeready.painpoints",
+          "sourceVersion": "3",
+          "policyVersion": "2026-09-21",
+          "releaseBlocking": false,
+          "requiresManualVerification": false,
+          "corroboratedBy": [
+            "storeready.painpoints"
+          ]
+        }
+      ]
+    }
+  },
+  "declarations": {
+    "status": "AUTOMATION_PENDING",
+    "rows": [
+      {
+        "feature": "accounts",
+        "detected": true,
+        "declared": null,
+        "status": "AUTOMATION_PENDING"
+      },
+      {
+        "feature": "subscriptions",
+        "detected": true,
+        "declared": null,
+        "status": "AUTOMATION_PENDING"
+      },
+      {
+        "feature": "health",
+        "detected": true,
+        "declared": null,
+        "status": "AUTOMATION_PENDING"
+      },
+      {
+        "feature": "ugc",
+        "detected": true,
+        "declared": null,
+        "status": "AUTOMATION_PENDING"
+      }
+    ],
+    "findings": [
+      {
+        "id": "pain.declaration.accounts",
+        "store": "cross-store",
+        "category": "policy",
+        "severity": "REVIEW",
+        "confidence": "high",
+        "evidenceQuality": "DERIVED",
+        "status": "AUTOMATION_PENDING",
+        "title": "Detected feature is missing from supplied store declaration evidence: accounts",
+        "summary": "",
+        "remediation": [],
+        "references": [],
+        "evidence": [],
+        "sourceTool": "storeready.painpoints",
+        "sourceVersion": "3",
+        "policyVersion": "2026-09-21",
+        "releaseBlocking": false,
+        "requiresManualVerification": false,
+        "corroboratedBy": [
+          "storeready.painpoints"
+        ]
+      },
+      {
+        "id": "pain.declaration.subscriptions",
+        "store": "cross-store",
+        "category": "policy",
+        "severity": "REVIEW",
+        "confidence": "high",
+        "evidenceQuality": "DERIVED",
+        "status": "AUTOMATION_PENDING",
+        "title": "Detected feature is missing from supplied store declaration evidence: subscriptions",
+        "summary": "",
+        "remediation": [],
+        "references": [],
+        "evidence": [],
+        "sourceTool": "storeready.painpoints",
+        "sourceVersion": "3",
+        "policyVersion": "2026-09-21",
+        "releaseBlocking": false,
+        "requiresManualVerification": false,
+        "corroboratedBy": [
+          "storeready.painpoints"
+        ]
+      },
+      {
+        "id": "pain.declaration.health",
+        "store": "cross-store",
+        "category": "policy",
+        "severity": "REVIEW",
+        "confidence": "high",
+        "evidenceQuality": "DERIVED",
+        "status": "AUTOMATION_PENDING",
+        "title": "Detected feature is missing from supplied store declaration evidence: health",
+        "summary": "",
+        "remediation": [],
+        "references": [],
+        "evidence": [],
+        "sourceTool": "storeready.painpoints",
+        "sourceVersion": "3",
+        "policyVersion": "2026-09-21",
+        "releaseBlocking": false,
+        "requiresManualVerification": false,
+        "corroboratedBy": [
+          "storeready.painpoints"
+        ]
+      },
+      {
+        "id": "pain.declaration.ugc",
+        "store": "cross-store",
+        "category": "policy",
+        "severity": "REVIEW",
+        "confidence": "high",
+        "evidenceQuality": "DERIVED",
+        "status": "AUTOMATION_PENDING",
+        "title": "Detected feature is missing from supplied store declaration evidence: ugc",
+        "summary": "",
+        "remediation": [],
+        "references": [],
+        "evidence": [],
+        "sourceTool": "storeready.painpoints",
+        "sourceVersion": "3",
+        "policyVersion": "2026-09-21",
+        "releaseBlocking": false,
+        "requiresManualVerification": false,
+        "corroboratedBy": [
+          "storeready.painpoints"
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "rows": [
+      {
+        "permission": "android.permission.INTERNET",
+        "status": "PASS",
+        "justification": null
+      },
+      {
+        "permission": "android.permission.CAMERA",
+        "status": "AUTOMATION_PENDING",
+        "justification": null
+      }
+    ],
+    "findings": [
+      {
+        "id": "pain.permission.camera",
+        "store": "google-play",
+        "category": "privacy",
+        "severity": "REVIEW",
+        "confidence": "high",
+        "evidenceQuality": "DERIVED",
+        "status": "AUTOMATION_PENDING",
+        "title": "Sensitive permission needs necessity evidence: android.permission.CAMERA",
+        "summary": "",
+        "remediation": [],
+        "references": [],
+        "evidence": [
+          {
+            "snippet": "android.permission.CAMERA"
+          }
+        ],
+        "sourceTool": "storeready.painpoints",
+        "sourceVersion": "3",
+        "policyVersion": "2026-09-21",
+        "releaseBlocking": false,
+        "requiresManualVerification": false,
+        "corroboratedBy": [
+          "storeready.painpoints"
+        ]
+      }
+    ]
+  },
+  "sdks": {
+    "rows": [
+      {
+        "name": "RevenueCat",
+        "category": "purchases",
+        "status": "AUTOMATION_PENDING"
+      }
+    ],
+    "findings": [
+      {
+        "id": "pain.sdk.revenuecat",
+        "store": "cross-store",
+        "category": "security",
+        "severity": "REVIEW",
+        "confidence": "high",
+        "evidenceQuality": "DERIVED",
+        "status": "AUTOMATION_PENDING",
+        "title": "Third-party SDK needs release review: RevenueCat",
+        "summary": "Detected SDK category: purchases.",
+        "remediation": [],
+        "references": [],
+        "evidence": [],
+        "sourceTool": "storeready.painpoints",
+        "sourceVersion": "3",
+        "policyVersion": "2026-09-21",
+        "releaseBlocking": false,
+        "requiresManualVerification": false,
+        "corroboratedBy": [
+          "storeready.painpoints"
+        ]
+      }
+    ]
+  },
+  "privacyDataFlows": {
+    "status": "AUTOMATION_PENDING",
+    "flows": [],
+    "destinations": [],
+    "findings": [
+      {
+        "id": "pain.privacy.data-flow",
+        "store": "cross-store",
+        "category": "privacy",
+        "severity": "REVIEW",
+        "confidence": "high",
+        "evidenceQuality": "DERIVED",
+        "status": "AUTOMATION_PENDING",
+        "title": "Runtime privacy data-flow map is missing",
+        "summary": "",
+        "remediation": [],
+        "references": [],
+        "evidence": [],
+        "sourceTool": "storeready.painpoints",
+        "sourceVersion": "3",
+        "policyVersion": "2026-09-21",
+        "releaseBlocking": false,
+        "requiresManualVerification": false,
+        "corroboratedBy": [
+          "storeready.painpoints"
+        ]
+      }
+    ]
+  },
+  "journeys": {
+    "journeys": [
+      {
+        "id": "adverse-network",
+        "status": "AUTOMATION_PENDING",
+        "expected": [
+          "cold-launch",
+          "offline-launch",
+          "poor-network",
+          "recovery"
+        ],
+        "passed": [],
+        "missing": [
+          "cold-launch",
+          "offline-launch",
+          "poor-network",
+          "recovery"
+        ]
+      },
+      {
+        "id": "account-lifecycle",
+        "status": "AUTOMATION_PENDING",
+        "expected": [
+          "signup",
+          "login",
+          "logout",
+          "recovery",
+          "data-export",
+          "account-deletion"
+        ],
+        "passed": [],
+        "missing": [
+          "signup",
+          "login",
+          "logout",
+          "recovery",
+          "data-export",
+          "account-deletion"
+        ]
+      },
+      {
+        "id": "reviewer-mode",
+        "status": "AUTOMATION_PENDING",
+        "expected": [
+          "reviewer-login",
+          "core-feature",
+          "premium-path",
+          "privacy",
+          "account-settings"
+        ],
+        "passed": [],
+        "missing": [
+          "reviewer-login",
+          "core-feature",
+          "premium-path",
+          "privacy",
+          "account-settings"
+        ]
+      },
+      {
+        "id": "subscription-journey",
+        "status": "AUTOMATION_PENDING",
+        "expected": [
+          "purchase",
+          "entitlement",
+          "restart",
+          "restore",
+          "cancel",
+          "expire"
+        ],
+        "passed": [],
+        "missing": [
+          "purchase",
+          "entitlement",
+          "restart",
+          "restore",
+          "cancel",
+          "expire"
+        ]
+      },
+      {
+        "id": "deep-link-notification",
+        "status": "AUTOMATION_PENDING",
+        "expected": [
+          "deep-link",
+          "notification-open",
+          "invalid-link",
+          "logged-out-link"
+        ],
+        "passed": [],
+        "missing": [
+          "deep-link",
+          "notification-open",
+          "invalid-link",
+          "logged-out-link"
+        ]
+      },
+      {
+        "id": "privacy-permission",
+        "status": "AUTOMATION_PENDING",
+        "expected": [
+          "deny",
+          "continue-after-denial",
+          "grant",
+          "revoke",
+          "restart"
+        ],
+        "passed": [],
+        "missing": [
+          "deny",
+          "continue-after-denial",
+          "grant",
+          "revoke",
+          "restart"
+        ]
+      }
+    ],
+    "findings": [
+      {
+        "id": "pain.journey.adverse-network",
+        "store": "cross-store",
+        "category": "quality",
+        "severity": "REVIEW",
+        "confidence": "high",
+        "evidenceQuality": "DERIVED",
+        "status": "AUTOMATION_PENDING",
+        "title": "Critical release journey is not fully evidenced: adverse-network",
+        "summary": "Missing steps: cold-launch, offline-launch, poor-network, recovery.",
+        "remediation": [],
+        "references": [],
+        "evidence": [],
+        "sourceTool": "storeready.painpoints",
+        "sourceVersion": "3",
+        "policyVersion": "2026-09-21",
+        "releaseBlocking": false,
+        "requiresManualVerification": false,
+        "corroboratedBy": [
+          "storeready.painpoints"
+        ]
+      },
+      {
+        "id": "pain.journey.account-lifecycle",
+        "store": "cross-store",
+        "category": "quality",
+        "severity": "REVIEW",
+        "confidence": "high",
+        "evidenceQuality": "DERIVED",
+        "status": "AUTOMATION_PENDING",
+        "title": "Critical release journey is not fully evidenced: account-lifecycle",
+        "summary": "Missing steps: signup, login, logout, recovery, data-export, account-deletion.",
+        "remediation": [],
+        "references": [],
+        "evidence": [],
+        "sourceTool": "storeready.painpoints",
+        "sourceVersion": "3",
+        "policyVersion": "2026-09-21",
+        "releaseBlocking": false,
+        "requiresManualVerification": false,
+        "corroboratedBy": [
+          "storeready.painpoints"
+        ]
+      },
+      {
+        "id": "pain.journey.reviewer-mode",
+        "store": "cross-store",
+        "category": "quality",
+        "severity": "REVIEW",
+        "confidence": "high",
+        "evidenceQuality": "DERIVED",
+        "status": "AUTOMATION_PENDING",
+        "title": "Critical release journey is not fully evidenced: reviewer-mode",
+        "summary": "Missing steps: reviewer-login, core-feature, premium-path, privacy, account-settings.",
+        "remediation": [],
+        "references": [],
+        "evidence": [],
+        "sourceTool": "storeready.painpoints",
+        "sourceVersion": "3",
+        "policyVersion": "2026-09-21",
+        "releaseBlocking": false,
+        "requiresManualVerification": false,
+        "corroboratedBy": [
+          "storeready.painpoints"
+        ]
+      },
+      {
+        "id": "pain.journey.subscription-journey",
+        "store": "cross-store",
+        "category": "quality",
+        "severity": "REVIEW",
+        "confidence": "high",
+        "evidenceQuality": "DERIVED",
+        "status": "AUTOMATION_PENDING",
+        "title": "Critical release journey is not fully evidenced: subscription-journey",
+        "summary": "Missing steps: purchase, entitlement, restart, restore, cancel, expire.",
+        "remediation": [],
+        "references": [],
+        "evidence": [],
+        "sourceTool": "storeready.painpoints",
+        "sourceVersion": "3",
+        "policyVersion": "2026-09-21",
+        "releaseBlocking": false,
+        "requiresManualVerification": false,
+        "corroboratedBy": [
+          "storeready.painpoints"
+        ]
+      },
+      {
+        "id": "pain.journey.deep-link-notification",
+        "store": "cross-store",
+        "category": "quality",
+        "severity": "REVIEW",
+        "confidence": "high",
+        "evidenceQuality": "DERIVED",
+        "status": "AUTOMATION_PENDING",
+        "title": "Critical release journey is not fully evidenced: deep-link-notification",
+        "summary": "Missing steps: deep-link, notification-open, invalid-link, logged-out-link.",
+        "remediation": [],
+        "references": [],
+        "evidence": [],
+        "sourceTool": "storeready.painpoints",
+        "sourceVersion": "3",
+        "policyVersion": "2026-09-21",
+        "releaseBlocking": false,
+        "requiresManualVerification": false,
+        "corroboratedBy": [
+          "storeready.painpoints"
+        ]
+      },
+      {
+        "id": "pain.journey.privacy-permission",
+        "store": "cross-store",
+        "category": "quality",
+        "severity": "REVIEW",
+        "confidence": "high",
+        "evidenceQuality": "DERIVED",
+        "status": "AUTOMATION_PENDING",
+        "title": "Critical release journey is not fully evidenced: privacy-permission",
+        "summary": "Missing steps: deny, continue-after-denial, grant, revoke, restart.",
+        "remediation": [],
+        "references": [],
+        "evidence": [],
+        "sourceTool": "storeready.painpoints",
+        "sourceVersion": "3",
+        "policyVersion": "2026-09-21",
+        "releaseBlocking": false,
+        "requiresManualVerification": false,
+        "corroboratedBy": [
+          "storeready.painpoints"
+        ]
+      }
+    ]
+  },
+  "releaseBuildQuality": {
+    "status": "AUTOMATION_PENDING",
+    "runtimeStatus": "NOT_TESTED",
+    "artifactHash": null,
+    "storeConsoleEvidence": false
+  },
+  "policyWatch": {
+    "reviewedAt": "2026-09-21",
+    "rows": [
+      {
+        "id": "google-target-api-36",
+        "store": "google-play",
+        "effectiveAt": "2026-08-31",
+        "status": "AUTOMATION_PENDING",
+        "source": "https://support.google.com/googleplay/android-developer/answer/11926878"
+      },
+      {
+        "id": "android-developer-verification-phase-1",
+        "store": "google-play",
+        "effectiveAt": "2026-09-30",
+        "status": "AUTOMATION_PENDING",
+        "source": "https://developer.android.com/developer-verification"
+      },
+      {
+        "id": "google-memory-dex-quality",
+        "store": "google-play",
+        "effectiveAt": "2027-02-01",
+        "status": "AUTOMATION_PENDING",
+        "source": "https://support.google.com/googleplay/android-developer/answer/17492799"
+      },
+      {
+        "id": "google-zero-tap-restore",
+        "store": "google-play",
+        "effectiveAt": "2027-04-01",
+        "status": "AUTOMATION_PENDING",
+        "source": "https://support.google.com/googleplay/android-developer/answer/17492799"
+      },
+      {
+        "id": "android-verification-global-rollout",
+        "store": "google-play",
+        "effectiveAt": "2027 (date TBD)",
+        "status": "AUTOMATION_PENDING",
+        "source": "https://developer.android.com/developer-verification"
+      }
+    ]
+  },
+  "rejection": {
+    "status": "AUTOMATION_PENDING",
+    "matches": []
+  },
+  "postRelease": {
+    "status": "AUTOMATION_PENDING",
+    "signals": [],
+    "attention": []
+  },
+  "previousReport": null,
+  "limitations": [
+    "StoreReady cannot prove store approval, legal compliance or unobserved production behavior.",
+    "External store-console, device, reviewer, billing and production signals remain NOT_TESTED until evidence is imported.",
+    "Announced future requirements are tracked as upcoming and do not become release blockers before their effective date."
+  ],
+  "owasp": {
+    "source": "https://mas.owasp.org/MASVS/",
+    "mapping": []
+  }
+}

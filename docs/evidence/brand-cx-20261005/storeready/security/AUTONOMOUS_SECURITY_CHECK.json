@@ -1,0 +1,469 @@
+{
+  "schemaVersion": 1,
+  "status": "AUTOMATION_PENDING",
+  "profile": "standard",
+  "controls": [
+    {
+      "id": "cleartext",
+      "title": "Cleartext traffic is disabled",
+      "status": "PASS",
+      "severity": "INFO",
+      "masvs": "MASVS-NETWORK",
+      "summary": ""
+    },
+    {
+      "id": "debuggable",
+      "title": "Release configuration is not explicitly debuggable",
+      "status": "PASS",
+      "severity": "INFO",
+      "masvs": "MASVS-RESILIENCE",
+      "summary": ""
+    },
+    {
+      "id": "tls-bypass",
+      "title": "No obvious TLS certificate/hostname verification bypass",
+      "status": "PASS",
+      "severity": "INFO",
+      "masvs": "MASVS-NETWORK",
+      "summary": ""
+    },
+    {
+      "id": "webview-bridge",
+      "title": "No obviously unsafe WebView JavaScript bridge pattern",
+      "status": "PASS",
+      "severity": "INFO",
+      "masvs": "MASVS-PLATFORM",
+      "summary": ""
+    },
+    {
+      "id": "weak-crypto",
+      "title": "No obvious weak cryptographic primitive in app source",
+      "status": "PASS",
+      "severity": "INFO",
+      "masvs": "MASVS-CRYPTO",
+      "summary": ""
+    },
+    {
+      "id": "hardcoded-secret-pattern",
+      "title": "No obvious hardcoded production credential pattern",
+      "status": "PASS",
+      "severity": "INFO",
+      "masvs": "MASVS-CODE",
+      "summary": ""
+    },
+    {
+      "id": "exported-components",
+      "title": "Exported Android components are explicitly reviewed",
+      "status": "AUTOMATION_PENDING",
+      "severity": "HIGH",
+      "masvs": "MASVS-PLATFORM",
+      "summary": "activity:.MainActivity",
+      "evidence": [
+        {
+          "type": "activity",
+          "name": ".MainActivity",
+          "exported": "true"
+        }
+      ]
+    },
+    {
+      "id": "coverage:0",
+      "title": "Security scanner coverage gap",
+      "status": "AUTOMATION_PENDING",
+      "severity": "REVIEW",
+      "masvs": "MASVS-CODE",
+      "summary": "gitleaks: not installed"
+    },
+    {
+      "id": "coverage:1",
+      "title": "Security scanner coverage gap",
+      "status": "AUTOMATION_PENDING",
+      "severity": "REVIEW",
+      "masvs": "MASVS-CODE",
+      "summary": "osv: not installed"
+    },
+    {
+      "id": "coverage:2",
+      "title": "Security scanner coverage gap",
+      "status": "AUTOMATION_PENDING",
+      "severity": "REVIEW",
+      "masvs": "MASVS-CODE",
+      "summary": "trivy: not installed"
+    },
+    {
+      "id": "coverage:3",
+      "title": "Security scanner coverage gap",
+      "status": "AUTOMATION_PENDING",
+      "severity": "REVIEW",
+      "masvs": "MASVS-CODE",
+      "summary": "opengrep: not installed"
+    },
+    {
+      "id": "coverage:4",
+      "title": "Security scanner coverage gap",
+      "status": "AUTOMATION_PENDING",
+      "severity": "REVIEW",
+      "masvs": "MASVS-CODE",
+      "summary": "syft: unavailable"
+    },
+    {
+      "id": "coverage:5",
+      "title": "Security scanner coverage gap",
+      "status": "AUTOMATION_PENDING",
+      "severity": "REVIEW",
+      "masvs": "MASVS-CODE",
+      "summary": "grype: unavailable"
+    },
+    {
+      "id": "coverage:6",
+      "title": "Security scanner coverage gap",
+      "status": "AUTOMATION_PENDING",
+      "severity": "REVIEW",
+      "masvs": "MASVS-CODE",
+      "summary": "zizmor: unavailable"
+    },
+    {
+      "id": "coverage:7",
+      "title": "Security scanner coverage gap",
+      "status": "AUTOMATION_PENDING",
+      "severity": "REVIEW",
+      "masvs": "MASVS-CODE",
+      "summary": "actionlint: unavailable"
+    },
+    {
+      "id": "coverage:artifact",
+      "title": "Exact release artifact security evidence is missing",
+      "status": "AUTOMATION_PENDING",
+      "severity": "HIGH",
+      "masvs": "MASVS-RESILIENCE",
+      "summary": "Inspect the exact APK/AAB/IPA used for release."
+    },
+    {
+      "id": "coverage:runtime",
+      "title": "Runtime security/privacy evidence is missing",
+      "status": "AUTOMATION_PENDING",
+      "severity": "HIGH",
+      "masvs": "MASVS-NETWORK",
+      "summary": "Execute the release build and import runtime/network evidence."
+    }
+  ],
+  "findings": [
+    {
+      "id": "autonomous.security.exported-components",
+      "store": "cross-store",
+      "category": "security",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Exported Android components are explicitly reviewed",
+      "summary": "activity:.MainActivity",
+      "evidence": [],
+      "remediation": [
+        "Run the missing automated evidence source and rerun StoreReady."
+      ],
+      "references": [
+        "https://mas.owasp.org/MASVS/",
+        "https://csrc.nist.gov/pubs/sp/800/218/final"
+      ],
+      "sourceTool": "storeready.autonomous",
+      "sourceVersion": "1",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "automationState": "AUTOMATION_PENDING",
+      "corroboratedBy": [
+        "storeready.autonomous"
+      ]
+    },
+    {
+      "id": "autonomous.security.coverage:0",
+      "store": "cross-store",
+      "category": "security",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Security scanner coverage gap",
+      "summary": "gitleaks: not installed",
+      "evidence": [],
+      "remediation": [
+        "Run the missing automated evidence source and rerun StoreReady."
+      ],
+      "references": [
+        "https://mas.owasp.org/MASVS/",
+        "https://csrc.nist.gov/pubs/sp/800/218/final"
+      ],
+      "sourceTool": "storeready.autonomous",
+      "sourceVersion": "1",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "automationState": "AUTOMATION_PENDING",
+      "corroboratedBy": [
+        "storeready.autonomous"
+      ]
+    },
+    {
+      "id": "autonomous.security.coverage:1",
+      "store": "cross-store",
+      "category": "security",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Security scanner coverage gap",
+      "summary": "osv: not installed",
+      "evidence": [],
+      "remediation": [
+        "Run the missing automated evidence source and rerun StoreReady."
+      ],
+      "references": [
+        "https://mas.owasp.org/MASVS/",
+        "https://csrc.nist.gov/pubs/sp/800/218/final"
+      ],
+      "sourceTool": "storeready.autonomous",
+      "sourceVersion": "1",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "automationState": "AUTOMATION_PENDING",
+      "corroboratedBy": [
+        "storeready.autonomous"
+      ]
+    },
+    {
+      "id": "autonomous.security.coverage:2",
+      "store": "cross-store",
+      "category": "security",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Security scanner coverage gap",
+      "summary": "trivy: not installed",
+      "evidence": [],
+      "remediation": [
+        "Run the missing automated evidence source and rerun StoreReady."
+      ],
+      "references": [
+        "https://mas.owasp.org/MASVS/",
+        "https://csrc.nist.gov/pubs/sp/800/218/final"
+      ],
+      "sourceTool": "storeready.autonomous",
+      "sourceVersion": "1",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "automationState": "AUTOMATION_PENDING",
+      "corroboratedBy": [
+        "storeready.autonomous"
+      ]
+    },
+    {
+      "id": "autonomous.security.coverage:3",
+      "store": "cross-store",
+      "category": "security",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Security scanner coverage gap",
+      "summary": "opengrep: not installed",
+      "evidence": [],
+      "remediation": [
+        "Run the missing automated evidence source and rerun StoreReady."
+      ],
+      "references": [
+        "https://mas.owasp.org/MASVS/",
+        "https://csrc.nist.gov/pubs/sp/800/218/final"
+      ],
+      "sourceTool": "storeready.autonomous",
+      "sourceVersion": "1",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "automationState": "AUTOMATION_PENDING",
+      "corroboratedBy": [
+        "storeready.autonomous"
+      ]
+    },
+    {
+      "id": "autonomous.security.coverage:4",
+      "store": "cross-store",
+      "category": "security",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Security scanner coverage gap",
+      "summary": "syft: unavailable",
+      "evidence": [],
+      "remediation": [
+        "Run the missing automated evidence source and rerun StoreReady."
+      ],
+      "references": [
+        "https://mas.owasp.org/MASVS/",
+        "https://csrc.nist.gov/pubs/sp/800/218/final"
+      ],
+      "sourceTool": "storeready.autonomous",
+      "sourceVersion": "1",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "automationState": "AUTOMATION_PENDING",
+      "corroboratedBy": [
+        "storeready.autonomous"
+      ]
+    },
+    {
+      "id": "autonomous.security.coverage:5",
+      "store": "cross-store",
+      "category": "security",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Security scanner coverage gap",
+      "summary": "grype: unavailable",
+      "evidence": [],
+      "remediation": [
+        "Run the missing automated evidence source and rerun StoreReady."
+      ],
+      "references": [
+        "https://mas.owasp.org/MASVS/",
+        "https://csrc.nist.gov/pubs/sp/800/218/final"
+      ],
+      "sourceTool": "storeready.autonomous",
+      "sourceVersion": "1",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "automationState": "AUTOMATION_PENDING",
+      "corroboratedBy": [
+        "storeready.autonomous"
+      ]
+    },
+    {
+      "id": "autonomous.security.coverage:6",
+      "store": "cross-store",
+      "category": "security",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Security scanner coverage gap",
+      "summary": "zizmor: unavailable",
+      "evidence": [],
+      "remediation": [
+        "Run the missing automated evidence source and rerun StoreReady."
+      ],
+      "references": [
+        "https://mas.owasp.org/MASVS/",
+        "https://csrc.nist.gov/pubs/sp/800/218/final"
+      ],
+      "sourceTool": "storeready.autonomous",
+      "sourceVersion": "1",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "automationState": "AUTOMATION_PENDING",
+      "corroboratedBy": [
+        "storeready.autonomous"
+      ]
+    },
+    {
+      "id": "autonomous.security.coverage:7",
+      "store": "cross-store",
+      "category": "security",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Security scanner coverage gap",
+      "summary": "actionlint: unavailable",
+      "evidence": [],
+      "remediation": [
+        "Run the missing automated evidence source and rerun StoreReady."
+      ],
+      "references": [
+        "https://mas.owasp.org/MASVS/",
+        "https://csrc.nist.gov/pubs/sp/800/218/final"
+      ],
+      "sourceTool": "storeready.autonomous",
+      "sourceVersion": "1",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "automationState": "AUTOMATION_PENDING",
+      "corroboratedBy": [
+        "storeready.autonomous"
+      ]
+    },
+    {
+      "id": "autonomous.security.coverage:artifact",
+      "store": "cross-store",
+      "category": "security",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Exact release artifact security evidence is missing",
+      "summary": "Inspect the exact APK/AAB/IPA used for release.",
+      "evidence": [],
+      "remediation": [
+        "Run the missing automated evidence source and rerun StoreReady."
+      ],
+      "references": [
+        "https://mas.owasp.org/MASVS/",
+        "https://csrc.nist.gov/pubs/sp/800/218/final"
+      ],
+      "sourceTool": "storeready.autonomous",
+      "sourceVersion": "1",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "automationState": "AUTOMATION_PENDING",
+      "corroboratedBy": [
+        "storeready.autonomous"
+      ]
+    },
+    {
+      "id": "autonomous.security.coverage:runtime",
+      "store": "cross-store",
+      "category": "security",
+      "severity": "REVIEW",
+      "confidence": "high",
+      "evidenceQuality": "DERIVED",
+      "status": "AUTOMATION_PENDING",
+      "title": "Runtime security/privacy evidence is missing",
+      "summary": "Execute the release build and import runtime/network evidence.",
+      "evidence": [],
+      "remediation": [
+        "Run the missing automated evidence source and rerun StoreReady."
+      ],
+      "references": [
+        "https://mas.owasp.org/MASVS/",
+        "https://csrc.nist.gov/pubs/sp/800/218/final"
+      ],
+      "sourceTool": "storeready.autonomous",
+      "sourceVersion": "1",
+      "policyVersion": "2026-09-21",
+      "releaseBlocking": false,
+      "requiresManualVerification": false,
+      "automationState": "AUTOMATION_PENDING",
+      "corroboratedBy": [
+        "storeready.autonomous"
+      ]
+    }
+  ],
+  "coverage": {
+    "scanner": true,
+    "artifact": false,
+    "runtime": false
+  },
+  "sources": {
+    "owasp": "https://mas.owasp.org/MASVS/",
+    "nist": "https://csrc.nist.gov/pubs/sp/800/218/final"
+  }
+}

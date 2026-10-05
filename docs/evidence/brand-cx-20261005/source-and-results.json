@@ -1,0 +1,42 @@
+{
+  "sourceSha": "67486b7af44d4d67bee2a3ec0f2d786d5c127083",
+  "applicationSha": "3ace5b5c845c2d3beadf77b492f8f8e41626b62d",
+  "branch": "fix/brand-revenuecat-customer-experience-20261005",
+  "baselineTests": 329,
+  "finalTests": 333,
+  "cleanTests": 333,
+  "customerRegressions": 4,
+  "baselineRegressionFailures": 4,
+  "browserChecks": {
+    "browser": 21,
+    "features": 33,
+    "completion": 17,
+    "privacy": 2
+  },
+  "native": "compileDebugSources compileReleaseSources processReleaseManifest; 220 tasks; no signing/artifact/device tests",
+  "revenueCatDashboard": "not verified: no relevant authorized action found in discovery",
+  "releaseConfig": {
+    "billingEnabled": false,
+    "cloudPhotoRendersEnabled": true
+  },
+  "storeReady": {
+    "sha": "16e71ad3dcf32daa782ad9294ff85f668747e9ac",
+    "rootVersion": "2.1.0",
+    "cliVersion": "1.0.0",
+    "status": "BLOCKED",
+    "counts": {
+      "PASS": 3,
+      "BLOCKED": 5,
+      "ACTION_REQUIRED": 5,
+      "PLATFORM_REQUIRED": 9,
+      "AUTOMATION_PENDING": 40,
+      "NOT_APPLICABLE": 0
+    },
+    "invocation": "node /workspace/StoreReady/packages/cli/bin/storeready.mjs assure /workspace/Chisel --stores google-play --privacy-policy-file /workspace/Chisel/docs/privacy-policy.html --home /workspace/chisel-cx-evidence/store-home --out /workspace/chisel-cx-evidence/storeready"
+  },
+  "logo": {
+    "generated": "chisel-android/www/chisel-logo.png",
+    "sha256": "d7d5c520afcc78f71ef8dfe6097b0ddcd9a2430188fd92828926b5930cef4583",
+    "companion": "manually authored SVG, rasterized into native density assets"
+  }
+}
