@@ -1,0 +1,7 @@
+{
+  "artifact": "retained debug APK, bf826193988e91c2edc457b3ab405352594857e2 only",
+  "sha256": "8ed470ae883a70b10681aa1be3d83eb8d4222a6b80329958ead8c8ce5f43461d",
+  "sharedObjects": [],
+  "finalSignedAab": "NOT_RUN: developer-owned upload key unavailable; no key created",
+  "device16KB": "NOT_RUN: no attached device/emulator"
+}

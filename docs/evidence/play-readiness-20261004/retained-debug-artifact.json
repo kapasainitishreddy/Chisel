@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-04T22:44:41.685Z",
+  "file": "/workspace/chisel-build/chisel-debug.apk",
+  "kind": "apk",
+  "sha256": "8ed470ae883a70b10681aa1be3d83eb8d4222a6b80329958ead8c8ce5f43461d",
+  "sizeBytes": 9482141,
+  "archive": {
+    "zip": true,
+    "entryCount": 1058,
+    "androidManifest": "AndroidManifest.xml",
+    "infoPlist": null,
+    "privacyManifest": null,
+    "signatureEntries": [
+      "META-INF/CERT.SF",
+      "META-INF/CERT.RSA"
+    ],
+    "architectures": [],
+    "unsafeEntries": []
+  },
+  "findings": []
+}

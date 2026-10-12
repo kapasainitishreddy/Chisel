@@ -1,0 +1,11 @@
+import {readBytes} from '../credit-studio/provider.mjs';
+const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+export function createHandler({origins=[],authenticate,begin,removeOutputs,eraseData,deleteIdentity,complete}){
+ return async req=>{const origin=req.headers.get('origin');const headers={'Content-Type':'application/json','Cache-Control':'no-store','Vary':'Origin',...(origin&&origins.includes(origin)?{'Access-Control-Allow-Origin':origin,'Access-Control-Allow-Headers':'authorization,apikey,content-type','Access-Control-Allow-Methods':'DELETE,OPTIONS'}:{})};const json=(data,status=200)=>new Response(JSON.stringify(data),{status,headers});
+ if(origin&&!origins.includes(origin))return json({error:'origin_not_allowed'},403);if(req.method==='OPTIONS')return new Response(null,{status:204,headers});if(req.method!=='DELETE')return json({error:'method_not_allowed'},405);
+ let user;try{user=await authenticate(req);}catch{}if(!UUID.test(user||''))return json({error:'sign_in_required'},401);
+ let body;try{if(!/^application\/json(?:;|$)/i.test(req.headers.get('content-type')||''))throw Error();body=JSON.parse(new TextDecoder().decode(await readBytes(req,512)));}catch{return json({error:'invalid_confirmation'},400);}
+ if(body?.confirmation!=='DELETE'||Object.keys(body).some(k=>k!=='confirmation'))return json({error:'invalid_confirmation'},400);
+ try{for(let batch=0;batch<10;batch++){const plan=await begin(user);if(plan?.state==='active_jobs')return json({error:'active_jobs',message:'Wait for active edits to finish, then retry.'},409);if(plan?.state!=='ready'||!Array.isArray(plan.paths)||plan.paths.length>1000)throw Error('invalid_deletion_plan');const pattern=new RegExp(`^(PRODUCTION|SANDBOX)/${user}/[0-9a-f-]{36}\\.jpg$`,'i');if(plan.paths.some(p=>typeof p!=='string'||!pattern.test(p)))throw Error('foreign_output');await removeOutputs(plan.paths,user);if(plan.remaining)continue;await eraseData(user);await deleteIdentity(user);await complete(user);return json({deleted:true});}return json({pending:true,message:'Cleanup is continuing. Retry account deletion to finish.'},202);}catch{return json({error:'deletion_pending',message:'Cleanup could not finish. Your account is blocked from new purchases and edits after cleanup starts. Retry to finish.'},503);}
+ };
+}

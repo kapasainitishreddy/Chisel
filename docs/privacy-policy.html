@@ -5,21 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Chisel — Privacy Policy</title>
 <style>
-  body{margin:0;background:#0A0A0B;color:#F2EDE4;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;line-height:1.65}
+  :root{--bg:#F6F3EE;--text:#1C1915;--muted:#5C564C;--accent:#9A3412;--line:#D9D1C6}
+  @media(prefers-color-scheme:dark){:root{--bg:#141210;--text:#F7F4EF;--muted:#D2C9BC;--accent:#F2C4A2;--line:#3F382F}}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:"Public Sans",ui-sans-serif,system-ui,sans-serif;line-height:1.65}
   .wrap{max-width:760px;margin:0 auto;padding:48px 22px 80px}
-  h1{font-family:Georgia,serif;font-size:40px;margin:0 0 4px;color:#E2C58A}
-  h2{font-family:Georgia,serif;font-size:24px;margin:32px 0 8px;color:#C9A86A}
-  .meta{color:#C9C2B4;font-size:13px;margin-bottom:8px}
-  p,li{color:#DCD6C9}
-  a{color:#C9A86A}
-  code{background:rgba(201,168,106,.1);padding:1px 5px;border-radius:4px;color:#E2C58A}
-  hr{border:0;border-top:1px solid rgba(201,168,106,.2);margin:28px 0}
+  h1{font-size:40px;margin:0 0 4px;letter-spacing:-.04em;font-weight:700}
+  h2{font-size:24px;margin:32px 0 8px;letter-spacing:-.03em;color:var(--accent)}
+  .meta{color:var(--muted);font-size:13px;margin-bottom:8px}
+  p,li{color:var(--muted)}
+  a{color:var(--accent)}
+  code{background:color-mix(in srgb,var(--accent) 16%,transparent);padding:1px 5px;border-radius:4px;color:var(--accent)}
+  hr{border:0;border-top:1px solid var(--line);margin:28px 0}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>Chisel — Privacy Policy</h1>
-  <p class="meta">Last updated: 20 September 2026</p>
+  <p class="meta">Last updated: 12 October 2026</p>
   <p>Chisel ("the app", "we") is a facial self-improvement app: on-device facial analysis, grooming and makeup guidance, affirmations, face and neck routines, and progress tracking. This policy explains what data the app handles. Core analysis and personal photos stay local unless you explicitly submit a photo for optional cloud editing. Paid accounts and credit purchases are disabled in the current free-first release; they must not be enabled until the account-deletion, retention, billing and production-service gates described below are complete.</p>
 
   <h2>Who we are</h2>
@@ -29,6 +31,9 @@
   <p>Your camera feed, facial measurements, scan history, progress photos, makeup looks, routines, streaks, sleep/water/salt logs, and identity setting are processed and stored <strong>locally on your device</strong> (in the app's local storage). They are not uploaded to us and are not visible to us.</p>
   <p><strong>Your personal photo.</strong> When you choose or take a photo in the Your photo control, Chisel saves the original file and a smaller display copy in local browser/app storage (IndexedDB). The display copy personalizes Home, Training, Skin and Style. Saving this photo does not automatically upload it or run analysis. Use my photo in Skin explicitly selects the original for on-device analysis. Any optional cloud rendering uses the separate consent flow described below.</p>
 
+  <h2>Encrypted backup files and local reports</h2>
+  <p>Private tools can export selected local records as a passphrase-encrypted file. Supported groups include scans, progress thumbnails, Precision records, programs, hydration, sleep and streak history. Original personal portraits, the AI-look gallery and account credentials are not included. Live app storage is not encrypted by this feature, and Chisel does not provide native PIN or biometric vault locking. The file uses AES-256-GCM with a passphrase-derived key. We cannot recover a forgotten passphrase. Downloaded backups and discussion reports remain wherever you save or share them; local or cloud-account deletion does not remove those copies. Restore requires an explicit confirmation and replaces the supported groups present in that file.</p>
+
   <h2>Data sent off your device</h2>
   <ul>
     <li><strong>Cloud photo editing (optional).</strong> After confirmation, a prepared photo is sent over an encrypted connection to our backend and the image provider named in the confirmation. The legacy path uses Replicate. The optional credit-backed path uses OpenAI after a provider-and-credit confirmation. Its generated result is stored in private backend storage for authenticated retrieval; the original input is not saved to that output bucket. AI results can contain artifacts and are not measurements of progress.</li>
@@ -37,19 +42,20 @@
   </ul>
 
   <h2>Accounts and data minimization</h2>
-  <p>Free local tools do not require an account. Paid credit accounts are not available in the current release. If that feature is enabled in a later release, it will use an email sign-in account and this policy, the in-app account controls, the deletion workflow and the Play Data safety answers will be updated and re-verified before activation. We do not receive card details or access your contacts or location through this feature. No advertising or third-party analytics SDK is added by the credit feature.</p>
+  <p>Free local tools do not require an account. New paid credit accounts and purchases remain disabled. The existing-account management control can request an email code without creating an account, and offers sign-out and account deletion when the configured backend is available. These new backend lifecycle services are not yet deployed or accepted for live use. If that feature is enabled in a later release, it will use an email sign-in account and this policy, the in-app account controls, the deletion workflow and the Play Data safety answers will be updated and re-verified before activation. We do not receive card details or access your contacts or location through this feature. No advertising or third-party analytics SDK is added by the credit feature.</p>
 
   <h2>How data is shared</h2>
   <p>We do not sell your data. Data is shared only as described above: the photo you explicitly submit for cloud editing is shared with the named provider, OpenAI or Replicate, for that purpose, and purchase data is handled by Google Play / RevenueCat.</p>
 
   <h2>Data retention &amp; deletion</h2>
-  <p>You can remove your saved personal photo using Remove photo in Your photo. Clear all data in the app includes the stored personal original and display copy. These controls remove Chisel's copies, not the original file in your phone's gallery. On-device data is also removed when you uninstall the app or clear its storage in your device settings. Clear all data removes local photos, saved looks and local settings; it does not delete your cloud account because paid accounts are disabled in this release. If paid accounts are enabled later, an in-app account-deletion request, a web/email request path, backend deletion, provider deletion requests, retention exceptions and Play disclosures will be completed and tested before activation; backend records would include the credit ledger and render-job metadata needed to fulfill and reconcile purchases. You can contact <a href="mailto:nittureddy26@gmail.com">nittureddy26@gmail.com</a> about cloud data requests; we will handle them subject to fraud-prevention and legal-retention requirements.</p>
+  <p>You can remove your saved personal photo using Remove photo in Your photo. Clear all data in the app includes the stored personal original and display copy. These controls remove Chisel's copies, not the original file in your phone's gallery. On-device data is also removed when you uninstall the app or clear its storage in your device settings. Clear all data removes local photos, saved looks and local settings; it does not delete your cloud account or revoke downloaded copies. The existing-account control is a separate action: its new backend deletion and output-cleanup implementation remains undeployed and requires live acceptance. The public request page is <a href="https://github.com/kapasainitishreddy/Chisel/blob/main/docs/account-deletion.html">Delete your Chisel data</a>, and the same page is bundled in the app. Before paid services are enabled, that request path, provider deletion requests, retention exceptions and Play disclosures will also be completed and tested; backend records would include the credit ledger and render-job metadata needed to fulfill and reconcile purchases. You can contact <a href="mailto:nittureddy26@gmail.com">nittureddy26@gmail.com</a> about cloud data requests; we will handle them subject to fraud-prevention and legal-retention requirements.</p>
 
   <h2>Security</h2>
   <p>Data sent off the device is transmitted over TLS (HTTPS). Paid requests are not enabled in the current release. API secrets remain on the backend, not in the Android app. Provider retention rules are separate from Chisel's local deletion controls. Cloud rendering is an optional, separately disclosed path; paid sales remain disabled until production configuration, deletion, retention, billing and review are complete.</p>
 
   <h2>Permissions</h2>
   <p><strong>Camera</strong> — required for live facial analysis, affirmations, try-on and makeup features. The camera is used only while you are in those screens. The optional Take photo action uses your device's photo-capture interface; Choose photo opens its file or photo picker.</p>
+  <p><strong>Notifications (optional).</strong> When you turn on local reminders, Chisel requests notification permission on Android versions that require it. Reminders are scheduled on your device; they do not upload your routines or logs. You can turn reminders off in the app and change permission in Android Settings.</p>
 
   <h2>Medical disclaimer</h2>
   <p>Chisel provides cosmetic and educational guidance only. It is not a medical device and does not diagnose, treat, or cure any condition. For skin, hair, dental or health concerns, consult a qualified professional.</p>

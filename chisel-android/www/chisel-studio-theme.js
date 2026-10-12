@@ -5,7 +5,7 @@
   else root.ChiselStudioTheme=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(root){
 'use strict';
-const TOKENS=Object.freeze({bg:'#101314',surface:'#1b1f20',text:'#f4f3ed',muted:'#b8bfbc',accent:'#e1d5bb',sage:'#b2d4c0'});
+const TOKENS=Object.freeze({bg:'#141210',surface:'#211E1A',text:'#F7F4EF',muted:'#D2C9BC',accent:'#F2C4A2',sage:'#B7DCC8'});
 const SESSION_ORDER=['jaw-chin','cheek-builder','chin-support','release','full','yoga','massage-morning','massage-jaw','massage-depuff','massage-reset','massage-full','massage-evening','massage-screen','quick'];
 const validScore=v=>typeof v==='number'&&Number.isFinite(v)&&v>=0&&v<=100;
 function qualityLabel(value){return validScore(value)?`${Math.round(value)}/100 capture quality`:'Not measured';}

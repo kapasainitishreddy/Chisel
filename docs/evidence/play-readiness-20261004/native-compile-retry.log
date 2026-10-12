@@ -1,0 +1,685 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.11.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :app
+Unable to initialize metrics, ensure /home/agent/.android is writable, details: /home/agent/.android/analytics.settings (No such file or directory)
+WARNING: Using flatDir should be avoided because it doesn't support any meta-data formats.
+
+> Configure project :capacitor-cordova-android-plugins
+WARNING: Using flatDir should be avoided because it doesn't support any meta-data formats.
+
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :capacitor-android:preBuild UP-TO-DATE
+> Task :capacitor-android:preDebugBuild UP-TO-DATE
+> Task :capacitor-android:writeDebugAarMetadata UP-TO-DATE
+> Task :capacitor-camera:preBuild UP-TO-DATE
+> Task :capacitor-camera:preDebugBuild UP-TO-DATE
+> Task :capacitor-camera:writeDebugAarMetadata UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:preBuild UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:preDebugBuild UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:writeDebugAarMetadata
+> Task :capacitor-haptics:preBuild UP-TO-DATE
+> Task :capacitor-haptics:preDebugBuild UP-TO-DATE
+> Task :capacitor-haptics:writeDebugAarMetadata UP-TO-DATE
+> Task :capacitor-local-notifications:preBuild UP-TO-DATE
+> Task :capacitor-local-notifications:preDebugBuild UP-TO-DATE
+> Task :capacitor-local-notifications:writeDebugAarMetadata UP-TO-DATE
+> Task :capacitor-splash-screen:preBuild UP-TO-DATE
+> Task :capacitor-splash-screen:preDebugBuild UP-TO-DATE
+> Task :capacitor-splash-screen:writeDebugAarMetadata UP-TO-DATE
+> Task :capacitor-status-bar:preBuild UP-TO-DATE
+> Task :capacitor-status-bar:preDebugBuild UP-TO-DATE
+> Task :capacitor-status-bar:writeDebugAarMetadata UP-TO-DATE
+> Task :revenuecat-purchases-capacitor:preBuild UP-TO-DATE
+> Task :revenuecat-purchases-capacitor:preDebugBuild UP-TO-DATE
+> Task :revenuecat-purchases-capacitor:writeDebugAarMetadata UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :capacitor-android:generateDebugResValues UP-TO-DATE
+> Task :capacitor-android:generateDebugResources UP-TO-DATE
+> Task :capacitor-android:packageDebugResources UP-TO-DATE
+> Task :capacitor-camera:generateDebugResValues UP-TO-DATE
+> Task :capacitor-camera:generateDebugResources UP-TO-DATE
+> Task :capacitor-camera:packageDebugResources UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:generateDebugResValues
+> Task :capacitor-cordova-android-plugins:generateDebugResources
+> Task :capacitor-cordova-android-plugins:packageDebugResources
+> Task :capacitor-haptics:generateDebugResValues UP-TO-DATE
+> Task :capacitor-haptics:generateDebugResources UP-TO-DATE
+> Task :capacitor-haptics:packageDebugResources UP-TO-DATE
+> Task :capacitor-local-notifications:generateDebugResValues UP-TO-DATE
+> Task :capacitor-local-notifications:generateDebugResources UP-TO-DATE
+> Task :capacitor-local-notifications:packageDebugResources UP-TO-DATE
+> Task :capacitor-splash-screen:generateDebugResValues UP-TO-DATE
+> Task :capacitor-splash-screen:generateDebugResources UP-TO-DATE
+> Task :capacitor-splash-screen:packageDebugResources UP-TO-DATE
+> Task :capacitor-status-bar:generateDebugResValues UP-TO-DATE
+> Task :capacitor-status-bar:generateDebugResources UP-TO-DATE
+> Task :capacitor-status-bar:packageDebugResources UP-TO-DATE
+> Task :revenuecat-purchases-capacitor:generateDebugResValues UP-TO-DATE
+> Task :revenuecat-purchases-capacitor:generateDebugResources UP-TO-DATE
+> Task :revenuecat-purchases-capacitor:packageDebugResources UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :capacitor-android:extractDeepLinksDebug UP-TO-DATE
+> Task :capacitor-android:processDebugManifest UP-TO-DATE
+> Task :capacitor-camera:extractDeepLinksDebug UP-TO-DATE
+> Task :capacitor-camera:processDebugManifest UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:extractDeepLinksDebug
+> Task :capacitor-cordova-android-plugins:processDebugManifest
+> Task :capacitor-haptics:extractDeepLinksDebug UP-TO-DATE
+> Task :capacitor-haptics:processDebugManifest UP-TO-DATE
+> Task :capacitor-local-notifications:extractDeepLinksDebug UP-TO-DATE
+> Task :capacitor-local-notifications:processDebugManifest UP-TO-DATE
+> Task :capacitor-splash-screen:extractDeepLinksDebug UP-TO-DATE
+> Task :capacitor-splash-screen:processDebugManifest UP-TO-DATE
+> Task :capacitor-status-bar:extractDeepLinksDebug UP-TO-DATE
+> Task :capacitor-status-bar:processDebugManifest UP-TO-DATE
+> Task :revenuecat-purchases-capacitor:extractDeepLinksDebug UP-TO-DATE
+> Task :revenuecat-purchases-capacitor:processDebugManifest UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :capacitor-android:compileDebugLibraryResources UP-TO-DATE
+> Task :capacitor-android:parseDebugLocalResources UP-TO-DATE
+> Task :capacitor-android:generateDebugRFile UP-TO-DATE
+> Task :capacitor-camera:compileDebugLibraryResources UP-TO-DATE
+> Task :capacitor-camera:parseDebugLocalResources UP-TO-DATE
+> Task :capacitor-camera:generateDebugRFile UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:compileDebugLibraryResources
+> Task :capacitor-cordova-android-plugins:parseDebugLocalResources
+> Task :capacitor-cordova-android-plugins:generateDebugRFile
+> Task :capacitor-haptics:compileDebugLibraryResources UP-TO-DATE
+> Task :capacitor-haptics:parseDebugLocalResources UP-TO-DATE
+> Task :capacitor-haptics:generateDebugRFile UP-TO-DATE
+> Task :capacitor-local-notifications:compileDebugLibraryResources UP-TO-DATE
+> Task :capacitor-local-notifications:parseDebugLocalResources UP-TO-DATE
+> Task :capacitor-local-notifications:generateDebugRFile UP-TO-DATE
+> Task :capacitor-splash-screen:compileDebugLibraryResources UP-TO-DATE
+> Task :capacitor-splash-screen:parseDebugLocalResources UP-TO-DATE
+> Task :capacitor-splash-screen:generateDebugRFile UP-TO-DATE
+> Task :capacitor-status-bar:compileDebugLibraryResources UP-TO-DATE
+> Task :capacitor-status-bar:parseDebugLocalResources UP-TO-DATE
+> Task :capacitor-status-bar:generateDebugRFile UP-TO-DATE
+> Task :revenuecat-purchases-capacitor:compileDebugLibraryResources UP-TO-DATE
+> Task :revenuecat-purchases-capacitor:parseDebugLocalResources UP-TO-DATE
+> Task :revenuecat-purchases-capacitor:generateDebugRFile UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :capacitor-android:javaPreCompileDebug UP-TO-DATE
+> Task :capacitor-android:compileDebugJavaWithJavac UP-TO-DATE
+> Task :capacitor-android:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :capacitor-camera:javaPreCompileDebug UP-TO-DATE
+> Task :capacitor-camera:compileDebugJavaWithJavac UP-TO-DATE
+> Task :capacitor-camera:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:javaPreCompileDebug
+> Task :capacitor-cordova-android-plugins:compileDebugJavaWithJavac NO-SOURCE
+> Task :capacitor-cordova-android-plugins:bundleLibCompileToJarDebug
+> Task :capacitor-haptics:javaPreCompileDebug UP-TO-DATE
+> Task :capacitor-haptics:compileDebugJavaWithJavac UP-TO-DATE
+> Task :capacitor-haptics:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :capacitor-local-notifications:javaPreCompileDebug UP-TO-DATE
+> Task :capacitor-local-notifications:compileDebugJavaWithJavac UP-TO-DATE
+> Task :capacitor-local-notifications:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :capacitor-splash-screen:javaPreCompileDebug UP-TO-DATE
+> Task :capacitor-splash-screen:compileDebugJavaWithJavac UP-TO-DATE
+> Task :capacitor-splash-screen:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :capacitor-status-bar:javaPreCompileDebug UP-TO-DATE
+> Task :capacitor-status-bar:compileDebugJavaWithJavac UP-TO-DATE
+> Task :capacitor-status-bar:bundleLibCompileToJarDebug UP-TO-DATE
+> Task :revenuecat-purchases-capacitor:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :revenuecat-purchases-capacitor:compileDebugKotlin UP-TO-DATE
+> Task :revenuecat-purchases-capacitor:javaPreCompileDebug UP-TO-DATE
+> Task :revenuecat-purchases-capacitor:compileDebugJavaWithJavac NO-SOURCE
+> Task :revenuecat-purchases-capacitor:bundleLibCompileToJarDebug
+> Task :app:compileDebugJavaWithJavac
+> Task :app:compileDebugSources
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:javaPreCompileRelease UP-TO-DATE
+> Task :capacitor-android:preReleaseBuild UP-TO-DATE
+> Task :capacitor-android:writeReleaseAarMetadata UP-TO-DATE
+> Task :capacitor-camera:preReleaseBuild UP-TO-DATE
+> Task :capacitor-camera:writeReleaseAarMetadata UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:preReleaseBuild UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:writeReleaseAarMetadata
+> Task :capacitor-haptics:preReleaseBuild UP-TO-DATE
+> Task :capacitor-haptics:writeReleaseAarMetadata UP-TO-DATE
+> Task :capacitor-local-notifications:preReleaseBuild UP-TO-DATE
+> Task :capacitor-local-notifications:writeReleaseAarMetadata UP-TO-DATE
+> Task :capacitor-splash-screen:preReleaseBuild UP-TO-DATE
+> Task :capacitor-splash-screen:writeReleaseAarMetadata UP-TO-DATE
+> Task :capacitor-status-bar:preReleaseBuild UP-TO-DATE
+> Task :capacitor-status-bar:writeReleaseAarMetadata UP-TO-DATE
+> Task :revenuecat-purchases-capacitor:preReleaseBuild UP-TO-DATE
+> Task :revenuecat-purchases-capacitor:writeReleaseAarMetadata UP-TO-DATE
+> Task :app:checkReleaseAarMetadata UP-TO-DATE
+> Task :app:generateReleaseResValues UP-TO-DATE
+> Task :capacitor-android:generateReleaseResValues UP-TO-DATE
+> Task :capacitor-android:generateReleaseResources UP-TO-DATE
+> Task :capacitor-android:packageReleaseResources UP-TO-DATE
+> Task :capacitor-camera:generateReleaseResValues UP-TO-DATE
+> Task :capacitor-camera:generateReleaseResources UP-TO-DATE
+> Task :capacitor-camera:packageReleaseResources UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:generateReleaseResValues
+> Task :capacitor-cordova-android-plugins:generateReleaseResources
+> Task :capacitor-cordova-android-plugins:packageReleaseResources
+> Task :capacitor-haptics:generateReleaseResValues UP-TO-DATE
+> Task :capacitor-haptics:generateReleaseResources UP-TO-DATE
+> Task :capacitor-haptics:packageReleaseResources UP-TO-DATE
+> Task :capacitor-local-notifications:generateReleaseResValues UP-TO-DATE
+> Task :capacitor-local-notifications:generateReleaseResources UP-TO-DATE
+> Task :capacitor-local-notifications:packageReleaseResources UP-TO-DATE
+> Task :capacitor-splash-screen:generateReleaseResValues UP-TO-DATE
+> Task :capacitor-splash-screen:generateReleaseResources UP-TO-DATE
+> Task :capacitor-splash-screen:packageReleaseResources UP-TO-DATE
+> Task :capacitor-status-bar:generateReleaseResValues UP-TO-DATE
+> Task :capacitor-status-bar:generateReleaseResources UP-TO-DATE
+> Task :capacitor-status-bar:packageReleaseResources UP-TO-DATE
+> Task :revenuecat-purchases-capacitor:generateReleaseResValues UP-TO-DATE
+> Task :revenuecat-purchases-capacitor:generateReleaseResources UP-TO-DATE
+> Task :revenuecat-purchases-capacitor:packageReleaseResources UP-TO-DATE
+> Task :app:mapReleaseSourceSetPaths UP-TO-DATE
+> Task :app:generateReleaseResources UP-TO-DATE
+> Task :app:mergeReleaseResources UP-TO-DATE
+> Task :app:packageReleaseResources UP-TO-DATE
+> Task :app:parseReleaseLocalResources UP-TO-DATE
+> Task :app:createReleaseCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksRelease UP-TO-DATE
+> Task :capacitor-android:extractDeepLinksRelease UP-TO-DATE
+> Task :capacitor-android:processReleaseManifest UP-TO-DATE
+> Task :capacitor-camera:extractDeepLinksRelease UP-TO-DATE
+> Task :capacitor-camera:processReleaseManifest UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:extractDeepLinksRelease
+> Task :capacitor-cordova-android-plugins:processReleaseManifest
+> Task :capacitor-haptics:extractDeepLinksRelease UP-TO-DATE
+> Task :capacitor-haptics:processReleaseManifest UP-TO-DATE
+> Task :capacitor-local-notifications:extractDeepLinksRelease UP-TO-DATE
+> Task :capacitor-local-notifications:processReleaseManifest UP-TO-DATE
+> Task :capacitor-splash-screen:extractDeepLinksRelease UP-TO-DATE
+> Task :capacitor-splash-screen:processReleaseManifest UP-TO-DATE
+> Task :capacitor-status-bar:extractDeepLinksRelease UP-TO-DATE
+> Task :capacitor-status-bar:processReleaseManifest UP-TO-DATE
+> Task :revenuecat-purchases-capacitor:extractDeepLinksRelease UP-TO-DATE
+> Task :revenuecat-purchases-capacitor:processReleaseManifest UP-TO-DATE
+> Task :app:processReleaseMainManifest UP-TO-DATE
+> Task :app:processReleaseManifest UP-TO-DATE
+> Task :app:processReleaseManifestForPackage UP-TO-DATE
+> Task :capacitor-android:compileReleaseLibraryResources UP-TO-DATE
+> Task :capacitor-android:parseReleaseLocalResources UP-TO-DATE
+> Task :capacitor-android:generateReleaseRFile UP-TO-DATE
+> Task :capacitor-camera:compileReleaseLibraryResources UP-TO-DATE
+> Task :capacitor-camera:parseReleaseLocalResources UP-TO-DATE
+> Task :capacitor-camera:generateReleaseRFile UP-TO-DATE
+> Task :capacitor-cordova-android-plugins:compileReleaseLibraryResources
+> Task :capacitor-cordova-android-plugins:parseReleaseLocalResources
+> Task :capacitor-cordova-android-plugins:generateReleaseRFile
+> Task :capacitor-haptics:compileReleaseLibraryResources UP-TO-DATE
+> Task :capacitor-haptics:parseReleaseLocalResources UP-TO-DATE
+> Task :capacitor-haptics:generateReleaseRFile UP-TO-DATE
+> Task :capacitor-local-notifications:compileReleaseLibraryResources UP-TO-DATE
+> Task :capacitor-local-notifications:parseReleaseLocalResources UP-TO-DATE
+> Task :capacitor-local-notifications:generateReleaseRFile UP-TO-DATE
+> Task :capacitor-splash-screen:compileReleaseLibraryResources UP-TO-DATE
+> Task :capacitor-splash-screen:parseReleaseLocalResources UP-TO-DATE
+> Task :capacitor-splash-screen:generateReleaseRFile UP-TO-DATE
+> Task :capacitor-status-bar:compileReleaseLibraryResources UP-TO-DATE
+> Task :capacitor-status-bar:parseReleaseLocalResources UP-TO-DATE
+> Task :capacitor-status-bar:generateReleaseRFile UP-TO-DATE
+> Task :revenuecat-purchases-capacitor:compileReleaseLibraryResources UP-TO-DATE
+> Task :revenuecat-purchases-capacitor:parseReleaseLocalResources UP-TO-DATE
+> Task :revenuecat-purchases-capacitor:generateReleaseRFile UP-TO-DATE
+> Task :app:processReleaseResources
+> Task :capacitor-android:javaPreCompileRelease
+
+> Task :capacitor-android:compileReleaseJavaWithJavac
+Note: Some input files use unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+> Task :capacitor-android:bundleLibCompileToJarRelease
+> Task :capacitor-camera:javaPreCompileRelease
+
+> Task :capacitor-camera:compileReleaseJavaWithJavac
+Note: /workspace/Chisel/chisel-android/node_modules/@capacitor/camera/android/src/main/java/com/capacitorjs/plugins/camera/CameraBottomSheetDialogFragment.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+
+> Task :capacitor-camera:bundleLibCompileToJarRelease
+> Task :capacitor-cordova-android-plugins:javaPreCompileRelease
+> Task :capacitor-cordova-android-plugins:compileReleaseJavaWithJavac NO-SOURCE
+> Task :capacitor-cordova-android-plugins:bundleLibCompileToJarRelease
+> Task :capacitor-haptics:javaPreCompileRelease
+> Task :capacitor-haptics:compileReleaseJavaWithJavac
+> Task :capacitor-haptics:bundleLibCompileToJarRelease
+> Task :capacitor-local-notifications:javaPreCompileRelease
+
+> Task :capacitor-local-notifications:compileReleaseJavaWithJavac
+Note: /workspace/Chisel/chisel-android/node_modules/@capacitor/local-notifications/android/src/main/java/com/capacitorjs/plugins/localnotifications/LocalNotificationsPlugin.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :capacitor-local-notifications:bundleLibCompileToJarRelease
+> Task :capacitor-splash-screen:javaPreCompileRelease
+> Task :capacitor-splash-screen:compileReleaseJavaWithJavac
+> Task :capacitor-splash-screen:bundleLibCompileToJarRelease
+> Task :capacitor-status-bar:javaPreCompileRelease
+
+> Task :capacitor-status-bar:compileReleaseJavaWithJavac
+Note: /workspace/Chisel/chisel-android/node_modules/@capacitor/status-bar/android/src/main/java/com/capacitorjs/plugins/statusbar/StatusBar.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+
+> Task :capacitor-status-bar:bundleLibCompileToJarRelease
+> Task :revenuecat-purchases-capacitor:compileReleaseKotlin
+> Task :revenuecat-purchases-capacitor:javaPreCompileRelease
+> Task :revenuecat-purchases-capacitor:compileReleaseJavaWithJavac NO-SOURCE
+> Task :revenuecat-purchases-capacitor:bundleLibCompileToJarRelease
+> Task :app:compileReleaseJavaWithJavac
+> Task :app:compileReleaseSources
+
+> Task :app:dependencies
+
+------------------------------------------------------------
+Project ':app'
+------------------------------------------------------------
+
+releaseRuntimeClasspath - Resolved configuration for runtime for variant: release
++--- androidx.appcompat:appcompat:1.7.0
+|    +--- androidx.activity:activity:1.7.0 -> 1.9.2
+|    |    +--- androidx.annotation:annotation:1.1.0 -> 1.8.1
+|    |    |    \--- androidx.annotation:annotation-jvm:1.8.1
+|    |    |         \--- org.jetbrains.kotlin:kotlin-stdlib:1.7.10 -> 2.0.21
+|    |    |              +--- org.jetbrains:annotations:13.0
+|    |    |              +--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0 -> 1.9.25 (c)
+|    |    |              +--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0 -> 1.9.25 (c)
+|    |    |              \--- org.jetbrains.kotlin:kotlin-stdlib-common:2.0.21 (c)
+|    |    +--- androidx.collection:collection:1.0.0 -> 1.4.2
+|    |    |    \--- androidx.collection:collection-jvm:1.4.2
+|    |    |         +--- androidx.annotation:annotation:1.8.1 (*)
+|    |    |         \--- org.jetbrains.kotlin:kotlin-stdlib:1.8.22 -> 2.0.21 (*)
+|    |    +--- androidx.core:core:1.13.0 -> 1.15.0
+|    |    |    +--- androidx.annotation:annotation:1.8.1 (*)
+|    |    |    +--- androidx.annotation:annotation-experimental:1.4.1
+|    |    |    |    \--- org.jetbrains.kotlin:kotlin-stdlib:1.7.10 -> 2.0.21 (*)
+|    |    |    +--- androidx.collection:collection:1.4.2 (*)
+|    |    |    +--- androidx.concurrent:concurrent-futures:1.0.0 -> 1.1.0
+|    |    |    |    +--- androidx.annotation:annotation:1.1.0 -> 1.8.1 (*)
+|    |    |    |    \--- com.google.guava:listenablefuture:1.0
+|    |    |    +--- androidx.interpolator:interpolator:1.0.0
+|    |    |    |    \--- androidx.annotation:annotation:1.0.0 -> 1.8.1 (*)
+|    |    |    +--- androidx.lifecycle:lifecycle-runtime:2.6.2
+|    |    |    |    +--- androidx.annotation:annotation:1.1.0 -> 1.8.1 (*)
+|    |    |    |    +--- androidx.arch.core:core-common:2.2.0
+|    |    |    |    |    \--- androidx.annotation:annotation:1.1.0 -> 1.8.1 (*)
+|    |    |    |    +--- androidx.arch.core:core-runtime:2.2.0
+|    |    |    |    |    +--- androidx.annotation:annotation:1.1.0 -> 1.8.1 (*)
+|    |    |    |    |    \--- androidx.arch.core:core-common:2.2.0 (*)
+|    |    |    |    +--- androidx.lifecycle:lifecycle-common:2.6.2
+|    |    |    |    |    +--- androidx.annotation:annotation:1.1.0 -> 1.8.1 (*)
+|    |    |    |    |    +--- org.jetbrains.kotlin:kotlin-stdlib:1.8.10 -> 2.0.21 (*)
+|    |    |    |    |    +--- org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4
+|    |    |    |    |    |    +--- org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4
+|    |    |    |    |    |    |    \--- org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4
+|    |    |    |    |    |    |         +--- org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.6.4
+|    |    |    |    |    |    |         |    +--- org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4 (c)
+|    |    |    |    |    |    |         |    +--- org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4 (c)
+|    |    |    |    |    |    |         |    \--- org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4 (c)
+|    |    |    |    |    |    |         +--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.21 -> 1.9.25
+|    |    |    |    |    |    |         |    +--- org.jetbrains.kotlin:kotlin-stdlib:1.9.25 -> 2.0.21 (*)
+|    |    |    |    |    |    |         |    \--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.25
+|    |    |    |    |    |    |         |         \--- org.jetbrains.kotlin:kotlin-stdlib:1.9.25 -> 2.0.21 (*)
+|    |    |    |    |    |    |         \--- org.jetbrains.kotlin:kotlin-stdlib-common:1.6.21 -> 2.0.21
+|    |    |    |    |    |    |              \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.21 (*)
+|    |    |    |    |    |    +--- org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.6.4 (*)
+|    |    |    |    |    |    \--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.21 -> 1.9.25 (*)
+|    |    |    |    |    +--- androidx.lifecycle:lifecycle-livedata:2.6.2 (c)
+|    |    |    |    |    +--- androidx.lifecycle:lifecycle-livedata-core:2.6.2 (c)
+|    |    |    |    |    +--- androidx.lifecycle:lifecycle-process:2.6.2 (c)
+|    |    |    |    |    +--- androidx.lifecycle:lifecycle-runtime:2.6.2 (c)
+|    |    |    |    |    +--- androidx.lifecycle:lifecycle-viewmodel:2.6.2 (c)
+|    |    |    |    |    \--- androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2 (c)
+|    |    |    |    +--- androidx.profileinstaller:profileinstaller:1.3.0 -> 1.3.1
+|    |    |    |    |    +--- androidx.annotation:annotation:1.2.0 -> 1.8.1 (*)
+|    |    |    |    |    +--- androidx.concurrent:concurrent-futures:1.1.0 (*)
+|    |    |    |    |    +--- androidx.startup:startup-runtime:1.1.1
+|    |    |    |    |    |    +--- androidx.annotation:annotation:1.1.0 -> 1.8.1 (*)
+|    |    |    |    |    |    \--- androidx.tracing:tracing:1.0.0 -> 1.2.0
+|    |    |    |    |    |         \--- androidx.annotation:annotation:1.2.0 -> 1.8.1 (*)
+|    |    |    |    |    \--- com.google.guava:listenablefuture:1.0
+|    |    |    |    +--- org.jetbrains.kotlin:kotlin-stdlib:1.8.10 -> 2.0.21 (*)
+|    |    |    |    +--- androidx.lifecycle:lifecycle-common:2.6.2 (c)
+|    |    |    |    +--- androidx.lifecycle:lifecycle-livedata-core:2.6.2 (c)
+|    |    |    |    +--- androidx.lifecycle:lifecycle-process:2.6.2 (c)
+|    |    |    |    +--- androidx.lifecycle:lifecycle-viewmodel:2.6.2 (c)
+|    |    |    |    +--- androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2 (c)
+|    |    |    |    \--- androidx.lifecycle:lifecycle-livedata:2.6.2 (c)
+|    |    |    +--- androidx.tracing:tracing:1.2.0 (*)
+|    |    |    +--- androidx.versionedparcelable:versionedparcelable:1.1.1
+|    |    |    |    +--- androidx.annotation:annotation:1.1.0 -> 1.8.1 (*)
+|    |    |    |    \--- androidx.collection:collection:1.0.0 -> 1.4.2 (*)
+|    |    |    +--- org.jetbrains.kotlin:kotlin-stdlib:1.8.22 -> 2.0.21 (*)
+|    |    |    \--- androidx.core:core-ktx:1.15.0 (c)
+|    |    +--- androidx.lifecycle:lifecycle-runtime:2.6.1 -> 2.6.2 (*)
+|    |    +--- androidx.lifecycle:lifecycle-viewmodel:2.6.1 -> 2.6.2
+|    |    |    +--- androidx.annotation:annotation:1.1.0 -> 1.8.1 (*)
+|    |    |    +--- org.jetbrains.kotlin:kotlin-stdlib:1.8.10 -> 2.0.21 (*)
+|    |    |    +--- androidx.lifecycle:lifecycle-common:2.6.2 (c)
+|    |    |    +--- androidx.lifecycle:lifecycle-livedata:2.6.2 (c)
+|    |    |    +--- androidx.lifecycle:lifecycle-livedata-core:2.6.2 (c)
+|    |    |    +--- androidx.lifecycle:lifecycle-process:2.6.2 (c)
+|    |    |    +--- androidx.lifecycle:lifecycle-runtime:2.6.2 (c)
+|    |    |    \--- androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2 (c)
+|    |    +--- androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.1 -> 2.6.2
+|    |    |    +--- androidx.annotation:annotation:1.0.0 -> 1.8.1 (*)
+|    |    |    +--- androidx.core:core-ktx:1.2.0 -> 1.15.0
+|    |    |    |    +--- androidx.annotation:annotation:1.8.1 (*)
+|    |    |    |    +--- androidx.core:core:1.15.0 (*)
+|    |    |    |    +--- org.jetbrains.kotlin:kotlin-stdlib:1.8.22 -> 2.0.21 (*)
+|    |    |    |    \--- androidx.core:core:1.15.0 (c)
+|    |    |    +--- androidx.lifecycle:lifecycle-livedata-core:2.6.2
+|    |    |    |    +--- androidx.arch.core:core-common:2.1.0 -> 2.2.0 (*)
+|    |    |    |    +--- androidx.arch.core:core-runtime:2.1.0 -> 2.2.0 (*)
+|    |    |    |    +--- androidx.lifecycle:lifecycle-common:2.6.2 (*)
+|    |    |    |    +--- org.jetbrains.kotlin:kotlin-stdlib:1.8.10 -> 2.0.21 (*)
+|    |    |    |    +--- androidx.lifecycle:lifecycle-common:2.6.2 (c)
+|    |    |    |    +--- androidx.lifecycle:lifecycle-livedata:2.6.2 (c)
+|    |    |    |    +--- androidx.lifecycle:lifecycle-process:2.6.2 (c)
+|    |    |    |    +--- androidx.lifecycle:lifecycle-runtime:2.6.2 (c)
+|    |    |    |    +--- androidx.lifecycle:lifecycle-viewmodel:2.6.2 (c)
+|    |    |    |    \--- androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2 (c)
+|    |    |    +--- androidx.lifecycle:lifecycle-viewmodel:2.6.2 (*)
+|    |    |    +--- androidx.savedstate:savedstate:1.2.1
+|    |    |    |    +--- androidx.annotation:annotation:1.1.0 -> 1.8.1 (*)
+|    |    |    |    +--- androidx.arch.core:core-common:2.1.0 -> 2.2.0 (*)
+|    |    |    |    +--- androidx.lifecycle:lifecycle-common:2.6.1 -> 2.6.2 (*)
+|    |    |    |    \--- org.jetbrains.kotlin:kotlin-stdlib:1.8.10 -> 2.0.21 (*)
+|    |    |    +--- org.jetbrains.kotlin:kotlin-stdlib:1.8.10 -> 2.0.21 (*)
+|    |    |    +--- org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4 (*)
+|    |    |    +--- androidx.lifecycle:lifecycle-common:2.6.2 (c)
+|    |    |    +--- androidx.lifecycle:lifecycle-livedata:2.6.2 (c)
+|    |    |    +--- androidx.lifecycle:lifecycle-livedata-core:2.6.2 (c)
+|    |    |    +--- androidx.lifecycle:lifecycle-process:2.6.2 (c)
+|    |    |    +--- androidx.lifecycle:lifecycle-runtime:2.6.2 (c)
+|    |    |    \--- androidx.lifecycle:lifecycle-viewmodel:2.6.2 (c)
+|    |    +--- androidx.profileinstaller:profileinstaller:1.3.1 (*)
+|    |    +--- androidx.savedstate:savedstate:1.2.1 (*)
+|    |    +--- androidx.tracing:tracing:1.0.0 -> 1.2.0 (*)
+|    |    \--- org.jetbrains.kotlin:kotlin-stdlib:1.8.22 -> 2.0.21 (*)
+|    +--- androidx.annotation:annotation:1.3.0 -> 1.8.1 (*)
+|    +--- androidx.appcompat:appcompat-resources:1.7.0
+|    |    +--- androidx.annotation:annotation:1.2.0 -> 1.8.1 (*)
+|    |    +--- androidx.collection:collection:1.0.0 -> 1.4.2 (*)
+|    |    +--- androidx.core:core:1.6.0 -> 1.15.0 (*)
+|    |    +--- androidx.vectordrawable:vectordrawable:1.1.0
+|    |    |    +--- androidx.annotation:annotation:1.1.0 -> 1.8.1 (*)
+|    |    |    +--- androidx.core:core:1.1.0 -> 1.15.0 (*)
+|    |    |    \--- androidx.collection:collection:1.1.0 -> 1.4.2 (*)
+|    |    +--- androidx.vectordrawable:vectordrawable-animated:1.1.0
+|    |    |    +--- androidx.vectordrawable:vectordrawable:1.1.0 (*)
+|    |    |    +--- androidx.interpolator:interpolator:1.0.0 (*)
+|    |    |    \--- androidx.collection:collection:1.1.0 -> 1.4.2 (*)
+|    |    \--- androidx.appcompat:appcompat:1.7.0 (c)
+|    +--- androidx.collection:collection:1.0.0 -> 1.4.2 (*)
+|    +--- androidx.core:core:1.13.0 -> 1.15.0 (*)
+|    +--- androidx.core:core-ktx:1.13.0 -> 1.15.0 (*)
+|    +--- androidx.cursoradapter:cursoradapter:1.0.0
+|    |    \--- androidx.annotation:annotation:1.0.0 -> 1.8.1 (*)
+|    +--- androidx.drawerlayout:drawerlayout:1.0.0 -> 1.1.1
+|    |    +--- androidx.annotation:annotation:1.1.0 -> 1.8.1 (*)
+|    |    +--- androidx.core:core:1.2.0 -> 1.15.0 (*)
+|    |    \--- androidx.customview:customview:1.1.0
+|    |         +--- androidx.annotation:annotation:1.1.0 -> 1.8.1 (*)
+|    |         +--- androidx.core:core:1.3.0 -> 1.15.0 (*)
+|    |         \--- androidx.collection:collection:1.1.0 -> 1.4.2 (*)
+|    +--- androidx.emoji2:emoji2:1.3.0
+|    |    +--- androidx.annotation:annotation:1.2.0 -> 1.8.1 (*)
+|    |    +--- androidx.collection:collection:1.1.0 -> 1.4.2 (*)
+|    |    +--- androidx.core:core:1.3.0 -> 1.15.0 (*)
+|    |    +--- androidx.lifecycle:lifecycle-process:2.4.1 -> 2.6.2
+|    |    |    +--- androidx.annotation:annotation:1.2.0 -> 1.8.1 (*)
+|    |    |    +--- androidx.lifecycle:lifecycle-runtime:2.6.2 (*)
+|    |    |    +--- androidx.startup:startup-runtime:1.1.1 (*)
+|    |    |    +--- org.jetbrains.kotlin:kotlin-stdlib:1.8.10 -> 2.0.21 (*)
+|    |    |    +--- androidx.lifecycle:lifecycle-common:2.6.2 (c)
+|    |    |    +--- androidx.lifecycle:lifecycle-livedata:2.6.2 (c)
+|    |    |    +--- androidx.lifecycle:lifecycle-livedata-core:2.6.2 (c)
+|    |    |    +--- androidx.lifecycle:lifecycle-runtime:2.6.2 (c)
+|    |    |    +--- androidx.lifecycle:lifecycle-viewmodel:2.6.2 (c)
+|    |    |    \--- androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2 (c)
+|    |    +--- androidx.startup:startup-runtime:1.0.0 -> 1.1.1 (*)
+|    |    \--- androidx.emoji2:emoji2-views-helper:1.3.0 (c)
+|    +--- androidx.emoji2:emoji2-views-helper:1.2.0 -> 1.3.0
+|    |    +--- androidx.collection:collection:1.1.0 -> 1.4.2 (*)
+|    |    +--- androidx.core:core:1.3.0 -> 1.15.0 (*)
+|    |    +--- androidx.emoji2:emoji2:1.3.0 (*)
+|    |    \--- androidx.emoji2:emoji2:1.3.0 (c)
+|    +--- androidx.fragment:fragment:1.5.4 -> 1.8.4
+|    |    +--- androidx.activity:activity:1.8.1 -> 1.9.2 (*)
+|    |    +--- androidx.annotation:annotation:1.1.0 -> 1.8.1 (*)
+|    |    +--- androidx.annotation:annotation-experimental:1.4.0 -> 1.4.1 (*)
+|    |    +--- androidx.collection:collection:1.1.0 -> 1.4.2 (*)
+|    |    +--- androidx.core:core-ktx:1.2.0 -> 1.15.0 (*)
+|    |    +--- androidx.lifecycle:lifecycle-livedata-core:2.6.1 -> 2.6.2 (*)
+|    |    +--- androidx.lifecycle:lifecycle-runtime:2.6.1 -> 2.6.2 (*)
+|    |    +--- androidx.lifecycle:lifecycle-viewmodel:2.6.1 -> 2.6.2 (*)
+|    |    +--- androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.1 -> 2.6.2 (*)
+|    |    +--- androidx.loader:loader:1.0.0
+|    |    |    +--- androidx.annotation:annotation:1.0.0 -> 1.8.1 (*)
+|    |    |    +--- androidx.core:core:1.0.0 -> 1.15.0 (*)
+|    |    |    +--- androidx.lifecycle:lifecycle-livedata:2.0.0 -> 2.6.2
+|    |    |    |    +--- androidx.arch.core:core-common:2.1.0 -> 2.2.0 (*)
+|    |    |    |    +--- androidx.arch.core:core-runtime:2.1.0 -> 2.2.0 (*)
+|    |    |    |    +--- androidx.lifecycle:lifecycle-livedata-core:2.6.2 (*)
+|    |    |    |    +--- org.jetbrains.kotlin:kotlin-stdlib:1.8.10 -> 2.0.21 (*)
+|    |    |    |    +--- androidx.lifecycle:lifecycle-common:2.6.2 (c)
+|    |    |    |    +--- androidx.lifecycle:lifecycle-livedata-core:2.6.2 (c)
+|    |    |    |    +--- androidx.lifecycle:lifecycle-process:2.6.2 (c)
+|    |    |    |    +--- androidx.lifecycle:lifecycle-runtime:2.6.2 (c)
+|    |    |    |    +--- androidx.lifecycle:lifecycle-viewmodel:2.6.2 (c)
+|    |    |    |    \--- androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2 (c)
+|    |    |    \--- androidx.lifecycle:lifecycle-viewmodel:2.0.0 -> 2.6.2 (*)
+|    |    +--- androidx.profileinstaller:profileinstaller:1.3.1 (*)
+|    |    +--- androidx.savedstate:savedstate:1.2.1 (*)
+|    |    +--- androidx.viewpager:viewpager:1.0.0
+|    |    |    +--- androidx.annotation:annotation:1.0.0 -> 1.8.1 (*)
+|    |    |    +--- androidx.core:core:1.0.0 -> 1.15.0 (*)
+|    |    |    \--- androidx.customview:customview:1.0.0 -> 1.1.0 (*)
+|    |    \--- org.jetbrains.kotlin:kotlin-stdlib:1.8.22 -> 2.0.21 (*)
+|    +--- androidx.lifecycle:lifecycle-runtime:2.6.1 -> 2.6.2 (*)
+|    +--- androidx.lifecycle:lifecycle-viewmodel:2.6.1 -> 2.6.2 (*)
+|    +--- androidx.profileinstaller:profileinstaller:1.3.1 (*)
+|    +--- androidx.resourceinspection:resourceinspection-annotation:1.0.1
+|    |    \--- androidx.annotation:annotation:1.1.0 -> 1.8.1 (*)
+|    +--- androidx.savedstate:savedstate:1.2.1 (*)
+|    +--- org.jetbrains.kotlin:kotlin-stdlib:1.8.22 -> 2.0.21 (*)
+|    \--- androidx.appcompat:appcompat-resources:1.7.0 (c)
++--- androidx.coordinatorlayout:coordinatorlayout:1.2.0
+|    +--- androidx.collection:collection:1.0.0 -> 1.4.2 (*)
+|    +--- androidx.annotation:annotation:1.1.0 -> 1.8.1 (*)
+|    +--- androidx.core:core:1.3.0 -> 1.15.0 (*)
+|    \--- androidx.customview:customview:1.0.0 -> 1.1.0 (*)
++--- androidx.core:core-splashscreen:1.0.1
+|    +--- androidx.annotation:annotation:1.2.0 -> 1.8.1 (*)
+|    \--- org.jetbrains.kotlin:kotlin-stdlib:1.6.21 -> 2.0.21 (*)
++--- project :capacitor-android
+|    +--- org.jetbrains.kotlin:kotlin-bom:1.9.25
+|    |    +--- org.jetbrains.kotlin:kotlin-stdlib:1.9.25 -> 2.0.21 (c)
+|    |    +--- org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.25 (c)
+|    |    +--- org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.25 (c)
+|    |    \--- org.jetbrains.kotlin:kotlin-stdlib-common:1.9.25 -> 2.0.21 (c)
+|    +--- androidx.appcompat:appcompat:1.7.0 (*)
+|    +--- androidx.core:core:1.15.0 (*)
+|    +--- androidx.activity:activity:1.9.2 (*)
+|    +--- androidx.fragment:fragment:1.8.4 (*)
+|    +--- androidx.coordinatorlayout:coordinatorlayout:1.2.0 (*)
+|    +--- androidx.webkit:webkit:1.12.1
+|    |    +--- androidx.annotation:annotation:1.8.1 (*)
+|    |    +--- androidx.annotation:annotation-experimental:1.4.1 (*)
+|    |    \--- androidx.core:core:1.1.0 -> 1.15.0 (*)
+|    \--- org.apache.cordova:framework:10.1.1
++--- project :capacitor-cordova-android-plugins
+|    +--- androidx.appcompat:appcompat:1.7.0 (*)
+|    \--- org.apache.cordova:framework:10.1.1
++--- project :capacitor-camera
+|    +--- project :capacitor-android (*)
+|    +--- androidx.exifinterface:exifinterface:1.3.7
+|    |    \--- androidx.annotation:annotation:1.2.0 -> 1.8.1 (*)
+|    +--- androidx.appcompat:appcompat:1.7.0 (*)
+|    \--- com.google.android.material:material:1.12.0
+|         +--- org.jetbrains.kotlin:kotlin-bom:1.8.22 -> 1.9.25 (*)
+|         +--- com.google.errorprone:error_prone_annotations:2.15.0
+|         +--- androidx.activity:activity:1.8.0 -> 1.9.2 (*)
+|         +--- androidx.annotation:annotation:1.2.0 -> 1.8.1 (*)
+|         +--- androidx.appcompat:appcompat:1.6.1 -> 1.7.0 (*)
+|         +--- androidx.cardview:cardview:1.0.0
+|         |    \--- androidx.annotation:annotation:1.0.0 -> 1.8.1 (*)
+|         +--- androidx.coordinatorlayout:coordinatorlayout:1.1.0 -> 1.2.0 (*)
+|         +--- androidx.constraintlayout:constraintlayout:2.0.1
+|         |    +--- androidx.appcompat:appcompat:1.2.0 -> 1.7.0 (*)
+|         |    +--- androidx.core:core:1.3.1 -> 1.15.0 (*)
+|         |    \--- androidx.constraintlayout:constraintlayout-solver:2.0.1
+|         +--- androidx.core:core:1.6.0 -> 1.15.0 (*)
+|         +--- androidx.drawerlayout:drawerlayout:1.1.1 (*)
+|         +--- androidx.dynamicanimation:dynamicanimation:1.0.0
+|         |    +--- androidx.core:core:1.0.0 -> 1.15.0 (*)
+|         |    +--- androidx.collection:collection:1.0.0 -> 1.4.2 (*)
+|         |    \--- androidx.legacy:legacy-support-core-utils:1.0.0
+|         |         +--- androidx.annotation:annotation:1.0.0 -> 1.8.1 (*)
+|         |         +--- androidx.core:core:1.0.0 -> 1.15.0 (*)
+|         |         +--- androidx.documentfile:documentfile:1.0.0
+|         |         |    \--- androidx.annotation:annotation:1.0.0 -> 1.8.1 (*)
+|         |         +--- androidx.loader:loader:1.0.0 (*)
+|         |         +--- androidx.localbroadcastmanager:localbroadcastmanager:1.0.0
+|         |         |    \--- androidx.annotation:annotation:1.0.0 -> 1.8.1 (*)
+|         |         \--- androidx.print:print:1.0.0
+|         |              \--- androidx.annotation:annotation:1.0.0 -> 1.8.1 (*)
+|         +--- androidx.annotation:annotation-experimental:1.0.0 -> 1.4.1 (*)
+|         +--- androidx.fragment:fragment:1.2.5 -> 1.8.4 (*)
+|         +--- androidx.lifecycle:lifecycle-runtime:2.0.0 -> 2.6.2 (*)
+|         +--- androidx.recyclerview:recyclerview:1.0.0 -> 1.1.0
+|         |    +--- androidx.annotation:annotation:1.1.0 -> 1.8.1 (*)
+|         |    +--- androidx.core:core:1.1.0 -> 1.15.0 (*)
+|         |    +--- androidx.customview:customview:1.0.0 -> 1.1.0 (*)
+|         |    \--- androidx.collection:collection:1.0.0 -> 1.4.2 (*)
+|         +--- androidx.resourceinspection:resourceinspection-annotation:1.0.1 (*)
+|         +--- androidx.transition:transition:1.5.0
+|         |    +--- androidx.annotation:annotation:1.2.0 -> 1.8.1 (*)
+|         |    +--- androidx.collection:collection:1.1.0 -> 1.4.2 (*)
+|         |    +--- androidx.core:core:1.13.0 -> 1.15.0 (*)
+|         |    \--- androidx.dynamicanimation:dynamicanimation:1.0.0 (*)
+|         +--- androidx.vectordrawable:vectordrawable:1.1.0 (*)
+|         \--- androidx.viewpager2:viewpager2:1.0.0
+|              +--- androidx.annotation:annotation:1.1.0 -> 1.8.1 (*)
+|              +--- androidx.fragment:fragment:1.1.0 -> 1.8.4 (*)
+|              +--- androidx.recyclerview:recyclerview:1.1.0 (*)
+|              +--- androidx.core:core:1.1.0 -> 1.15.0 (*)
+|              \--- androidx.collection:collection:1.1.0 -> 1.4.2 (*)
++--- project :capacitor-haptics
+|    +--- project :capacitor-android (*)
+|    \--- androidx.appcompat:appcompat:1.7.0 (*)
++--- project :capacitor-local-notifications
+|    +--- project :capacitor-android (*)
+|    \--- androidx.appcompat:appcompat:1.7.0 (*)
++--- project :capacitor-splash-screen
+|    +--- project :capacitor-android (*)
+|    +--- androidx.appcompat:appcompat:1.7.0 (*)
+|    \--- androidx.core:core-splashscreen:1.0.1 (*)
++--- project :capacitor-status-bar
+|    +--- project :capacitor-android (*)
+|    +--- androidx.core:core:1.15.0 (*)
+|    \--- androidx.appcompat:appcompat:1.7.0 (*)
+\--- project :revenuecat-purchases-capacitor
+     +--- org.jetbrains.kotlin:kotlin-stdlib:2.0.21 (*)
+     +--- project :capacitor-android (*)
+     +--- androidx.appcompat:appcompat:1.7.0 (*)
+     \--- com.revenuecat.purchases:purchases-hybrid-common:15.0.0
+          +--- org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4 (*)
+          +--- org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4 (*)
+          +--- com.revenuecat.purchases:purchases:9.1.0
+          |    +--- org.jetbrains.kotlin:kotlin-parcelize-runtime:2.0.21
+          |    |    +--- org.jetbrains.kotlin:kotlin-stdlib:2.0.21 (*)
+          |    |    \--- org.jetbrains.kotlin:kotlin-android-extensions-runtime:2.0.21
+          |    |         \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.21 (*)
+          |    +--- androidx.core:core-ktx:1.8.0 -> 1.15.0 (*)
+          |    +--- androidx.annotation:annotation:1.3.0 -> 1.8.1 (*)
+          |    +--- androidx.lifecycle:lifecycle-runtime:2.5.0 -> 2.6.2 (*)
+          |    +--- androidx.lifecycle:lifecycle-common:2.5.0 -> 2.6.2 (*)
+          |    +--- androidx.lifecycle:lifecycle-process:2.5.0 -> 2.6.2 (*)
+          |    +--- org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1
+          |    |    \--- org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.5.1
+          |    |         +--- org.jetbrains.kotlin:kotlin-stdlib:1.8.21 -> 2.0.21 (*)
+          |    |         +--- org.jetbrains.kotlinx:kotlinx-serialization-bom:1.5.1
+          |    |         |    +--- org.jetbrains.kotlinx:kotlinx-serialization-core:1.5.1 (c)
+          |    |         |    +--- org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.5.1 (c)
+          |    |         |    +--- org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1 (c)
+          |    |         |    \--- org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.5.1 (c)
+          |    |         +--- org.jetbrains.kotlin:kotlin-stdlib-common:1.8.21 -> 2.0.21 (*)
+          |    |         \--- org.jetbrains.kotlinx:kotlinx-serialization-core:1.5.1
+          |    |              \--- org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.5.1
+          |    |                   +--- org.jetbrains.kotlin:kotlin-stdlib:1.8.21 -> 2.0.21 (*)
+          |    |                   +--- org.jetbrains.kotlinx:kotlinx-serialization-bom:1.5.1 (*)
+          |    |                   \--- org.jetbrains.kotlin:kotlin-stdlib-common:1.8.21 -> 2.0.21 (*)
+          |    +--- com.google.crypto.tink:tink-android:1.8.0
+          |    |    \--- com.google.code.gson:gson:2.8.9
+          |    +--- com.google.android.gms:play-services-ads-identifier:17.0.1
+          |    |    \--- com.google.android.gms:play-services-basement:17.0.0 -> 18.4.0
+          |    |         +--- androidx.collection:collection:1.0.0 -> 1.4.2 (*)
+          |    |         +--- androidx.core:core:1.2.0 -> 1.15.0 (*)
+          |    |         \--- androidx.fragment:fragment:1.1.0 -> 1.8.4 (*)
+          |    +--- org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4 (*)
+          |    +--- dev.drewhamilton.poko:poko-annotations:0.17.2
+          |    |    \--- dev.drewhamilton.poko:poko-annotations-jvm:0.17.2
+          |    |         \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.21 (*)
+          |    +--- com.android.billingclient:billing:8.0.0
+          |    |    +--- androidx.activity:activity:1.2.3 -> 1.9.2 (*)
+          |    |    +--- com.google.android.datatransport:transport-api:3.0.0
+          |    |    |    \--- androidx.annotation:annotation:1.1.0 -> 1.8.1 (*)
+          |    |    +--- com.google.android.datatransport:transport-backend-cct:3.1.8
+          |    |    |    +--- androidx.annotation:annotation:1.1.0 -> 1.8.1 (*)
+          |    |    |    +--- com.google.android.datatransport:transport-api:3.0.0 (*)
+          |    |    |    +--- com.google.android.datatransport:transport-runtime:3.1.8
+          |    |    |    |    +--- androidx.annotation:annotation:1.3.0 -> 1.8.1 (*)
+          |    |    |    |    +--- com.google.android.datatransport:transport-api:3.0.0 (*)
+          |    |    |    |    +--- com.google.firebase:firebase-encoders:17.0.0
+          |    |    |    |    |    \--- androidx.annotation:annotation:1.1.0 -> 1.8.1 (*)
+          |    |    |    |    +--- com.google.firebase:firebase-encoders-proto:16.0.0
+          |    |    |    |    |    +--- androidx.annotation:annotation:1.1.0 -> 1.8.1 (*)
+          |    |    |    |    |    \--- com.google.firebase:firebase-encoders:17.0.0 (*)
+          |    |    |    |    \--- javax.inject:javax.inject:1
+          |    |    |    +--- com.google.firebase:firebase-encoders:17.0.0 (*)
+          |    |    |    \--- com.google.firebase:firebase-encoders-json:18.0.0
+          |    |    |         +--- androidx.annotation:annotation:1.1.0 -> 1.8.1 (*)
+          |    |    |         \--- com.google.firebase:firebase-encoders:17.0.0 (*)
+          |    |    +--- com.google.android.datatransport:transport-runtime:3.1.8 (*)
+          |    |    +--- com.google.android.gms:play-services-base:18.5.0
+          |    |    |    +--- androidx.collection:collection:1.0.0 -> 1.4.2 (*)
+          |    |    |    +--- androidx.core:core:1.2.0 -> 1.15.0 (*)
+          |    |    |    +--- androidx.fragment:fragment:1.0.0 -> 1.8.4 (*)
+          |    |    |    +--- com.google.android.gms:play-services-basement:18.4.0 (*)
+          |    |    |    \--- com.google.android.gms:play-services-tasks:18.2.0
+          |    |    |         \--- com.google.android.gms:play-services-basement:18.4.0 (*)
+          |    |    +--- com.google.android.gms:play-services-basement:18.4.0 (*)
+          |    |    +--- com.google.android.gms:play-services-location:19.0.0
+          |    |    |    +--- com.google.android.gms:play-services-base:18.0.0 -> 18.5.0 (*)
+          |    |    |    +--- com.google.android.gms:play-services-basement:18.0.0 -> 18.4.0 (*)
+          |    |    |    +--- com.google.android.gms:play-services-places-placereport:17.0.0
+          |    |    |    |    \--- com.google.android.gms:play-services-basement:17.0.0 -> 18.4.0 (*)
+          |    |    |    \--- com.google.android.gms:play-services-tasks:18.0.0 -> 18.2.0 (*)
+          |    |    \--- com.google.android.gms:play-services-tasks:18.2.0 (*)
+          |    \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.21 (*)
+          +--- com.revenuecat.purchases:purchases-store-amazon:9.1.0
+          |    +--- com.revenuecat.purchases:purchases:9.1.0 (*)
+          |    +--- com.amazon.device:amazon-appstore-sdk:3.0.5
+          |    \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.21 (*)
+          \--- org.jetbrains.kotlin:kotlin-stdlib:2.0.21 (*)
+
+(c) - A dependency constraint, not a dependency. The dependency affected by the constraint occurs elsewhere in the tree.
+(*) - Indicates repeated occurrences of a transitive dependency subtree. Gradle expands transitive dependency subtrees only once per project; repeat occurrences only display the root of the subtree, followed by this annotation.
+
+A web-based, searchable dependency report is available by adding the --scan option.
+[Incubating] Problems report is available at: file:///workspace/Chisel/chisel-android/android/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 31s
+221 actionable tasks: 48 executed, 173 up-to-date

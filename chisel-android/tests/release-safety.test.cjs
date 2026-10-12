@@ -12,6 +12,7 @@ test('free-first release does not expose unfinished paid account creation',()=>{
   assert.match(html,/CHISEL_RELEASE_CONFIG\s*=\s*Object\.freeze\(\{billingEnabled:false/);
   assert.match(html,/cloudPhotoRendersEnabled!==true/);
   assert.match(credits,/Credit purchases and paid accounts are disabled in this release/);
+  assert.match(credits,/This signs in an existing account/);
   assert.match(credits,/button\.hidden=!billingEnabled\(\)/);
 });
 
@@ -19,7 +20,14 @@ test('privacy and deletion disclosures are present in the shipping surfaces',()=
   const html=read('www/index.html');
   const policy=read('../docs/privacy-policy.html');
   const terms=read('../docs/terms-of-use.html');
-  assert.match(html,/https:\/\/github\.com\/kapasainitishreddy\/Chisel\/blob\/main\/docs\/privacy-policy\.html/);
+  assert.match(html,/href="privacy-policy\.html"/);
+  assert.match(html,/href="account-deletion\.html"/);
+  assert.equal(read('www/account-deletion.html'),fs.readFileSync(path.join(root,'../docs/account-deletion.html'),'utf8'));
+  assert.match(read('www/account-deletion.html'),/does not create new accounts/i);
+  assert.match(read('www/account-deletion.html'),/nittureddy26@gmail\.com/);
+  assert.match(read('www/tools.html'),/href="index\.html" id="getApp"/);
+  assert.match(read('www/404.html'),/Page not found/);
+  assert.equal(read('www/privacy-policy.html'),fs.readFileSync(path.join(root,'../docs/privacy-policy.html'),'utf8'));
   assert.match(html,/terms-of-use\.html/);
   assert.match(html,/function wipeAllData\(\)/);
   assert.match(html,/Clear all my data/);
@@ -29,6 +37,11 @@ test('privacy and deletion disclosures are present in the shipping surfaces',()=
   assert.match(policy,/nittureddy26@gmail\.com/);
   assert.match(terms,/not a diagnosis/i);
   assert.match(terms,/Stop immediately/i);
+});
+
+test('shipped web directory does not contain an env file',()=>{
+  const names=fs.readdirSync(path.join(root,'www'));
+  assert.equal(names.some(name=>name==='.env'||name.startsWith('.env.')),false);
 });
 
 test('release signing fails closed without developer-owned credentials',()=>{

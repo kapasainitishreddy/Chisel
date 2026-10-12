@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-04T22:46:10.238Z",
+  "project": {
+    "root": "/workspace/Chisel/chisel-android",
+    "framework": "capacitor",
+    "platforms": [
+      "android",
+      "ios"
+    ],
+    "packageJson": {
+      "name": "chisel",
+      "scripts": [
+        "build",
+        "test",
+        "test:enhancements",
+        "test:precision",
+        "test:premium",
+        "sync",
+        "open",
+        "android",
+        "serve",
+        "pretest"
+      ]
+    },
+    "android": {
+      "present": true,
+      "manifestPath": "/workspace/Chisel/chisel-android/android/app/src/main/AndroidManifest.xml",
+      "packageName": "com.chisel.lookmax",
+      "activity": ".MainActivity",
+      "apk": "/workspace/Chisel/chisel-android/android/app/build/outputs/apk/debug/app-debug.apk"
+    },
+    "ios": {
+      "present": true
+    },
+    "web": {
+      "present": false
+    },
+    "api": {
+      "openapi": null,
+      "hurlFiles": [],
+      "scriptNames": []
+    }
+  },
+  "plan": {
+    "primary": null,
+    "androidDevices": [],
+    "loopbackServers": [
+      {
+        "port": 4173,
+        "url": "http://127.0.0.1:4173/",
+        "status": "AUTOMATION_PENDING",
+        "ok": true
+      }
+    ],
+    "coverageGaps": [
+      "runtime.android: no ready Android device or emulator; a web fallback does not satisfy Android runtime verification",
+      "runtime: no connected Android target or unambiguous loopback web server"
+    ]
+  },
+  "capabilities": [
+    {
+      "id": "adb",
+      "label": "Android Debug Bridge",
+      "available": false,
+      "version": "10-04 22:46:10.180  3730  3730 F adb     : adb_utils.cpp:315 Cannot mkdir '/home/agent/.android': Read-only file system",
+      "category": "qa",
+      "network": false
+    }
+  ]
+}

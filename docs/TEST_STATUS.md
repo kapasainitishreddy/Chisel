@@ -1,5 +1,56 @@
 # Test Status
 
+## Visual theme, 2026-10-12
+
+Commands run in `chisel-android` after the light/dark pass:
+
+- `npm test`: pretest `cap sync android`, then 327/327 Node tests, 0 failed. New coverage is `tests/chisel-appearance.test.cjs` (preference, resolved mode, WCAG pairs, haptics, icons).
+- `npm run typecheck`: 121 files passed `node --check`.
+- `npm run build`: 47 modules, inline scripts, and runtime assets valid.
+- Headless Chrome at 390×844 captured Home, Analyze, Affirm, Meditate, Groom, Connect, onboarding, and the tools page before the change and again in light and dark. Measured tab, button, and guide contrast is at least 6.5:1.
+- A desktop recording walked the same tabs and switched Dark and Light from Settings → Appearance.
+
+`bundleRelease` was not run. The Android SDK is not installed here.
+
+## Free internal-test prep, 2026-10-12
+
+Commands run in `chisel-android` on `cursor/play-internal-readiness-d466`:
+
+- `npm ci --ignore-scripts`: 99 packages, 0 vulnerabilities.
+- `npm run typecheck`: 119 files passed `node --check`. There is no TypeScript project in `www/`. Deno is not installed here, so the Supabase functions were not typechecked.
+- `npm test`: pretest `cap sync android` succeeded, then 321/321 Node tests passed, 0 failed, 0 skipped.
+- `npm run build`: 46 modules, inline scripts, and runtime assets valid.
+- `npm run doctor`: Capacitor doctor reported Android looking great on the installed 7.6.9 toolchain. It also lists 8.5.3 as the latest release. That upgrade was not applied.
+- Headless Chrome on the served `www/` app: tabs, Settings/Connect, Clear-all confirmation (dismissed), sleep 99 rejected, sleep 7.5 kept, water -4 rejected, water 2 and salt `mid` kept, deletion page, 404 page, tools page opening the app, existing-account form with empty and invalid email blocked, no credit packs, Go Premium hidden. No horizontal overflow at 390×844 or 1280×900.
+- Secret scan of `chisel-android` and `supabase` found no private-key, live Stripe, GitHub token, or Google API key pattern.
+
+`bundleRelease` was not run. Java 21 is present and the Android SDK is not. The signing guard is covered by `tests/release-safety.test.cjs` and by the earlier readiness-branch dry run, which rejected a missing keystore.
+
+## StoreReady Play audit and fixes — 2026-10-04
+
+Continue `fix/storeready-play-readiness-20261004`, application/test SHA **c87f20b8239c9e41b62ec33b72e0e02081054057**. The later retained task source was recovered: work efebe818 / application bf826193, nine commits ahead of remote main. All 13 remote branches and nine PRs were compared. Read [Play readiness report](PLAY_READINESS_REPORT.md) and [durable evidence](evidence/play-readiness-20261004/source-and-tool-version.json).
+
+Actual StoreReady 2.1.0 at 16e71ad3 ran before/after and remains **BLOCKED**. Verified fixes: Billing 8/compatible Capacitor 7 and Java 21/Kotlin 2 migration; active-entitlement purchase/restore checks; explicit backup/transfer exclusions; current bundled privacy and notification disclosure; distribution-only signing guard; npm advisories 9→0. Release flags remain billingEnabled=false/cloudPhotoRendersEnabled=true, API 36/min API 23.
+
+319/319 Node tests, clean-source frozen install/build, 17/17 completion browser checks and 2/2 external-network-denied policy navigation checks PASS. Debug and release source compilation/resources and release-manifest merge PASS; 221 Gradle tasks. Merged release target 36/Billing 8.0.0; 61 downloaded AARs have no .so. bundleRelease --dry-run correctly rejects absent upload credentials. No signing key or current installable artifact created; prior debug APK is historical bf826193 evidence. Unpublished 10-commit range Gitleaks: no leaks; worktree public/reference-key candidates individually triaged.
+
+Final signed AAB, real Android/16 KB/permission/lifecycle/accessibility/performance acceptance, real billing/OTP/deletion, undeployed lifecycle/scheduler/provider-retention acceptance, exact-artifact Data Safety/privacy/health/listing and account testing/identity gates remain blocked or not run. Browser auth/billing/deletion replies are fixtures. No console change, purchase, deployment, merge or force push; authorized publication is only the non-default fix branch.
+
+## Current application acceptance, 2026-10-04
+
+Application source: **bf826193988e91c2edc457b3ab405352594857e2**. Subsequent handoff edits are documentation only.
+
+- Node: **312/312 PASS**, zero failures/skips. Fresh archive + frozen install repeats 312/312.
+- Build validation: **46 JavaScript modules PASS**, including inline scripts/assets.
+- Completion browser: **17/17 PASS** with real local controls/downloads/storage; auth/deletion are intercepted fixtures, no emails/cloud deletion.
+- Fitting browser: **6/6 PASS** using actual MediaPipe and fixture camera, no upload/page errors.
+- Embedded PostgreSQL: lifecycle migrations/ownership/retry/refund/tombstone/access-control acceptance PASS; not production Supabase acceptance.
+- Native debug: **BUILD SUCCESSFUL**, 248 tasks. All **58 assets match** APK; v1/v2 debug signature verified.
+- Release command: expected BLOCKED by missing developer-owned upload signing, no AAB produced.
+- Fresh review: seven findings fixed with regression coverage; Precision quota failure also fixed.
+
+Evidence, scope, artifact SHA and reproduction: [completion report](COMPLETION_REPORT.md), `/workspace/chisel-build/evidence/`. Browser QA used only managed-proxy CA pins; production TLS is unchanged. No current physical-device install, live billing/provider output, real account/OTP deletion, new cloud deployment or empirical accuracy claim. Old Frame Fitting MODULE_NOT_FOUND and pristine-checkout failures are fixed at this source; historical CI results below are not a new CI run.
+
 ## Credits and compare, 2026-09-10
 
 Exact application/test head: 4a932d41b5af04f2e52317dcb2946cfac8e599c6.

@@ -6,9 +6,9 @@ Allowed statuses are **PASS**, **FAIL**, **BLOCKED**, **NOT RUN**, and **N/A**.
 
 | Gate | Status | Evidence required |
 |---|---|---|
-| source / synchronized product test suite | PASS | Current branch inherits the verified synchronized suite and release-hardening merge; rerun before final release if source changes |
-| Android debug build | PASS | Existing API-36 debug/build evidence; rerun against final candidate |
-| release bundle compile | NOT RUN | Release signing now fails closed until the developer-owned keystore is configured; run `bundleRelease` against the final candidate |
+| source / synchronized product test suite | PASS | bf82619: 312/312 Node tests, fresh tracked checkout, 46-module build validation; see COMPLETION_REPORT.md |
+| Android debug build | PASS | bf82619: actual API-36 debug APK, all 58 canonical assets match; SHA in COMPLETION_REPORT.md |
+| release bundle compile | BLOCKED | Actual bundleRelease attempt rejected by missing developer-owned upload signing; no AAB produced |
 | final upload signing | NOT RUN | Developer-owned upload keystore + signed AAB tied to final commit |
 | Play Internal upload/install | NOT RUN | Internal-test artifact, install/launch and Play-delivered build evidence |
 | physical-device final regression | NOT RUN | Final build: permissions, Analyze, Quick/Deep, Precision, AR coach, try-on, progress, share/export, restart/data deletion |

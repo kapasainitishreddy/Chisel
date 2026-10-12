@@ -5,16 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
 <title>Free Face Tools — Chisel</title>
 <meta name="description" content="Free, private, no-signup face tools: canthal tilt, facial symmetry and face shape — measured on your device by Chisel."/>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<meta property="og:title" content="Free Face Tools — Chisel"/>
+<meta property="og:description" content="Free, private, no-signup face tools: canthal tilt, facial symmetry and face shape — measured on your device by Chisel."/>
+<meta property="og:type" content="website"/>
+<script src="chisel-appearance.js"></script>
+<script>ChiselAppearance.init();</script>
 <style>
   :root{--onyx:#0A0A0B;--graphite:#1A1A1D;--ivory:#F2EDE4;--ivory-dim:#C9C2B4;--gold:#C9A86A;--gold-bright:#E2C58A;--emerald:#3E6B5A;--line:rgba(201,168,106,.18);--display:'Cormorant Garamond',serif;--sans:'Inter',system-ui,sans-serif}
   *{box-sizing:border-box}
   html,body{margin:0;background:var(--onyx);color:var(--ivory);font-family:var(--sans);-webkit-font-smoothing:antialiased}
   body{background:radial-gradient(1000px 500px at 74% -10%,rgba(201,168,106,.09),transparent 60%),radial-gradient(800px 460px at -10% 10%,rgba(62,107,90,.10),transparent 60%),var(--onyx)}
   .wrap{max-width:760px;margin:0 auto;padding:40px 22px 80px}
-  .mark{font-family:var(--display);font-weight:700;font-size:44px;background:linear-gradient(180deg,var(--ivory) 25%,var(--gold) 115%);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1}
+  .mark{font-family:var(--display);font-weight:700;font-size:44px;color:var(--ivory);letter-spacing:-.04em;line-height:1}
   .tag{font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);margin-top:6px}
   h1{font-family:var(--display);font-weight:600;font-size:clamp(30px,7vw,48px);line-height:1.05;margin:26px 0 8px;text-wrap:balance}
   h1 em{font-style:italic;color:var(--gold)}
@@ -35,6 +37,7 @@
   footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);font-size:11px;color:var(--ivory-dim);line-height:1.7}
   a{color:var(--gold)}
 </style>
+<link rel="stylesheet" href="chisel-studio-theme.css"/>
 </head>
 <body>
 <div class="wrap">
@@ -62,12 +65,13 @@
     <div class="eyebrow" style="justify-self:center">Go further</div>
     <h2 style="font-family:var(--display);font-weight:600;font-size:26px;margin:6px 0 8px">Get the full analysis in Chisel</h2>
     <p class="lede" style="margin:0 auto 16px">Live camera scan, skin & teeth reads, hairstyle/beard try-on, evidence-backed routines, and a progress tracker — all on-device.</p>
-    <a class="btn solid" href="#" id="getApp">Get Chisel</a>
+    <a class="btn solid" href="index.html" id="getApp">Open the full app</a>
   </div>
 
   <footer>
     Runs on Google MediaPipe in your browser. No image is uploaded or stored. Cosmetic &amp; educational — not medical advice.
     See how scores are computed in the app's <b>How scoring works</b> screen.
+    <a href="privacy-policy.html">Privacy</a> · <a href="account-deletion.html">Delete your data</a> · <a href="https://github.com/kapasainitishreddy/Chisel/blob/main/docs/terms-of-use.html">Terms</a>
   </footer>
 </div>
 

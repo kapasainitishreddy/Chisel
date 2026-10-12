@@ -1,0 +1,1 @@
+export async function cleanupOutputs({list,remove,expire}){const jobs=await list(100);if(!Array.isArray(jobs)||jobs.length>100)throw Error('invalid_cleanup_batch');let removed=0,failed=0;for(const job of jobs){try{await remove(job.output_path);await expire(job.id,job.output_path);removed++;}catch{failed++;}}return{removed,failed,pending:jobs.length===100};}

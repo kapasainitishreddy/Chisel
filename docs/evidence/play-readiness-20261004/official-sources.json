@@ -1,0 +1,74 @@
+[
+  {
+    "id": "target-sdk",
+    "url": "https://support.google.com/googleplay/android-developer/answer/11926878?hl=en",
+    "checkedAt": "2026-10-04",
+    "summary": "Phone new apps and updates require API 36 from 31 August 2026. This app retains API 36."
+  },
+  {
+    "id": "billing-version",
+    "url": "https://developer.android.com/google/play/billing/deprecation-faq",
+    "checkedAt": "2026-10-04",
+    "summary": "Billing 7 normal deadline is 31 August 2026; an account-specific extension can run through 1 November 2026. Billing 8 has normal deadline 31 August 2027. No extension is assumed."
+  },
+  {
+    "id": "billing-lifecycle",
+    "url": "https://developer.android.com/google/play/billing/integrate",
+    "checkedAt": "2026-10-04",
+    "summary": "Pending transactions must not grant entitlement. Verify purchased state and secure backend ownership, acknowledge/consume, recover on resume, and test real Play lifecycle."
+  },
+  {
+    "id": "backup",
+    "url": "https://developer.android.com/identity/data/autobackup",
+    "checkedAt": "2026-10-04",
+    "summary": "For target API 31+ some vendors still allow device transfer when allowBackup is false; explicit extraction rules protect private data."
+  },
+  {
+    "id": "page-sizes",
+    "url": "https://developer.android.com/guide/practices/page-sizes",
+    "checkedAt": "2026-10-04",
+    "summary": "Current page says API 35+ apps on 64-bit Play devices must support 16 KB; its current update enforcement date is 1 February 2027. Pure Java/Kotlin without native libraries already supports 16 KB, but runtime regression testing is recommended."
+  },
+  {
+    "id": "user-data",
+    "url": "https://support.google.com/googleplay/android-developer/answer/10144311",
+    "checkedAt": "2026-10-04",
+    "summary": "All apps need an in-app privacy policy link or text and a public non-geofenced non-editable policy URL. Disclosures must cover actual access, retention, deletion and third parties."
+  },
+  {
+    "id": "data-safety",
+    "url": "https://support.google.com/googleplay/android-developer/answer/10787469",
+    "checkedAt": "2026-10-04",
+    "summary": "Developer answers must cover actual submitted app and SDK behavior; local-only data and optional cloud processing have different applicability. No answers were submitted here."
+  },
+  {
+    "id": "deletion",
+    "url": "https://support.google.com/googleplay/android-developer/answer/13327111",
+    "checkedAt": "2026-10-04",
+    "summary": "When in-app account creation is offered, an in-app deletion request and external web resource are required, with associated data removal and clear retention exceptions."
+  },
+  {
+    "id": "permissions",
+    "url": "https://support.google.com/googleplay/android-developer/answer/16558241",
+    "checkedAt": "2026-10-04",
+    "summary": "Permissions must be necessary, contextual and disclosed. Restricted permissions such as USE_EXACT_ALARM require eligible core functionality."
+  },
+  {
+    "id": "closed-testing",
+    "url": "https://support.google.com/googleplay/android-developer/answer/14151465",
+    "checkedAt": "2026-10-04",
+    "summary": "Personal Play developer accounts created after 13 November 2023 need at least 12 opted-in testers continuously for 14 days before applying for production access. Account applicability is unknown."
+  },
+  {
+    "id": "health-declaration",
+    "url": "https://support.google.com/googleplay/android-developer/answer/14738291",
+    "checkedAt": "2026-10-04",
+    "summary": "Health apps declaration needs exact-artifact review; Chisel routines and local logs make a no-health-features assumption unsafe."
+  },
+  {
+    "id": "developer-verification",
+    "url": "https://developer.android.com/developer-verification",
+    "checkedAt": "2026-10-04",
+    "summary": "Developer identity/package registration requires account and market evidence; no console state or regional approval is inferred."
+  }
+]

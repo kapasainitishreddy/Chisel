@@ -1,5 +1,9 @@
 # Chisel Premium Features
 
+## Status clarification, 2026-10-04
+
+The tiers and bullets below are a **historical product proposal**, not a list of active entitlements or delivered paid features. Current source contains optional consumable AI-credit purchases, gated off for launch acceptance; no monthly/annual Pro product is verified. Adaptive local programs, method-aware reports and encrypted exported backups are now wired independently of a Pro entitlement. Full native vault/biometrics, active-store encryption, association UI and every advanced coach/history proposal are not complete. See [current capability and release evidence](COMPLETION_REPORT.md). Do not present proposed pack prices as verified store pricing or revenue.
+
 Chisel's paid tier extends precision, history, coaching, styling depth, and secure storage. Core privacy and a useful local analysis remain free.
 
 ## Free

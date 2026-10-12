@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+# No public marketing domain or sitemap is published with this internal-test build.

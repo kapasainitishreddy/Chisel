@@ -1,0 +1,153 @@
+✖ purchase without an active entitlement does not announce Premium or close the paywall (14.067775ms)
+✖ restore without active entitlement stays open and explains the result (6.388855ms)
+✔ confirmed purchase and restore close the paywall, cancelled purchases do not (11.69424ms)
+✖ release disabled flag prevents direct purchase and restore even after SDK setup (3.869623ms)
+✖ cloud and device transfer exclude private WebView and preference data in every backup domain (1.030613ms)
+✖ billing SDK uses Billing 8 capable upstream and matching Capacitor peers (1.171578ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 1
+ℹ fail 5
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 108.815743
+
+✖ failing tests:
+
+test at Chisel/chisel-android/tests/play-readiness.test.cjs:12:1
+✖ purchase without an active entitlement does not announce Premium or close the paywall (14.067775ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(h.messages.some(m=>/not.*active|not.*confirmed|pending/i.test(m)))
+  
+      at TestContext.<anonymous> (/workspace/Chisel/chisel-android/tests/play-readiness.test.cjs:14:9)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at Chisel/chisel-android/tests/play-readiness.test.cjs:16:1
+✖ restore without active entitlement stays open and explains the result (6.388855ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(h.messages.some(m=>/no active|not.*active/i.test(m)))
+  
+      at TestContext.<anonymous> (/workspace/Chisel/chisel-android/tests/play-readiness.test.cjs:18:9)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at Chisel/chisel-android/tests/play-readiness.test.cjs:24:1
+✖ release disabled flag prevents direct purchase and restore even after SDK setup (3.869623ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 0
+  
+      at TestContext.<anonymous> (/workspace/Chisel/chisel-android/tests/play-readiness.test.cjs:25:313)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at Chisel/chisel-android/tests/play-readiness.test.cjs:27:1
+✖ cloud and device transfer exclude private WebView and preference data in every backup domain (1.030613ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /android:dataExtractionRules="@xml\/data_extraction_rules"/. Input:
+  
+  '<?xml version="1.0" encoding="utf-8"?>\n' +
+    '<manifest xmlns:android="http://schemas.android.com/apk/res/android">\n' +
+    '\n' +
+    '    <application\n' +
+    '        android:allowBackup="false"\n' +
+    '        android:usesCleartextTraffic="false"\n' +
+    '        android:icon="@mipmap/ic_launcher"\n' +
+    '        android:label="@string/app_name"\n' +
+    '        android:roundIcon="@mipmap/ic_launcher_round"\n' +
+    '        android:supportsRtl="true"\n' +
+    '        android:theme="@style/AppTheme">\n' +
+    '\n' +
+    '        <activity\n' +
+    '            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"\n' +
+    '            android:name=".MainActivity"\n' +
+    '            android:label="@string/title_activity_main"\n' +
+    '            android:theme="@style/AppTheme.NoActionBarLaunch"\n' +
+    '            android:launchMode="singleTask"\n' +
+    '            android:exported="true">\n' +
+    '\n' +
+    '            <intent-filter>\n' +
+    '                <action android:name="android.intent.action.MAIN" />\n' +
+    '                <category android:name="android.intent.category.LAUNCHER" />\n' +
+    '            </intent-filter>\n' +
+    '\n' +
+    '        </activity>\n' +
+    '\n' +
+    '        <provider\n' +
+    '            android:name="androidx.core.content.FileProvider"\n' +
+    '            android:authorities="${applicationId}.fileprovider"\n' +
+    '            android:exported="false"\n' +
+    '            android:grantUriPermissions="true">\n' +
+    '            <meta-data\n' +
+    '                android:name="android.support.FILE_PROVIDER_PATHS"\n' +
+    '                android:resource="@xml/file_paths"></meta-data>\n' +
+    '        </provider>\n' +
+    '    </application>\n' +
+    '\n' +
+    '    <!-- Permissions -->\n' +
+    '\n' +
+    '    <uses-permission android:name="android.permission.INTERNET" />\n' +
+    '    <uses-permission android:name="android.permission.CAMERA" />\n' +
+    '    <uses-feature android:name="android.hardware.camera" android:required="false" />\n' +
+    '    <uses-feature android:name="android.hardware.camera.front" android:required="false" />\n' +
+    '</manifest>\n'
+  
+      at TestContext.<anonymous> (/workspace/Chisel/chisel-android/tests/play-readiness.test.cjs:28:73)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '<?xml version="1.0" encoding="utf-8"?>\n<manifest xmlns:android="http://schemas.android.com/apk/res/android">\n\n    <application\n        android:allowBackup="false"\n        android:usesCleartextTraffic="false"\n        android:icon="@mipmap/ic_launcher"\n        android:label="@string/app_name"\n        android:roundIcon="@mipmap/ic_launcher_round"\n        android:supportsRtl="true"\n        android:theme="@style/AppTheme">\n\n        <activity\n            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"\n            android:name=".MainActivity"\n            android:label="@string/title_activity_main"\n            android:theme="@style/AppTheme.NoActionBarLaunch"\n            android:launchMode="singleTask"\n            android:exported="true">\n\n            <intent-filter>\n                <action android:name="android.intent.action.MAIN" />\n                <category android:name="android.intent.category.LAUNCHER" />\n            </intent-filter>\n\n        </activity>\n\n        <provider\n            android:name="androidx.core.content.FileProvider"\n            android:authorities="${applicationId}.fileprovider"\n            android:exported="false"\n            android:grantUriPermissions="true">\n            <meta-data\n                android:name="android.support.FILE_PROVIDER_PATHS"\n                android:resource="@xml/file_paths"></meta-data>\n        </provider>\n    </application>\n\n    <!-- Permissions -->\n\n    <uses-permission android:name="android.permission.INTERNET" />\n    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-feature android:name="android.hardware.camera" android:required="false" />\n    <uses-feature android:name="android.hardware.camera.front" android:required="false" />\n</manifest>\n',
+    expected: /android:dataExtractionRules="@xml\/data_extraction_rules"/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at Chisel/chisel-android/tests/play-readiness.test.cjs:33:1
+✖ billing SDK uses Billing 8 capable upstream and matching Capacitor peers (1.171578ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(Number(pkg.dependencies['@revenuecat/purchases-capacitor'].split('.')[0])>=11)
+  
+      at TestContext.<anonymous> (/workspace/Chisel/chisel-android/tests/play-readiness.test.cjs:34:52)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

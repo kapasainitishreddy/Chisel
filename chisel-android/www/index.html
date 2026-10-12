@@ -2,46 +2,45 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="format-detection" content="telephone=no" />
 <meta name="msapplication-tap-highlight" content="no" />
-<meta name="theme-color" content="#0A0A0B" />
+<meta name="theme-color" content="#141210" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: gap: content:; media-src * blob: filesystem:; img-src * data: blob: content:;" />
 <title>Chisel — Sculpt your best self</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<meta name="description" content="On-device face analysis, grooming and makeup guidance. Cosmetic and educational, not a medical rating." />
+<meta property="og:title" content="Chisel — Sculpt your best self" />
+<meta property="og:description" content="On-device face analysis, grooming and makeup guidance. Cosmetic and educational, not a medical rating." />
+<meta property="og:type" content="website" />
+<script src="chisel-appearance.js"></script>
+<script>ChiselAppearance.init();</script>
+<link rel="stylesheet" href="chisel-studio-theme.css" />
 <style>
   :root{
-    --onyx:#0A0A0B;
-    --graphite:#1A1A1D;
-    --ivory:#F2EDE4;
-    --ivory-dim:#C9C2B4;
-    --gold:#C9A86A;
-    --gold-bright:#E2C58A;
-    --rose:#D4A5A5;
-    --emerald:#3E6B5A;
-    --line:rgba(201,168,106,.18);
-    --ease:cubic-bezier(.22,.61,.36,1);
-    --ease-out:cubic-bezier(.16,1,.3,1);
-    --display:'Cormorant Garamond',serif;
-    --sans:'Inter',system-ui,sans-serif;
+    --onyx:#141210;
+    --graphite:#211E1A;
+    --ivory:#F7F4EF;
+    --ivory-dim:#D2C9BC;
+    --gold:#F2C4A2;
+    --gold-bright:#F2C4A2;
+    --rose:#E7B8B2;
+    --emerald:#1F6A45;
+    --line:#3F382F;
+    --ease:cubic-bezier(.2,.7,.2,1);
+    --ease-out:cubic-bezier(.2,.7,.2,1);
+    --display:"Public Sans",ui-sans-serif,system-ui,sans-serif;
+    --sans:"Public Sans",ui-sans-serif,system-ui,sans-serif;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0;height:100%;background:var(--onyx);color:var(--ivory);font-family:var(--sans);overflow:hidden;-webkit-font-smoothing:antialiased}
-  body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);background:
-    radial-gradient(1200px 600px at 70% -10%, rgba(201,168,106,.08), transparent 60%),
-    radial-gradient(900px 500px at -10% 110%, rgba(62,107,90,.10), transparent 60%),
-    var(--onyx)}
-  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.06;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.6'/></svg>")}
-  body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9998;background:radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,.55) 100%)}
+  body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom);background:var(--onyx)}
 
   /* Boot */
   #boot{position:fixed;inset:0;z-index:10000;background:var(--onyx);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .8s var(--ease)}
   #boot.gone{opacity:0;pointer-events:none}
-  #boot .mark{font-family:var(--display);font-size:64px;font-weight:500;letter-spacing:.04em;background:linear-gradient(180deg,var(--ivory) 30%,var(--gold) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  #boot .mark{font-family:var(--display);font-size:64px;font-weight:700;letter-spacing:-.04em;color:var(--ivory)}
   #boot .tag{margin-top:6px;font-size:11px;letter-spacing:.4em;text-transform:uppercase;color:var(--ivory-dim)}
   #boot .bar{margin-top:40px;width:200px;height:1px;background:rgba(255,255,255,.08);position:relative;overflow:hidden}
   #boot .bar::after{content:"";position:absolute;left:0;top:0;height:100%;width:0;background:linear-gradient(90deg,transparent,var(--gold),transparent);animation:boot 1.4s var(--ease) forwards}
@@ -57,7 +56,7 @@
   @media (max-width:760px){.app{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) 72px}main.view{grid-row:1}nav.tabs{grid-row:2}}
 
   nav.rail{background:linear-gradient(180deg,var(--graphite),#0d0d0f);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:24px 16px;position:relative}
-  nav.rail .logo{font-family:var(--display);font-size:34px;line-height:1;letter-spacing:.03em;background:linear-gradient(180deg,var(--ivory),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;padding:8px 4px 18px;border-bottom:1px solid var(--line)}
+  nav.rail .logo{font-family:var(--display);font-size:34px;line-height:1;letter-spacing:-.04em;color:var(--ivory);padding:8px 4px 18px;border-bottom:1px solid var(--line)}
   nav.rail .logo small{display:block;font-family:var(--sans);font-size:9px;letter-spacing:.5em;color:var(--ivory-dim);margin-top:4px;text-transform:uppercase}
   nav.rail .links{display:flex;flex-direction:column;gap:4px;margin-top:18px;flex:1}
   nav.rail a{display:flex;align-items:center;gap:12px;padding:12px 14px;min-height:44px;color:var(--ivory-dim);text-decoration:none;font-size:13px;letter-spacing:.06em;text-transform:uppercase;border-radius:8px;position:relative;transition:color .25s var(--ease),background .25s var(--ease)}
@@ -91,7 +90,7 @@
   /* Cards */
   .card{background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.012));border:1px solid var(--line);border-radius:14px;padding:20px;position:relative;transition:border-color .25s var(--ease),transform .25s var(--ease)}
   .card:hover{border-color:rgba(201,168,106,.45)}
-  .card.gold{border-color:rgba(201,168,106,.35);box-shadow:0 0 0 1px rgba(201,168,106,.05) inset, 0 20px 60px -20px rgba(201,168,106,.2)}
+  .card.gold{border-color:var(--line)}
   .grid{display:grid;gap:18px}
   .g-3{grid-template-columns:repeat(3,1fr)}
   .g-2{grid-template-columns:repeat(2,1fr)}
@@ -333,24 +332,24 @@
 
 <div class="app">
   <nav class="rail" aria-label="primary">
-    <div class="logo">Chisel<small>Lookmax · AI</small></div>
+    <div class="logo">Chisel<small>Private studio</small></div>
     <div class="links" id="navLinks">
-      <a href="#home" data-route="home" class="active"><span class="ico">◇</span> Home</a>
-      <a href="#analyze" data-route="analyze"><span class="ico">◉</span> Analyze</a>
-      <a href="#affirm" data-route="affirm"><span class="ico">✦</span> Affirm</a>
-      <a href="#meditate" data-route="meditate"><span class="ico">◯</span> Meditate</a>
-      <a href="#groom" data-route="groom"><span class="ico">▣</span> Groom</a>
+      <a href="#home" data-route="home" class="active"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z"/></svg></span> Home</a>
+      <a href="#analyze" data-route="analyze"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H4v4M16 3h4v4M4 16v4h4M16 21h4v-4M9 12h6"/></svg></span> Analyze</a>
+      <a href="#affirm" data-route="affirm"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5 13.4 8.6 18.5 10 13.4 11.4 12 16.5 10.6 11.4 5.5 10 10.6 8.6z"/></svg></span> Affirm</a>
+      <a href="#meditate" data-route="meditate"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 8v4l2.5 1.5"/></svg></span> Meditate</a>
+      <a href="#groom" data-route="groom"><span class="ico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg></span> Groom</a>
     </div>
     <div class="footer">Build <b id="buildTag">1.0.0</b></div>
   </nav>
 
   <nav class="tabs" id="bottomTabs">
     <span class="pill" id="tabPill"></span>
-    <a href="#home" data-route="home"><span class="ico" aria-hidden="true">◇</span><span>Home</span></a>
-    <a href="#analyze" data-route="analyze"><span class="ico" aria-hidden="true">◉</span><span>Analyze</span></a>
-    <a href="#affirm" data-route="affirm"><span class="ico" aria-hidden="true">✦</span><span>Affirm</span></a>
-    <a href="#meditate" data-route="meditate"><span class="ico" aria-hidden="true">◯</span><span>Meditate</span></a>
-    <a href="#groom" data-route="groom"><span class="ico" aria-hidden="true">▣</span><span>Groom</span></a>
+    <a href="#home" data-route="home"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 12 4l8 7v9h-5v-6H9v6H4z"/></svg></span><span>Home</span></a>
+    <a href="#analyze" data-route="analyze"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H4v4M16 3h4v4M4 16v4h4M16 21h4v-4M9 12h6"/></svg></span><span>Analyze</span></a>
+    <a href="#affirm" data-route="affirm"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 13.4 8.6 18.5 10 13.4 11.4 12 16.5 10.6 11.4 5.5 10 10.6 8.6z"/></svg></span><span>Affirm</span></a>
+    <a href="#meditate" data-route="meditate"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 8v4l2.5 1.5"/></svg></span><span>Meditate</span></a>
+    <a href="#groom" data-route="groom"><span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg></span><span>Groom</span></a>
   </nav>
 
   <main class="view" id="view">
@@ -397,17 +396,17 @@
         <div class="eyebrow">Quick Actions</div>
         <div class="grid g-3" style="margin-top:10px">
           <div class="card" data-go="analyze" style="cursor:pointer">
-            <div style="font-size:32px">◉</div>
+            <div class="cs-glyph" data-glyph="scan"></div>
             <h3 style="font-family:var(--display);font-size:24px;margin:8px 0 0;font-weight:500">Analyze</h3>
             <p class="lede" style="font-size:13px;margin:4px 0 0">Map your jawline, cheekbones and symmetry, then compare trends under similar capture conditions.</p>
           </div>
           <div class="card" data-go="affirm" style="cursor:pointer">
-            <div style="font-size:32px">✦</div>
+            <div class="cs-glyph" data-glyph="affirm"></div>
             <h3 style="font-family:var(--display);font-size:24px;margin:8px 0 0;font-weight:500">Affirm</h3>
             <p class="lede" id="affirmCardSub" style="font-size:13px;margin:4px 0 0">Read affirmations on top of your live reflection. Lock eyes with the person you're becoming.</p>
           </div>
           <div class="card" data-go="meditate" style="cursor:pointer">
-            <div style="font-size:32px">◯</div>
+            <div class="cs-glyph" data-glyph="meditate"></div>
             <h3 style="font-family:var(--display);font-size:24px;margin:8px 0 0;font-weight:500">Meditate</h3>
             <p class="lede" style="font-size:13px;margin:4px 0 0">Guided visualization with a calm voice. See the chiseled, confident version of you.</p>
           </div>
@@ -470,7 +469,7 @@
       <h2 class="section">See your structure. <span class="gold">Start with the jaw.</span></h2>
       <p class="lede" style="margin-bottom:14px">A private, on-device face mesh maps your jawline, cheekbones and symmetry first, then adds skin, hair and teeth guidance.</p>
       <div class="card analyze-start">
-        <div style="font-size:38px;color:var(--gold)">◉</div>
+        <div class="cs-glyph" data-glyph="scan"></div>
         <h3 class="display" style="font-size:24px;margin:4px 0 0">Ready when you are.</h3>
         <p class="lede" style="font-size:13px;margin:5px auto 0">Face forward in even light. Keep your jaw relaxed.</p>
         <div class="btn-row analyze-primary">
@@ -497,7 +496,7 @@
       <h2 class="section">Say it. <span class="gold">See it. Become it.</span></h2>
       <p class="lede" style="margin-bottom:18px">Affirmations work best when spoken. Open the camera, look at yourself, and read each one out loud.</p>
       <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px;text-align:center;min-height:200px">
-        <div style="font-size:54px;color:var(--gold)">✦</div>
+        <div class="cs-glyph" data-glyph="affirm" style="width:40px;height:40px"></div>
         <h3 class="display" style="font-size:28px;margin:8px 0 0">Mirror mode</h3>
         <p class="lede" style="margin:8px auto 0">Affirmations and manifestation lines appear on top of your reflection.</p>
         <div class="btn-row" style="margin-top:18px">
@@ -526,16 +525,16 @@
     <!-- MEDITATE -->
     <section class="screen" data-screen="meditate">
       <div class="eyebrow">Visualization</div>
-      <h2 class="section">See the man <span class="gold">you're becoming.</span></h2>
+      <h2 class="section">See the person <span class="gold">you're becoming.</span></h2>
       <p class="lede" style="margin-bottom:18px">Guided audio + breathing orb. Pick a duration, close your eyes, and let the voice do the work.</p>
       <div class="card" style="padding:24px">
         <div class="btn-row" id="durChips" style="justify-content:center">
           <button class="chip" data-dur="180">3 min</button>
-          <button class="chip on" data-dur="600">10 min · Lookmax</button>
+          <button class="chip on" data-dur="600">10 min · Guided</button>
           <button class="chip" data-dur="1200">20 min</button>
         </div>
         <div class="orb-stage">
-          <div class="arc"><svg viewBox="0 0 240 240"><defs><linearGradient id="goldgrad" x1="0" x2="1"><stop offset="0" stop-color="#C9A86A"/><stop offset="1" stop-color="#E2C58A"/></linearGradient></defs><circle class="bg" cx="120" cy="120" r="116"/><circle class="fg" id="arcFg" cx="120" cy="120" r="116" stroke-dasharray="729" stroke-dashoffset="0"/></svg></div>
+          <div class="arc"><svg viewBox="0 0 240 240"><defs><linearGradient id="goldgrad" x1="0" x2="1"><stop offset="0" stop-color="var(--gold)"/><stop offset="1" stop-color="var(--sage, var(--gold))"/></linearGradient></defs><circle class="bg" cx="120" cy="120" r="116"/><circle class="fg" id="arcFg" cx="120" cy="120" r="116" stroke-dasharray="729" stroke-dashoffset="0"/></svg></div>
           <div class="orb"></div>
         </div>
         <div class="timer" id="timer">10:00</div>
@@ -594,6 +593,17 @@
       <h2 class="section">Your app. <span class="gold">Your control.</span></h2>
       <p class="lede" style="margin-bottom:18px">Chisel is ready to use on this phone. Your scans, routines and progress stay here unless you explicitly choose an optional photoreal render.</p>
 
+      <div class="card" id="appearanceCard" style="margin-bottom:14px">
+        <div class="eyebrow">Appearance</div>
+        <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:600">Light or dark</h3>
+        <p class="lede" style="font-size:13px;margin:0 0 12px">Follow the phone, or keep one mode. Text stays high contrast either way.</p>
+        <div class="btn-row" role="group" aria-label="Color theme">
+          <button class="btn" type="button" data-theme-choice="system" aria-pressed="true">System</button>
+          <button class="btn" type="button" data-theme-choice="light" aria-pressed="false">Light</button>
+          <button class="btn" type="button" data-theme-choice="dark" aria-pressed="false">Dark</button>
+        </div>
+      </div>
+
       <div class="card" style="margin-bottom:14px">
         <div class="diag">
           <div class="k">Capacitor native shell</div><div class="v" id="dCap">—</div>
@@ -625,7 +635,7 @@
       <div class="card" style="margin-top:18px">
         <div class="eyebrow">Privacy &amp; data</div>
         <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:500">Your data stays on this device</h3>
-        <p style="color:var(--ivory-dim);font-size:13px;line-height:1.6">Scans, photos, streaks, routines and settings are stored only on your phone — no account, no ads, no tracking. The only time anything leaves the device is an optional photoreal render. <a href="https://github.com/kapasainitishreddy/Chisel/blob/main/docs/privacy-policy.html" target="_blank" rel="noopener" style="color:var(--gold)">Privacy policy ↗</a> · <a href="https://github.com/kapasainitishreddy/Chisel/blob/main/docs/terms-of-use.html" target="_blank" rel="noopener" style="color:var(--gold)">Terms of use ↗</a></p>
+        <p style="color:var(--ivory-dim);font-size:13px;line-height:1.6">Free local scans, photos, streaks, routines and settings stay on your phone. Optional cloud photo editing sends a prepared photo after your confirmation. Existing cloud-account management uses email sign-in and a separate deletion request. Credit purchases and new paid accounts are disabled in this release. No ads or analytics tracking. <a href="privacy-policy.html" style="color:var(--gold)">Privacy policy</a> · <a href="account-deletion.html" style="color:var(--gold)">Delete your data</a> · <a href="https://github.com/kapasainitishreddy/Chisel/blob/main/docs/terms-of-use.html" target="_blank" rel="noopener" style="color:var(--gold)">Terms of use ↗</a></p>
         <div class="btn-row" style="margin-top:14px">
           <button class="btn ghost" id="wipeData">Clear all my data</button>
         </div>
@@ -654,7 +664,7 @@
 <!-- CAMERA CONSENT (one-time, before first camera use) -->
 <div id="camConsent">
   <div class="cc-panel">
-    <div style="font-size:44px;color:var(--gold)">◉</div>
+    <div class="cs-glyph" data-glyph="scan" style="margin-inline:auto"></div>
     <h3 style="font-family:var(--display);font-size:26px;margin:12px 0 6px;font-weight:500">Camera access</h3>
     <p style="color:var(--ivory-dim);line-height:1.6;font-size:14px">Chisel uses your front camera for on-device facial analysis, affirmations, try-on and makeup. <b>The video is processed live on your phone and is never uploaded</b> (the only exception is if you choose the optional photoreal render). You can allow it now, and Android will also ask once.</p>
     <div class="btn-row" style="margin-top:20px;justify-content:center">
@@ -669,20 +679,20 @@
   <video id="cam" autoplay playsinline muted></video>
   <canvas id="overlay"></canvas>
   <div class="hud">
-    <div class="back" id="camBack" aria-label="close">✕</div>
+    <div class="back" id="camBack" aria-label="close"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></div>
     <div class="meta" id="camMeta">Live</div>
     <div style="width:44px"></div>
   </div>
   <div class="controls">
-    <div class="camctrl" id="camFlip" title="Flip camera" role="button" aria-label="Flip camera">⟲</div>
-    <div class="camctrl" id="camShot" title="Capture" role="button" aria-label="Capture">◉</div>
+    <div class="camctrl" id="camFlip" title="Flip camera" role="button" aria-label="Flip camera"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h11l-3-3M20 16H9l3 3"/></svg></div>
+    <div class="camctrl" id="camShot" title="Capture" role="button" aria-label="Capture"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg></div>
   </div>
   <div class="affirm-overlay" id="affirmOverlay" style="display:none">
     <div class="card">
       <div class="cat" id="affCat">Confidence</div>
       <div class="txt" id="affTxt">—</div>
       <div class="pager" id="affPager"></div>
-      <div class="say">🎙️ Say it out loud</div>
+      <div class="say">Say it out loud</div>
     </div>
   </div>
   <div id="scanGuide"><div class="sg-big" id="sgBig"></div><div class="sg-sub" id="sgSub"></div></div>
@@ -911,6 +921,7 @@
   })();
 </script>
 
+<script src="chisel-runtime-loader.js"></script>
 <script src="chisel-ar-coach-core.js"></script>
 <script>
 /* ---------- Utilities ---------- */
@@ -920,9 +931,10 @@ const toast = (m,t=1800)=>{ const el=$('#toast'); el.textContent=m; el.classList
 const store = { get:(k,d)=>{ try{return JSON.parse(localStorage.getItem('chisel:'+k))??d}catch{return d} }, set:(k,v)=>localStorage.setItem('chisel:'+k, JSON.stringify(v)) };
 const RENDER_FN_URL = 'https://wnzbmmhtdchdqjnskwlo.supabase.co/functions/v1/render-lookmax';
 const RENDER_ANON_KEY = 'sb_publishable_kr_GPQ_vODmXjIxQoV8v6A_FqH8RCts';
-/* Release safety: paid accounts stay unavailable until billing, deletion,
-   retention and Play purchase testing are complete. Optional cloud photo
-   editing remains a separate, consented path. */
+// Paid purchases stay off until RevenueCat products, receipt webhooks, and a
+// deployed, accepted account-deletion path all exist. Optional cloud photo
+// editing remains a separate consented path. Do not set billingEnabled to true
+// before those gates. See PLAY_STORE.md and docs/PLAY_DATA_SAFETY.md.
 window.CHISEL_RELEASE_CONFIG = Object.freeze({billingEnabled:false,cloudPhotoRendersEnabled:true});
 function deviceId(){
   let id = store.get('deviceId', null);
@@ -1051,7 +1063,7 @@ function renderHome(){
   $('#homeAffirm').textContent = pickAffirm(cat);
   const s = store.get('streak',{count:0,last:null,freezes:0});
   $('#streakNum').textContent = s.count;
-  const fz = (s.freezes||0)>0 ? ' · ❄ '+s.freezes+' freeze'+(s.freezes>1?'s':'') : '';
+  const fz = (s.freezes||0)>0 ? ' · '+s.freezes+' freeze'+(s.freezes>1?'s':'') : '';
   $('#streakSub').textContent = (s.last ? ('Last session: '+s.last) : 'Begin a session to start your streak.')+fz;
   const sc = store.get('lastScore', null);
   $('#scoreNum').textContent = sc==null ? '—' : sc;
@@ -1074,7 +1086,7 @@ function bumpStreak(){
   else if(s.last===twoAgo && (s.freezes||0)>0){ s.freezes--; s.count++; toast('Streak freeze used — streak saved'); }  // forgive one missed day
   else { s.count=1; }
   s.last = today;
-  if(s.count>0 && s.count%7===0 && (s.freezes||0)<3){ s.freezes=(s.freezes||0)+1; toast('Earned a streak freeze ❄'); }  // one freeze per 7-day run, cap 3
+  if(s.count>0 && s.count%7===0 && (s.freezes||0)<3){ s.freezes=(s.freezes||0)+1; toast('Earned a streak freeze'); }  // one freeze per 7-day run, cap 3
   store.set('streak',s); renderHome();
 }
 
@@ -1190,7 +1202,7 @@ $('#camShot').addEventListener('click', ()=>{
   if(!faceKitReady){ toast('Face engine still loading…'); return; }
   manualSnap = true; $('#camMeta').textContent='Hold still — capturing…';
   clearTimeout(_snapTO);
-  _snapTO=setTimeout(()=>{ if(manualSnap){ manualSnap=false; $('#camMeta').textContent='Center your face · tap ◉ to scan'; toast('No face detected — center your face in good light'); } }, 6000);
+  _snapTO=setTimeout(()=>{ if(manualSnap){ manualSnap=false; $('#camMeta').textContent='Center your face, then tap capture'; toast('No face detected — center your face in good light'); } }, 6000);
 });
 
 /* ---------- Real face mesh (MediaPipe FaceLandmarker) ---------- */
@@ -2528,7 +2540,7 @@ function finalizeScan(){
     {k:'Jaw', priority:true, ctrl:true, score:jawScore,
      status:`Taper ${jawTaper.toFixed(2)} · gonial ~${gonial.toFixed(0)}° (frontal proxy)`,
      metrics:[['Taper (jaw/cheek)',jawTaper.toFixed(2)],['fWHR',fWHR.toFixed(2)],['Gonial angle ~',gonial.toFixed(0)+'°']],
-     rem:[jawFrame,R('Strong','Lower body-fat is the biggest lever on a visible jawline. [facial-adiposity research]'),R('Moderate','Firm gum/chewing loads the masseter. [mastication studies]'),R('Moderate','Run Analyze → AR Jaw & Cheek Coach for gentle chin-tuck and neck-alignment form guidance.'),R('Myth','"Mewing" has no controlled evidence of changing bone.')]},
+     rem:[jawFrame,R('Limited','Jaw appearance varies with pose, lighting and natural anatomy. No scan establishes a need to lose weight.'),R('Limited','Keep your jaw relaxed. Repeated forceful chewing can aggravate jaw discomfort; stop for pain.'),R('Moderate','Run Analyze → AR Jaw & Cheek Coach for gentle chin-tuck and neck-alignment form guidance.'),R('Myth','"Mewing" has no controlled evidence of changing bone.')]},
     {k:'Cheekbones', priority:true, ctrl:false, score:cheekScore,
      status:`Mid-face ratio ${midfaceRatio.toFixed(2)} · projection ${(malarProm*100).toFixed(1)}`,
      metrics:[['Mid-face ratio',midfaceRatio.toFixed(2)],['Malar projection',`${(malarProm*100).toFixed(1)} (3D)`],['Cheek : jaw width',(jawTaper>0?(1/jawTaper).toFixed(2):'—')]],
@@ -2561,7 +2573,7 @@ function finalizeScan(){
     {k:'Angles & profile', ctrl:false, score:null,
      status:`Gonial ~${gonial.toFixed(0)}° · nasofrontal ~${nasofrontal.toFixed(0)}° · nasolabial ~${nasolabial.toFixed(0)}°`,
      metrics:[['Gonial (jaw)',gonial.toFixed(0)+'°'],['Canthal tilt',canthal.toFixed(1)+'°'],['Nasofrontal',nasofrontal.toFixed(0)+'° (3D)'],['Nasolabial',nasolabial.toFixed(0)+'° (3D)'],['Mentolabial',mentolabial.toFixed(0)+'° (3D)'],['Chin projection',chinProj.toFixed(1)+' (3D)']],
-     rem:[R('Limited','These are read from the 3D face mesh depth — a real profile-angle estimate from a front scan, but approximate. Turn your head slowly a few degrees during a Deep scan for a steadier read.'),R('Limited','Ideal ranges (guidance, not rules): nasofrontal ~115–135°, nasolabial ~90–110° (men) / ~95–110° (women). These are bone/cartilage — surgical, not trainable.'),R('Moderate','What you CAN move: posture (chin tuck lifts the whole profile) and lower body-fat (sharpens the jaw–neck angle). [posture & adiposity research]')]},
+     rem:[R('Limited','These are read from the 3D face mesh depth — a real profile-angle estimate from a front scan, but approximate. Turn your head slowly a few degrees during a Deep scan for a steadier read.'),R('Limited','Ideal ranges (guidance, not rules): nasofrontal ~115–135°, nasolabial ~90–110° (men) / ~95–110° (women). These are bone/cartilage — surgical, not trainable.'),R('Moderate','Gentle posture practice can change how a photograph is framed. It does not change adult bone structure.')]},
     {k:'Nose', ctrl:false, score:noseScore,
      status:`Nasal index ${nasalIdx.toFixed(2)} (width/length)`,
      metrics:[['Nasal index',nasalIdx.toFixed(2)]],
@@ -2583,29 +2595,17 @@ function finalizeScan(){
     areas.splice(3,0,browArea);
   }
 
-  /* Overall harmony */
-  const core=[symScore,thirdsScore,jawScore,noseScore,lipScore,eyeScore,skinScore];
-  const overall=Math.round(core.reduce((a,b)=>a+b,0)/core.length);
-
-  /* Controllable potential — honest headroom on the things you can actually change
-     (skin, teeth, and the fat-driven part of the jaw), not a rank of you. */
-  const ctrlNowArr=[skinScore]; if(teethScore!=null) ctrlNowArr.push(teethScore); ctrlNowArr.push(jawScore);
-  const ctrlNow=Math.round(ctrlNowArr.reduce((a,b)=>a+b,0)/ctrlNowArr.length);
-  const ctrlCeil=Math.min(95, ctrlNow+Math.round((100-ctrlNow)*0.6));   // ~60% of headroom is realistically reachable
-  const potential=Math.max(0, ctrlCeil-ctrlNow);
-  store.set('lastPotential',{now:ctrlNow,ceil:ctrlCeil,gain:potential});
-
   const prev=store.get('scans',[]).slice(-1)[0];
   const bloatTrend = prev && typeof prev.bloat==='number' ? (bloatIndex>prev.bloat+3?'▲ up':(bloatIndex<prev.bloat-3?'▼ down':'– steady')) : (bloatBase?'tracking':'baseline');
 
-  renderResults(overall, areas, {bloat:`${bloatIndex}/100 ${bloatTrend}`, quality:_qual, potential:{now:ctrlNow,ceil:ctrlCeil,gain:potential}});
-  saveScan({ t:Date.now(), overall, sym:symScore, jaw:jawScore, gonial:+gonial.toFixed(0), nose:noseScore, lips:lipScore, eyes:eyeScore,
+  renderResults(null, areas, {bloat:`${bloatIndex}/100 ${bloatTrend}`, quality:_qual});
+  saveScan({ t:Date.now(), methodVersion:'quick-photo-v2', gonial:+gonial.toFixed(0), lipFullness:lipFull, eyeSpacing:spacing,
     skin:skinScore, teeth:teethScore, hairGloss, redLevel, oilPct, blemish, shape:shapeConf?shape:null, sleep:(typeof sleepForToday==='function'?sleepForToday():null), ita:+ita.toFixed(1),
     undertone:und.label, hue:+und.hue.toFixed(1), wb:wbOn?1:0,
     bloat:bloatIndex, fullness:+fullness.toFixed(3), under:undEyeDark, skinHex:hex(skinCol), lipHex:hex(lipCol) });
-  savePhoto(captureScanThumb(), overall, Date.now());
+  savePhoto(captureScanThumb(), null, Date.now());
   if(deepScan) store.set('deepCount', (store.get('deepCount',0))+1);
-  store.set('lastScore', overall); renderHome(); bumpStreak(); renderTimeline();
+  renderHome(); bumpStreak(); renderTimeline();
   clearScanWatch();
   _burst=[];
   $('#camSheet').style.display='block'; $('#camSheet').scrollTop=0;
@@ -2637,7 +2637,7 @@ function renderResults(overall, areas, extra){
     #camSheet .jaw-focus p{margin:5px 0 0;font-size:12px;color:var(--ivory-dim);line-height:1.45}
   </style>`;
   const blocks=areas.map(a=>{
-    const sc = a.score!=null? `<span class="sc">${a.score}</span>` : (a.ctrl?`<span class="sc" style="font-size:11px;color:var(--ivory-dim)">guided</span>`:'');
+    const sc = a.ctrl?`<span class="sc" style="font-size:11px;color:var(--ivory-dim)">guided</span>`:'';
     const dot = a.swatch? `<span class="cdot" style="background:${a.swatch}"></span>`:'';
     const mets=(a.metrics||[]).map(m=>`<div class="mrow"><span>${m[0]}</span><b>${m[1]}</b></div>`).join('');
     const rems=(a.rem||[]).map(r=>`<div class="rem"><i class="ev ev-${r.t.toLowerCase().split(' ')[0]}">${r.t}</i><span>${r.txt}</span></div>`).join('');
@@ -2649,7 +2649,7 @@ function renderResults(overall, areas, extra){
   const jaw=areas.find(a=>a.k==='Jaw');
   const jawFocus=jaw ? `<div class="jaw-focus">
     <div class="ey">Jawline first</div>
-    <div class="top"><b>Jaw structure</b><span>${jaw.score}/100 signal</span></div>
+    <div class="top"><b>Jaw structure</b><span>photographic guide</span></div>
     <p>${jaw.status}. This is a photographic estimate, so use repeated scans in similar light to track change.</p>
   </div>` : '';
   $('#camSheet').innerHTML = evCss + `
@@ -2669,26 +2669,26 @@ function saveScan(rec){ const arr=store.get('scans',[]); arr.push(rec); while(ar
 function renderTimeline(){
   const el=$('#scanHistory'); if(!el) return;
   const arr=store.get('scans',[]);
-  if(!arr.length){ el.innerHTML='<p class="lede" style="font-size:13px;margin-top:14px">No scans yet. Open the camera and tap ◉ to log your first reading — Chisel tracks the trend over time.</p>'; return; }
-  const bars=arr.slice(-14).map(s=>`<div title="${new Date(s.t).toLocaleDateString()}" style="flex:1;min-width:5px;background:linear-gradient(180deg,var(--gold-bright),var(--gold));height:${Math.max(8,s.overall)}%;border-radius:3px 3px 0 0"></div>`).join('');
+  if(!arr.length){ el.innerHTML='<p class="lede cs-empty" style="font-size:14px;margin-top:14px">No scans yet. Open the camera and tap capture to log your first reading. Chisel tracks the trend over time.</p>'; return; }
+  const bars=arr.slice(-14).map(s=>`<div title="${new Date(s.t).toLocaleDateString()}" style="flex:1;min-width:5px;background:linear-gradient(180deg,var(--gold-bright),var(--gold));height:${Math.max(8,30)}%;border-radius:3px 3px 0 0"></div>`).join('');
   const rows=arr.slice(-8).reverse().map(s=>{
     const dd=new Date(s.t), when=dd.toLocaleDateString([], {month:'short',day:'numeric'})+' · '+dd.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
     const bl = (typeof s.bloat==='number') ? s.bloat+'/100' : (s.fullness??'—');
-    return `<div class="row"><label>${when}</label><span>bloat ${bl} · <span class="gold">${s.overall}</span></span></div>`;
+    return `<div class="row"><label>${when}</label><span>bloat ${bl}</span></div>`;
   }).join('');
   const photos=store.get('photos',[]);
   let photoHtml='';
   if(photos.length){
     const first=photos[0], last=photos[photos.length-1];
-    const strip=photos.slice(-10).map(p=>`<img src="${p.url}" title="${new Date(p.t).toLocaleDateString()} · ${p.overall}/100" style="height:72px;border-radius:8px;border:1px solid var(--line);flex:0 0 auto"/>`).join('');
+    const strip=photos.slice(-10).map(p=>`<img src="${p.url}" title="${new Date(p.t).toLocaleDateString()}" style="height:72px;border-radius:8px;border:1px solid var(--line);flex:0 0 auto"/>`).join('');
     const compare = photos.length>=2 ? `
       <div class="eyebrow" style="margin-top:16px">Before &rarr; now · drag to compare</div>
       <div id="baWrap" style="position:relative;max-width:320px;margin:10px auto 0;border-radius:12px;overflow:hidden;border:1px solid var(--gold);touch-action:none;user-select:none;cursor:ew-resize">
         <img src="${last.url}" style="display:block;width:100%"/>
         <div id="baOver" style="position:absolute;inset:0;width:50%;overflow:hidden;border-right:2px solid var(--gold-bright)"><img src="${first.url}" style="display:block;width:320px;max-width:none;height:100%;object-fit:cover"/></div>
         <div id="baHandle" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:34px;height:34px;border-radius:50%;background:rgba(10,10,11,.7);border:1px solid var(--gold);color:var(--gold);display:grid;place-items:center;font-size:13px;pointer-events:none">↔</div>
-        <div style="position:absolute;left:8px;bottom:8px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px">${new Date(first.t).toLocaleDateString([], {month:'short',day:'numeric'})} · ${first.overall}</div>
-        <div style="position:absolute;right:8px;bottom:8px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px">now · ${last.overall}</div>
+        <div style="position:absolute;left:8px;bottom:8px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px">${new Date(first.t).toLocaleDateString([], {month:'short',day:'numeric'})}</div>
+        <div style="position:absolute;right:8px;bottom:8px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);background:rgba(0,0,0,.5);padding:3px 7px;border-radius:6px">now</div>
       </div>` : '';
     photoHtml=`<div class="card" style="margin-top:14px">
       <div class="eyebrow">Progress photos · ${photos.length}</div>
@@ -2876,7 +2876,7 @@ function buildGroom(){
   const g = $('#groomGrid'); g.innerHTML='';
   GROOM.forEach(it=>{
     const el = document.createElement('div'); el.className='card groom'; el.dataset.id=it.id;
-    el.innerHTML = `<div><div class="num">${it.num}</div><div class="name">${it.name}</div></div><div class="icon">${it.icon}</div>`;
+    el.innerHTML = `<div><div class="num">${it.num}</div><div class="name">${it.name}</div></div><div class="icon cs-glyph" data-glyph="${it.id}"></div>`;
     el.addEventListener('click',()=>openGroom(it.id));
     g.appendChild(el);
   });
@@ -3065,7 +3065,7 @@ function renderBadges(){
   const el=$('#milestones'); if(!el) return; const st=badgeState();
   el.innerHTML=BADGES.map(b=>{ const on=b.got(st);
     return `<div class="card" style="text-align:center;opacity:${on?1:.5}">
-      <div style="font-size:30px;color:${on?'var(--gold)':'var(--ivory-dim)'}">${b.glyph}</div>
+      <div class="cs-glyph" data-glyph="${b.id}" style="margin-inline:auto;color:${on?'var(--gold)':'var(--ivory-dim)'}"></div>
       <div style="font-family:var(--display);font-size:18px;margin-top:6px">${b.name}</div>
       <div style="font-size:11px;color:var(--ivory-dim);margin-top:4px">${on?'Unlocked':b.hint}</div></div>`;
   }).join('');
@@ -3074,20 +3074,18 @@ function renderBadges(){
 /* ---------- Shareable progress card (Web Share + download fallback) ---------- */
 function buildShareCard(){
   const c=document.createElement('canvas'); c.width=1080; c.height=1080; const x=c.getContext('2d');
-  x.fillStyle='#0A0A0B'; x.fillRect(0,0,1080,1080);
-  const g=x.createRadialGradient(780,120,40,780,120,900); g.addColorStop(0,'rgba(201,168,106,.20)'); g.addColorStop(1,'rgba(10,10,11,0)'); x.fillStyle=g; x.fillRect(0,0,1080,1080);
-  const s=store.get('streak',{count:0}), sc=store.get('lastScore',null), scans=store.get('scans',[]);
-  const withSkin=scans.filter(v=>typeof v.skin==='number');
-  const gain=withSkin.length>=2 ? withSkin[withSkin.length-1].skin-withSkin[0].skin : null;
+  x.fillStyle='#141210'; x.fillRect(0,0,1080,1080);
+  const g=x.createRadialGradient(780,120,40,780,120,900); g.addColorStop(0,'rgba(242,196,162,.22)'); g.addColorStop(1,'rgba(20,18,16,0)'); x.fillStyle=g; x.fillRect(0,0,1080,1080);
+  const s=store.get('streak',{count:0});
   x.textAlign='center';
-  x.fillStyle='#F2EDE4'; x.font='700 46px Georgia,serif'; x.fillText('CHISEL', 540, 155);
-  x.fillStyle='#C9A86A'; x.font='500 24px Inter,Arial,sans-serif'; x.fillText('S C U L P T   Y O U R   B E S T   S E L F', 540, 205);
-  x.fillStyle='#E2C58A'; x.font='700 260px Georgia,serif'; x.fillText(String(s.count||0), 540, 615);
-  x.fillStyle='#F2EDE4'; x.font='500 40px Inter,Arial,sans-serif'; x.fillText('DAY STREAK', 540, 690);
-  const line=[]; if(sc!=null) line.push('Harmony '+sc); if(gain!=null && gain>0) line.push('Skin +'+Math.round(gain));
-  x.fillStyle='#C9C2B4'; x.font='400 34px Inter,Arial,sans-serif'; x.fillText(line.join('    ·    ')||'Evidence-based self-improvement', 540, 820);
-  x.strokeStyle='rgba(201,168,106,.45)'; x.lineWidth=2; x.beginPath(); x.moveTo(360,880); x.lineTo(720,880); x.stroke();
-  x.fillStyle='#C9A86A'; x.font='italic 500 30px Georgia,serif'; x.fillText('Progress, not a rating.', 540, 955);
+  x.fillStyle='#F7F4EF'; x.font='700 46px "Public Sans",sans-serif'; x.fillText('CHISEL', 540, 155);
+  x.fillStyle='#F2C4A2'; x.font='500 24px "Public Sans",sans-serif'; x.fillText('PRIVATE PRACTICE', 540, 205);
+  x.fillStyle='#F2C4A2'; x.font='700 260px "Public Sans",sans-serif'; x.fillText(String(s.count||0), 540, 615);
+  x.fillStyle='#F7F4EF'; x.font='500 40px "Public Sans",sans-serif'; x.fillText('DAY STREAK', 540, 690);
+  const line=['Private practice · consistent habits'];
+  x.fillStyle='#D2C9BC'; x.font='400 34px "Public Sans",sans-serif'; x.fillText(line.join('    ·    ')||'Evidence-based self-improvement', 540, 820);
+  x.strokeStyle='rgba(242,196,162,.45)'; x.lineWidth=2; x.beginPath(); x.moveTo(360,880); x.lineTo(720,880); x.stroke();
+  x.fillStyle='#F2C4A2'; x.font='italic 500 30px "Public Sans",sans-serif'; x.fillText('Progress, not a rating.', 540, 955);
   return c;
 }
 function shareProgress(){
@@ -3221,7 +3219,7 @@ function finalizePosture(){
     <h3>Posture · <span class="gold">${cva}°</span> <span style="font-size:13px;color:var(--ivory-dim)">craniovertebral angle</span></h3>
     <p><b>${rating}.</b> ${note} A larger angle means your ear sits back over your shoulder (upright); a smaller angle is forward-head. Measured side-on from your ear and shoulder.</p>
     <div style="margin-top:10px"><div class="mrow"><span>Your angle</span><b>${cva}°</b></div><div class="mrow"><span>Posture reference</span><b>≈ 50°+</b></div></div>
-    <p style="font-size:12px;margin-top:10px"><i style="color:#7CC79A">Moderate–Strong</i> — chin tucks & deep-neck-flexor work improve forward-head posture in RCTs. Chin tucks 3×15 daily; set screens at eye level. [Cervical RCT]</p>
+    <p style="font-size:12px;margin-top:10px"><i style="color:#7CC79A">Moderate–Strong</i> — chin tucks & deep-neck-flexor work improve forward-head posture in RCTs. Gentle posture practice if comfortable daily; set screens at eye level. [Cervical RCT]</p>
     <p style="font-size:11px;margin-top:8px;color:var(--ivory-dim)">Estimate from a 2D side view — not a clinical measurement. Measure at the same distance each time.</p>`;
 }
 
@@ -3489,17 +3487,17 @@ $('#idSave') && $('#idSave').addEventListener('click', ()=>{
 function hydToday(){ const m=store.get('hydration',{}); return m[new Date().toDateString()]||{}; }
 function saveHydration(patch){ const m=store.get('hydration',{}), k=new Date().toDateString(); m[k]=Object.assign({}, m[k]||{}, patch); store.set('hydration',m); }
 function renderHydration(){ const h=hydToday(); if($('#waterL')&&h.water!=null) $('#waterL').value=h.water; if(h.salt) $$('#sodiumSeg .chip').forEach(c=>c.classList.toggle('on',c.dataset.salt===h.salt)); }
-$('#waterL') && $('#waterL').addEventListener('change', e=>{ const v=parseFloat(e.target.value); if(!isNaN(v)){ saveHydration({water:v}); toast('Water logged'); } });
+$('#waterL') && $('#waterL').addEventListener('change', e=>{ const v=parseFloat(e.target.value); if(!Number.isFinite(v)||v<0||v>8){ e.target.value=''; toast('Enter liters (0–8)'); return; } saveHydration({water:v}); toast('Water logged'); });
 $$('#sodiumSeg .chip').forEach(c=>c.addEventListener('click',()=>{ $$('#sodiumSeg .chip').forEach(x=>x.classList.remove('on')); c.classList.add('on'); saveHydration({salt:c.dataset.salt}); toast(c.dataset.salt+' salt logged'); }));
 
 /* --- 30-day programs --- */
 const PROGRAMS=[
   {id:'skin', name:'Skin Reset', glyph:'○', blurb:'SPF, retinoid and sleep — the strongest-evidence skin stack.',
-   tasks:['SPF 30+ every morning','Gentle cleanse AM/PM','Retinoid at night (build up slowly)','7–9h sleep','2L water']},
-  {id:'jaw', name:'Jaw & Posture', glyph:'◢', blurb:'Leaner face + upright posture — the levers that move the jawline.',
-   tasks:['Chin tucks 3×15','Slight calorie deficit / lower body-fat','Firm gum 10 min','Sleep on your back','Low-sodium day']},
+   tasks:['SPF 30+ every morning','Gentle cleanse AM/PM','Use a simple routine that your skin tolerates','7–9h sleep','Drink according to your needs']},
+  {id:'jaw', name:'Jaw & Posture', glyph:'◢', blurb:'Comfortable posture and consistent rest. No structural change is promised.',
+   tasks:['Gentle posture practice if comfortable','Comfortable movement break','Relax your jaw; stop for discomfort','Sleep on your back','Low-sodium day']},
   {id:'glow', name:'Total Glow-up', glyph:'✦', blurb:'A bit of everything: skin, teeth, grooming, sleep.',
-   tasks:['SPF + moisturiser','Whiten / brush + floss','Groom to your plan','Hydrate 2L','Sleep 8h']}
+   tasks:['SPF + moisturiser','Whiten / brush + floss','Groom to your plan','Drink according to your needs','Sleep 8h']}
 ];
 function programState(){ return store.get('program',null); }
 function programDay(){ const p=programState(); if(!p) return 0; return Math.min(30, Math.floor((Date.now()-p.start)/86400000)+1); }
@@ -3507,8 +3505,8 @@ function enrollProgram(id){ store.set('program',{id, start:Date.now()}); renderP
 function renderPrograms(){
   const el=$('#programs'); if(!el) return; const cur=programState();
   el.innerHTML=PROGRAMS.map(pr=>{ const active=cur&&cur.id===pr.id, day=active?programDay():0;
-    return `<div class="card" style="cursor:pointer;${active?'border-color:rgba(201,168,106,.5)':''}" data-prog="${pr.id}">
-      <div style="font-size:26px;color:var(--gold)">${pr.glyph}</div>
+    return `<div class="card" style="cursor:pointer;${active?'border-color:var(--gold)':''}" data-prog="${pr.id}">
+      <div class="cs-glyph" data-glyph="${pr.id}"></div>
       <h3 style="font-family:var(--display);font-size:20px;margin:6px 0 2px;font-weight:500">${pr.name}</h3>
       <p class="lede" style="font-size:12px;margin:0">${pr.blurb}</p>
       ${active?`<div style="margin-top:10px"><div style="height:6px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden"><div style="height:100%;width:${day/30*100}%;background:linear-gradient(90deg,var(--gold),var(--gold-bright))"></div></div><div style="font-size:11px;color:var(--gold);margin-top:4px">Day ${day} / 30</div></div>`:'<div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ivory-dim);margin-top:10px">Tap to start</div>'}
@@ -3519,7 +3517,7 @@ function openProgram(id){
   const pr=PROGRAMS.find(x=>x.id===id); if(!pr) return; const cur=programState(), active=cur&&cur.id===id, day=active?programDay():0;
   const milestone= active && (day===7||day===14||day===30);
   $('#programBody').innerHTML=`
-    <div style="font-size:30px;color:var(--gold)">${pr.glyph}</div>
+    <div class="cs-glyph" data-glyph="${pr.id}"></div>
     <div class="eyebrow" style="margin-top:8px">30-day program</div>
     <h3>${pr.name}</h3>
     <p class="lede">${pr.blurb}</p>
@@ -3616,11 +3614,15 @@ async function initRevenueCat(){
   try{ await P.configure({ apiKey: RC_API_KEY, appUserID: deviceId() }); _rc=P; rcReady=true; }
   catch(e){ console.warn('RevenueCat init failed', e); }
 }
+function hasPremiumEntitlement(result){
+  const info=result?.customerInfo||result;
+  return info?.entitlements?.active?.[RC_ENTITLEMENT_ID]?.isActive===true;
+}
 async function rcUserIdIfEntitled(){
   if(!rcReady || !_rc) return undefined;
   try{
     const r=await _rc.getCustomerInfo(); const info=(r&&r.customerInfo)||r||{};
-    const active=info.entitlements && info.entitlements.active && info.entitlements.active[RC_ENTITLEMENT_ID];
+    const active=hasPremiumEntitlement(info);
     return active ? deviceId() : undefined;   // appUserID was set to deviceId() at configure()
   }catch(e){ console.warn('rcUserIdIfEntitled', e); return undefined; }
 }
@@ -3646,8 +3648,10 @@ async function renderOfferings(){
   }catch(e){ console.warn('renderOfferings', e); el.innerHTML='<p class="lede">Couldn\'t load offers — try again shortly.</p>'; }
 }
 async function purchase(pkg){
-  if(!rcReady || !_rc){ toast('Store unavailable here'); return; }
-  try{ await _rc.purchasePackage({ aPackage: pkg }); toast('You\'re in — enjoy Premium'); closePaywall(); }
+  if(!window.CHISEL_RELEASE_CONFIG?.billingEnabled || !rcReady || !_rc){ toast('Store unavailable here'); return; }
+  try{ const result=await _rc.purchasePackage({ aPackage: pkg });
+    if(!hasPremiumEntitlement(result)){ toast('Premium is not active yet. Check your purchase status before trying again.'); return; }
+    toast('You\'re in — enjoy Premium'); closePaywall(); }
   catch(e){ if(e && (e.userCancelled||e.code==='PURCHASE_CANCELLED')) return; console.warn('purchase', e); toast('Purchase didn\'t go through — try again'); }
 }
 $('#goPremiumBtn') && $('#goPremiumBtn').addEventListener('click', openPaywall);
@@ -3655,8 +3659,10 @@ if(!window.CHISEL_RELEASE_CONFIG?.billingEnabled && $('#goPremiumBtn')) $('#goPr
 $('#paywallX') && $('#paywallX').addEventListener('click', closePaywall);
 $('#paywall') && $('#paywall').addEventListener('click', e=>{ if(e.target.id==='paywall') closePaywall(); });
 $('#paywallRestore') && $('#paywallRestore').addEventListener('click', async ()=>{
-  if(!rcReady || !_rc){ toast('Store unavailable here'); return; }
-  try{ await _rc.restorePurchases(); toast('Purchases restored'); closePaywall(); }
+  if(!window.CHISEL_RELEASE_CONFIG?.billingEnabled || !rcReady || !_rc){ toast('Store unavailable here'); return; }
+  try{ const result=await _rc.restorePurchases();
+    if(!hasPremiumEntitlement(result)){ toast('No active Premium purchase was found.'); return; }
+    toast('Purchases restored'); closePaywall(); }
   catch(e){ console.warn('restore', e); toast('Couldn\'t restore — try again'); }
 });
 initRevenueCat();
