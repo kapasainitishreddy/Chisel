@@ -1,5 +1,13 @@
 # Chisel Feature Matrix
 
+## Visual theme, 2026-10-12
+
+| Feature | In this build | Still required |
+|---|---|---|
+| Light and dark theme | System, Light, and Dark in Settings. Tokens in `chisel-studio-theme.css`. Public Sans is local. | Physical-device check of safe area, keyboard, and haptics |
+| Paid purchases | Still off. `billingEnabled` is false. | Unchanged: RevenueCat plus a deployed deletion path |
+| Account deletion | Unchanged local wipe, existing-account dialog, and public request page | Deploy `account-lifecycle` before any paid flag |
+
 ## Free internal-test checkpoint, 2026-10-12
 
 | Feature | In this build | Still required |

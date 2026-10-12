@@ -1,5 +1,11 @@
 # Change Requests
 
+## CR: Visual theme, 2026-10-12
+
+Replaced the gold-on-black first impression with a shared light and dark theme: Public Sans, central tokens, rounded cards and buttons, stroke icons, and a short transition. Settings can follow the phone or pin Light or Dark. Tabs respect the Android safe area, the keyboard hides them, and haptics run when Capacitor provides them. Copy on the meditation heading, empty scan, and streak freeze no longer uses a gendered line or a decorative glyph. Billing stays off. Privacy and deletion pages keep matching copies.
+
+Verified with `npm test` (327/327), `npm run typecheck` (121 files), `npm run build` (47 modules), and Chrome screenshots of the main screens. Not merged, deployed, or submitted.
+
 ## CR: Free Play internal test, 2026-10-12
 
 Prepared the 23 Sep `main` plus `fix/storeready-play-readiness-20261004` for a free internal-test upload. Paid purchases remain behind `billingEnabled: false`. Added the public deletion-request page and linked it from the app, privacy policy, and face-tools page. The existing-account dialog no longer opens with credit-purchase copy. Water entry rejects out-of-range liters, and encrypted backups accept the Home salt value `mid`. Draft Data safety and health answers are in `docs/PLAY_DATA_SAFETY.md`. The 37 pre-launch checks are dispositioned in `docs/PRELAUNCH_37.md`. Signing instructions stay in `PLAY_STORE.md`. No keystore, deployment, or store submission.

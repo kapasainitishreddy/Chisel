@@ -1,5 +1,17 @@
 # Test Status
 
+## Visual theme, 2026-10-12
+
+Commands run in `chisel-android` after the light/dark pass:
+
+- `npm test`: pretest `cap sync android`, then 327/327 Node tests, 0 failed. New coverage is `tests/chisel-appearance.test.cjs` (preference, resolved mode, WCAG pairs, haptics, icons).
+- `npm run typecheck`: 121 files passed `node --check`.
+- `npm run build`: 47 modules, inline scripts, and runtime assets valid.
+- Headless Chrome at 390×844 captured Home, Analyze, Affirm, Meditate, Groom, Connect, onboarding, and the tools page before the change and again in light and dark. Measured tab, button, and guide contrast is at least 6.5:1.
+- A desktop recording walked the same tabs and switched Dark and Light from Settings → Appearance.
+
+`bundleRelease` was not run. The Android SDK is not installed here.
+
 ## Free internal-test prep, 2026-10-12
 
 Commands run in `chisel-android` on `cursor/play-internal-readiness-d466`:

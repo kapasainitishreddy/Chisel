@@ -1,5 +1,9 @@
 # Release Status
 
+## Visual theme, 2026-10-12
+
+**Not uploaded.** The free internal-test branch now includes the light/dark theme. Paid purchases stay off. Signing, Data safety, and the deletion deployment are unchanged. Sai still creates the upload key and runs `bundleRelease`. Do not merge or submit from this pass.
+
 ## Free internal test, 2026-10-12
 
 **Not uploaded.** `cursor/play-internal-readiness-d466` contains `main` through 23 Sep plus `fix/storeready-play-readiness-20261004` and the free-launch prep in PR #10. Paid purchases stay off. The public account-deletion request page is committed and linked. A signed AAB was not produced. Sai still has to create the upload key, run `bundleRelease`, upload only to Internal testing, and fill Data safety from `docs/PLAY_DATA_SAFETY.md` after reading it against that AAB. Account-lifecycle and output cleanup remain undeployed. Do not set `billingEnabled` to true until RevenueCat and a tested live deletion path exist.

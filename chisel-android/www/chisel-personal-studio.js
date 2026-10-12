@@ -61,7 +61,7 @@
  function installHome(){
   const home=q('[data-screen="home"]'),hero=q('.hero',home),intro=hero&&hero.firstElementChild,launch=q('.cs-direct-tools'),hub=q('#cxpHomeHub');if(!hero||!launch)return;
   const image=photoSurface('cpsHomeHero','cps-home-hero');
-  image.innerHTML+=`<div class="cps-edge-fade"></div><button class="cps-icon-btn cps-edit-photo" data-cps-edit-photo type="button" aria-label="Change your photo">${svg('edit')}</button><button class="cps-add-photo" data-cps-edit-photo data-cps-add-caption type="button">Add your photo</button><h1>Your Best<br>Version</h1>`;
+  image.innerHTML+=`<div class="cps-edge-fade"></div><button class="cps-icon-btn cps-edit-photo" data-cps-edit-photo type="button" aria-label="Change your photo">${svg('edit')}</button><button class="cps-add-photo" data-cps-edit-photo data-cps-add-caption type="button">Add your photo</button><h1>Today</h1>`;
   q('h1',intro)?.remove();intro.prepend(image);
   const start=el('div','cps-start');start.append(el('h2','','Start today'));start.append(launch);intro.append(start);
   launch.style.removeProperty('grid-template-columns');launch.style.removeProperty('margin-top');

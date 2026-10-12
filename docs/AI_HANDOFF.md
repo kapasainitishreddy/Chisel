@@ -1,5 +1,13 @@
 # AI Development Handoff
 
+## Visual theme — 2026-10-12
+
+Same branch and PR #10. The app now has one light/dark system: Public Sans, shared color tokens, 18px cards, 48px controls, stroke icons, and a short screen transition. Settings → Appearance stores System, Light, or Dark in `chisel:theme`. Bottom tabs include the Android safe-area inset, and a software keyboard hides the tab bar. Capacitor haptics fire on primary taps when the plugin exists. `billingEnabled` is still false. Privacy and deletion pages stay paired with `docs/`.
+
+Verified: `npm test` 327/327, `npm run typecheck` 121 files, `npm run build` 47 modules. Headless Chrome captured every main screen before and after, in light and dark. A desktop walkthrough switched themes. `bundleRelease` was not run. Nothing was merged, deployed, or submitted.
+
+Next task: Sai creates the upload key, builds the AAB, and installs it from Internal testing. The checklist is at the end of [PRELAUNCH_37.md](PRELAUNCH_37.md). The visual notes are in [DESIGN.md](DESIGN.md).
+
 ## Free Play internal test — 2026-10-12
 
 Branch `cursor/play-internal-readiness-d466` brings `fix/storeready-play-readiness-20261004` onto `main` (`1c08c6e`, 23 Sep) and adds the free internal-test prep. PR #10. The July `claude/remaining-tasks-3luvx4` branch was not used.
