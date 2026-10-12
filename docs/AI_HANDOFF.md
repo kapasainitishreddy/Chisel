@@ -1,5 +1,29 @@
 # AI Development Handoff
 
+## Play internal-test candidate — 2026-10-12
+
+Branch `cursor/play-internal-testing-195e` merges `main` (`1c08c6e`, 23 September 2026) with `fix/storeready-play-readiness-20261004`. `claude/remaining-tasks-3luvx4` was not merged.
+
+Free-first flags stay `billingEnabled: false` and `cloudPhotoRendersEnabled: true`. `RC_API_KEY` is empty. Settings now opens the existing cloud-account deletion flow without creating an account. The `account-lifecycle` function is still not deployed. Production AAB profile is `npm run aab:production` (Capacitor Gradle `:app:bundleRelease`). This is not an Expo app. Drafts: [internal testing](PLAY_INTERNAL_TESTING.md), [Data safety](PLAY_DATA_SAFETY.md), [Health declaration](PLAY_HEALTH_DECLARATION.md), [store listing](PLAY_STORE_LISTING.md).
+
+No upload key was created and nothing was submitted to Play. Next task: Sai creates the upload key, runs typecheck/test/doctor, builds the AAB, and uploads it to Internal testing only.
+
+## StoreReady Play audit and fixes — 2026-10-04
+
+Continue `fix/storeready-play-readiness-20261004`, application/test SHA **c87f20b8239c9e41b62ec33b72e0e02081054057**. The later retained task source was recovered: work efebe818 / application bf826193, nine commits ahead of remote main. All 13 remote branches and nine PRs were compared. Read [Play readiness report](PLAY_READINESS_REPORT.md) and [durable evidence](evidence/play-readiness-20261004/source-and-tool-version.json).
+
+Actual StoreReady 2.1.0 at 16e71ad3 ran before/after and remains **BLOCKED**. Verified fixes: Billing 8/compatible Capacitor 7 and Java 21/Kotlin 2 migration; active-entitlement purchase/restore checks; explicit backup/transfer exclusions; current bundled privacy and notification disclosure; distribution-only signing guard; npm advisories 9→0. Release flags remain billingEnabled=false/cloudPhotoRendersEnabled=true, API 36/min API 23.
+
+319/319 Node tests, clean-source frozen install/build, 17/17 completion browser checks and 2/2 external-network-denied policy navigation checks PASS. Debug and release source compilation/resources and release-manifest merge PASS; 221 Gradle tasks. Merged release target 36/Billing 8.0.0; 61 downloaded AARs have no .so. bundleRelease --dry-run correctly rejects absent upload credentials. No signing key or current installable artifact created; prior debug APK is historical bf826193 evidence. Unpublished 10-commit range Gitleaks: no leaks; worktree public/reference-key candidates individually triaged.
+
+Final signed AAB, real Android/16 KB/permission/lifecycle/accessibility/performance acceptance, real billing/OTP/deletion, undeployed lifecycle/scheduler/provider-retention acceptance, exact-artifact Data Safety/privacy/health/listing and account testing/identity gates remain blocked or not run. Browser auth/billing/deletion replies are fixtures. No console change, purchase, deployment, merge or force push; authorized publication is only the non-default fix branch.
+
+## Current: completed local build checkpoint, 2026-10-04
+
+Continue branch `work`, not the historical draft PR referenced below. Application source **bf826193988e91c2edc457b3ab405352594857e2** has 312/312 Node tests, 17/17 completion browser checks, 6/6 real-MediaPipe fixture checks, embedded PostgreSQL lifecycle acceptance and a successful Android debug APK. Clean tracked checkout passes. The missing eyewear modules and cascading loader are repaired. Adaptive programs, conservative progress, encrypted exported backups and discussion reports are wired; account deletion/scheduled recovery source is implemented but not deployed. Seven final review findings were fixed with regressions.
+
+Read [the completion report](COMPLETION_REPORT.md) first for source, APK hash, evidence and remaining scope. APK: `/workspace/chisel-build/chisel-debug.apk`. No push/deployment/purchase/publication occurred. Preserve free local use; no new paid activation. Still required: signed Play artifact, final physical-device and empirical acceptance, cloud lifecycle deployment/live acceptance, provider/billing/retention acceptance and full native private vault. Live stores are not encrypted. Older account-free/framework/test descriptions in AGENTS.md and historical sections are superseded by actual current source and this checkpoint.
+
 ## Current: credit-backed studio and local comparison, 2026-09-10
 
 Continue draft PR #7 on feat/chisel-unisex-trainer-skin. The user explicitly approved actual implementation of reasonable AI-credit pricing, OpenAI editing, comparison and stylist export. Do not restart the app, add another theme controller or substitute ChatGPT Image Gen for app tests. The older AGENTS.md account-free/Replicate-only statements now apply only to the free/legacy paths: paid credits use an optional verified email account and an OpenAI backend. Never expose API keys.

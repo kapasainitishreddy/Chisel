@@ -1,5 +1,30 @@
 # Chisel Feature Matrix
 
+## Play internal-test candidate, 2026-10-12
+
+| Feature | Implemented and verified | Still required |
+|---|---|---|
+| Free-first Play build | Billing flag off, RevenueCat public key empty, purchases hidden, sign-in cannot create accounts while billing is off | Sai's upload key, signed AAB, internal-track install |
+| Account deletion | Settings → Clear all my data (local, including saved photo and looks). Settings → Delete cloud account opens the existing-account request and does not create an account | Deploy and live-test `account-lifecycle` before any paid account is enabled |
+| Play drafts | Data safety, health declaration, and store listing drafts match this source | Sai pastes them into Play Console against the uploaded AAB |
+| Production AAB profile | `npm run aab:production` runs Capacitor sync and Gradle `:app:bundleRelease`, and refuses to run without `keystore.properties` | Android SDK on Sai's machine and the key he creates |
+
+## StoreReady Play audit and fixes — 2026-10-04
+
+Continue `fix/storeready-play-readiness-20261004`, application/test SHA **c87f20b8239c9e41b62ec33b72e0e02081054057**. The later retained task source was recovered: work efebe818 / application bf826193, nine commits ahead of remote main. All 13 remote branches and nine PRs were compared. Read [Play readiness report](PLAY_READINESS_REPORT.md) and [durable evidence](evidence/play-readiness-20261004/source-and-tool-version.json).
+
+Actual StoreReady 2.1.0 at 16e71ad3 ran before/after and remains **BLOCKED**. Verified fixes: Billing 8/compatible Capacitor 7 and Java 21/Kotlin 2 migration; active-entitlement purchase/restore checks; explicit backup/transfer exclusions; current bundled privacy and notification disclosure; distribution-only signing guard; npm advisories 9→0. Release flags remain billingEnabled=false/cloudPhotoRendersEnabled=true, API 36/min API 23.
+
+319/319 Node tests, clean-source frozen install/build, 17/17 completion browser checks and 2/2 external-network-denied policy navigation checks PASS. Debug and release source compilation/resources and release-manifest merge PASS; 221 Gradle tasks. Merged release target 36/Billing 8.0.0; 61 downloaded AARs have no .so. bundleRelease --dry-run correctly rejects absent upload credentials. No signing key or current installable artifact created; prior debug APK is historical bf826193 evidence. Unpublished 10-commit range Gitleaks: no leaks; worktree public/reference-key candidates individually triaged.
+
+Final signed AAB, real Android/16 KB/permission/lifecycle/accessibility/performance acceptance, real billing/OTP/deletion, undeployed lifecycle/scheduler/provider-retention acceptance, exact-artifact Data Safety/privacy/health/listing and account testing/identity gates remain blocked or not run. Browser auth/billing/deletion replies are fixtures. No console change, purchase, deployment, merge or force push; authorized publication is only the non-default fix branch.
+
+## Current build additions, 2026-10-04
+
+[Completion report](COMPLETION_REPORT.md) is the current feature/evidence matrix. Added and wired: dependency-isolated runtime; one confidence-gated eyewear renderer; explicit beard selections across families; 30/60/90-day adaptive local plans; method-aware progress/baselines/JSON; encrypted supported-record backup with validated restore; four discussion sheets; billing-independent existing-account controls. Owner-bound account deletion and bounded cleanup/scheduler are implemented **in source only**. Reproducible clean tests and an actual debug APK are verified. Missing fitting modules are no longer a current source blocker.
+
+312 Node tests, 17 completion-browser checks and 6 real-model fixture checks pass. This is not live cloud/payment, physical-device or empirical measurement acceptance. Native vault/biometrics, learned segmentation, realistic local hair replacement, association UI and all advanced paid roadmap features remain incomplete. Existing generic history caps remain; Precision no longer has its previous 40-record cap. Historical rows below describe their own checkpoints.
+
 ## Credit-backed studio checkpoint, 2026-09-10
 
 | Feature | Implemented and verified | Still required |

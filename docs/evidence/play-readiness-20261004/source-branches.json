@@ -1,0 +1,93 @@
+[
+  {
+    "branch": "origin/claude/remaining-tasks-3luvx4",
+    "sha": "b923e7877f6da60660946a21a55d15de015a0afb",
+    "mainCounts": "284\t4",
+    "localCounts": "293\t4",
+    "localMergeBase": "59ead3af203ad99b9116ce4f986a4a62b79a255c"
+  },
+  {
+    "branch": "origin/codex/ui-ux-cx-polish-2026-08-17",
+    "sha": "c04ade7244638018f4bfdca7874650856ca8bf87",
+    "mainCounts": "79\t0",
+    "localCounts": "88\t0",
+    "localMergeBase": "c04ade7244638018f4bfdca7874650856ca8bf87"
+  },
+  {
+    "branch": "origin/docs/open-source-candidates-20260911",
+    "sha": "2438e7835b7a801ecc630db1cf31b857b3b86d1a",
+    "mainCounts": "77\t1",
+    "localCounts": "86\t1",
+    "localMergeBase": "d0f9bc19691c6f5cfb41f68b2f3241f69882ff6d"
+  },
+  {
+    "branch": "origin/feat/chisel-daily-pro-polish-20260816",
+    "sha": "6a05654aa5a170eb1617e835947509f1f2609a6d",
+    "mainCounts": "128\t11",
+    "localCounts": "137\t11",
+    "localMergeBase": "03359eb8e36acf253b0224af0495a0ab61879e7d"
+  },
+  {
+    "branch": "origin/feat/chisel-labs-complete",
+    "sha": "b74ae2a98c0687e4487408ad8e216b3a1e47359a",
+    "mainCounts": "254\t0",
+    "localCounts": "263\t0",
+    "localMergeBase": "b74ae2a98c0687e4487408ad8e216b3a1e47359a"
+  },
+  {
+    "branch": "origin/feat/chisel-platinum-ui",
+    "sha": "cf007ac05b4afa952193344fce9f8b4aae715129",
+    "mainCounts": "35\t4",
+    "localCounts": "44\t4",
+    "localMergeBase": "e2f5bc00c1318262b8a1eafece74b60a48dea403"
+  },
+  {
+    "branch": "origin/feat/chisel-precision-mode",
+    "sha": "0ee8425843c3889601508a590080df57767998ce",
+    "mainCounts": "254\t12",
+    "localCounts": "263\t12",
+    "localMergeBase": "b74ae2a98c0687e4487408ad8e216b3a1e47359a"
+  },
+  {
+    "branch": "origin/feat/chisel-unisex-trainer-skin",
+    "sha": "816d00aac42a7ea8174de908a4be2c1d28386330",
+    "mainCounts": "13\t0",
+    "localCounts": "22\t0",
+    "localMergeBase": "816d00aac42a7ea8174de908a4be2c1d28386330"
+  },
+  {
+    "branch": "origin/feat/launch-machine-chisel",
+    "sha": "1c5e865ca28863d565fdb50303841c6814319d9a",
+    "mainCounts": "70\t0",
+    "localCounts": "79\t0",
+    "localMergeBase": "1c5e865ca28863d565fdb50303841c6814319d9a"
+  },
+  {
+    "branch": "origin/feat/premium-ux-95",
+    "sha": "29ebf0745418eb995c89039cabeed2dae0ca1334",
+    "mainCounts": "253\t14",
+    "localCounts": "262\t14",
+    "localMergeBase": "59bae3db12bc2d9e1aede21be52dfb338f879933"
+  },
+  {
+    "branch": "origin/fix/mobile-build-pipeline",
+    "sha": "e417e17ddc6ce1b52f607571b0d2231a11827798",
+    "mainCounts": "253\t4",
+    "localCounts": "262\t4",
+    "localMergeBase": "59bae3db12bc2d9e1aede21be52dfb338f879933"
+  },
+  {
+    "branch": "origin/main",
+    "sha": "1c08c6efa8ed5696e16fd0d288ca2cb62f41f85f",
+    "mainCounts": "0\t0",
+    "localCounts": "9\t0",
+    "localMergeBase": "1c08c6efa8ed5696e16fd0d288ca2cb62f41f85f"
+  },
+  {
+    "branch": "origin/test/offline-component-dependencies",
+    "sha": "55f6ab1163bd981d25fda215e804b55e646c5f2c",
+    "mainCounts": "18\t1",
+    "localCounts": "27\t1",
+    "localMergeBase": "9d35e2669ad1152bce724fc2953e736549c64245"
+  }
+]

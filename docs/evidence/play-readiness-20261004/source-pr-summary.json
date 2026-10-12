@@ -1,0 +1,83 @@
+[
+  {
+    "number": 9,
+    "url": "https://github.com/kapasainitishreddy/Chisel/pull/9",
+    "state": "open",
+    "mergedAt": null,
+    "head": "docs/open-source-candidates-20260911",
+    "headSha": "2438e7835b7a801ecc630db1cf31b857b3b86d1a",
+    "base": "main"
+  },
+  {
+    "number": 8,
+    "url": "https://github.com/kapasainitishreddy/Chisel/pull/8",
+    "state": "open",
+    "mergedAt": null,
+    "head": "feat/chisel-platinum-ui",
+    "headSha": "cf007ac05b4afa952193344fce9f8b4aae715129",
+    "base": "feat/chisel-unisex-trainer-skin"
+  },
+  {
+    "number": 7,
+    "url": "https://github.com/kapasainitishreddy/Chisel/pull/7",
+    "state": "open",
+    "mergedAt": null,
+    "head": "feat/chisel-unisex-trainer-skin",
+    "headSha": "816d00aac42a7ea8174de908a4be2c1d28386330",
+    "base": "feat/launch-machine-chisel"
+  },
+  {
+    "number": 6,
+    "url": "https://github.com/kapasainitishreddy/Chisel/pull/6",
+    "state": "closed",
+    "mergedAt": "2026-09-20T01:45:48Z",
+    "head": "feat/launch-machine-chisel",
+    "headSha": "1c5e865ca28863d565fdb50303841c6814319d9a",
+    "base": "main"
+  },
+  {
+    "number": 5,
+    "url": "https://github.com/kapasainitishreddy/Chisel/pull/5",
+    "state": "closed",
+    "mergedAt": "2026-09-03T06:22:41Z",
+    "head": "codex/ui-ux-cx-polish-2026-08-17",
+    "headSha": "c04ade7244638018f4bfdca7874650856ca8bf87",
+    "base": "main"
+  },
+  {
+    "number": 4,
+    "url": "https://github.com/kapasainitishreddy/Chisel/pull/4",
+    "state": "closed",
+    "mergedAt": null,
+    "head": "feat/chisel-daily-pro-polish-20260816",
+    "headSha": "6a05654aa5a170eb1617e835947509f1f2609a6d",
+    "base": "main"
+  },
+  {
+    "number": 3,
+    "url": "https://github.com/kapasainitishreddy/Chisel/pull/3",
+    "state": "closed",
+    "mergedAt": "2026-08-04T02:20:11Z",
+    "head": "feat/premium-ux-95",
+    "headSha": "29ebf0745418eb995c89039cabeed2dae0ca1334",
+    "base": "main"
+  },
+  {
+    "number": 2,
+    "url": "https://github.com/kapasainitishreddy/Chisel/pull/2",
+    "state": "closed",
+    "mergedAt": null,
+    "head": "fix/mobile-build-pipeline",
+    "headSha": "e417e17ddc6ce1b52f607571b0d2231a11827798",
+    "base": "main"
+  },
+  {
+    "number": 1,
+    "url": "https://github.com/kapasainitishreddy/Chisel/pull/1",
+    "state": "closed",
+    "mergedAt": "2026-08-02T04:43:53Z",
+    "head": "feat/chisel-precision-mode",
+    "headSha": "0ee8425843c3889601508a590080df57767998ce",
+    "base": "main"
+  }
+]

@@ -1,5 +1,48 @@
 # Test Status
 
+## Play internal-test checks, 2026-10-12
+
+Commands, from `chisel-android` after `npm ci`:
+
+- `npm run typecheck` — Node syntax check of the app, tests, scripts, and Supabase functions, plus inline script validation.
+- `npm test` — Node test runner. `pretest` runs `npx cap sync android`.
+- `npm run doctor` — release-flag, empty RevenueCat key, signing-secret, and draft-doc check. It does not run `expo-doctor`.
+
+Results in this session, Node 22.14.0, after `npm ci --ignore-scripts` (99 packages):
+
+- `npm run typecheck`: PASS. 132 JavaScript files, 7 TypeScript files, 46 web modules and inline scripts.
+- `npm test`: PASS. 319 tests, 0 failed, 0 skipped. `pretest` ran `npx cap sync android`.
+- `npm run doctor`: PASS. Billing off, RevenueCat public key empty, no keystore in the tree.
+- `npm run aab:production`: exited 1 before Gradle, as intended, because `keystore.properties` is absent. No key was created.
+- Chrome check of `http://127.0.0.1:8080/#connect`: Settings shows Clear all my data and Delete cloud account. Go Premium is hidden. The cloud-account dialog says an existing account is required and no account will be created. No credit packs are shown. The delete button stays hidden until sign-in. No page errors.
+
+`npx expo-doctor` was not run as a gate. This app is Capacitor 7, and the doctor script records that Expo does not apply.
+
+## StoreReady Play audit and fixes — 2026-10-04
+
+Continue `fix/storeready-play-readiness-20261004`, application/test SHA **c87f20b8239c9e41b62ec33b72e0e02081054057**. The later retained task source was recovered: work efebe818 / application bf826193, nine commits ahead of remote main. All 13 remote branches and nine PRs were compared. Read [Play readiness report](PLAY_READINESS_REPORT.md) and [durable evidence](evidence/play-readiness-20261004/source-and-tool-version.json).
+
+Actual StoreReady 2.1.0 at 16e71ad3 ran before/after and remains **BLOCKED**. Verified fixes: Billing 8/compatible Capacitor 7 and Java 21/Kotlin 2 migration; active-entitlement purchase/restore checks; explicit backup/transfer exclusions; current bundled privacy and notification disclosure; distribution-only signing guard; npm advisories 9→0. Release flags remain billingEnabled=false/cloudPhotoRendersEnabled=true, API 36/min API 23.
+
+319/319 Node tests, clean-source frozen install/build, 17/17 completion browser checks and 2/2 external-network-denied policy navigation checks PASS. Debug and release source compilation/resources and release-manifest merge PASS; 221 Gradle tasks. Merged release target 36/Billing 8.0.0; 61 downloaded AARs have no .so. bundleRelease --dry-run correctly rejects absent upload credentials. No signing key or current installable artifact created; prior debug APK is historical bf826193 evidence. Unpublished 10-commit range Gitleaks: no leaks; worktree public/reference-key candidates individually triaged.
+
+Final signed AAB, real Android/16 KB/permission/lifecycle/accessibility/performance acceptance, real billing/OTP/deletion, undeployed lifecycle/scheduler/provider-retention acceptance, exact-artifact Data Safety/privacy/health/listing and account testing/identity gates remain blocked or not run. Browser auth/billing/deletion replies are fixtures. No console change, purchase, deployment, merge or force push; authorized publication is only the non-default fix branch.
+
+## Current application acceptance, 2026-10-04
+
+Application source: **bf826193988e91c2edc457b3ab405352594857e2**. Subsequent handoff edits are documentation only.
+
+- Node: **312/312 PASS**, zero failures/skips. Fresh archive + frozen install repeats 312/312.
+- Build validation: **46 JavaScript modules PASS**, including inline scripts/assets.
+- Completion browser: **17/17 PASS** with real local controls/downloads/storage; auth/deletion are intercepted fixtures, no emails/cloud deletion.
+- Fitting browser: **6/6 PASS** using actual MediaPipe and fixture camera, no upload/page errors.
+- Embedded PostgreSQL: lifecycle migrations/ownership/retry/refund/tombstone/access-control acceptance PASS; not production Supabase acceptance.
+- Native debug: **BUILD SUCCESSFUL**, 248 tasks. All **58 assets match** APK; v1/v2 debug signature verified.
+- Release command: expected BLOCKED by missing developer-owned upload signing, no AAB produced.
+- Fresh review: seven findings fixed with regression coverage; Precision quota failure also fixed.
+
+Evidence, scope, artifact SHA and reproduction: [completion report](COMPLETION_REPORT.md), `/workspace/chisel-build/evidence/`. Browser QA used only managed-proxy CA pins; production TLS is unchanged. No current physical-device install, live billing/provider output, real account/OTP deletion, new cloud deployment or empirical accuracy claim. Old Frame Fitting MODULE_NOT_FOUND and pristine-checkout failures are fixed at this source; historical CI results below are not a new CI run.
+
 ## Credits and compare, 2026-09-10
 
 Exact application/test head: 4a932d41b5af04f2e52317dcb2946cfac8e599c6.

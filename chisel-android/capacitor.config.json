@@ -2,7 +2,6 @@
   "appId": "com.chisel.lookmax",
   "appName": "Chisel",
   "webDir": "www",
-  "bundledWebRuntime": false,
   "backgroundColor": "#0A0A0B",
   "android": {
     "allowMixedContent": false,

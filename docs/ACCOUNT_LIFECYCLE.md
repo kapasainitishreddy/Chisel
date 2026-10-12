@@ -1,0 +1,13 @@
+# Account and output lifecycle implementation
+
+2026-10-04. Source implemented locally; NOT deployed or live accepted.
+
+Account deletion derives ownership from a verified Supabase access token. It requires explicit in-app confirmation and never accepts a requested user ID. Active jobs block deletion; stale jobs use the existing once-only refund settlement. A database tombstone blocks subsequent reservations and purchase grants. Storage outputs are removed in bounded batches before records and auth identity. Retriable pending deletions can finish through the authenticated scheduler. Free local data deletion remains separate.
+
+Receipts and financial ledger rows retain transaction deduplication/reconciliation fields with the auth user UUID replaced by a new random bookkeeping UUID. Internal deletion tombstones retain the old random auth UUID to reject delayed grants; they contain no email or photo. This is deidentification, not a claim of irreversible anonymization. Production financial/tombstone retention periods still need an approved operational policy before payments are enabled.
+
+`output-cleanup` requires a dedicated `CHISEL_CLEANUP_TOKEN`. It recovers at most 100 stale jobs, removes at most 100 expired stored outputs, and attempts at most 25 pending identity deletions per invocation. Removal errors preserve the output pointer for retries. Credit outputs expire after 24 hours; a 15-minute scheduler adds its scheduling delay, and outages can extend actual deletion. Legacy capability-job metadata is pruned at expiry; external provider retention is separate.
+
+`supabase/config.toml` disables gateway JWT verification only for `output-cleanup`, which requires its dedicated token. `account-lifecycle` retains gateway JWT verification and independently verifies the current user using getUser. Deploy with this function configuration (or explicitly `supabase functions deploy output-cleanup --no-verify-jwt`). Confirm an unauthenticated cleanup request is rejected, a wrong token is rejected, and the configured scheduler token reaches a successful bounded handler invocation. Never disable authentication globally.
+
+After deployment and secure configuration, install `supabase/ops/schedule-output-cleanup.sql`. It checks Vault secret names without hardcoding credentials. Confirm successful authenticated invocations and alert on failures/backlogs before activation. Scheduler installation, real auth/storage deletion, external RevenueCat user deletion/retention, financial retention and live refund behavior remain release acceptance requirements. No provider, payment, email or external deletion was performed here.

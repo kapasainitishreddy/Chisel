@@ -1,0 +1,19 @@
+{
+  "applicationSha": "c87f20b8239c9e41b62ec33b72e0e02081054057",
+  "startingSha": "efebe81813f6cfa9ef68472f3f5edf7c0b7b21f0",
+  "scannerSha": "16e71ad3dcf32daa782ad9294ff85f668747e9ac",
+  "scannerVersion": "2.1.0",
+  "node": "v24.19.0",
+  "npm": "11.9.0",
+  "gitleaks": "8.30.1",
+  "nativeCommands": [
+    "gradle -p chisel-android/android :app:compileDebugSources :app:compileReleaseSources :app:processReleaseManifest :app:dependencies --configuration releaseRuntimeClasspath --no-daemon --console=plain --max-workers=1",
+    "gradle -p chisel-android/android :app:bundleRelease --dry-run --no-daemon --console=plain --max-workers=1"
+  ],
+  "jdk": "Temurin 21.0.12.1+1 (official SHA-256 verified)",
+  "agp": "8.10.0",
+  "gradle": "8.11.1",
+  "sdk": "36",
+  "bundledPolicySha256": "0b1f2dc97da6f8244f07b687023b6c9e6f22189e3c9e95153247596b40e7070a",
+  "signedDistribution": "NOT_RUN: no developer-owned upload credentials; no new signing keys"
+}

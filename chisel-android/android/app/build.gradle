@@ -5,14 +5,22 @@ apply plugin: 'com.android.application'
 def keystorePropsFile = rootProject.file("keystore.properties")
 def keystoreProps = new Properties()
 if (keystorePropsFile.exists()) { keystoreProps.load(new FileInputStream(keystorePropsFile)) }
-def requestedRelease = gradle.startParameter.taskNames.any { it.toLowerCase().contains('release') }
-if (requestedRelease && !keystorePropsFile.exists()) {
-    throw new GradleException('Release signing is not configured. Create android/keystore.properties from keystore.properties.example before building a Play artifact.')
+// Inspecting/compiling the release variant needs no signing credential. Only
+// distribution tasks require the developer-owned key; graph inspection also
+// catches umbrella tasks such as build/bundle before any task executes.
+gradle.taskGraph.whenReady { graph ->
+    def distributesRelease = graph.allTasks.any { task ->
+        task.project == project && task.name ==~ /(?i)(assemble.*Release|bundle.*Release|package.*Release|sign.*ReleaseBundle|validateSigning.*Release)/
+    }
+    if (distributesRelease && !keystorePropsFile.exists()) {
+        throw new GradleException('Release signing is not configured. Create android/keystore.properties from keystore.properties.example before building a Play artifact.')
+    }
 }
 
 android {
     namespace "com.chisel.lookmax"
     compileSdk rootProject.ext.compileSdkVersion
+    buildToolsVersion "36.0.0"
     defaultConfig {
         applicationId "com.chisel.lookmax"
         minSdkVersion rootProject.ext.minSdkVersion
