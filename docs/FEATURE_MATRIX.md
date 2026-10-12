@@ -1,5 +1,14 @@
 # Chisel Feature Matrix
 
+## Play internal-test candidate, 2026-10-12
+
+| Feature | Implemented and verified | Still required |
+|---|---|---|
+| Free-first Play build | Billing flag off, RevenueCat public key empty, purchases hidden, sign-in cannot create accounts while billing is off | Sai's upload key, signed AAB, internal-track install |
+| Account deletion | Settings → Clear all my data (local, including saved photo and looks). Settings → Delete cloud account opens the existing-account request and does not create an account | Deploy and live-test `account-lifecycle` before any paid account is enabled |
+| Play drafts | Data safety, health declaration, and store listing drafts match this source | Sai pastes them into Play Console against the uploaded AAB |
+| Production AAB profile | `npm run aab:production` runs Capacitor sync and Gradle `:app:bundleRelease`, and refuses to run without `keystore.properties` | Android SDK on Sai's machine and the key he creates |
+
 ## StoreReady Play audit and fixes — 2026-10-04
 
 Continue `fix/storeready-play-readiness-20261004`, application/test SHA **c87f20b8239c9e41b62ec33b72e0e02081054057**. The later retained task source was recovered: work efebe818 / application bf826193, nine commits ahead of remote main. All 13 remote branches and nine PRs were compared. Read [Play readiness report](PLAY_READINESS_REPORT.md) and [durable evidence](evidence/play-readiness-20261004/source-and-tool-version.json).

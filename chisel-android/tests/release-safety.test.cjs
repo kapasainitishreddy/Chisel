@@ -11,8 +11,15 @@ test('free-first release does not expose unfinished paid account creation',()=>{
   const credits=read('www/chisel-credits-ui.js');
   assert.match(html,/CHISEL_RELEASE_CONFIG\s*=\s*Object\.freeze\(\{billingEnabled:false/);
   assert.match(html,/cloudPhotoRendersEnabled!==true/);
+  assert.match(html,/const RC_API_KEY = ''/);
+  assert.match(html,/id="deleteCloudAccount"/);
+  assert.match(html,/ChiselCredits && window\.ChiselCredits\.openAccount\(\)/);
   assert.match(credits,/Credit purchases and paid accounts are disabled in this release/);
   assert.match(credits,/button\.hidden=!billingEnabled\(\)/);
+  assert.match(credits,/create_user:billingEnabled\(\)&&!accountManagement/);
+  assert.match(credits,/This signs in to an existing account only/);
+  assert.match(credits,/if\(installed\|\|!root\.ChiselWalletCore\)return false/);
+  assert.doesNotMatch(credits,/!q\('#clsEditor'\)\)return false/);
 });
 
 test('privacy and deletion disclosures are present in the shipping surfaces',()=>{

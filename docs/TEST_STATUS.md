@@ -1,5 +1,23 @@
 # Test Status
 
+## Play internal-test checks, 2026-10-12
+
+Commands, from `chisel-android` after `npm ci`:
+
+- `npm run typecheck` — Node syntax check of the app, tests, scripts, and Supabase functions, plus inline script validation.
+- `npm test` — Node test runner. `pretest` runs `npx cap sync android`.
+- `npm run doctor` — release-flag, empty RevenueCat key, signing-secret, and draft-doc check. It does not run `expo-doctor`.
+
+Results in this session, Node 22.14.0, after `npm ci --ignore-scripts` (99 packages):
+
+- `npm run typecheck`: PASS. 132 JavaScript files, 7 TypeScript files, 46 web modules and inline scripts.
+- `npm test`: PASS. 319 tests, 0 failed, 0 skipped. `pretest` ran `npx cap sync android`.
+- `npm run doctor`: PASS. Billing off, RevenueCat public key empty, no keystore in the tree.
+- `npm run aab:production`: exited 1 before Gradle, as intended, because `keystore.properties` is absent. No key was created.
+- Chrome check of `http://127.0.0.1:8080/#connect`: Settings shows Clear all my data and Delete cloud account. Go Premium is hidden. The cloud-account dialog says an existing account is required and no account will be created. No credit packs are shown. The delete button stays hidden until sign-in. No page errors.
+
+`npx expo-doctor` was not run as a gate. This app is Capacitor 7, and the doctor script records that Expo does not apply.
+
 ## StoreReady Play audit and fixes — 2026-10-04
 
 Continue `fix/storeready-play-readiness-20261004`, application/test SHA **c87f20b8239c9e41b62ec33b72e0e02081054057**. The later retained task source was recovered: work efebe818 / application bf826193, nine commits ahead of remote main. All 13 remote branches and nine PRs were compared. Read [Play readiness report](PLAY_READINESS_REPORT.md) and [durable evidence](evidence/play-readiness-20261004/source-and-tool-version.json).

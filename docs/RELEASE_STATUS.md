@@ -1,5 +1,9 @@
 # Release Status
 
+## Internal-test preparation — 2026-10-12
+
+**Not submitted.** Branch `cursor/play-internal-testing-195e`. Purchases remain off. Account deletion is in the app for local data and, as a request only, for an existing cloud account. The deletion service is not deployed. The production artifact is a signed Gradle App Bundle from `npm run aab:production`. Sai creates the upload key. Play drafts are in `docs/PLAY_DATA_SAFETY.md`, `docs/PLAY_HEALTH_DECLARATION.md`, and `docs/PLAY_STORE_LISTING.md`. No AAB was built in this session because the Android SDK and the upload key are intentionally absent. Expo/EAS is not the build system.
+
 ## StoreReady Play audit and fixes — 2026-10-04
 
 Continue `fix/storeready-play-readiness-20261004`, application/test SHA **c87f20b8239c9e41b62ec33b72e0e02081054057**. The later retained task source was recovered: work efebe818 / application bf826193, nine commits ahead of remote main. All 13 remote branches and nine PRs were compared. Read [Play readiness report](PLAY_READINESS_REPORT.md) and [durable evidence](evidence/play-readiness-20261004/source-and-tool-version.json).

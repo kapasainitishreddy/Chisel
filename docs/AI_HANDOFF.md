@@ -1,5 +1,13 @@
 # AI Development Handoff
 
+## Play internal-test candidate — 2026-10-12
+
+Branch `cursor/play-internal-testing-195e` merges `main` (`1c08c6e`, 23 September 2026) with `fix/storeready-play-readiness-20261004`. `claude/remaining-tasks-3luvx4` was not merged.
+
+Free-first flags stay `billingEnabled: false` and `cloudPhotoRendersEnabled: true`. `RC_API_KEY` is empty. Settings now opens the existing cloud-account deletion flow without creating an account. The `account-lifecycle` function is still not deployed. Production AAB profile is `npm run aab:production` (Capacitor Gradle `:app:bundleRelease`). This is not an Expo app. Drafts: [internal testing](PLAY_INTERNAL_TESTING.md), [Data safety](PLAY_DATA_SAFETY.md), [Health declaration](PLAY_HEALTH_DECLARATION.md), [store listing](PLAY_STORE_LISTING.md).
+
+No upload key was created and nothing was submitted to Play. Next task: Sai creates the upload key, runs typecheck/test/doctor, builds the AAB, and uploads it to Internal testing only.
+
 ## StoreReady Play audit and fixes — 2026-10-04
 
 Continue `fix/storeready-play-readiness-20261004`, application/test SHA **c87f20b8239c9e41b62ec33b72e0e02081054057**. The later retained task source was recovered: work efebe818 / application bf826193, nine commits ahead of remote main. All 13 remote branches and nine PRs were compared. Read [Play readiness report](PLAY_READINESS_REPORT.md) and [durable evidence](evidence/play-readiness-20261004/source-and-tool-version.json).

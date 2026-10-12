@@ -5,6 +5,9 @@
   "main": "www/index.html",
   "scripts": {
     "build": "node scripts/verify-build.cjs",
+    "typecheck": "node scripts/typecheck.cjs",
+    "doctor": "node scripts/play-doctor.cjs",
+    "aab:production": "node scripts/bundle-production-aab.cjs",
     "test": "node --test tests/*.test.cjs",
     "test:enhancements": "node --test tests/enhancements-core.test.cjs tests/enhancements-ui.test.cjs tests/native-integration.test.cjs",
     "test:precision": "node --test tests/precision-core.test.cjs tests/precision-ui.test.cjs tests/precision-native.test.cjs",

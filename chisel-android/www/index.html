@@ -625,9 +625,10 @@
       <div class="card" style="margin-top:18px">
         <div class="eyebrow">Privacy &amp; data</div>
         <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:500">Your data stays on this device</h3>
-        <p style="color:var(--ivory-dim);font-size:13px;line-height:1.6">Free local scans, photos, streaks, routines and settings stay on your phone. Optional cloud photo editing sends a prepared photo after your confirmation. Existing cloud-account management uses email sign-in and a separate deletion request. Credit purchases and new paid accounts are disabled in this release. No ads or analytics tracking. <a href="privacy-policy.html" style="color:var(--gold)">Privacy policy</a> · <a href="https://github.com/kapasainitishreddy/Chisel/blob/main/docs/terms-of-use.html" target="_blank" rel="noopener" style="color:var(--gold)">Terms of use ↗</a></p>
+        <p style="color:var(--ivory-dim);font-size:13px;line-height:1.6">Free local scans, photos, streaks, routines and settings stay on your phone. Optional cloud photo editing sends a prepared photo after your confirmation. Delete cloud account signs in to an existing account and requests deletion. It does not create an account or start a purchase. Credit purchases and new paid accounts are disabled in this release. No ads or analytics tracking. <a href="privacy-policy.html" style="color:var(--gold)">Privacy policy</a> · <a href="https://github.com/kapasainitishreddy/Chisel/blob/main/docs/terms-of-use.html" target="_blank" rel="noopener" style="color:var(--gold)">Terms of use ↗</a></p>
         <div class="btn-row" style="margin-top:14px">
-          <button class="btn ghost" id="wipeData">Clear all my data</button>
+          <button class="btn ghost" id="wipeData" type="button">Clear all my data</button>
+          <button class="btn ghost" id="deleteCloudAccount" type="button">Delete cloud account</button>
         </div>
       </div>
     </section>
@@ -3034,6 +3035,10 @@ function wipeAllData(){
   setTimeout(()=>location.reload(), 900);
 }
 $('#wipeData') && $('#wipeData').addEventListener('click', wipeAllData);
+$('#deleteCloudAccount') && $('#deleteCloudAccount').addEventListener('click', ()=>{
+  if(window.ChiselCredits && window.ChiselCredits.openAccount()) return;
+  toast('Account tools are still loading. Try again in a moment.');
+});
 
 /* ================= Growth & retention features ================= */
 

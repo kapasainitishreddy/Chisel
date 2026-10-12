@@ -3,10 +3,13 @@
 Everything you need to get a signed **AAB** and publish. Steps A–B produce the
 uploadable file; C–F are the Play Console side.
 
-> I cannot build/sign the AAB for you: it must be signed with **your** keystore
-> and password (which only you should ever hold), and it needs your local Android
-> SDK. The project is now configured so that **one command** produces the signed
-> AAB once you've done the one-time setup below.
+> Sai creates the upload key and holds the passwords. Nothing in this
+> repository can sign the AAB. The production profile is
+> `npm run aab:production` in `chisel-android` (Gradle `:app:bundleRelease`).
+> Paste-ready internal-test drafts: `docs/PLAY_INTERNAL_TESTING.md`,
+> `docs/PLAY_DATA_SAFETY.md`, `docs/PLAY_HEALTH_DECLARATION.md`, and
+> `docs/PLAY_STORE_LISTING.md`. Where this file disagrees with those drafts,
+> use the drafts.
 
 ---
 
@@ -17,7 +20,7 @@ uploadable file; C–F are the Play Console side.
   (Android Studio → Settings → SDK Manager → tick **Android 16 (API 36)** → Apply).
 - The project now targets **API 36 / AGP 8.6 / Gradle 8.7**.
 
-### 2. Create your upload keystore (you choose the passwords)
+### 2. Sai creates the upload keystore (Sai chooses the passwords)
 Open a terminal in `chisel-android/android/` and run (uses the JDK bundled with
 Android Studio; if `keytool` isn't found, use the full path
 `"C:\Program Files\Android\Android Studio\jbr\bin\keytool.exe"`):
@@ -106,20 +109,9 @@ Verify both links return HTTP 200 and open in an incognito window before you pas
 | Feature graphic | 1024×500 PNG/JPEG |
 | Screenshots | ≥2 (use 4+ 1080×1920 portraits: Analyze results, Try-on, Makeup, Progress) |
 
-**STORE_DESCRIPTION (paste, edit freely):**
-> Chisel measures what you can actually improve — and shows you how, with the
-> evidence behind every tip.
->
-> • On-device facial analysis (Google MediaPipe, 468-point mesh): jawline, cheekbones, facial angles, symmetry, skin, teeth, hair.
-> • 3D profile angles from a single front scan — nasofrontal, nasolabial and more.
-> • Skin scan: undertone, evenness, redness, blemishes — each with a science-graded routine.
-> • Virtual try-on: hair, beard, eyewear and makeup on your live face.
-> • Makeup suggestions and a coach (guidance, never a rating) tailored to your undertone and face shape.
-> • Progress photos, before/after slider, streaks, and 30-day glow-up programs.
-> • Inclusive: male, female, non-binary and custom identities.
->
-> Everything runs on your device. No login, no ads, no trackers. Cosmetic &
-> educational guidance — not medical advice.
+**Store listing copy:** use `docs/PLAY_STORE_LISTING.md`. Do not paste an older
+description that says every photo stays on the device or that the app has no
+optional cloud edit.
 
 ---
 
@@ -129,14 +121,8 @@ Verify both links return HTTP 200 and open in an incognito window before you pas
 Paste your hosted URL from step C.
 
 ### Data safety form — answers
-- **Does your app collect or share user data?** → **Yes** if the optional photoreal path is enabled in the submitted build (a prepared photo is sent to the named provider and a random device identifier is used for the free allowance). If you submit a strictly local-only build, re-check every answer against that exact artifact.
-- **Data types:**
-  - **Photos and videos → Photos**: Collected **Yes**, Shared **Yes** (image-generation provider). Processed **ephemerally / not stored**. Purpose: **App functionality**. Optional: **Yes** (only if user uses photoreal).
-  - **Device or other IDs**: Collected **Yes**, Shared **No**. Purpose: **App functionality, Fraud prevention** (usage limits).
-  - **Purchase history**: declare only when billing is enabled; handled by Google Play / RevenueCat for the configured purchase flow.
-- **Is all data encrypted in transit?** → **Yes**.
-- **Can users request data deletion?** → The current free-first build provides local “Clear all my data”; do not enable paid account creation until an in-app account-deletion request and backend deletion workflow are implemented and tested.
-- No location, contacts, messages, health-connect, or analytics data collected.
+
+Use `docs/PLAY_DATA_SAFETY.md` for this build. Photos sent to Replicate are **not** ephemeral. Sleep, water, and salt logs stay on the device, so they are not collected data types. Purchases stay off.
 
 ### Content rating
 - Complete the questionnaire honestly. It's a wellness/beauty utility with no
@@ -144,17 +130,10 @@ Paste your hosted URL from step C.
   **17+/Mature** given the appearance focus. No user-generated content, no social features.
 
 ### Health apps declaration
-- Complete this declaration accurately for the exact artifact you upload. Chisel
-  includes face/neck movement routines and posture practice, so it is not
-  correct to select “no health features” merely because it is not a medical
-  device. Review the **Activity and Fitness** and **Stress Management,
-  Relaxation and Mental Acuity** categories; also review any category the
-  current build exposes for its local sleep, water or salt self-tracking.
-- State that the app provides general wellness and cosmetic education, does not
-  diagnose or treat disease, and does not claim to measure pressure, blood
-  flow, lymph drainage, muscle activation, fat loss or facial reshaping.
-- Do not claim Health Connect, clinical validation, medical-device status or
-  professional care unless those capabilities are actually added and reviewed.
+
+Use `docs/PLAY_HEALTH_DECLARATION.md`. Select the activity, relaxation, sleep,
+and nutrition categories that match the on-device routines and self-logs. Do
+not select “no health features,” Health Connect, or medical-device status.
 
 ### App access
 - No login required → select **All functionality is available without special access**.

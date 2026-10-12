@@ -1,5 +1,9 @@
 # Change Requests
 
+## CR: Prepare the free-first Play internal test, 2026-10-12
+
+Merged `fix/storeready-play-readiness-20261004` onto the 23 September `main`. Left purchases off. Wired Settings to the existing cloud-account deletion flow and blocked account creation while billing is off. Added the production App Bundle script, typecheck, release doctor, and Play Data safety, health, and listing drafts. No key was created and no console submission was made. Paid activation stays blocked until RevenueCat and a deployed, tested account-deletion path both exist.
+
 ## StoreReady Play audit and fixes — 2026-10-04
 
 Continue `fix/storeready-play-readiness-20261004`, application/test SHA **c87f20b8239c9e41b62ec33b72e0e02081054057**. The later retained task source was recovered: work efebe818 / application bf826193, nine commits ahead of remote main. All 13 remote branches and nine PRs were compared. Read [Play readiness report](PLAY_READINESS_REPORT.md) and [durable evidence](evidence/play-readiness-20261004/source-and-tool-version.json).
