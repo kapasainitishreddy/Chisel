@@ -52,7 +52,10 @@ From `chisel-android/`:
 ```bash
 npx cap sync android
 cd android
+# Windows
 gradlew.bat bundleRelease
+# macOS or Linux
+./gradlew bundleRelease
 ```
 
 Output (this is what you upload to Play):
@@ -129,6 +132,8 @@ Verify both links return HTTP 200 and open in an incognito window before you pas
 Paste your hosted URL from step C.
 
 ### Data safety form — answers
+
+Draft answers for this free internal-test build, including the health declaration, are in [`docs/PLAY_DATA_SAFETY.md`](docs/PLAY_DATA_SAFETY.md). Paste those only after you re-read them against the exact AAB you upload. The shorter notes below are the same boundaries:
 - **Does your app collect or share user data?** → **Yes** if the optional photoreal path is enabled in the submitted build (a prepared photo is sent to the named provider and a random device identifier is used for the free allowance). If you submit a strictly local-only build, re-check every answer against that exact artifact.
 - **Data types:**
   - **Photos and videos → Photos**: Collected **Yes**, Shared **Yes** (image-generation provider). Processed **ephemerally / not stored**. Purpose: **App functionality**. Optional: **Yes** (only if user uses photoreal).
