@@ -10,6 +10,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: gap: content:; media-src * blob: filesystem:; img-src * data: blob: content:;" />
 <title>Chisel — Sculpt your best self</title>
+<meta name="description" content="On-device face analysis, grooming and makeup guidance. Cosmetic and educational, not a medical rating." />
+<meta property="og:title" content="Chisel — Sculpt your best self" />
+<meta property="og:description" content="On-device face analysis, grooming and makeup guidance. Cosmetic and educational, not a medical rating." />
+<meta property="og:type" content="website" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -625,7 +629,7 @@
       <div class="card" style="margin-top:18px">
         <div class="eyebrow">Privacy &amp; data</div>
         <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:500">Your data stays on this device</h3>
-        <p style="color:var(--ivory-dim);font-size:13px;line-height:1.6">Free local scans, photos, streaks, routines and settings stay on your phone. Optional cloud photo editing sends a prepared photo after your confirmation. Existing cloud-account management uses email sign-in and a separate deletion request. Credit purchases and new paid accounts are disabled in this release. No ads or analytics tracking. <a href="privacy-policy.html" style="color:var(--gold)">Privacy policy</a> · <a href="https://github.com/kapasainitishreddy/Chisel/blob/main/docs/terms-of-use.html" target="_blank" rel="noopener" style="color:var(--gold)">Terms of use ↗</a></p>
+        <p style="color:var(--ivory-dim);font-size:13px;line-height:1.6">Free local scans, photos, streaks, routines and settings stay on your phone. Optional cloud photo editing sends a prepared photo after your confirmation. Existing cloud-account management uses email sign-in and a separate deletion request. Credit purchases and new paid accounts are disabled in this release. No ads or analytics tracking. <a href="privacy-policy.html" style="color:var(--gold)">Privacy policy</a> · <a href="account-deletion.html" style="color:var(--gold)">Delete your data</a> · <a href="https://github.com/kapasainitishreddy/Chisel/blob/main/docs/terms-of-use.html" target="_blank" rel="noopener" style="color:var(--gold)">Terms of use ↗</a></p>
         <div class="btn-row" style="margin-top:14px">
           <button class="btn ghost" id="wipeData">Clear all my data</button>
         </div>
@@ -921,9 +925,10 @@ const toast = (m,t=1800)=>{ const el=$('#toast'); el.textContent=m; el.classList
 const store = { get:(k,d)=>{ try{return JSON.parse(localStorage.getItem('chisel:'+k))??d}catch{return d} }, set:(k,v)=>localStorage.setItem('chisel:'+k, JSON.stringify(v)) };
 const RENDER_FN_URL = 'https://wnzbmmhtdchdqjnskwlo.supabase.co/functions/v1/render-lookmax';
 const RENDER_ANON_KEY = 'sb_publishable_kr_GPQ_vODmXjIxQoV8v6A_FqH8RCts';
-/* Release safety: paid accounts stay unavailable until billing, deletion,
-   retention and Play purchase testing are complete. Optional cloud photo
-   editing remains a separate, consented path. */
+// Paid purchases stay off until RevenueCat products, receipt webhooks, and a
+// deployed, accepted account-deletion path all exist. Optional cloud photo
+// editing remains a separate consented path. Do not set billingEnabled to true
+// before those gates. See PLAY_STORE.md and docs/PLAY_DATA_SAFETY.md.
 window.CHISEL_RELEASE_CONFIG = Object.freeze({billingEnabled:false,cloudPhotoRendersEnabled:true});
 function deviceId(){
   let id = store.get('deviceId', null);
@@ -3476,7 +3481,7 @@ $('#idSave') && $('#idSave').addEventListener('click', ()=>{
 function hydToday(){ const m=store.get('hydration',{}); return m[new Date().toDateString()]||{}; }
 function saveHydration(patch){ const m=store.get('hydration',{}), k=new Date().toDateString(); m[k]=Object.assign({}, m[k]||{}, patch); store.set('hydration',m); }
 function renderHydration(){ const h=hydToday(); if($('#waterL')&&h.water!=null) $('#waterL').value=h.water; if(h.salt) $$('#sodiumSeg .chip').forEach(c=>c.classList.toggle('on',c.dataset.salt===h.salt)); }
-$('#waterL') && $('#waterL').addEventListener('change', e=>{ const v=parseFloat(e.target.value); if(!isNaN(v)){ saveHydration({water:v}); toast('Water logged'); } });
+$('#waterL') && $('#waterL').addEventListener('change', e=>{ const v=parseFloat(e.target.value); if(!Number.isFinite(v)||v<0||v>8){ e.target.value=''; toast('Enter liters (0–8)'); return; } saveHydration({water:v}); toast('Water logged'); });
 $$('#sodiumSeg .chip').forEach(c=>c.addEventListener('click',()=>{ $$('#sodiumSeg .chip').forEach(x=>x.classList.remove('on')); c.classList.add('on'); saveHydration({salt:c.dataset.salt}); toast(c.dataset.salt+' salt logged'); }));
 
 /* --- 30-day programs --- */

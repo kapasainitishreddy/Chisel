@@ -31,6 +31,8 @@ function draw(s){
  if(!dialog)return;
  if(q('#ccDeleteAccount'))q('#ccDeleteAccount').hidden=!uid();
  if(q('.cc-rules'))q('.cc-rules').hidden=accountManagement;
+ if(q('.cc-sub'))q('.cc-sub').hidden=accountManagement;
+ const note=q('#ccSignIn small');if(note)note.textContent=accountManagement?'This signs in an existing account. It does not create one, and it does not start a purchase.':'Only paid credits need an account. Your local photos stay on this device.';
  if(!billingEnabled()||accountManagement){
   q('#ccSignIn').hidden=!accountManagement||!!uid();q('#ccSignOut').hidden=!uid();q('#ccPacks').replaceChildren();
   q('#ccPriceNotice').textContent='';safeMessage('#ccBalance',accountManagement?'Existing cloud account':'Credits unavailable');safeMessage('#ccStatus',accountManagement?(uid()?'Manage or delete your existing cloud account. Purchases remain unavailable here.':'Sign in to an existing account to delete it. This flow cannot create an account.'):'Credit purchases and paid accounts are disabled in this release.');

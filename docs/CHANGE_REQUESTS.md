@@ -1,5 +1,11 @@
 # Change Requests
 
+## CR: Free Play internal test, 2026-10-12
+
+Prepared the 23 Sep `main` plus `fix/storeready-play-readiness-20261004` for a free internal-test upload. Paid purchases remain behind `billingEnabled: false`. Added the public deletion-request page and linked it from the app, privacy policy, and face-tools page. The existing-account dialog no longer opens with credit-purchase copy. Water entry rejects out-of-range liters, and encrypted backups accept the Home salt value `mid`. Draft Data safety and health answers are in `docs/PLAY_DATA_SAFETY.md`. The 37 pre-launch checks are dispositioned in `docs/PRELAUNCH_37.md`. Signing instructions stay in `PLAY_STORE.md`. No keystore, deployment, or store submission.
+
+Verified with `npm ci`, `npm run typecheck` (119 files), `npm test` (321/321), `npm run build`, `npm run doctor`, and a headless Chrome pass of the changed screens. `bundleRelease` was not run because the Android SDK is not installed in this environment.
+
 ## StoreReady Play audit and fixes — 2026-10-04
 
 Continue `fix/storeready-play-readiness-20261004`, application/test SHA **c87f20b8239c9e41b62ec33b72e0e02081054057**. The later retained task source was recovered: work efebe818 / application bf826193, nine commits ahead of remote main. All 13 remote branches and nine PRs were compared. Read [Play readiness report](PLAY_READINESS_REPORT.md) and [durable evidence](evidence/play-readiness-20261004/source-and-tool-version.json).

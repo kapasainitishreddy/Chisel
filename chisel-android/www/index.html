@@ -3481,7 +3481,7 @@ $('#idSave') && $('#idSave').addEventListener('click', ()=>{
 function hydToday(){ const m=store.get('hydration',{}); return m[new Date().toDateString()]||{}; }
 function saveHydration(patch){ const m=store.get('hydration',{}), k=new Date().toDateString(); m[k]=Object.assign({}, m[k]||{}, patch); store.set('hydration',m); }
 function renderHydration(){ const h=hydToday(); if($('#waterL')&&h.water!=null) $('#waterL').value=h.water; if(h.salt) $$('#sodiumSeg .chip').forEach(c=>c.classList.toggle('on',c.dataset.salt===h.salt)); }
-$('#waterL') && $('#waterL').addEventListener('change', e=>{ const v=parseFloat(e.target.value); if(!isNaN(v)){ saveHydration({water:v}); toast('Water logged'); } });
+$('#waterL') && $('#waterL').addEventListener('change', e=>{ const v=parseFloat(e.target.value); if(!Number.isFinite(v)||v<0||v>8){ e.target.value=''; toast('Enter liters (0–8)'); return; } saveHydration({water:v}); toast('Water logged'); });
 $$('#sodiumSeg .chip').forEach(c=>c.addEventListener('click',()=>{ $$('#sodiumSeg .chip').forEach(x=>x.classList.remove('on')); c.classList.add('on'); saveHydration({salt:c.dataset.salt}); toast(c.dataset.salt+' salt logged'); }));
 
 /* --- 30-day programs --- */

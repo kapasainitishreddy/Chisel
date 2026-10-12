@@ -1,5 +1,14 @@
 # Chisel Feature Matrix
 
+## Free internal-test checkpoint, 2026-10-12
+
+| Feature | In this build | Still required |
+|---|---|---|
+| Paid credits and Premium | Flag `billingEnabled` is false. Go Premium is hidden. Existing-account sign-in does not create an account and shows no packs. | RevenueCat public key, Play products, webhook, and a deployed deletion path before the flag can change |
+| Account deletion | In-app local wipe, existing-account dialog, and public request page `docs/account-deletion.html` | Deploy `account-lifecycle` and `output-cleanup`, then delete one real test account |
+| Optional photoreal edit | Still enabled by `cloudPhotoRendersEnabled` | Sai decides whether the internal-test AAB should stay on-device. If the flag changes, rewrite Data safety |
+| Release signing | Fails closed without `keystore.properties` | Sai's upload key and `bundleRelease` |
+
 ## StoreReady Play audit and fixes — 2026-10-04
 
 Continue `fix/storeready-play-readiness-20261004`, application/test SHA **c87f20b8239c9e41b62ec33b72e0e02081054057**. The later retained task source was recovered: work efebe818 / application bf826193, nine commits ahead of remote main. All 13 remote branches and nine PRs were compared. Read [Play readiness report](PLAY_READINESS_REPORT.md) and [durable evidence](evidence/play-readiness-20261004/source-and-tool-version.json).

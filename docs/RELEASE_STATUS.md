@@ -1,5 +1,9 @@
 # Release Status
 
+## Free internal test, 2026-10-12
+
+**Not uploaded.** `cursor/play-internal-readiness-d466` contains `main` through 23 Sep plus `fix/storeready-play-readiness-20261004` and the free-launch prep in PR #10. Paid purchases stay off. The public account-deletion request page is committed and linked. A signed AAB was not produced. Sai still has to create the upload key, run `bundleRelease`, upload only to Internal testing, and fill Data safety from `docs/PLAY_DATA_SAFETY.md` after reading it against that AAB. Account-lifecycle and output cleanup remain undeployed. Do not set `billingEnabled` to true until RevenueCat and a tested live deletion path exist.
+
 ## StoreReady Play audit and fixes — 2026-10-04
 
 Continue `fix/storeready-play-readiness-20261004`, application/test SHA **c87f20b8239c9e41b62ec33b72e0e02081054057**. The later retained task source was recovered: work efebe818 / application bf826193, nine commits ahead of remote main. All 13 remote branches and nine PRs were compared. Read [Play readiness report](PLAY_READINESS_REPORT.md) and [durable evidence](evidence/play-readiness-20261004/source-and-tool-version.json).

@@ -41,7 +41,7 @@ Status values: **Applied**, **Already true**, **Not this product**, **Sai**. Not
 | 33 | Second browser and desktop | Partial | The web shell can be opened in a desktop browser. A second-browser pass of the signed Android build is Sai's. |
 | 34 | Core flow on a phone | Sai | Camera, scan, try-on, and notifications need a real device and the internal-test install. |
 | 35 | Click every link and button | Partial | Dead store link on the tools page was fixed. Privacy, terms, and deletion links resolve to real pages. Full button coverage on device is Sai's. |
-| 36 | Try to break forms | Partial | Account creation is not offered. The deletion and archive flows have existing fixture tests. Empty and hostile input on a phone is Sai's. |
+| 36 | Try to break forms | Applied in the browser | Empty and invalid emails are blocked on the existing-account form. Sleep outside 0–14 hours is rejected. Water outside 0–8 liters is rejected and is not stored. Salt `mid` from the Home control can be restored from an encrypted backup. Hostile input on a physical phone is still Sai's. |
 | 37 | 404 page | Applied | `chisel-android/www/404.html` is the static not-found page. Inside the app, an unknown hash route returns to Home. |
 
 ## Sai's remaining checklist

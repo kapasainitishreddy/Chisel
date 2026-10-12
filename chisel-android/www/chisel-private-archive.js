@@ -17,7 +17,7 @@
    if(key==='chisel:precision:v2'){ensure(object(parsed)&&parsed.version===2&&Array.isArray(parsed.faceScans)&&Array.isArray(parsed.bodyScans)&&object(parsed.settings)&&(!parsed.calibration||object(parsed.calibration)),'Invalid Precision history');[...parsed.faceScans,...parsed.bodyScans].forEach(precisionRecord);}
    if(key==='chisel:adaptiveProgram'&&parsed!==null)program(parsed);
    if(key==='chisel:programHistory'){ensure(Array.isArray(parsed),'Invalid program history');parsed.forEach(program);}
-   if(key==='chisel:hydration'){ensure(object(parsed),'Invalid hydration history');for(const row of Object.values(parsed))ensure(object(row)&&(row.water==null||number(row.water)&&row.water>=0&&row.water<=30)&&(row.salt==null||['Low','Medium','High','low','medium','high'].includes(row.salt)),'Invalid hydration record');}
+   if(key==='chisel:hydration'){ensure(object(parsed),'Invalid hydration history');for(const row of Object.values(parsed))ensure(object(row)&&(row.water==null||number(row.water)&&row.water>=0&&row.water<=30)&&(row.salt==null||['Low','Medium','High','low','medium','mid','high'].includes(row.salt)),'Invalid hydration record');}
    if(key==='chisel:sleepLog'){ensure(object(parsed)&&Object.values(parsed).every(v=>number(v)&&v>=0&&v<=24),'Invalid sleep history');}
    if(key==='chisel:streak')ensure(object(parsed)&&Number.isInteger(parsed.count)&&parsed.count>=0&&(parsed.last==null||typeof parsed.last==='string'),'Invalid streak');
   }

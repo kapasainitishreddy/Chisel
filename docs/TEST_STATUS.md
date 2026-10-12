@@ -1,5 +1,19 @@
 # Test Status
 
+## Free internal-test prep, 2026-10-12
+
+Commands run in `chisel-android` on `cursor/play-internal-readiness-d466`:
+
+- `npm ci --ignore-scripts`: 99 packages, 0 vulnerabilities.
+- `npm run typecheck`: 119 files passed `node --check`. There is no TypeScript project in `www/`. Deno is not installed here, so the Supabase functions were not typechecked.
+- `npm test`: pretest `cap sync android` succeeded, then 321/321 Node tests passed, 0 failed, 0 skipped.
+- `npm run build`: 46 modules, inline scripts, and runtime assets valid.
+- `npm run doctor`: Capacitor doctor reported Android looking great on the installed 7.6.9 toolchain. It also lists 8.5.3 as the latest release. That upgrade was not applied.
+- Headless Chrome on the served `www/` app: tabs, Settings/Connect, Clear-all confirmation (dismissed), sleep 99 rejected, sleep 7.5 kept, water -4 rejected, water 2 and salt `mid` kept, deletion page, 404 page, tools page opening the app, existing-account form with empty and invalid email blocked, no credit packs, Go Premium hidden. No horizontal overflow at 390×844 or 1280×900.
+- Secret scan of `chisel-android` and `supabase` found no private-key, live Stripe, GitHub token, or Google API key pattern.
+
+`bundleRelease` was not run. Java 21 is present and the Android SDK is not. The signing guard is covered by `tests/release-safety.test.cjs` and by the earlier readiness-branch dry run, which rejected a missing keystore.
+
 ## StoreReady Play audit and fixes — 2026-10-04
 
 Continue `fix/storeready-play-readiness-20261004`, application/test SHA **c87f20b8239c9e41b62ec33b72e0e02081054057**. The later retained task source was recovered: work efebe818 / application bf826193, nine commits ahead of remote main. All 13 remote branches and nine PRs were compared. Read [Play readiness report](PLAY_READINESS_REPORT.md) and [durable evidence](evidence/play-readiness-20261004/source-and-tool-version.json).

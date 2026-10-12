@@ -1,5 +1,17 @@
 # AI Development Handoff
 
+## Free Play internal test — 2026-10-12
+
+Branch `cursor/play-internal-readiness-d466` brings `fix/storeready-play-readiness-20261004` onto `main` (`1c08c6e`, 23 Sep) and adds the free internal-test prep. PR #10. The July `claude/remaining-tasks-3luvx4` branch was not used.
+
+`billingEnabled` stays `false` until RevenueCat products, receipt webhooks, and a deployed, accepted account-deletion path all exist. `cloudPhotoRendersEnabled` stays `true`. Account deletion was already implemented in source and is still not deployed. This pass adds the public request page `docs/account-deletion.html` (bundled in the app and linked from Connect, the privacy policy, and the face-tools page). The existing-account dialog no longer leads with credit-purchase copy. Water logging rejects values outside 0–8 liters, and the encrypted backup accepts the Home salt value `mid`.
+
+Draft Play answers are in [PLAY_DATA_SAFETY.md](PLAY_DATA_SAFETY.md). The 37 web-launch checks, applied only where they fit this Android app, are in [PRELAUNCH_37.md](PRELAUNCH_37.md). Signing still fails closed without a gitignored keystore. See [PLAY_STORE.md](../PLAY_STORE.md).
+
+Verified here: `npm ci` (0 vulnerabilities on the lockfile), `npm run typecheck` (119 files), `npm test` (321/321), `npm run build` (46 modules), `npm run doctor` (Android ok on Capacitor 7.6.9; doctor also prints Capacitor 8.5.3 as newer, which was not installed). Headless Chrome walked Home, Analyze, Affirm, Meditate, Groom, Connect, the deletion page, the 404 page, the tools page, and the existing-account form at 390 and 1280. Go Premium stayed hidden. No secret-key pattern in `chisel-android` or `supabase`. `bundleRelease` was not run: this environment has Java 21 and no Android SDK. No keystore was created, no function was deployed, and nothing was submitted to Play.
+
+Next task: Sai creates the upload key, builds the AAB, and installs it from Internal testing. The checklist is at the end of [PRELAUNCH_37.md](PRELAUNCH_37.md).
+
 ## StoreReady Play audit and fixes — 2026-10-04
 
 Continue `fix/storeready-play-readiness-20261004`, application/test SHA **c87f20b8239c9e41b62ec33b72e0e02081054057**. The later retained task source was recovered: work efebe818 / application bf826193, nine commits ahead of remote main. All 13 remote branches and nine PRs were compared. Read [Play readiness report](PLAY_READINESS_REPORT.md) and [durable evidence](evidence/play-readiness-20261004/source-and-tool-version.json).
