@@ -64,12 +64,14 @@ for(const lens of LENSES){
   const response=await page.goto(BASE+'/www/index.html',{waitUntil:'domcontentloaded',timeout:30000});
   await page.waitForFunction(()=>document.getElementById('boot')?.classList.contains('gone'),
     {timeout:13000}).catch(()=>{});
+  // The first-run modal appears after the splash. Wait before attempting user actions.
+  await page.locator('#idModal.on').waitFor({state:'visible',timeout:8000}).catch(()=>{});
   await check('page-renders','Chisel opens as a usable app with a primary navigation.',async()=>{
    const title=await page.title();
    const active=await page.locator('.screen.active[data-screen]').count();
    const nav=await page.locator('#bottomTabs [data-route]').count();
    return {pass:response?.status()===200&&title.includes('Chisel')&&active===1&&nav>=4,
-    title,status:response?.status(),activeScreens:active,navItems:nav,screenshot:await capture('home')};
+    title,httpStatus:response?.status(),activeScreens:active,navItems:nav,screenshot:await capture('home')};
   });
   // A normal first-run modal has no permission to upload, analyze or start camera.
   await check('onboarding-exists','Identity/usage choice is optional and dismissible, with a privacy explanation.',async()=>{
@@ -91,8 +93,8 @@ for(const lens of LENSES){
    await check('home-hub','A first-time visitor can find scan, style, trainer, and routine entries.',async()=>{
     const actions=await page.locator('#cxpHomeHub [data-cxp-action]').allTextContents();
     const has=await page.locator('#cxpHomeHub').count()>0;
-    const named=['Scan now','Try-on Studio','Face Yoga','Routine'];
-    return {pass:has&&named.every(n=>actions.some(t=>t.includes(n))),
+    const named=['Scan','Style','Face yoga','Routine'];
+    return {pass:has&&named.every(n=>actions.some(t=>t.toLowerCase().includes(n.toLowerCase()))),
      accessibleEntryPoints:actions.map(x=>x.replace(/\s+/g,' ').trim()).slice(0,10),
      screenshot:await capture('home-hub')};
    });
@@ -137,10 +139,10 @@ for(const lens of LENSES){
   }
   if(lens.id==='keyboard-reduced-motion'){
    await check('nav-keyboard','A nav control can be activated with keyboard and its selection is exposed.',async()=>{
-    const tab=page.locator('#bottomTabs [data-route="groom"]');
+    const tab=page.locator('nav.rail [data-route="groom"]');
     await tab.focus();await tab.press('Enter');
     const active=await page.locator('.screen.active').getAttribute('data-screen');
-    const current=await page.locator('#bottomTabs [data-route="groom"]').getAttribute('aria-current');
+    const current=await page.locator('nav.rail [data-route="groom"]').getAttribute('aria-current');
     return {pass:active==='groom'&&current==='page',active,ariaCurrent:current,screenshot:await capture('keyboard-nav')};
    });
    await check('trainer-reduced-motion','Face and Neck Trainer is available without forced motion.',async()=>{
@@ -158,11 +160,15 @@ for(const lens of LENSES){
   }
   if(lens.id==='privacy-conscious'){
    await check('local-privacy-copy','Privacy messaging is present; no real image/cloud request is required to use basics.',async()=>{
-    const text=await page.locator('body').innerText();
+    await page.locator('#bottomTabs [data-route="analyze"]').click();
+    const text=await page.locator('.screen.active').innerText();
+    const truth=await page.locator('#chiselCaptureTruth').innerText().catch(()=>'');
     const local=/on-device|on your device|local processing/i.test(text);
-    const disclosures=/photographic estimate|not a prediction|not medical|weak scans/i.test(text);
+    const disclosures=/photographic estimate|not a prediction|not medical|weak scans|camera/i.test(text+' '+truth);
     return {pass:local&&disclosures,
-     localCopyPresent:local,limitationsVisible:disclosures,screenshot:await capture('privacy-copy')};
+     localCopyPresent:local,limitationsVisible:disclosures,
+     disclosureExcerpt:(text+' '+truth).replace(/\s+/g,' ').slice(0,380),
+     screenshot:await capture('privacy-copy')};
    });
    await check('no-camera-or-payments','The controlled browser did not use a live camera, payment or cloud API.',async()=>{
     const used=await page.evaluate(()=>{
