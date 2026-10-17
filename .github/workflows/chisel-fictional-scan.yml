@@ -1,0 +1,71 @@
+name: Chisel fictional-user scan
+
+on:
+  push:
+    branches: [qa/chisel-fictional-scan-20261017]
+    paths:
+      - qa/chisel-fictional-scan.mjs
+      - .github/workflows/chisel-fictional-scan.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: chisel-fictional-scan-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  isolated:
+    name: Pinned offline Chisel browser and source tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: kapasainitishreddy/Chisel
+          ref: 1c08c6efa8ed5696e16fd0d288ca2cb62f41f85f
+          path: target-project
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify pinned source and harness syntax
+        run: |
+          mkdir -p qa-output
+          git rev-parse HEAD > qa-output/harness-commit.txt
+          git -C target-project rev-parse HEAD > qa-output/target-commit.txt
+          test "$(cat qa-output/target-commit.txt)" = 1c08c6efa8ed5696e16fd0d288ca2cb62f41f85f
+          node --check qa/chisel-fictional-scan.mjs
+      - name: Install browser runner
+        run: |
+          mkdir -p qa
+          (cd qa && npm install --no-save --no-audit --no-fund --ignore-scripts playwright@1.63.0)
+          (cd qa && npx playwright install --with-deps chromium)
+      - name: Run pinned Chisel source tests
+        run: |
+          (cd target-project/chisel-android && npm ci --ignore-scripts --no-audit --no-fund && npm test) > qa-output/source-tests.log 2>&1
+      - name: Test fictional visitors against an unchanged local build
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory target-project/chisel-android > qa-output/server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173/www/index.html >/dev/null; then break; fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:4173/www/index.html >/dev/null
+          set -o pipefail
+          node qa/chisel-fictional-scan.mjs | tee qa-output/run.log
+          git -C target-project diff --exit-code
+      - name: Preserve private evidence even after failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: chisel-fictional-scan-evidence
+          path: qa-output/
+          retention-days: 3
+          if-no-files-found: warn
