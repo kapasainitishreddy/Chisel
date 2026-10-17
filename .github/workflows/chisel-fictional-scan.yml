@@ -45,9 +45,14 @@ jobs:
           mkdir -p qa
           (cd qa && npm install --no-save --no-audit --no-fund --ignore-scripts playwright@1.63.0)
           (cd qa && npx playwright install --with-deps chromium)
-      - name: Run pinned Chisel source tests
+      - name: Record pinned Chisel source-test results
         run: |
+          set +e
           (cd target-project/chisel-android && npm ci --ignore-scripts --no-audit --no-fund && npm test) > qa-output/source-tests.log 2>&1
+          RESULT=$?
+          printf '%s\n' "$RESULT" > qa-output/source-tests.exit
+          echo "Source suite exit: $RESULT (browser QA will still run)."
+          exit 0
       - name: Test fictional visitors against an unchanged local build
         run: |
           python3 -m http.server 4173 --bind 127.0.0.1 --directory target-project/chisel-android > qa-output/server.log 2>&1 &
@@ -61,6 +66,11 @@ jobs:
           set -o pipefail
           node qa/chisel-fictional-scan.mjs | tee qa-output/run.log
           git -C target-project diff --exit-code
+      - name: Gate packaging and source tests separately from browser checks
+        if: always()
+        run: |
+          test -f qa-output/source-tests.exit
+          test "$(cat qa-output/source-tests.exit)" = "0"
       - name: Preserve private evidence even after failures
         if: always()
         uses: actions/upload-artifact@v4
