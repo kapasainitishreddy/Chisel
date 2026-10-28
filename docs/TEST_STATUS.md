@@ -1,9 +1,9 @@
 # Test Status
 
-## Capacitor 7 and appearance candidate, 2026-10-28
+## Main-delivered Capacitor 7 and appearance checkpoint, 2026-10-28
 
-Candidate source SHA `64581407f87c5cee360c34935c6c9d4a011a92b4` on
-`recovery/chisel-cap7-reconcile-20261028` (based on verified recovery branch
+Implementation source SHA `64581407f87c5cee360c34935c6c9d4a011a92b4` and
+test follow-up `dd8189408859cd2c4b9cd33bd425a9c54b5f3947` on `main` (based on verified recovery branch
 `768629d413f5e78eaa4d576e9bd0b545117831ec`). The app source keeps the local
 archive/gallery recovery and deletion behavior while adding Capacitor 7.6.9
 and aligned 7.x plugins, Android backup exclusion rules, a bundled offline
@@ -37,12 +37,25 @@ disabled. Public Sans is bundled with its SIL OFL notice.
   IndexedDB-open retry assertion timed out under parallel browser load. The
   package scripts now execute tests sequentially. Repeated serial full runs
   and the serial browser suite passed at this candidate.
+- GitHub run 40782319152 first failed with 349/351: the identity chooser
+  reopened during the appearance journey after reload, and the gallery fixture
+  observed its error text before the retry button mounted. Run 40782823628
+  showed the timing guards alone were insufficient. The test now seeds a
+  synthetic identity before app load and keeps its injected gallery read
+  failure active until the retry control exists, then restores the service and
+  retries. Final GitHub main-source run [40783501396](https://github.com/kapasainitishreddy/Chisel/actions/runs/40783501396)
+  passed audit, secret scan, syntax, and all 351 automated tests.
+- Independent review of `dd8189408859cd2c4b9cd33bd425a9c54b5f3947` found no
+  must-fix. The gallery retry control is a native button; this specific
+  injected-error journey does not separately test keyboard activation.
 
 This is source and local Chromium evidence only. `npx cap sync android` is not
 a native compile. Android Gradle compilation, physical device, TalkBack,
 Keystore vault, live-storage encryption, real image accuracy, provider,
 billing, legal/store review and release gates remain open. The pinned Gradle
-8.11.1 retrieval was refused previously and was not retried or bypassed.
+8.11.1 retrieval was refused previously and was not retried or bypassed. The
+GitHub workflow passed source checks; no Android build, release, or deployment
+is implied.
 
 ## Local saved-look gallery lifecycle, 2026-10-28
 

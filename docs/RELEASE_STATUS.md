@@ -2,8 +2,8 @@
 
 ## Capacitor 7 source reconciliation candidate, 2026-10-28
 
-Candidate branch `recovery/chisel-cap7-reconcile-20261028`, source
-`64581407f87c5cee360c34935c6c9d4a011a92b4`. The app source retains local
+Main implementation source `64581407f87c5cee360c34935c6c9d4a011a92b4` with
+test follow-up `dd8189408859cd2c4b9cd33bd425a9c54b5f3947`. The app retains local
 archive/photo/gallery recovery and adds aligned Capacitor 7.6.9 packages,
 Android backup exclusions, a local privacy page, and optional system/light/dark
 appearance. Purchases and billing remain disabled. Public Sans is bundled
@@ -13,7 +13,10 @@ Fresh source evidence: `npm audit --omit=dev --audit-level=high` reports 0
 vulnerabilities; web build validates 47 modules; `npm test` passes 351/351
 sequentially; the synthetic Chromium suite passes 4/4. Main-source syntax and
 obvious-secret checks pass. The main workflow's source checks are represented
-locally, but no main push has been made from this candidate yet.
+GitHub main-source run 40783501396 passed the production dependency audit,
+obvious-secret scan, source syntax checks, and automated suite. Earlier runs
+40782319152 and 40782823628 failed two browser test timing assumptions each;
+the assumptions were repaired and the final run passed 351/351.
 
 Independent review's privacy-copy finding was corrected: Settings and the live
 render/retry actions now disclose that they send a captured camera still to

@@ -16,7 +16,11 @@ Capacitor sync.
 
 Verification: production dependency audit has 0 vulnerabilities; build validates
 47 modules; Node suite 351/351 and synthetic Chromium suite 4/4 pass; the exact
-main-source syntax, secret-scan and diff checks pass. An independent reviewer
+main-source syntax, secret-scan and diff checks pass. GitHub source run
+40783501396 passes all source checks and 351 automated tests. Runs 40782319152
+and 40782823628 initially failed two browser test assumptions; these were
+fixed in test commit `dd8189408859cd2c4b9cd33bd425a9c54b5f3947`, and the follow-up
+run passed. An independent reviewer
 found no must-fix after the disclosure correction. Native Android/device,
 TalkBack, vault/encryption, provider, billing, legal/store and release acceptance
 remain open. See [TEST_STATUS.md](TEST_STATUS.md).

@@ -7,10 +7,10 @@ attractiveness ranking or a measure of personal worth. Some face and progress
 flows still show private cosmetic measurement scores; their accuracy and
 usefulness need further validation. Analysis is not medical advice.
 
-## Current source checkpoint
+## Main source checkpoint
 
-Candidate branch: `recovery/chisel-cap7-reconcile-20261028` at source
-`64581407f87c5cee360c34935c6c9d4a011a92b4`.
+The implementation and test checkpoint is on `main` at
+`dd8189408859cd2c4b9cd33bd425a9c54b5f3947`.
 
 The local saved-look flow supports create/save, comparison and undo, reload,
 single-look removal, corrupt-record recovery, and cancellation of a delayed
@@ -35,10 +35,12 @@ contrast-token checks, keyboard focus, reduced motion, storage denial, and the
 saved-photo/archive recovery flows. Settings and the photoreal action state
 that Make it photoreal sends a live camera still to the backend and Replicate,
 that Retry sends another frame, and that the selected-photo studio has a
-separate confirmation. An earlier parallel full-suite run exposed
-one intermittent IndexedDB-open gallery timing failure. Running the tests
-sequentially passed, so the package scripts now keep them sequential to make
-CI results reproducible.
+separate confirmation. GitHub Actions first found two browser-test assumptions
+on CI: the first-run identity dialog could return after reload, and the gallery
+test read failure text before the retry control was mounted. Tests now seed a
+synthetic identity and deterministically reject the gallery read until its
+retry UI is ready. The corrected main run passed; earlier failed runs are
+recorded in [test status](docs/TEST_STATUS.md).
 
 ## Privacy and release limits
 

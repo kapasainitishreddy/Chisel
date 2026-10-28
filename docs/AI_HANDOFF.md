@@ -1,10 +1,10 @@
 # AI Development Handoff
 
-## Current Capacitor 7 and appearance reconciliation candidate, 2026-10-28
+## Main-delivered Capacitor 7 and appearance checkpoint, 2026-10-28
 
-Candidate branch `recovery/chisel-cap7-reconcile-20261028` at
-`64581407f87c5cee360c34935c6c9d4a011a92b4`, based on recovery source
-`768629d413f5e78eaa4d576e9bd0b545117831ec`. The app retains the local
+Main implementation source `64581407f87c5cee360c34935c6c9d4a011a92b4` and
+test follow-up `dd8189408859cd2c4b9cd33bd425a9c54b5f3947`, based on recovery
+source `768629d413f5e78eaa4d576e9bd0b545117831ec`. The app retains the local
 archive/photo/gallery failure recovery and safe deletion code while aligning
 Capacitor Core, Android, CLI and plugins to 7.x (7.6.9 platform/core/CLI) and
 adding explicit Android cloud/device-transfer backup exclusions. Settings now
@@ -13,7 +13,11 @@ notice. The local privacy page is linked from Settings. Billing remains off.
 
 Fresh checks: dependency audit 0 vulnerabilities, `npm run build` 47 modules,
 `npm test` 351/351 serially, `npm run test:browser` 4/4 serially, source syntax,
-obvious-secret scan and `git diff --check` passed. Independent review found a
+obvious-secret scan and `git diff --check` passed. Test follow-up commit
+`dd8189408859cd2c4b9cd33bd425a9c54b5f3947` is on main. GitHub source workflow
+40783501396 passes. Two earlier main workflow runs exposed browser-test
+races—identity dialog reappearance and a retry-button render race—which were
+made deterministic and passed on the follow-up run. Independent review found a
 cloud-photo disclosure gap; Settings, render/retry controls, and the privacy
 policy now distinguish the free camera-frame Replicate path from the separate
 selected-photo studio path. Settings also say paid accounts and credit-backed
