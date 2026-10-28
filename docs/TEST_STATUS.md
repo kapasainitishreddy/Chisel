@@ -1,5 +1,49 @@
 # Test Status
 
+## Capacitor 7 and appearance candidate, 2026-10-28
+
+Candidate source SHA `64581407f87c5cee360c34935c6c9d4a011a92b4` on
+`recovery/chisel-cap7-reconcile-20261028` (based on verified recovery branch
+`768629d413f5e78eaa4d576e9bd0b545117831ec`). The app source keeps the local
+archive/gallery recovery and deletion behavior while adding Capacitor 7.6.9
+and aligned 7.x plugins, Android backup exclusion rules, a bundled offline
+privacy page, and system/light/dark appearance settings. Billing remains
+disabled. Public Sans is bundled with its SIL OFL notice.
+
+- `npm audit --omit=dev --audit-level=high`: **0 vulnerabilities**.
+- `npm run build`: **PASS**, 47 modules validated.
+- `npm test`: **351/351 PASS**, zero failed/skipped. The pretest Capacitor
+  sync completed against Capacitor 7.6.9, camera 7.0.5, haptics 7.0.5,
+  local notifications 7.0.7, splash screen 7.0.5, status bar 7.0.6, and
+  RevenueCat 11.0.0.
+- `CHISEL_CHROMIUM_PATH=/usr/bin/chromium npm run test:browser`: **4/4 PASS**.
+  Rendered synthetic journeys cover photo lifecycle, archive restore and
+  failure recovery, saved-look create/compare/delete/reload, and appearance
+  preference persistence, contrast tokens, keyboard focus and reduced motion.
+- Main-source JavaScript syntax checks, the obvious-secret scan, and
+  `git diff --check`: **PASS**.
+- An independent review found that Settings described only selected-photo
+  cloud edits even though the legacy photoreal action submits a live camera
+  still to Replicate. Settings, the render and retry actions, and the policy
+  now disclose the frame and recipient; a regression test ties that copy to
+  the capture/POST path. A sync test confirms the theme runtime, CSS, fonts and
+  OFL notice are copied byte-identically to Android assets before native build.
+  Settings also say paid accounts and credit-backed photo edits are disabled
+  in this release.
+- One intermediate focused test run failed because the in-app policy mirror
+  had not yet been updated from the canonical policy; the mirror was synced and
+  the focused test plus final full suite passed.
+- The first concurrent full-suite attempt passed 349/350; the saved-gallery
+  IndexedDB-open retry assertion timed out under parallel browser load. The
+  package scripts now execute tests sequentially. Repeated serial full runs
+  and the serial browser suite passed at this candidate.
+
+This is source and local Chromium evidence only. `npx cap sync android` is not
+a native compile. Android Gradle compilation, physical device, TalkBack,
+Keystore vault, live-storage encryption, real image accuracy, provider,
+billing, legal/store review and release gates remain open. The pinned Gradle
+8.11.1 retrieval was refused previously and was not retried or bypassed.
+
 ## Local saved-look gallery lifecycle, 2026-10-28
 
 Implementation source SHA `8ed59b6e2f1e41ca4d2ab41a25f53d860524d45f` on

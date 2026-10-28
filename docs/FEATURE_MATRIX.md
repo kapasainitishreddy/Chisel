@@ -1,5 +1,22 @@
 # Chisel Feature Matrix
 
+## Appearance preferences, 2026-10-28
+
+Settings now offer System, Light, and Dark appearance choices. The selected
+preference is applied on startup and saved locally; if browser storage is
+unavailable or denied, the control reports failure without claiming it was
+saved. The rendered Chromium check covers all choices, reload persistence,
+keyboard focus, reduced motion, and denied-storage behavior. Public Sans is
+bundled locally under the SIL Open Font License with its notice at
+`chisel-android/www/fonts/OFL.txt`. This does not represent a full WCAG audit or
+native TalkBack acceptance. See [test evidence](TEST_STATUS.md).
+
+Privacy follow-up: Settings and the style action now state that the legacy
+photoreal control sends a live-camera still to the backend and Replicate, and
+Retry sends another frame. The separately confirmed selected-photo flow is
+described independently. The policy and local policy mirror are synchronized;
+an independent review found no further must-fix after this correction.
+
 ## Local saved-look lifecycle, 2026-10-28
 
 Saved-look insertion and retention pruning now commit in one IndexedDB

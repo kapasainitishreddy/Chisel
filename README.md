@@ -1,47 +1,57 @@
 # Chisel
 
 Chisel is a local-first Android grooming and style exploration app built with
-Capacitor. It offers face and style tools, grooming guidance, saved looks,
+Capacitor. It includes face and style tools, grooming guidance, saved looks,
 progress features, and an optional image studio. It does not present a social
 attractiveness ranking or a measure of personal worth. Some face and progress
-flows still show private cosmetic measurement scores, whose accuracy and
-usefulness require further validation. Analysis is not medical advice.
+flows still show private cosmetic measurement scores; their accuracy and
+usefulness need further validation. Analysis is not medical advice.
 
-## Current verified checkpoint
+## Current source checkpoint
 
-The recovery branch `recovery/chisel-cloud-build-20261004-efebe81` contains a
-synthetic-data saved-look lifecycle checkpoint. In the rendered browser journey,
-a user can create and save a local look, compare and undo the comparison, reload
-the gallery, remove a look, recover from a corrupt record or storage failure,
-and delete the source photo while a delayed save is in progress without the
-photo reappearing. The test also checks a small viewport, keyboard actions and
-reduced-motion behavior.
+Candidate branch: `recovery/chisel-cap7-reconcile-20261028` at source
+`64581407f87c5cee360c34935c6c9d4a011a92b4`.
 
-The gallery implementation checkpoint is `8ed59b6e2f1e41ca4d2ab41a25f53d860524d45f`.
-Its app source was freshly rechecked at `37d72bf7b40caa8c099474e037d7e3ab1e6a68ce`
-(a documentation-only follow-up) with:
+The local saved-look flow supports create/save, comparison and undo, reload,
+single-look removal, corrupt-record recovery, and cancellation of a delayed
+save after its source photo is removed. Settings now offer system, light, and
+dark appearance choices. The preference stays on-device; the bundled Public
+Sans font includes its SIL Open Font License. The Android runtime dependencies
+are aligned to Capacitor 7.6.9 and its 7.x plugins.
 
-- `npm test`: 335/335 passed.
-- `CHISEL_CHROMIUM_PATH=/usr/bin/chromium npm run test:browser`: 3/3 passed.
-- `npm run build`: passed; 46 modules validated.
-- Runtime syntax, generated Android asset comparisons and `git diff --check`:
-  passed.
+## Checks run on this source
 
-These are source and fixture-backed browser results, not native-device or full
-product acceptance. The browser fixtures use synthetic images and local test
-responses. No real portrait, paid provider request, purchase, or billing action
-was used.
+- `npm audit --omit=dev --audit-level=high`: **0 vulnerabilities**.
+- `npm run build`: **passed**, 47 modules validated.
+- `npm test`: **351/351 passed**, sequential Node test execution; Capacitor
+  sync completed and Android plugins resolved to their 7.x versions.
+- `CHISEL_CHROMIUM_PATH=/usr/bin/chromium npm run test:browser`: **4/4 passed**.
+  These local journeys use synthetic images and stubbed service responses.
+- Main-source syntax checks, the repository's obvious-secret scan, and
+  `git diff --check`: **passed**.
+
+The tests include a rendered theme journey for light/dark/system persistence,
+contrast-token checks, keyboard focus, reduced motion, storage denial, and the
+saved-photo/archive recovery flows. Settings and the photoreal action state
+that Make it photoreal sends a live camera still to the backend and Replicate,
+that Retry sends another frame, and that the selected-photo studio has a
+separate confirmation. An earlier parallel full-suite run exposed
+one intermittent IndexedDB-open gallery timing failure. Running the tests
+sequentially passed, so the package scripts now keep them sequential to make
+CI results reproducible.
 
 ## Privacy and release limits
 
-Saved looks and current WebView records are not encrypted at rest by Chisel.
-Encrypted archive export does not encrypt live app storage. The Android
-Keystore-backed vault and native image migration are not implemented. Android
-device behavior, power-loss durability, TalkBack, byte-level deletion,
+Live WebView records and saved looks are not encrypted at rest. Encrypted
+archive export does not encrypt live app storage. Android cloud/device-transfer
+backup exclusions do not create a private vault. The Android Keystore-backed
+vault, native image migration, and byte-level deletion are not implemented.
+Native Android compilation, device behavior, TalkBack, power-loss durability,
 empirical model accuracy, provider retention, billing, legal/store
 applicability, signing, and release readiness remain unverified or blocked.
-The pinned Gradle download was refused in the current environment and was not
-bypassed. Do not treat this checkpoint as a completed or released app.
+The pinned Gradle 8.11.1 download was refused in the prior environment and was
+not retried or bypassed. No real photos, paid API calls, billing activation,
+deployment, or publication were used.
 
 ## Run locally
 
@@ -53,8 +63,9 @@ npm run build
 CHISEL_CHROMIUM_PATH=/path/to/chromium npm run test:browser
 ```
 
-To prepare the Android project after installing the Android SDK and the pinned
-Gradle distribution through an authorized route:
+The current Capacitor 7 Android project uses JDK 21. After an authorized
+Android SDK and the pinned Gradle distribution are available, prepare and
+compile it with:
 
 ```sh
 npx cap sync android
@@ -70,5 +81,3 @@ bash gradlew assembleDebug
 - [Current handoff](docs/AI_HANDOFF.md)
 - [Native vault contract](docs/NATIVE_VAULT_CONTRACT.md)
 - [User guide](docs/USER_GUIDE.md)
-
-The ledger marks incomplete families and the next acceptance evidence required.

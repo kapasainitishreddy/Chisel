@@ -1,5 +1,26 @@
 # Change Requests
 
+## CR: Reconcile Capacitor runtime, appearance, and cloud-photo disclosure, 2026-10-28
+
+**Goal:** keep supported Capacitor dependencies aligned, provide a user-controlled
+system/light/dark setting, and describe every enabled image-send path accurately.
+
+Implemented in source commit `64581407f87c5cee360c34935c6c9d4a011a92b4`: Capacitor
+7.6.9 and compatible 7.x plugins, Android backup exclusions, locally bundled
+Public Sans with its SIL OFL notice, and system/light/dark appearance settings.
+Settings and the camera-render/retry controls disclose that photoreal sends a
+live camera still to Replicate; separately confirmed selected-photo editing is
+described as a distinct flow, and paid accounts/credit-backed editing are
+marked disabled in this release. The Android asset mirror is validated after
+Capacitor sync.
+
+Verification: production dependency audit has 0 vulnerabilities; build validates
+47 modules; Node suite 351/351 and synthetic Chromium suite 4/4 pass; the exact
+main-source syntax, secret-scan and diff checks pass. An independent reviewer
+found no must-fix after the disclosure correction. Native Android/device,
+TalkBack, vault/encryption, provider, billing, legal/store and release acceptance
+remain open. See [TEST_STATUS.md](TEST_STATUS.md).
+
 ## CR: Make saved-look lifecycle atomic and recoverable, 2026-10-28
 
 **Goal:** make local style previews safe to save, compare, undo, reopen, remove

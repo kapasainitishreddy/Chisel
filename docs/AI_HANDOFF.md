@@ -1,5 +1,36 @@
 # AI Development Handoff
 
+## Current Capacitor 7 and appearance reconciliation candidate, 2026-10-28
+
+Candidate branch `recovery/chisel-cap7-reconcile-20261028` at
+`64581407f87c5cee360c34935c6c9d4a011a92b4`, based on recovery source
+`768629d413f5e78eaa4d576e9bd0b545117831ec`. The app retains the local
+archive/photo/gallery failure recovery and safe deletion code while aligning
+Capacitor Core, Android, CLI and plugins to 7.x (7.6.9 platform/core/CLI) and
+adding explicit Android cloud/device-transfer backup exclusions. Settings now
+offer system, light and dark themes, with bundled Public Sans and SIL OFL
+notice. The local privacy page is linked from Settings. Billing remains off.
+
+Fresh checks: dependency audit 0 vulnerabilities, `npm run build` 47 modules,
+`npm test` 351/351 serially, `npm run test:browser` 4/4 serially, source syntax,
+obvious-secret scan and `git diff --check` passed. Independent review found a
+cloud-photo disclosure gap; Settings, render/retry controls, and the privacy
+policy now distinguish the free camera-frame Replicate path from the separate
+selected-photo studio path. Settings also say paid accounts and credit-backed
+photo edits are disabled in this release. A new test verifies the Android
+appearance assets after Capacitor sync. One concurrent test run
+previously produced a flaky gallery-open timeout; serial scripts now make the
+run deterministic, and serial full/browser reruns pass.
+
+This candidate has not been compiled for Android or tested on a device. The
+official Capacitor 7 Android requirements include JDK 21. The pinned Gradle
+8.11.1 download had been refused; do not retry or bypass it. The archive and
+backup exclusions do not encrypt live WebView records; Keystore vault, native
+photo migration, power-loss/device deletion and TalkBack remain open. No
+provider call, real photo, purchase, billing activation, deployment or
+publication was performed. Keep legal/store applicability and release gates
+open. See [TEST_STATUS.md](TEST_STATUS.md) and [RELEASE_STATUS.md](RELEASE_STATUS.md).
+
 ## Current local saved-look gallery checkpoint, 2026-10-28
 
 Working branch `recovery/chisel-cloud-build-20261004-efebe81`; implementation

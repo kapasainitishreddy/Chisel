@@ -1,5 +1,33 @@
 # Release Status
 
+## Capacitor 7 source reconciliation candidate, 2026-10-28
+
+Candidate branch `recovery/chisel-cap7-reconcile-20261028`, source
+`64581407f87c5cee360c34935c6c9d4a011a92b4`. The app source retains local
+archive/photo/gallery recovery and adds aligned Capacitor 7.6.9 packages,
+Android backup exclusions, a local privacy page, and optional system/light/dark
+appearance. Purchases and billing remain disabled. Public Sans is bundled
+under SIL OFL with its license notice.
+
+Fresh source evidence: `npm audit --omit=dev --audit-level=high` reports 0
+vulnerabilities; web build validates 47 modules; `npm test` passes 351/351
+sequentially; the synthetic Chromium suite passes 4/4. Main-source syntax and
+obvious-secret checks pass. The main workflow's source checks are represented
+locally, but no main push has been made from this candidate yet.
+
+Independent review's privacy-copy finding was corrected: Settings and the live
+render/retry actions now disclose that they send a captured camera still to
+Replicate, while policy describes the separate confirmed selected-photo flow.
+Capacitor sync is checked for the bundled theme runtime, CSS and licensed fonts
+before native build. The final review found no further must-fix in those fixes.
+
+This is not Android acceptance. Native compilation/device/TalkBack/Keystore
+vault and byte-deletion behavior are not verified. Capacitor 7's Android
+runtime needs JDK 21; the prior Gradle 8.11.1 download refusal remains binding
+and was not retried. Live WebView stores and saved looks are unencrypted.
+Provider, legal/store applicability, billing, signing, and publication gates
+remain open.
+
 ## Local saved-look lifecycle checkpoint, 2026-10-28
 
 Working branch `recovery/chisel-cloud-build-20261004-efebe81`, source
