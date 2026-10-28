@@ -17,6 +17,7 @@ test('archive recovery is reachable from Settings and runs before app storage co
   assert.match(completion,/not a full-device backup/i);
   assert.match(completion,/live WebView records remain unencrypted/i);
   assert.match(completion,/local unencrypted recovery copy/i);
+  assert.match(completion,/concurrent multi-tab restore is not supported or tested/i);
   assert.match(completion,/selected portrait, saved AI gallery, camera-roll originals/);
   assert.match(completion,/Restore cancelled\. Nothing changed\./);
   const archive=fs.readFileSync('www/chisel-private-archive.js','utf8');
