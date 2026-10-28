@@ -642,7 +642,7 @@ catch(error){if(window.ChiselPrivateArchive?.showRecoveryBlock)window.ChiselPriv
       <div class="card" style="margin-top:18px">
         <div class="eyebrow">Privacy &amp; data</div>
         <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:500">Where your data lives</h3>
-        <p style="color:var(--ivory-dim);font-size:13px;line-height:1.6">Free scans, routines and settings are stored in this app on your device. While Chisel is installed, live records are not encrypted by Chisel. Android cloud backup is disabled in this build, but this is not a private vault and device-to-device transfer behavior can vary by Android version. The optional encrypted backup protects only its listed records; it excludes your selected portrait and saved AI gallery. A paid image edit sends the photo you select to the disclosed service for processing; optional account and credit records are held by that service. Clear all data removes Chisel's local records, portrait and saved looks; it does not delete an optional cloud account. <a href="privacy-policy.html" style="color:var(--gold)">Privacy policy</a> · <a href="https://github.com/kapasainitishreddy/Chisel/blob/main/docs/terms-of-use.html" target="_blank" rel="noopener" style="color:var(--gold)">Terms of use ↗</a></p>
+        <p style="color:var(--ivory-dim);font-size:13px;line-height:1.6">Free scans, routines and settings are stored in this app on your device. While Chisel is installed, live records are not encrypted by Chisel. Android cloud backup is disabled in this build, but this is not a private vault and device-to-device transfer behavior can vary by Android version. The optional encrypted backup protects only its listed records; it excludes your selected portrait and saved AI gallery. Optional cloud editing is a separate action: the photoreal style tool sends a still captured from the live camera to Chisel's backend and Replicate when you tap Make it photoreal; the selected-photo studio flow sends the photo you choose after its own confirmation. Cloud services process those images; the legacy photoreal tool currently allows up to two free renders per day, and Retry sends another frame. Credit-backed accounts and purchases are disabled in this release. Clear all data removes Chisel's local records, portrait and saved looks; it does not delete any cloud records. <a href="privacy-policy.html" style="color:var(--gold)">Privacy policy</a> · <a href="https://github.com/kapasainitishreddy/Chisel/blob/main/docs/terms-of-use.html" target="_blank" rel="noopener" style="color:var(--gold)">Terms of use ↗</a></p>
         <div class="btn-row" style="margin-top:14px">
           <button class="btn ghost" id="chiselPrivateToolsSettings" aria-haspopup="dialog">Progress reports &amp; encrypted backup</button>
           <button class="btn ghost" id="wipeData">Clear all my data</button>
@@ -723,6 +723,7 @@ catch(error){if(window.ChiselPrivateArchive?.showRecoveryBlock)window.ChiselPriv
       <span class="photoreal-note" id="photorealNote"></span>
       <button class="sc" id="goPremiumBtn" style="margin-left:auto">Go Premium</button>
     </div>
+    <p class="photoreal-note" id="photorealPrivacyNote" role="note">Tapping Make it photoreal sends a still from this live camera view to Chisel's backend and Replicate. Up to two free cloud renders per day; Retry sends another frame. Local guides stay on this device.</p>
     <div class="lab" id="hairLab">Hairstyle</div>
     <div class="scroller fit-grid" id="hairChips" role="group" aria-labelledby="hairLab"></div>
     <div class="lab" id="beardLab">Facial hair</div>
@@ -743,6 +744,7 @@ catch(error){if(window.ChiselPrivateArchive?.showRecoveryBlock)window.ChiselPriv
       <button class="btn ghost" id="prRetry">Retry</button>
       <button class="btn solid" id="prSave">Save</button>
     </div>
+    <p class="photoreal-note" role="note">Retry submits a newly captured camera frame to the cloud renderer.</p>
     <button class="btn ghost" id="prClose" style="min-height:36px;padding:8px 14px">Close</button>
   </div>
   <div class="sheet" id="camSheet" style="display:none"></div>
