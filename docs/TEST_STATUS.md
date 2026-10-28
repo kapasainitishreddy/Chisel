@@ -28,6 +28,21 @@ Implementation source SHA `8ed59b6e2f1e41ca4d2ab41a25f53d860524d45f` on
   and stale digest save after photo deletion); re-review found **no remaining
   must-fix**.
 
+### Fresh rerun on documentation checkpoint `37d72bf7b40caa8c099474e037d7e3ab1e6a68ce`
+
+- `npm test`: **335/335 PASS**, zero failures/skips. Capacitor pretest sync
+  completed.
+- `npm run build`: **PASS**, 46 modules validated.
+- `CHISEL_CHROMIUM_PATH=/usr/bin/chromium npm run test:browser`: first run had
+  2/3 pass and the gallery's transient IndexedDB-open failure assertion timed
+  out. The targeted gallery rerun passed 1/1, then the complete browser suite
+  rerun passed **3/3** with zero failures/skips. This indicates a test/runtime
+  timing flake remains possible; retain it as a follow-up rather than hiding
+  the initial failure.
+- `git diff --check`: **PASS**. The runtime source did not change from the
+  `8ed59b6` implementation checkpoint; this rerun validates that same app
+  source at `37d72bf`.
+
 Not demonstrated: native Android behavior, power-loss transaction durability,
 live WebView encryption, byte-level deletion, TalkBack, real image accuracy,
 provider retention, billing or release readiness. No real portrait, paid API,

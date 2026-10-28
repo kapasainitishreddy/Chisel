@@ -17,8 +17,9 @@ and delete the source photo while a delayed save is in progress without the
 photo reappearing. The test also checks a small viewport, keyboard actions and
 reduced-motion behavior.
 
-At source checkpoint `37d72bf7b40caa8c099474e037d7e3ab1e6a68ce`, recorded checks
-were:
+The gallery implementation checkpoint is `8ed59b6e2f1e41ca4d2ab41a25f53d860524d45f`.
+Its app source was freshly rechecked at `37d72bf7b40caa8c099474e037d7e3ab1e6a68ce`
+(a documentation-only follow-up) with:
 
 - `npm test`: 335/335 passed.
 - `CHISEL_CHROMIUM_PATH=/usr/bin/chromium npm run test:browser`: 3/3 passed.
