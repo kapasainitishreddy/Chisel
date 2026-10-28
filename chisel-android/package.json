@@ -5,8 +5,8 @@
   "main": "www/index.html",
   "scripts": {
     "build": "node scripts/verify-build.cjs",
-    "test": "node --test tests/*.test.cjs",
-    "test:browser": "node --test tests/browser-local-lifecycle.test.cjs tests/archive-recovery-browser.test.cjs tests/looks-gallery-browser.test.cjs",
+    "test": "node --test --test-concurrency=1 tests/*.test.cjs",
+    "test:browser": "node --test --test-concurrency=1 tests/browser-local-lifecycle.test.cjs tests/archive-recovery-browser.test.cjs tests/looks-gallery-browser.test.cjs tests/appearance-browser.test.cjs",
     "test:enhancements": "node --test tests/enhancements-core.test.cjs tests/enhancements-ui.test.cjs tests/native-integration.test.cjs",
     "test:precision": "node --test tests/precision-core.test.cjs tests/precision-ui.test.cjs tests/precision-native.test.cjs",
     "test:premium": "node --test tests/premium-ux.test.cjs",

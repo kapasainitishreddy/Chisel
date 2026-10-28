@@ -1,0 +1,42 @@
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),http=require('node:http'),path=require('node:path');
+const {chromium}=require('playwright');
+const webRoot=path.resolve(__dirname,'../www');
+
+test('appearance settings render, persist, follow system, and respect reduced motion',async t=>{
+ let server,browser;
+ t.after(async()=>{if(browser)await browser.close();if(server)await new Promise(resolve=>server.close(resolve));});
+ server=http.createServer((req,res)=>{let name;try{name=decodeURIComponent(new URL(req.url,'http://127.0.0.1').pathname);}catch{name='/';}if(name==='/')name='/index.html';const file=path.resolve(webRoot,'.'+name);if(!file.startsWith(webRoot+path.sep)&&file!==webRoot){res.writeHead(403).end();return;}fs.stat(file,(error,stat)=>{if(error||!stat.isFile()){res.writeHead(404).end();return;}const mime={'.html':'text/html','.js':'text/javascript','.mjs':'text/javascript','.css':'text/css','.woff2':'font/woff2','.json':'application/json','.svg':'image/svg+xml'}[path.extname(file)]||'application/octet-stream';res.writeHead(200,{'content-type':mime});fs.createReadStream(file).pipe(res);});});
+ await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+ const executablePath=process.env.CHISEL_CHROMIUM_PATH||(fs.existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined);
+ if(!executablePath&&!fs.existsSync(chromium.executablePath())){t.skip('Install Playwright Chromium or set CHISEL_CHROMIUM_PATH to an existing Chromium binary.');return;}
+ browser=await chromium.launch({headless:true,...(executablePath?{executablePath}:{}),args:['--no-sandbox','--disable-dev-shm-usage']});
+ const context=await browser.newContext({viewport:{width:390,height:820},colorScheme:'dark'}),page=await context.newPage();
+ page.setDefaultTimeout(15000);await page.route('https://**',route=>route.abort());
+ await page.goto(`http://127.0.0.1:${server.address().port}`,{waitUntil:'domcontentloaded'});
+ await page.waitForSelector('#idModal.on');
+ await page.locator('#idX').click();
+ await page.waitForFunction(()=>window.ChiselAppearance&&typeof window.go==='function');
+ await page.evaluate(()=>go('connect'));
+ await page.locator('#appearanceCard').waitFor({state:'visible'});
+ assert.equal(await page.locator('[data-theme-choice="system"]').getAttribute('aria-pressed'),'true');
+ await page.getByRole('button',{name:'Light',exact:true}).click();
+ assert.equal(await page.locator('html').getAttribute('data-theme'),'light');
+ assert.equal(await page.locator('[data-theme-choice="light"]').getAttribute('aria-pressed'),'true');
+ assert.equal(await page.locator('html').evaluate(el=>getComputedStyle(el).getPropertyValue('--cs-bg').trim()),'#F6F3EE');
+ await page.screenshot({path:'/tmp/chisel-appearance-settings-light.png',fullPage:false});
+ await page.reload({waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.ChiselAppearance&&typeof window.go==='function');
+ assert.equal(await page.locator('html').getAttribute('data-theme'),'light','explicit choice survives reload');
+ await page.emulateMedia({colorScheme:'light',reducedMotion:'reduce'});
+ await page.evaluate(()=>{localStorage.removeItem('chisel:theme');ChiselAppearance.apply(document,'system','light');});
+ assert.equal(await page.locator('html').getAttribute('data-theme'),null,'system preference removes explicit override');
+ assert.equal(await page.locator('html').evaluate(el=>getComputedStyle(el).getPropertyValue('--cs-bg').trim()),'#F6F3EE');
+ assert.equal(await page.locator('.screen.active').evaluate(el=>getComputedStyle(el).animationDuration),'0s','final theme motion respects reduced motion');
+ await page.keyboard.press('Tab');
+ const outline=await page.evaluate(()=>{const active=document.activeElement;return active===document.body?null:getComputedStyle(active).outlineStyle;});
+ assert.ok(outline&&outline!=='none','keyboard focus remains visible');
+ await page.getByRole('button',{name:'Dark',exact:true}).click();
+ assert.equal(await page.locator('html').getAttribute('data-theme'),'dark');
+ await page.getByRole('button',{name:'System',exact:true}).click();
+ assert.equal(await page.locator('html').getAttribute('data-theme'),null);
+ assert.deepEqual(await page.evaluate(()=>({policy:document.querySelector('a[href="privacy-policy.html"]')?.getAttribute('href'),theme:document.documentElement.dataset.chiselTheme})),{policy:'privacy-policy.html',theme:'quiet-studio'});
+});

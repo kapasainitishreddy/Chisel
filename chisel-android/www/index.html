@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="format-detection" content="telephone=no" />
 <meta name="msapplication-tap-highlight" content="no" />
-<meta name="theme-color" content="#0A0A0B" />
+<meta name="theme-color" content="#141210" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: gap: content:; media-src * blob: filesystem:; img-src * data: blob: content:;" />
@@ -15,9 +15,9 @@
 try{if(!window.ChiselPrivateArchive?.recover)throw Error('Archive recovery tools could not start. Chisel has paused local tools to protect your records.');window.CHISEL_ARCHIVE_RECOVERY=window.ChiselPrivateArchive.recover(localStorage);}
 catch(error){if(window.ChiselPrivateArchive?.showRecoveryBlock)window.ChiselPrivateArchive.showRecoveryBlock(error?.message);else{window.CHISEL_ARCHIVE_RECOVERY_BLOCKED=String(error?.message||'Archive recovery tools could not start. Chisel has paused local tools to protect your records.');const style=document.createElement('style');style.textContent='.app,#boot{display:none!important}#archiveFailure{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;padding:24px;background:#0a0a0b;color:#f2ede4;font:16px/1.6 system-ui,sans-serif}';document.head.append(style);document.addEventListener('DOMContentLoaded',()=>{const box=document.createElement('div');box.id='archiveFailure';box.setAttribute('role','alert');box.tabIndex=-1;box.textContent=window.CHISEL_ARCHIVE_RECOVERY_BLOCKED;document.body.append(box);box.focus();},{once:true});}}
 </script>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<script src="chisel-appearance.js"></script>
+<script>ChiselAppearance.init();</script>
+<link rel="stylesheet" href="chisel-studio-theme.css" />
 <style>
   :root{
     --onyx:#0A0A0B;
@@ -599,6 +599,17 @@ catch(error){if(window.ChiselPrivateArchive?.showRecoveryBlock)window.ChiselPriv
       <div class="eyebrow">Settings</div>
       <h2 class="section">Your app. <span class="gold">Your control.</span></h2>
       <p class="lede" style="margin-bottom:18px">Chisel runs locally for free. You can choose an optional paid cloud image edit or sign in to manage credits; those are separate from your local records.</p>
+
+      <div class="card" id="appearanceCard" style="margin-bottom:14px">
+        <div class="eyebrow">Appearance</div>
+        <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:600">Light or dark</h3>
+        <p class="lede" style="font-size:13px;margin:0 0 12px">Follow the phone, or keep one mode. Text stays high contrast either way.</p>
+        <div class="btn-row" role="group" aria-label="Color theme">
+          <button class="btn" type="button" data-theme-choice="system" aria-pressed="true">System</button>
+          <button class="btn" type="button" data-theme-choice="light" aria-pressed="false">Light</button>
+          <button class="btn" type="button" data-theme-choice="dark" aria-pressed="false">Dark</button>
+        </div>
+      </div>
 
       <div class="card" style="margin-bottom:14px">
         <div class="diag">
