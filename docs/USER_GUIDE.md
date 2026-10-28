@@ -249,11 +249,11 @@ Users can:
 - review scan/photo history
 - see longer-term changes alongside routine adherence
 
-## 19. Best-photo picker
+## 19. Photo capture comparison
 
 Access: **More / photo tools** where exposed.
 
-The image landmarker can help compare candidate photos and choose the strongest capture according to image/face quality signals. It is not an attractiveness ranking.
+Choose up to six photos to see unranked on-device notes about lighting, image detail, tilt and framing. Chisel does not rank faces, expressions or people; choose the photo that works for your own purpose. Closing the panel revokes its temporary previews. The checks are capture heuristics, not validated predictions.
 
 ## 20. Identity/personalization
 

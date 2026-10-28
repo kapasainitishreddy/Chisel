@@ -67,6 +67,15 @@
   }
   return {read:()=>transact('readonly',s=>s.get(KEY)),write:value=>transact('readwrite',s=>s.put(value,KEY)),clear:()=>transact('readwrite',s=>s.delete(KEY))};
  }
+ function deleteDatabase(name){
+  return new Promise((resolve,reject)=>{
+   if(!root.indexedDB){reject(Error('Local image storage is unavailable.'));return;}
+   const request=root.indexedDB.deleteDatabase(name);
+   request.onsuccess=()=>resolve();
+   request.onerror=()=>reject(request.error||Error('Local image storage could not be deleted.'));
+   request.onblocked=()=>reject(Error('Close other Chisel tabs and try clearing local data again.'));
+  });
+ }
  function createPhotoStore({adapter,prepare=preparePhoto,makeURL=b=>URL.createObjectURL(b),revokeURL=u=>URL.revokeObjectURL(u)}){
   let record=null,url=null,epoch=0,queue=Promise.resolve();const listeners=new Set();
   const snapshot=()=>Object.freeze({hasPhoto:!!record,url,width:record?record.width:null,height:record?record.height:null});
@@ -108,7 +117,18 @@
    if(!root.confirm('Delete all Chisel data on this device, including your saved photo? This cannot be undone.'))return;
    button.disabled=true;
    try{
-    if(root.ChiselLooksStudio)await root.ChiselLooksStudio.clearSaved();
+    // Remove the short-lived token before optional cloud/gallery cleanup. If
+    // another cleanup step fails, keep the device clear action open and safe.
+    if(root.sessionStorage)root.sessionStorage.removeItem('chisel:credit-session');
+    else throw Error('Private session storage is unavailable; local clear could not be verified.');
+    // clearSaved also cancels an in-flight optional edit; its normal path clears
+    // the gallery. If that optional module is incomplete, clear the DB directly.
+    if(root.ChiselLooksStudio&&typeof root.ChiselLooksStudio.clearSaved==='function'&&root.ChiselLooksGallery&&typeof root.ChiselLooksGallery.clear==='function')await root.ChiselLooksStudio.clearSaved();
+    else{
+     if(root.ChiselLooksStudio&&typeof root.ChiselLooksStudio.closeEditor==='function')await root.ChiselLooksStudio.closeEditor();
+     if(root.ChiselLooksGallery&&typeof root.ChiselLooksGallery.clear==='function')await root.ChiselLooksGallery.clear();
+     else await deleteDatabase('chisel-saved-looks');
+    }
     await remove();
     Object.keys(root.localStorage).filter(k=>k.startsWith('chisel:')).forEach(k=>root.localStorage.removeItem(k));
     root.dispatchEvent(new CustomEvent('chisel:data-cleared'));

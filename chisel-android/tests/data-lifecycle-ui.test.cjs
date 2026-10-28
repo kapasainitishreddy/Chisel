@@ -17,6 +17,13 @@ test('local deletion names its scope and keeps cloud account deletion separate',
   assert.match(photos,/await root\.ChiselLooksStudio\.clearSaved\(\)/);
   assert.match(photos,/await remove\(\)/);
   assert.match(photos,/k\.startsWith\('chisel:'\)/);
+  assert.match(html,/function deleteLocalDatabase\(name\)/);
+  assert.match(html,/request\.onblocked=\(\)=>reject/);
+  assert.match(html,/window\.ChiselPersonalPhoto\?\.getStore\)await window\.ChiselPersonalPhoto\.getStore\(\)\.clear\(\)/);
+  assert.match(html,/window\.ChiselLooksGallery\?\.clear\)await window\.ChiselLooksGallery\.clear\(\)/);
+  assert.match(html,/Could not finish clearing local data/);
+  assert.match(photos,/else await deleteDatabase\('chisel-saved-looks'\)/);
+  assert.match(photos,/chisel:credit-session/);
 });
 
 test('Android backup flag is not confused with encryption of live WebView stores',()=>{
