@@ -10,6 +10,22 @@ test('settings distinguish local storage, encrypted export, and optional cloud d
   assert.match(html,/paid credit features use an account and cloud services/i);
 });
 
+test('archive recovery is reachable from Settings and runs before app storage consumers',()=>{
+  assert.match(html,/id="chiselPrivateToolsSettings" aria-haspopup="dialog"/);
+  assert.ok(html.indexOf('ChiselPrivateArchive.recover(localStorage)')<html.indexOf('/* ---------- Utilities ---------- */'));
+  const completion=fs.readFileSync('www/chisel-completion-ui.js','utf8');
+  assert.match(completion,/not a full-device backup/i);
+  assert.match(completion,/live WebView records remain unencrypted/i);
+  assert.match(completion,/local unencrypted recovery copy/i);
+  assert.match(completion,/selected portrait, saved AI gallery, camera-roll originals/);
+  assert.match(completion,/Restore cancelled\. Nothing changed\./);
+  const archive=fs.readFileSync('www/chisel-private-archive.js','utf8');
+  assert.match(archive,/JOURNAL_KEY='chisel:archive:restore-journal:v1'/);
+  assert.match(archive,/state='committed'/);
+  assert.match(archive,/function recover\(storage\)/);
+  assert.match(archive,/showRecoveryBlock/);
+});
+
 test('local deletion names its scope and keeps cloud account deletion separate',()=>{
   assert.match(html,/Delete Chisel data stored on this device, including scans, the selected portrait, saved looks/i);
   assert.match(html,/manage or delete those in the account controls/i);

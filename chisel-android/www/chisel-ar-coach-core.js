@@ -311,6 +311,7 @@
 
 if(typeof window!=='undefined'&&typeof document!=='undefined'){
   window.addEventListener('load',()=>{
+    if(window.CHISEL_ARCHIVE_RECOVERY_BLOCKED)return;
     const addCss=href=>{if(document.querySelector(`link[data-chisel-runtime="${href}"]`))return;const link=document.createElement('link');link.rel='stylesheet';link.href=href;link.dataset.chiselRuntime=href;document.head.appendChild(link);};
     if(!document.getElementById('chiselLauncherLayerFix')){const layerFix=document.createElement('style');layerFix.id='chiselLauncherLayerFix';layerFix.textContent='.chl-launcher,.chp-launcher{z-index:180!important}';document.head.appendChild(layerFix);}
     const pending=new Map();

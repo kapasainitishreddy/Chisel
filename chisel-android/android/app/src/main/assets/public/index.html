@@ -10,6 +10,11 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: gap: content:; media-src * blob: filesystem:; img-src * data: blob: content:;" />
 <title>Chisel — Sculpt your best self</title>
+<script src="chisel-private-archive.js" data-chisel-runtime="chisel-private-archive.js" data-loaded="1"></script>
+<script>
+try{if(!window.ChiselPrivateArchive?.recover)throw Error('Archive recovery tools could not start. Chisel has paused local tools to protect your records.');window.CHISEL_ARCHIVE_RECOVERY=window.ChiselPrivateArchive.recover(localStorage);}
+catch(error){if(window.ChiselPrivateArchive?.showRecoveryBlock)window.ChiselPrivateArchive.showRecoveryBlock(error?.message);else{window.CHISEL_ARCHIVE_RECOVERY_BLOCKED=String(error?.message||'Archive recovery tools could not start. Chisel has paused local tools to protect your records.');const style=document.createElement('style');style.textContent='.app,#boot{display:none!important}#archiveFailure{position:fixed;inset:0;z-index:2147483647;display:grid;place-items:center;padding:24px;background:#0a0a0b;color:#f2ede4;font:16px/1.6 system-ui,sans-serif}';document.head.append(style);document.addEventListener('DOMContentLoaded',()=>{const box=document.createElement('div');box.id='archiveFailure';box.setAttribute('role','alert');box.tabIndex=-1;box.textContent=window.CHISEL_ARCHIVE_RECOVERY_BLOCKED;document.body.append(box);box.focus();},{once:true});}}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -628,6 +633,7 @@
         <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:500">Where your data lives</h3>
         <p style="color:var(--ivory-dim);font-size:13px;line-height:1.6">Free scans, routines and settings are stored in this app on your device. While Chisel is installed, live records are not encrypted by Chisel. Android cloud backup is disabled in this build, but this is not a private vault and device-to-device transfer behavior can vary by Android version. The optional encrypted backup protects only its listed records; it excludes your selected portrait and saved AI gallery. A paid image edit sends the photo you select to the disclosed service for processing; optional account and credit records are held by that service. Clear all data removes Chisel's local records, portrait and saved looks; it does not delete an optional cloud account. <a href="https://github.com/kapasainitishreddy/Chisel/blob/main/docs/privacy-policy.html" target="_blank" rel="noopener" style="color:var(--gold)">Privacy policy ↗</a> · <a href="https://github.com/kapasainitishreddy/Chisel/blob/main/docs/terms-of-use.html" target="_blank" rel="noopener" style="color:var(--gold)">Terms of use ↗</a></p>
         <div class="btn-row" style="margin-top:14px">
+          <button class="btn ghost" id="chiselPrivateToolsSettings" aria-haspopup="dialog">Progress reports &amp; encrypted backup</button>
           <button class="btn ghost" id="wipeData">Clear all my data</button>
         </div>
       </div>
@@ -915,6 +921,7 @@
 <script src="chisel-runtime-loader.js"></script>
 <script src="chisel-ar-coach-core.js"></script>
 <script>
+if(window.CHISEL_ARCHIVE_RECOVERY_BLOCKED)throw new Error('Chisel app startup paused because local archive recovery is pending.');
 /* ---------- Utilities ---------- */
 const $ = (s,r=document)=>r.querySelector(s);
 const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
