@@ -24,7 +24,9 @@ test('appearance settings render, persist, follow system, and respect reduced mo
  assert.equal(await page.locator('[data-theme-choice="light"]').getAttribute('aria-pressed'),'true');
  assert.equal(await page.locator('html').evaluate(el=>getComputedStyle(el).getPropertyValue('--cs-bg').trim()),'#F6F3EE');
  await page.screenshot({path:'/tmp/chisel-appearance-settings-light.png',fullPage:false});
- await page.reload({waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.ChiselAppearance&&typeof window.go==='function');
+ await page.reload({waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.ChiselAppearance&&typeof window.go==='function'&&document.querySelector('#idModal'));
+ if(await page.locator('#idModal').evaluate(el=>el.classList.contains('on')))await page.locator('#idX').click();
+ await page.locator('#idModal').waitFor({state:'hidden'});await page.evaluate(()=>go('connect'));await page.locator('#appearanceCard').waitFor({state:'visible'});
  assert.equal(await page.locator('html').getAttribute('data-theme'),'light','explicit choice survives reload');
  await page.emulateMedia({colorScheme:'light',reducedMotion:'reduce'});
  await page.evaluate(()=>{localStorage.removeItem('chisel:theme');ChiselAppearance.apply(document,'system','light');});
