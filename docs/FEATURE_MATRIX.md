@@ -1,5 +1,27 @@
 # Chisel Feature Matrix
 
+## Local saved-look lifecycle, 2026-10-28
+
+Saved-look insertion and retention pruning now commit in one IndexedDB
+transaction. Valid records are checked before display/open; unreadable rows are
+reported, and users can retry a storage read or remove only corrupt records.
+Cleanup follows each cursor's primary key, including numeric keys. A stale
+save checks its source/result identity and studio epoch after the asynchronous
+source hash, so portrait deletion cannot enqueue a delayed gallery write.
+
+The rendered synthetic Chromium path saves two different styles, moves and
+resets the comparison slider with the keyboard, injects a failed transaction,
+reopens data after reload, repairs a corrupt record while retaining valid
+looks, deletes one item, and races a delayed save against portrait deletion.
+Browser viewport 360x640 and reduced-motion behavior are checked. Full suite is
+335/335; browser suite 3/3; `npm run build` validates 46 modules. Independent
+review found no remaining must-fix. See [test evidence](TEST_STATUS.md) and
+[feature ledger](FEATURE_LEDGER.csv).
+
+This does not encrypt IndexedDB, prove native interruption/byte deletion, or
+verify Android device accessibility. Only synthetic test images and mocked
+local service responses were used; no real image-provider call was made.
+
 ## Encrypted archive recovery, 2026-10-28
 
 The existing home progress/tools dialog already mounted encrypted export and

@@ -1,5 +1,38 @@
 # Test Status
 
+## Local saved-look gallery lifecycle, 2026-10-28
+
+Implementation source SHA `8ed59b6e2f1e41ca4d2ab41a25f53d860524d45f` on
+`recovery/chisel-cloud-build-20261004-efebe81`.
+
+- `npm test`: **335/335 PASS**, zero failed/skipped. The pretest Capacitor
+  sync completed and copied the canonical gallery/UI assets into Android's
+  generated WebView asset directory.
+- `CHISEL_CHROMIUM_PATH=/usr/bin/chromium npm run test:browser`: **3/3 PASS**.
+  The added gallery journey uses only a synthetic canvas portrait/result and
+  stubbed local service responses. It covers rendered create/save, keyboard
+  compare and neutral split reset, interrupted IndexedDB write with no false
+  success, synchronous database-open failure followed by retry, corrupt numeric
+  key recovery and failed-cleanup retry, valid look persistence across reload,
+  removal of one look, and portrait deletion while the source digest is paused.
+  The delayed save is canceled and remains absent after reload. It also checks
+  360×640 layout and reduced-motion loading behavior.
+- `npm run build`: **PASS**, 46 modules validated.
+- `git diff --check`, `node --check` for both changed runtime files, and
+  `cmp` of canonical gallery JS, studio JS and CSS against generated Android
+  assets: **PASS**.
+- Screenshot from the synthetic corrupt-record state:
+  `/tmp/chisel-saved-looks-corrupt-record.png`.
+- Independent read-only reviewer: the three reported must-fix issues were
+  repaired (failed connection retry, numeric IndexedDB primary key deletion,
+  and stale digest save after photo deletion); re-review found **no remaining
+  must-fix**.
+
+Not demonstrated: native Android behavior, power-loss transaction durability,
+live WebView encryption, byte-level deletion, TalkBack, real image accuracy,
+provider retention, billing or release readiness. No real portrait, paid API,
+provider request, credentials or billing were used.
+
 ## Encrypted archive recovery checkpoint, 2026-10-28
 
 Source SHA: `e75241e27d0e775de128c1607d1850f0d3b9ef33` on

@@ -1,5 +1,35 @@
 # AI Development Handoff
 
+## Current local saved-look gallery checkpoint, 2026-10-28
+
+Working branch `recovery/chisel-cloud-build-20261004-efebe81`; implementation
+source `8ed59b6e2f1e41ca4d2ab41a25f53d860524d45f`. Gallery saves now write a
+look and prune the eight-item cap in one IndexedDB transaction. Records are
+validated before use; unreadable records are shown with a retryable, targeted
+cleanup action, including rows with numeric IndexedDB keys. A denied IndexedDB
+open can retry after storage access returns. Studio save snapshots its source
+and result and checks for changes after hashing so a photo deletion cannot be
+undone by a delayed save.
+
+Rendered Chromium journey covers synthetic source/result creation, save-failure
+transaction abort, keyboard comparison and neutral-split undo, second style
+save, corrupt-record failure/retry and repair, persistence across reload,
+single-look removal, and source-photo deletion during a delayed save. Full suite
+335/335, browser suite 3/3, build validation 46 modules, independent review no
+must-fix. Details and screenshot are in [TEST_STATUS.md](TEST_STATUS.md).
+
+This is local WebView and synthetic browser evidence only. Native storage
+encryption, device interruption/deletion, TalkBack and Android runtime remain
+open. Live WebView stores and the saved gallery are not encrypted by Chisel.
+Provider, billing, signed release and legal/applicability gates are unchanged.
+
+## Next task
+
+Obtain supported Android build/device tooling without bypassing the refused
+Gradle download, then implement and verify the separate Keystore-backed vault
+and native gallery deletion contract. Until then keep the native/device gate
+open; do not claim the gallery or app is complete.
+
 ## Current archive recovery continuation, 2026-10-28
 
 Working branch `recovery/chisel-cloud-build-20261004-efebe81` now has source

@@ -1,5 +1,20 @@
 # Release Status
 
+## Local saved-look lifecycle checkpoint, 2026-10-28
+
+Working branch `recovery/chisel-cloud-build-20261004-efebe81`, source
+`8ed59b6e2f1e41ca4d2ab41a25f53d860524d45f`. Source/runtime tests pass
+335/335, Chromium journeys 3/3, and web validation 46 modules. Independent
+read-only re-review found no must-fix after repairing retry, corrupt-row
+cleanup and stale-save race paths. Generated Android web assets match the
+canonical JS/CSS source.
+
+This checkpoint does not create a native APK or encrypt live records. Native
+Keystore storage, device deletion/interruption, Android accessibility, signing,
+provider, billing and store release remain open; the pinned Gradle download
+was refused and was not retried or bypassed. No real images, paid provider
+requests, billing or deployment were used.
+
 ## Encrypted archive recovery checkpoint, 2026-10-28
 
 Working branch `recovery/chisel-cloud-build-20261004-efebe81`, source

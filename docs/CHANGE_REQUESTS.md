@@ -1,5 +1,23 @@
 # Change Requests
 
+## CR: Make saved-look lifecycle atomic and recoverable, 2026-10-28
+
+**Goal:** make local style previews safe to save, compare, undo, reopen, remove
+and recover after storage failures without resurfacing a deleted source.
+
+Implemented at `8ed59b6e2f1e41ca4d2ab41a25f53d860524d45f`: save and retention
+pruning share one IndexedDB transaction; gallery records are validated;
+unreadable records can be reviewed and selectively removed by IndexedDB primary
+key; a failed open can be retried; save checks that source, result and editor
+epoch remain current after hashing. The browser test uses synthetic images and
+stubbed local service output.
+
+Verification: `npm test` 335/335; Chromium browser suite 3/3; web build validates
+46 modules; canonical and generated Android assets match. Independent reviewer
+repaired three findings and found no remaining must-fix. No Android device,
+native encryption, real image, provider, credential, billing or deployment
+acceptance is claimed. Full evidence: [TEST_STATUS.md](TEST_STATUS.md).
+
 ## CR: Recover interrupted local archive restore, 2026-10-28
 
 **Goal:** let a user restore supported records from the existing encrypted
