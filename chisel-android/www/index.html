@@ -764,11 +764,11 @@
 </div>
 
 <!-- BEST-PHOTO PICKER MODAL -->
-<div class="modal" id="pickerModal">
+<div class="modal" id="pickerModal" role="dialog" aria-modal="true" aria-labelledby="pickerTitle">
   <div class="panel">
-    <div class="x" id="pickerX">✕</div>
+    <button class="x" id="pickerX" type="button" aria-label="Close photo comparison">✕</button>
     <div class="eyebrow">Photo comparison</div>
-    <h3>Capture notes</h3>
+    <h3 id="pickerTitle" tabindex="-1">Capture notes</h3>
     <p class="lede">These checks describe image conditions only. They do not judge your face, expression or worth. Nothing is uploaded.</p>
     <div id="pickerBody" aria-live="polite" aria-atomic="false"></div>
   </div>
@@ -3247,7 +3247,7 @@ function finalizePosture(){
 }
 
 /* ---------- Best-photo picker (on-device, IMAGE-mode landmarker) ---------- */
-let _imgKit=null, _imgKitP=null, pickerImageURLs=[], pickerRunId=0;
+let _imgKit=null, _imgKitP=null, pickerImageURLs=[], pickerRunId=0, pickerReturnFocus=null;
 async function loadImageKit(){
   const BASE="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.20";
   const MODEL="https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task";
@@ -3277,7 +3277,7 @@ async function scorePhoto(img){
   notes.push(fill<0.4?'Face framing looks distant.':fill>1.02?'Face framing looks close.':'Face framing looks centered.');
   return {available:true, notes};
 }
-$('#openPicker') && $('#openPicker').addEventListener('click', ()=>$('#pickerFiles').click());
+$('#openPicker') && $('#openPicker').addEventListener('click', ()=>{pickerReturnFocus=$('#openPicker');$('#pickerFiles').click();});
 $('#pickerFiles') && $('#pickerFiles').addEventListener('change', async (e)=>{
   const files=[...e.target.files].slice(0,6); e.target.value='';
   if(!files.length) return;
@@ -3285,6 +3285,7 @@ $('#pickerFiles') && $('#pickerFiles').addEventListener('change', async (e)=>{
   pickerImageURLs.forEach(url=>URL.revokeObjectURL(url)); pickerImageURLs=[];
   $('#pickerBody').innerHTML='<p class="lede" role="status">Checking capture conditions on this device…</p>';
   $('#pickerModal').classList.add('on');
+  $('#pickerTitle').focus({preventScroll:true});
   const results=[];
   for(const [index,f] of files.entries()){
     let url=null;
@@ -3302,9 +3303,18 @@ $('#pickerFiles') && $('#pickerFiles').addEventListener('change', async (e)=>{
       <ul style="margin:4px 0 0;padding-left:18px;font-size:12px;color:var(--ivory-dim)">${r.notes.map(n=>`<li>${n}</li>`).join('')}</ul></div>
     </article>`).join('') + '<p style="font-size:11px;margin-top:12px;color:var(--ivory-dim)">Use your own preferences to compare photos. These simple, unvalidated local checks cover lighting, image detail, tilt and framing only; they do not predict which photo looks best or select a face or expression.</p>';
 });
-function closePicker(){ pickerRunId++;$('#pickerModal').classList.remove('on');pickerImageURLs.forEach(url=>URL.revokeObjectURL(url));pickerImageURLs=[]; }
+function closePicker(){ pickerRunId++;$('#pickerModal').classList.remove('on');pickerImageURLs.forEach(url=>URL.revokeObjectURL(url));pickerImageURLs=[];if(pickerReturnFocus&&pickerReturnFocus.isConnected)setTimeout(()=>{if(pickerReturnFocus&&pickerReturnFocus.isConnected)pickerReturnFocus.focus({preventScroll:true});},0); }
 $('#pickerX') && $('#pickerX').addEventListener('click', closePicker);
 $('#pickerModal') && $('#pickerModal').addEventListener('click', e=>{ if(e.target.id==='pickerModal') closePicker(); });
+$('#pickerModal') && $('#pickerModal').addEventListener('keydown', e=>{
+  if(e.key==='Escape'){e.preventDefault();closePicker();return;}
+  if(e.key!=='Tab')return;
+  const modal=$('#pickerModal'),focusable=[...modal.querySelectorAll('button:not(:disabled),a[href],input:not(:disabled),select:not(:disabled),textarea:not(:disabled),[tabindex="0"]')].filter(n=>n.getClientRects().length&&getComputedStyle(n).visibility!=='hidden');
+  if(!focusable.length)return;
+  const first=focusable[0],last=focusable[focusable.length-1],active=document.activeElement,notFocusable=!focusable.includes(active);
+  if(e.shiftKey&&(active===first||notFocusable)){e.preventDefault();last.focus();}
+  else if(!e.shiftKey&&(active===last||notFocusable)){e.preventDefault();first.focus();}
+});
 
 /* ================= Makeup: suggestor, coach, custom routine, tracker ================= */
 let coachMode=false, _coachBuf=null;

@@ -24,6 +24,12 @@ test('photo comparison keeps each preview local and revokes temporary URLs on cl
   assert.match(picker,/if\(run!==pickerRunId\)return/);
   assert.match(picker,/URL\.revokeObjectURL\(url\)/);
   assert.match(html,/id="pickerBody" aria-live="polite"/);
+  assert.match(html,/id="pickerModal" role="dialog" aria-modal="true" aria-labelledby="pickerTitle"/);
+  assert.match(html,/<button class="x" id="pickerX" type="button" aria-label="Close photo comparison">/);
+  assert.match(picker,/e\.key==='Escape'/);
+  assert.match(picker,/e\.key!=='Tab'/);
+  assert.match(picker,/notFocusable/);
+  assert.match(picker,/pickerReturnFocus\.focus/);
 });
 
 test('style preset groups have names and pressed state for assistive technology',()=>{
