@@ -1,5 +1,30 @@
 # Chisel Feature Matrix
 
+## Encrypted archive recovery, 2026-10-28
+
+The existing home progress/tools dialog already mounted encrypted export and
+restore, but Settings exposed only a privacy explanation and local-delete
+action. Settings now opens the same scoped archive flow. Its text identifies
+included record groups, excluded portrait/gallery/camera-roll/cloud records,
+and that only the downloaded archive is encrypted. It also explains the
+temporary local, unencrypted recovery copy used during restore.
+
+Restore now records the previous values before replacing supported keys. A
+prepared journal is rolled back before startup consumes app records; a committed
+marker is cleaned up while preserving the fully restored records. Failed
+recovery leaves its journal in place and blocks local tools until retry. The
+passphrase remains in memory only and is cleared from the field after each
+action. The restore disclosure asks users to close other tabs because
+cross-tab concurrency is unsupported and untested. Local clear removes the
+`chisel:` recovery namespace along with other device records.
+
+Rendered Chromium acceptance and deterministic failure injection pass; see
+[archive test evidence](TEST_STATUS.md) and the updated
+[feature ledger](FEATURE_LEDGER.csv). This remains WebView-local recovery over
+unencrypted stores, not a full-device backup, formal transactional guarantee,
+native vault or device-level acceptance. No unsupported data were added to the
+archive.
+
 ## Local photo lifecycle and rendered accessibility, 2026-10-28
 
 The photo comparison is now a labelled modal dialog with a real close button,
@@ -10,7 +35,7 @@ success, model-unavailable/no-face and interrupted work; keyboard style
 selection and undo; reduced motion; 200% text sizing; and local clear success
 plus simulated IndexedDB-blocked failure/retry. The run asserts the tested
 journey makes no external POST request. It does not prove every possible
-network route is upload-free. Full `npm test` passes 323/323 and `npm run build`
+network route is upload-free. Full `npm test` passes 334/334 and `npm run build`
 validates 46 modules. The native vault remains missing: active WebView stores
 are unencrypted, and native compilation/device acceptance is blocked by the
 unavailable Gradle distribution and absent Android toolchain. See

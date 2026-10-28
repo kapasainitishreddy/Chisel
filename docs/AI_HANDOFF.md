@@ -1,5 +1,23 @@
 # AI Development Handoff
 
+## Current archive recovery continuation, 2026-10-28
+
+Working branch `recovery/chisel-cloud-build-20261004-efebe81` now has source
+checkpoint `e75241e27d0e775de128c1607d1850f0d3b9ef33`. The existing archive
+entry was reachable from the home tools dialog; Settings now opens it directly.
+Archive restore uses a local prepared/committed journal, restores old values
+before app startup after an interrupted write, and blocks app use if recovery
+is still unavailable. The UI names supported and excluded data, explains that
+live records and the temporary journal are unencrypted, and warns users to
+close other browser tabs before restoring. Independent read-only review found
+no must-fix. Full suite 334/334, browser suite 2/2 and build validation (46
+modules) pass; details and screenshots are in [TEST_STATUS.md](TEST_STATUS.md).
+
+This does not add unsupported archive data or a native encrypted vault.
+Concurrent multi-tab restore, power-loss durability, physical device behavior,
+TalkBack, and formal security acceptance remain unverified. Keep release,
+billing, provider, and native gates open.
+
 ## Current follow-up, 2026-10-28
 
 At implementation SHA `5e1f9fdaa6dae4d712db55caa8db39ab27df395f`, the ranked

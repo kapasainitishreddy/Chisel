@@ -1,5 +1,27 @@
 # Change Requests
 
+## CR: Recover interrupted local archive restore, 2026-10-28
+
+**Goal:** let a user restore supported records from the existing encrypted
+archive without silently accepting a mixed set after an interrupted write.
+
+Implemented in `e75241e27d0e775de128c1607d1850f0d3b9ef33`: direct Settings entry;
+scoped inclusion/exclusion and live-storage disclosure; a before-value journal
+with prepared/committed states; startup rollback before app initialization;
+fail-closed retry when storage remains unavailable; and confirmation,
+interruption, duplicate-import and delete-after-recovery coverage. The
+passphrase is not persisted. Temporary recovery data is unencrypted in local
+WebView storage and the UI says so. Independent read-only review found no
+must-fix. Concurrent multi-tab restore is explicitly unsupported and browser
+users are told to close other tabs first.
+
+Verification: full `npm test` 334/334; `CHISEL_CHROMIUM_PATH=/usr/bin/chromium
+npm run test:browser` 2/2; `npm run build` validated 46 modules; canonical and
+generated Android UI/archive/index assets match. Browser and unit tests use
+synthetic records and deterministic local failure injection. Android device,
+native vault, power-loss durability, cloud retention, legal applicability,
+provider, billing, and release remain open.
+
 ## CR: Rendered local photo recovery and keyboard containment, 2026-10-28
 
 **Goal:** verify that the photo comparison flow is understandable, keyboard

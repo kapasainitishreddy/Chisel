@@ -1,5 +1,15 @@
 # Release Status
 
+## Encrypted archive recovery checkpoint, 2026-10-28
+
+Working branch `recovery/chisel-cloud-build-20261004-efebe81`, source
+`e75241e27d0e775de128c1607d1850f0d3b9ef33`. Full `npm test`: 334/334;
+Chromium browser journey: 2/2; web build validation: 46 modules. Independent
+review found no must-fix. This is fixture-backed WebView recovery only: live
+records and the temporary journal remain unencrypted. Multi-tab restore is
+unsupported, device/power-loss acceptance is open, and no Android build, signing,
+release, deployment, provider or billing gate was changed.
+
 ## Ranked-photo and local-delete reliability checkpoint, 2026-10-28
 
 Working branch `recovery/chisel-cloud-build-20261004-efebe81`. The photo
@@ -12,7 +22,7 @@ unavailable. Named style groups expose labels and pressed state. See
 [FEATURE_LEDGER.csv](FEATURE_LEDGER.csv) and
 [competitor desk research](COMPETITOR_EXPERIMENT.md).
 
-Fresh verification: `npm test` 323/323 PASS (including Capacitor Android asset
+Fresh verification at the earlier photo checkpoint: `npm test` 323/323 PASS (including Capacitor Android asset
 sync and a Playwright/Chromium synthetic browser journey); `npm run build`
 PASS (46 modules, inline scripts and assets). Browser acceptance uses generated
 synthetic images, a fake camera, and a stub face model; no face upload or
@@ -36,7 +46,7 @@ and release gates remain open.
 
 Branch `recovery/chisel-cloud-build-20261004-efebe81` contains the bounded
 privacy/CX improvements described in [the native data contract](NATIVE_VAULT_CONTRACT.md).
-The earlier 317/317 Node checkpoint and web source validation pass. The follow-up above adds a Chromium browser journey and 323/323 full-suite result. An Android debug build could not complete because the Gradle 8.11.1 wrapper download was refused by the environment network. This does not produce a new APK or change prior release evidence. Live stores are not
+The earlier 317/317 Node checkpoint and web source validation pass. The photo follow-up above adds a Chromium browser journey and 323/323 full-suite result. The archive recovery checkpoint at the top extends this to 334/334. An Android debug build could not complete because the Gradle 8.11.1 wrapper download was refused by the environment network. This does not produce a new APK or change prior release evidence. Live stores are not
 encrypted; signed release, physical-device acceptance, lifecycle deployment,
 billing/provider gates and full native vault remain open.
 

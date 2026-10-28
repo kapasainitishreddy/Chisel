@@ -1,5 +1,53 @@
 # Test Status
 
+## Encrypted archive recovery checkpoint, 2026-10-28
+
+Source SHA: `e75241e27d0e775de128c1607d1850f0d3b9ef33` on
+`recovery/chisel-cloud-build-20261004-efebe81`. The archive controls were
+already mounted by the completion tools from the home tools dialog; this
+checkpoint also exposes the same dialog from Settings and gates app startup on
+recovery of a prior restore journal.
+
+- `CHISEL_CHROMIUM_PATH=/usr/bin/chromium npm run test:browser`: **2/2 PASS**.
+  The archive journey runs through the rendered Settings control and tests the
+  encrypted download bytes; wrong passphrase, corrupt and oversized import
+  rejection; cancelled confirmation; successful and repeated restore; injected
+  quota failure with rollback; failed rollback and retained journal; startup
+  fail-closed behavior while storage remains blocked; successful retry and
+  idempotent recovery; then device clear and reload with no restored record or
+  journal resurrection. It checks keyboard focus return and reduced motion.
+  All archive data are synthetic fixture values.
+- `node --test tests/archive-recovery.test.cjs tests/data-lifecycle-ui.test.cjs`:
+  **15/15 PASS**. Deterministic storage doubles inject failure at journal
+  prepare, each supported-record write, commit marker, every rollback remove
+  and old-value write, and journal cleanup. They also cover unsupported/malformed
+  records, passphrase/corrupt/oversized inputs, duplicate import and recovery
+  repeatability.
+- Full `npm test`: **334/334 PASS**, zero failures/skips; `pretest` completed
+  Capacitor asset sync. `CHISEL_CHROMIUM_PATH=/usr/bin/chromium npm run
+  test:browser`: **2/2 PASS**, zero skips. `npm run build`: **PASS**, 46 modules.
+  `git diff --check`: **PASS**. Canonical archive/UI/index files match generated
+  Android assets after the sync.
+- Rendered screenshots from the local synthetic run:
+  `/tmp/chisel-archive-settings.png`, `/tmp/chisel-archive-unlock-error.png`,
+  and `/tmp/chisel-archive-recovery-pending.png`.
+- Independent read-only review at core recovery SHA
+  `0729120bd7258be986d24d838222f62d93abaa42`: **no must-fix**. It confirmed
+  prepared/committed ordering, interrupted rollback, fail-closed startup,
+  committed-marker retry, and clear-after-recovery coverage. Its identified
+  multi-tab limitation is now stated in Settings and asserted in the rendered
+  journey at the final checkpoint SHA above.
+- The journal contains a temporary unencrypted copy of only the record groups
+  being replaced, in the same local WebView storage as current live data. It is
+  removed after commit or rollback; if cleanup/storage operations fail, startup
+  keeps local tools blocked until retry. This is application-level recovery,
+  not a formal transaction/security guarantee. No passphrase is persisted.
+
+Not proven here: device power-loss durability, cross-tab concurrent restore,
+Android Keystore encryption, native backup/restore, TalkBack, byte-level storage
+erasure, provider/account retention, billing or release. No real personal
+records/photos, external provider calls or paid services were used.
+
 ## Browser lifecycle and accessibility follow-up, 2026-10-28
 
 - Added pinned `playwright@1.64.1` dev dependency using the public npm registry;
