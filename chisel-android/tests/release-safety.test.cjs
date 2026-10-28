@@ -32,6 +32,7 @@ test('privacy and deletion disclosures are present in the shipping surfaces',()=
   assert.match(policy,/paid accounts and credit purchases are disabled/i);
   assert.match(policy,/nittureddy26@gmail\.com/);
   assert.match(html,/photoreal style tool sends a still captured from the live camera to Chisel's backend and Replicate/i);
+  assert.match(html,/paid accounts and credit-backed photo edits are disabled in this release/i);
   assert.match(html,/Retry sends another frame/i);
   assert.match(html,/id="photorealPrivacyNote"[\s\S]*?Tapping Make it photoreal sends a still from this live camera view to Chisel's backend and Replicate/i);
   assert.match(html,/Retry submits a newly captured camera frame to the cloud renderer/i);

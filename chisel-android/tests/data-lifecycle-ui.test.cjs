@@ -9,6 +9,7 @@ test('settings distinguish local storage, encrypted export, and optional cloud d
   assert.match(section,/does not delete any cloud records/i);
   assert.match(section,/photoreal style tool sends a still captured from the live camera/i);
   assert.match(section,/Retry sends another frame/i);
+  assert.match(html,/paid accounts and credit-backed photo edits are disabled in this release/i);
   assert.match(html,/paid credit features use an account and cloud services/i);
 });
 
