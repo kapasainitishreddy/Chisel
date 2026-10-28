@@ -1,5 +1,23 @@
 # Test Status
 
+## Ranked-photo and deletion follow-up, 2026-10-28
+
+- `npm test`: **322/322 PASS**, zero failed/skipped; `pretest` Capacitor Android
+  asset sync completed.
+- `npm run build`: **PASS**, 46 modules plus inline scripts/runtime assets.
+- Focused lifecycle/photo comparison and deletion regression: **24/24 PASS**. It includes
+  source checks for unranked notes, local object URL cleanup, named style
+  groups, deletion scope/error handling, portrait store behavior and cloud
+  account separation.
+- `docs/FEATURE_LEDGER.csv`: **25 feature/gate rows**, each with source,
+  observed state, scenario/evidence, blocker and next acceptance.
+- Gradle/Android compilation and browser rendering: **BLOCKED/NOT RUN** in this
+  batch. Gradle wrapper distribution retrieval was refused by the environment;
+  browser acceptance lacks `puppeteer-core`. No physical device or TalkBack
+  evidence is claimed.
+- No external provider calls, paid billing, real face data, credentials, or
+  cloud data changes.
+
 ## Privacy, recovery and style controls, 2026-10-28
 
 - Focused lifecycle/UI suite: 8/8 PASS, covering disclosure, local/cloud

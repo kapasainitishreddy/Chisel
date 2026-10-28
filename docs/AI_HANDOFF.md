@@ -1,5 +1,27 @@
 # AI Development Handoff
 
+## Current follow-up, 2026-10-28
+
+At the implementation SHA recorded in `FEATURE_LEDGER.csv`, the ranked home
+photo chooser is replaced with input-order local capture notes; each preview
+URL is revoked on close and notes disclose that the capture heuristics are
+unvalidated. The local clear operation removes the same-tab credit token and
+portrait/gallery stores, falls back to direct gallery DB deletion if its
+optional module is absent, and fails visibly if IndexedDB is blocked. Focused
+synthetic regressions and the full **322/322** Node test suite
+pass; `npm run build` validates 46 modules. See `FEATURE_LEDGER.csv` for per-
+feature state and next acceptance, and `COMPETITOR_EXPERIMENT.md` for dated,
+small-sample desk research.
+
+The native Capacitor 6 shell exists, but no Keystore vault adapter exists.
+Gradle distribution retrieval was blocked in this execution environment, so
+no new Android code was added without a compilable verification path. Live
+WebView storage remains unencrypted; iOS, physical-device, TalkBack/zoom,
+provider retention, store/legal applicability and billing remain unaccepted.
+No real images, paid services, credentials, deployment, publication, or
+external participants were used. Confirm the verified remote working-branch
+SHA before treating this checkpoint as available to other environments.
+
 ## Current recovery checkpoint, 2026-10-28
 
 Continue branch `recovery/chisel-cloud-build-20261004-efebe81`. The continuation began at the exact verified remote source `efebe81813f6cfa9ef68472f3f5edf7c0b7b21f0`; no competing branch work was present. This bounded privacy/CX slice clarifies live-storage and export/deletion boundaries in Settings, improves touch/keyboard/screen-reader semantics in the legacy style controls, and gives camera permission/device failures concrete recovery steps. Source, Android mirror and current contract are covered by 317/317 Node tests; web build validation passes. See [native private-data contract](NATIVE_VAULT_CONTRACT.md).

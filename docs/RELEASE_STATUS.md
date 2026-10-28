@@ -1,5 +1,35 @@
 # Release Status
 
+## Ranked-photo and local-delete reliability checkpoint, 2026-10-28
+
+Working branch `recovery/chisel-cloud-build-20261004-efebe81`. The photo
+capture chooser now offers unranked local capture notes (lighting, detail,
+tilt, framing), retains input order, and revokes temporary preview URLs on
+close. It does not use face-expression signals or upload the selected photos.
+The clear-data path now clears the optional session token and both local image
+stores, and reports failure instead of success when a store/module is
+unavailable. Named style groups expose labels and pressed state. See
+[FEATURE_LEDGER.csv](FEATURE_LEDGER.csv) and
+[competitor desk research](COMPETITOR_EXPERIMENT.md).
+
+Fresh verification: `npm test` 322/322 PASS (including Capacitor Android asset
+sync); `npm run build` PASS (46 modules, inline scripts and assets). The
+Gradle 8.11.1 distribution is unavailable in this environment, so Android
+compilation/device verification remain blocked; no browser runner is
+installed. This is source and synthetic-test progress only. The checkout has
+a native Capacitor runtime, but no Keystore adapter exists; live WebView stores
+remain unencrypted and native photo migration is still required. No provider,
+billing, credentials, real-face data, signing, release or deployment action was
+performed. Store/legal/AI applicability is not reviewed and release remains
+blocked.
+
+An independent read-only re-review found no must-fix in the changed code,
+ledger paths, or competitor evidence. It confirmed the picker no longer asks
+the face model for expression outputs and deletion tests cover missing-gallery
+and blocked-database paths. Reviewer disposition: code checkpoint accepted for
+source scope only; native, browser, accessibility, accuracy, market-demand,
+and release gates remain open.
+
 ## Recovery branch privacy checkpoint, 2026-10-28
 
 Branch `recovery/chisel-cloud-build-20261004-efebe81` contains the bounded

@@ -4,6 +4,14 @@ Status: bounded implementation checkpoint, 2026-10-28. This is a contract for
 accurate product behavior and future native vault work. It does not claim that
 the current live stores are encrypted.
 
+Current native finding: the repository has a Capacitor 6 Android runtime and a
+plain `BridgeActivity`, so a custom Keystore-backed plugin is technically
+possible. No such adapter is registered or implemented. This batch does not
+migrate live photo bytes to a new crypto format: the installed Gradle wrapper
+cannot obtain its pinned distribution in this environment, so a new native
+crypto/storage path could not be compiled or exercised. Treat native vault
+implementation and migration as blocked, not as an absent-runtime finding.
+
 ## User goal and product scope
 
 The free core serves people who want private, local grooming exploration and
@@ -63,6 +71,25 @@ account deletion independence and accessibility. PIN/biometric unlock must use
 platform authentication APIs and must not be described as encryption by itself.
 This checkpoint deliberately leaves the manifest and security configuration
 unchanged.
+
+## Threat model and review status
+
+The assets include a selected face photo, derived preview, facial scan records,
+optional cloud edit outputs, an account session token, and encrypted exports.
+Relevant boundaries are WebView localStorage/IndexedDB, Android app sandbox and
+backup/device transfer, JavaScript-to-native bridge, OS photo picker/camera,
+user-selected export destinations, and optional provider/account services.
+Threats include another local app or person reading an unlocked device, backup
+or share-copy leakage, stale tabs blocking deletion, corrupted/tampered restore,
+key loss/invalidation, accidental cloud upload, partial provider failure, and
+session data surviving a local clear. The current source does not provide
+active-store encryption, verified byte-level deletion, native key lifecycle,
+or server retention evidence for this checkpoint.
+
+OWASP ASVS/MASVS, WCAG 2.2, NIST AI RMF, app-store policy, and privacy/sector
+law applicability are **not reviewed**. This is a risk inventory, not a
+compliance mapping or legal conclusion. Geography, age range, retention terms,
+provider contracts, store declarations, and legal review remain unverified.
 
 ## Success and reliability gates
 
