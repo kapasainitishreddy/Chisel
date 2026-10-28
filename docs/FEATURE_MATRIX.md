@@ -1,5 +1,22 @@
 # Chisel Feature Matrix
 
+## Local photo lifecycle and rendered accessibility, 2026-10-28
+
+The photo comparison is now a labelled modal dialog with a real close button,
+Escape handling, focus return and a keyboard focus guard. A Playwright test runs
+the app in system Chromium with synthetic canvas photos, a fake camera and stub
+face-model responses. It exercises local image save/remove/reselect; comparison
+success, model-unavailable/no-face and interrupted work; keyboard style
+selection and undo; reduced motion; 200% text sizing; and local clear success
+plus simulated IndexedDB-blocked failure/retry. The run asserts the tested
+journey makes no external POST request. It does not prove every possible
+network route is upload-free. Full `npm test` passes 323/323 and `npm run build`
+validates 46 modules. The native vault remains missing: active WebView stores
+are unencrypted, and native compilation/device acceptance is blocked by the
+unavailable Gradle distribution and absent Android toolchain. See
+[test evidence](TEST_STATUS.md), [native contract](NATIVE_VAULT_CONTRACT.md),
+and [feature ledger](FEATURE_LEDGER.csv).
+
 ## Privacy and style recovery, 2026-10-28
 
 Settings now disclose unencrypted live WebView records, the limited encrypted

@@ -6,11 +6,16 @@ the current live stores are encrypted.
 
 Current native finding: the repository has a Capacitor 6 Android runtime and a
 plain `BridgeActivity`, so a custom Keystore-backed plugin is technically
-possible. No such adapter is registered or implemented. This batch does not
-migrate live photo bytes to a new crypto format: the installed Gradle wrapper
-cannot obtain its pinned distribution in this environment, so a new native
-crypto/storage path could not be compiled or exercised. Treat native vault
-implementation and migration as blocked, not as an absent-runtime finding.
+possible. `MainActivity` registers no custom vault plugin, and there is no
+Android Keystore/storage adapter in the source tree. In this execution
+environment only the Java runtime is present: `javac`, `gradle`, `adb`, and
+Android SDK environment variables are absent. The wrapper pins Gradle 8.11.1;
+the previous exact `bash gradlew assembleDebug` attempt failed when the
+environment refused the Gradle distribution download. The user explicitly
+forbade bypassing that download restriction. Therefore no new native crypto
+or migration code can be compiled, instrumented, or device-tested here. A
+partial unbuilt Android adapter would not safely migrate current live stores;
+the native-vault work remains blocked, not an absent-runtime finding.
 
 ## User goal and product scope
 

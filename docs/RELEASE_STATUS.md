@@ -12,11 +12,13 @@ unavailable. Named style groups expose labels and pressed state. See
 [FEATURE_LEDGER.csv](FEATURE_LEDGER.csv) and
 [competitor desk research](COMPETITOR_EXPERIMENT.md).
 
-Fresh verification: `npm test` 322/322 PASS (including Capacitor Android asset
-sync); `npm run build` PASS (46 modules, inline scripts and assets). The
-Gradle 8.11.1 distribution is unavailable in this environment, so Android
-compilation/device verification remain blocked; no browser runner is
-installed. This is source and synthetic-test progress only. The checkout has
+Fresh verification: `npm test` 323/323 PASS (including Capacitor Android asset
+sync and a Playwright/Chromium synthetic browser journey); `npm run build`
+PASS (46 modules, inline scripts and assets). Browser acceptance uses generated
+synthetic images, a fake camera, and a stub face model; no face upload or
+provider request is performed. The Gradle 8.11.1 distribution is unavailable
+in this environment, so Android compilation/device verification remain
+blocked. This is source and fixture-backed UI progress only. The checkout has
 a native Capacitor runtime, but no Keystore adapter exists; live WebView stores
 remain unencrypted and native photo migration is still required. No provider,
 billing, credentials, real-face data, signing, release or deployment action was
@@ -34,10 +36,7 @@ and release gates remain open.
 
 Branch `recovery/chisel-cloud-build-20261004-efebe81` contains the bounded
 privacy/CX improvements described in [the native data contract](NATIVE_VAULT_CONTRACT.md).
-317/317 Node tests and web source validation pass. An Android debug build could
-not complete because the Gradle 8.11.1 wrapper download was refused by the
-environment network; browser acceptance lacks `puppeteer-core`. This does not
-produce a new APK or change prior release evidence. Live stores are not
+The earlier 317/317 Node checkpoint and web source validation pass. The follow-up above adds a Chromium browser journey and 323/323 full-suite result. An Android debug build could not complete because the Gradle 8.11.1 wrapper download was refused by the environment network. This does not produce a new APK or change prior release evidence. Live stores are not
 encrypted; signed release, physical-device acceptance, lifecycle deployment,
 billing/provider gates and full native vault remain open.
 

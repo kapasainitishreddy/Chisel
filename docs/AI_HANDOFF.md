@@ -2,22 +2,26 @@
 
 ## Current follow-up, 2026-10-28
 
-At the implementation SHA recorded in `FEATURE_LEDGER.csv`, the ranked home
-photo chooser is replaced with input-order local capture notes; each preview
-URL is revoked on close and notes disclose that the capture heuristics are
-unvalidated. The local clear operation removes the same-tab credit token and
-portrait/gallery stores, falls back to direct gallery DB deletion if its
-optional module is absent, and fails visibly if IndexedDB is blocked. Focused
-synthetic regressions and the full **322/322** Node test suite
-pass; `npm run build` validates 46 modules. See `FEATURE_LEDGER.csv` for per-
-feature state and next acceptance, and `COMPETITOR_EXPERIMENT.md` for dated,
-small-sample desk research.
+At implementation SHA `5e1f9fdaa6dae4d712db55caa8db39ab27df395f`, the ranked
+home photo chooser was replaced with input-order local capture notes. The
+follow-up adds an accessible dialog close button, Escape handling, focus
+restoration, and a real Playwright/Chromium journey with fake camera/model
+fixtures. Local import/remove/reselect, comparison interruption and failure,
+keyboard style restore, reduced motion, 200% text sizing, local clear and
+blocked-delete retry are exercised. The full suite is now **323/323 PASS**
+including that browser run; `npm run build` validates 46 modules. See
+`FEATURE_LEDGER.csv` for per-feature state and `COMPETITOR_EXPERIMENT.md` for
+the dated, small-sample desk research.
 
 The native Capacitor 6 shell exists, but no Keystore vault adapter exists.
-Gradle distribution retrieval was blocked in this execution environment, so
-no new Android code was added without a compilable verification path. Live
-WebView storage remains unencrypted; iOS, physical-device, TalkBack/zoom,
-provider retention, store/legal applicability and billing remain unaccepted.
+This environment lacks `javac`, `gradle`, `adb`, and Android SDK paths, and
+the wrapper's pinned Gradle distribution download is blocked; the explicit
+no-bypass restriction prevents native compilation. Live WebView storage
+remains unencrypted; iOS, physical-device, TalkBack, provider retention,
+store/legal applicability and billing remain unaccepted. Screenshots from the
+synthetic browser run are under `/tmp/chisel-photo-comparison-dialog.png`,
+`/tmp/chisel-photo-comparison-200pct.png`, and
+`/tmp/chisel-style-keyboard.png` in the execution environment.
 No real images, paid services, credentials, deployment, publication, or
 external participants were used. Confirm the verified remote working-branch
 SHA before treating this checkpoint as available to other environments.

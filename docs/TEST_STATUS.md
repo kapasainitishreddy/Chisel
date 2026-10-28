@@ -1,5 +1,39 @@
 # Test Status
 
+## Browser lifecycle and accessibility follow-up, 2026-10-28
+
+- Added pinned `playwright@1.64.1` dev dependency using the public npm registry;
+  system Chromium already existed at `/usr/bin/chromium`. Test source:
+  `tests/browser-local-lifecycle.test.cjs` starts an ephemeral local HTTP server.
+- `CHISEL_CHROMIUM_PATH=/usr/bin/chromium npm run test:browser`: **1/1 PASS**.
+  With synthetic canvas images, fake camera and a stub MediaPipe module, it
+  exercised local photo save/remove/reselect; comparison model-unavailable and
+  no-face messages; close during pending work; temporary URL revocation;
+  keyboard dialog close/focus return; keyboard style change/restore; reduced
+  motion; 200% text sizing and a 195×422 CSS viewport; and local deletion on
+  success plus a simulated blocked IndexedDB request and retry. It records no
+  image upload; optional Supabase calls are aborted in-browser.
+- Full `npm test`: **323/323 PASS**, including `pretest` Capacitor sync and the
+  new browser test. `npm run build`: **PASS**, 46 modules and runtime assets.
+- Browser screenshots: `/tmp/chisel-photo-comparison-dialog.png`,
+  `/tmp/chisel-photo-comparison-200pct.png`,
+  `/tmp/chisel-style-keyboard.png`, and
+  `/tmp/chisel-browser-local-lifecycle.png`.
+- Still not proven: TalkBack/screen reader, actual Android camera/storage,
+  cross-tab physical IDB blocking, real MediaPipe accuracy, native encryption,
+  cloud lifecycle, provider output, or billing. No real faces or credentials
+  were used.
+
+## Native-vault toolchain check, 2026-10-28
+
+Only `/usr/bin/java` is available; `javac`, `gradle`, `adb`, `ANDROID_HOME`,
+`ANDROID_SDK_ROOT`, and `JAVA_HOME` are absent. `MainActivity` is a plain
+Capacitor `BridgeActivity`, with no custom Keystore plugin registered. The
+wrapper is pinned to Gradle 8.11.1, and its prior assemble attempt was refused
+when retrieving that distribution. The new delegation explicitly prohibits
+bypassing that restriction, so no unbuildable native crypto/migration code was
+added. Native vault implementation and device acceptance remain blocked.
+
 ## Ranked-photo and deletion follow-up, 2026-10-28
 
 - `npm test`: **322/322 PASS**, zero failed/skipped; `pretest` Capacitor Android

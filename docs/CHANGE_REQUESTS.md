@@ -1,5 +1,25 @@
 # Change Requests
 
+## CR: Rendered local photo recovery and keyboard containment, 2026-10-28
+
+**Goal:** verify that the photo comparison flow is understandable, keyboard
+operable and reversible under local failure conditions, while preserving the
+free local experience and accurate privacy claims.
+
+Implemented at `5e1f9fdaa6dae4d712db55caa8db39ab27df395f`: accessible modal
+semantics, keyboard close/focus return and a focus guard; reproducible
+Playwright/Chromium testing with synthetic photos, fake camera and stub model;
+local remove/reselect and deletion blocked/retry flows. Independent read-only
+review found no must-fix in the dialog/focus change and noted the browser test's
+network evidence is scoped to its synthetic journey. No real images, provider,
+credentials or billing were used.
+
+Verification: `CHISEL_CHROMIUM_PATH=/usr/bin/chromium npm run test:browser`
+1/1; `npm test` 323/323; `npm run build` 46 modules; `git diff --check`
+passed. Native Keystore encryption, interrupted native migration and Android
+device acceptance remain open because the required compiler/SDK and Gradle
+distribution are unavailable; no partial, uncompiled native adapter was added.
+
 ## CR: Clarify private data lifecycle and style recovery, 2026-10-28
 
 **Goal:** let free-core users understand what is local, encrypted, exportable,
@@ -18,10 +38,10 @@ guidance without claiming a successful test-camera start. Added the
 product gates and future native-encryption requirements. No account, billing,
 provider, manifest security, backup flag or key settings changed.
 
-Verification: focused lifecycle tests 8/8, full Node suite 317/317 and web build
-46-module/runtime validation passed. Android assets were synced. Android build
-was blocked by the unavailable Gradle wrapper download; browser QA was not run
-because `puppeteer-core` is absent. No real face or provider test data used.
+Verification at that earlier checkpoint: focused lifecycle tests 8/8, full
+Node suite 317/317 and web build 46-module/runtime validation passed. Android
+assets were synced. Browser acceptance was added in the follow-up above. No
+real face or provider test data used.
 
 ## Next gates
 
