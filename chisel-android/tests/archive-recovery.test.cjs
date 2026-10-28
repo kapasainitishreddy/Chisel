@@ -59,6 +59,13 @@ test('commit marker survives a reload and recovery keeps the fully committed val
  assert.deepEqual(archive.recover(store),{recovered:false,committed:true});assert.deepEqual(store.snapshot(),next);
 });
 
+test('commit marker that persists before a reported storage error keeps the complete commit and blocks until retry',()=>{
+ let didThrow=false;const store=memory(old,(op,key,value,ops)=>{if(op==='set'&&key===archive.JOURNAL_KEY&&!didThrow&&JSON.parse(value).state==='committed'){didThrow=true;return false;}return false;});
+ const originalSet=store.setItem.bind(store);store.setItem=(key,value)=>{if(key===archive.JOURNAL_KEY&&!didThrow&&JSON.parse(value).state==='committed'){didThrow=true;store.values.set(key,String(value));throw Error('reported after commit');}return originalSet(key,value);};
+ assert.deepEqual(archive.restore(data(next),store),{count:2,cleanupPending:true});assert.deepEqual({...store.snapshot()},{...next,[archive.JOURNAL_KEY]:store.values.get(archive.JOURNAL_KEY)});assert.equal(JSON.parse(store.getItem(archive.JOURNAL_KEY)).state,'committed');
+ assert.deepEqual(archive.recover(store),{recovered:false,committed:true});assert.deepEqual(store.snapshot(),next);delete globalThis.CHISEL_ARCHIVE_RECOVERY_BLOCKED;
+});
+
 test('archive validation and passphrase failures do not mutate live records',async()=>{
  const original=memory(old),before=original.snapshot();const encrypted=await archive.encrypt(data(next),'synthetic recovery passphrase',crypto);
  await assert.rejects(archive.decrypt(encrypted,'wrong synthetic passphrase',crypto),/unlock/i);assert.deepEqual(original.snapshot(),before);
