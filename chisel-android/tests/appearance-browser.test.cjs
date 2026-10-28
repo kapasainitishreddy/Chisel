@@ -11,10 +11,8 @@ test('appearance settings render, persist, follow system, and respect reduced mo
  if(!executablePath&&!fs.existsSync(chromium.executablePath())){t.skip('Install Playwright Chromium or set CHISEL_CHROMIUM_PATH to an existing Chromium binary.');return;}
  browser=await chromium.launch({headless:true,...(executablePath?{executablePath}:{}),args:['--no-sandbox','--disable-dev-shm-usage']});
  const context=await browser.newContext({viewport:{width:390,height:820},colorScheme:'dark'}),page=await context.newPage();
- page.setDefaultTimeout(15000);await page.route('https://**',route=>route.abort());
+ page.setDefaultTimeout(15000);await page.route('https://**',route=>route.abort());await page.addInitScript(()=>localStorage.setItem('chisel:identity',JSON.stringify({gender:'nonbinary',label:null})));
  await page.goto(`http://127.0.0.1:${server.address().port}`,{waitUntil:'domcontentloaded'});
- await page.waitForSelector('#idModal.on');
- await page.locator('#idX').click();
  await page.waitForFunction(()=>window.ChiselAppearance&&typeof window.go==='function');
  await page.evaluate(()=>go('connect'));
  await page.locator('#appearanceCard').waitFor({state:'visible'});
@@ -24,9 +22,7 @@ test('appearance settings render, persist, follow system, and respect reduced mo
  assert.equal(await page.locator('[data-theme-choice="light"]').getAttribute('aria-pressed'),'true');
  assert.equal(await page.locator('html').evaluate(el=>getComputedStyle(el).getPropertyValue('--cs-bg').trim()),'#F6F3EE');
  await page.screenshot({path:'/tmp/chisel-appearance-settings-light.png',fullPage:false});
- await page.reload({waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.ChiselAppearance&&typeof window.go==='function'&&document.querySelector('#idModal'));
- if(await page.locator('#idModal').evaluate(el=>el.classList.contains('on')))await page.locator('#idX').click();
- await page.locator('#idModal').waitFor({state:'hidden'});await page.evaluate(()=>go('connect'));await page.locator('#appearanceCard').waitFor({state:'visible'});
+ await page.reload({waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.ChiselAppearance&&typeof window.go==='function');await page.evaluate(()=>go('connect'));await page.locator('#appearanceCard').waitFor({state:'visible'});
  assert.equal(await page.locator('html').getAttribute('data-theme'),'light','explicit choice survives reload');
  await page.emulateMedia({colorScheme:'light',reducedMotion:'reduce'});
  await page.evaluate(()=>{localStorage.removeItem('chisel:theme');ChiselAppearance.apply(document,'system','light');});
