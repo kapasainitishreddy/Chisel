@@ -159,9 +159,10 @@
   #styleBar .lab{font-size:9px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold);padding:0 2px}
   #styleBar .scroller{display:flex;gap:7px;overflow-x:auto;padding:2px;scrollbar-width:none}
   #styleBar .scroller::-webkit-scrollbar{display:none}
-  #styleBar .sc{flex:0 0 auto;padding:8px 13px;min-height:36px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(0,0,0,.45);color:var(--ivory-dim);font-size:11px;letter-spacing:.08em;white-space:nowrap;cursor:pointer}
+  #styleBar .sc{flex:0 0 auto;padding:8px 13px;min-width:44px;min-height:44px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(0,0,0,.45);color:var(--ivory-dim);font-size:11px;letter-spacing:.08em;white-space:nowrap;cursor:pointer}
   #styleBar .sc.on{background:linear-gradient(90deg,var(--gold),var(--gold-bright));color:var(--onyx);border-color:var(--gold)}
-  #styleBar .sw{flex:0 0 auto;width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,.25);cursor:pointer;padding:0;position:relative}
+  #styleBar .sw{flex:0 0 auto;width:44px;height:44px;border-radius:50%;border:2px solid rgba(255,255,255,.55);cursor:pointer;padding:0;position:relative}
+  #styleBar button:focus-visible{outline:3px solid var(--ivory);outline-offset:3px}
   #styleBar .sw.on{border-color:var(--gold-bright);box-shadow:0 0 0 2px rgba(226,197,138,.4)}
   #styleBar .sc.match::before,#styleBar .sw.match::after{content:"✓";color:var(--emerald);font-size:10px;font-weight:700}
   #styleBar .sc.match::before{margin-right:5px;color:#7CC79A}
@@ -592,7 +593,7 @@
     <section class="screen" data-screen="connect">
       <div class="eyebrow">Settings</div>
       <h2 class="section">Your app. <span class="gold">Your control.</span></h2>
-      <p class="lede" style="margin-bottom:18px">Chisel is ready to use on this phone. Your scans, routines and progress stay here unless you explicitly choose an optional photoreal render.</p>
+      <p class="lede" style="margin-bottom:18px">Chisel runs locally for free. You can choose an optional paid cloud image edit or sign in to manage credits; those are separate from your local records.</p>
 
       <div class="card" style="margin-bottom:14px">
         <div class="diag">
@@ -618,14 +619,14 @@
         <div class="card">
           <div class="eyebrow">Support</div>
           <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:500">Everything essential is on-device</h3>
-          <p>No account, no ads, and no tracking. Your core experience works directly on this phone.</p>
+          <p>No ads or analytics. The free core works on this phone without an account; only optional paid credit features use an account and cloud services.</p>
         </div>
       </div>
 
       <div class="card" style="margin-top:18px">
         <div class="eyebrow">Privacy &amp; data</div>
-        <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:500">Your data stays on this device</h3>
-        <p style="color:var(--ivory-dim);font-size:13px;line-height:1.6">Scans, photos, streaks, routines and settings are stored only on your phone — no account, no ads, no tracking. The only time anything leaves the device is an optional photoreal render. <a href="https://github.com/kapasainitishreddy/Chisel/blob/main/docs/privacy-policy.html" target="_blank" rel="noopener" style="color:var(--gold)">Privacy policy ↗</a> · <a href="https://github.com/kapasainitishreddy/Chisel/blob/main/docs/terms-of-use.html" target="_blank" rel="noopener" style="color:var(--gold)">Terms of use ↗</a></p>
+        <h3 style="font-family:var(--display);font-size:22px;margin:6px 0;font-weight:500">Where your data lives</h3>
+        <p style="color:var(--ivory-dim);font-size:13px;line-height:1.6">Free scans, routines and settings are stored in this app on your device. While Chisel is installed, live records are not encrypted by Chisel. Android cloud backup is disabled in this build, but this is not a private vault and device-to-device transfer behavior can vary by Android version. The optional encrypted backup protects only its listed records; it excludes your selected portrait and saved AI gallery. A paid image edit sends the photo you select to the disclosed service for processing; optional account and credit records are held by that service. Clear all data removes Chisel's local records, portrait and saved looks; it does not delete an optional cloud account. <a href="https://github.com/kapasainitishreddy/Chisel/blob/main/docs/privacy-policy.html" target="_blank" rel="noopener" style="color:var(--gold)">Privacy policy ↗</a> · <a href="https://github.com/kapasainitishreddy/Chisel/blob/main/docs/terms-of-use.html" target="_blank" rel="noopener" style="color:var(--gold)">Terms of use ↗</a></p>
         <div class="btn-row" style="margin-top:14px">
           <button class="btn ghost" id="wipeData">Clear all my data</button>
         </div>
@@ -1117,9 +1118,12 @@ async function openCam(){
     stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:facing, width:{ideal:1280}, height:{ideal:720} }, audio:false });
     cam.srcObject = stream; cam.classList.toggle('mirror', facing==='user'); await cam.play();
   }catch(err){
-    toast('Camera blocked: '+err.message, 3000); console.warn(err);
+    const message=cameraFailureMessage(err);
+    $('#camMeta').textContent=message;
+    toast(message, 6500); console.warn(err);
     closeCam();
-    return;
+    runDiag();
+    return false;
   }
   sizeCanvas();
   $('#camMeta').textContent = 'Loading face engine…';
@@ -1136,6 +1140,15 @@ async function openCam(){
   detLoop = requestAnimationFrame(meshLoop);
   if(scanMode) setScanWatch();
   runDiag();
+  return true;
+}
+function cameraFailureMessage(error){
+  const name=String(error&&error.name||'');
+  if(name==='NotAllowedError'||name==='PermissionDeniedError'||name==='SecurityError')return 'Camera access is blocked. Allow camera access for Chisel in Android Settings, then tap Test Camera again.';
+  if(name==='NotFoundError'||name==='DevicesNotFoundError')return 'No camera was found. Check that this device has an available camera, then tap Refresh.';
+  if(name==='NotReadableError'||name==='TrackStartError')return 'The camera could not start. Close other apps using the camera, then try Test Camera again.';
+  if(name==='OverconstrainedError'||name==='ConstraintNotSatisfiedError')return 'This camera could not use the requested video size. Try again; Chisel can use the camera at its available size.';
+  return 'Camera is unavailable right now. Check permission and device access, then try Test Camera again.';
 }
 function shouldShowScanGuide(){
   const inAffirm = $('#affirmOverlay').style.display==='flex';
@@ -1766,7 +1779,7 @@ function applyMatches(){
   renderStyleTop(); renderStyleChips();
 }
 function chipBtn(label, on, match, fn){
-  const b=document.createElement('button'); b.className='sc'+(on?' on':'')+(match?' match':''); b.textContent=label; b.onclick=fn; return b;
+  const b=document.createElement('button'); b.type='button'; b.className='sc'+(on?' on':'')+(match?' match':''); b.textContent=label; b.setAttribute('aria-pressed',String(!!on)); b.onclick=fn; return b;
 }
 function renderStyleTop(){
   const t=$('#styleTop'); if(!t) return; t.innerHTML='';
@@ -1774,7 +1787,7 @@ function renderStyleTop(){
   ['men','women'].forEach(g=>{ seg.appendChild(chipBtn(g==='men'?'Short styles':'Long styles', styleGender===g, false, ()=>{ if(styleGender===g) return; styleGender=g; styleHair=1; if(_faceShape) applyMatches(); else { renderStyleTop(); renderStyleChips(); } })); });
   t.appendChild(seg);
   const seg2=document.createElement('div'); seg2.className='seg';
-  [['match','Best matches'],['all','All']].forEach(([v,l])=>{ seg2.appendChild(chipBtn(l, styleView===v, false, ()=>{ styleView=v; renderStyleChips(); })); });
+  [['match','Suggested'],['all','All styles']].forEach(([v,l])=>{ seg2.appendChild(chipBtn(l, styleView===v, false, ()=>{ styleView=v; renderStyleTop(); renderStyleChips(); })); });
   t.appendChild(seg2);
   const info=document.createElement('button'); info.className='sc info';
   if(!_faceShape) info.textContent='Reading face — look straight on…';
@@ -1800,8 +1813,9 @@ function renderStyleChips(){
     HAIR_COLORS.forEach(c=>{ const m=!!(mc&&c.rgb&&mc.includes(c.name)); if(matchOnly && c.rgb && mc && !m) return;
       const on = c.rgb ? (_styleHairColLock&&hex(_styleHairColLock)===hex(c.rgb)) : (_styleHairColLock==null);
       const b=document.createElement('button');
-      if(c.rgb){ b.className='sw'+(on?' on':'')+(m?' match':''); b.style.background=hex(c.rgb); b.title=c.name+(m?' · suits you':''); }
-      else { b.className='sc'+(on?' on':''); b.textContent=c.name; }
+      b.type='button'; b.setAttribute('aria-pressed',String(!!on));
+      if(c.rgb){ b.className='sw'+(on?' on':'')+(m?' match':''); b.style.background=hex(c.rgb); b.title=c.name+(m?' · suggested':''); b.setAttribute('aria-label',c.name+(m?' · suggested':'')+(on?' · selected':'')); }
+      else { b.className='sc'+(on?' on':''); b.textContent=c.name; b.setAttribute('aria-label',c.name+(on?' · selected':'')); }
       b.onclick=()=>{ _styleHairColLock=c.rgb||null; if(!c.rgb) _styleHairCol=null; renderStyleChips(); };
       cc.appendChild(b); });
     if(mc===null){ const note=document.createElement('button'); note.className='sc info'; note.textContent='Scan in Analyze for colour match'; cc.appendChild(note); }
@@ -3023,12 +3037,12 @@ async function runDiag(){
 }
 $('#testCam').addEventListener('click', async ()=>{
   setCamMode('test');
-  await openCam(); $('#camMeta').textContent='Test mode';
+  if(await openCam()) $('#camMeta').textContent='Test mode';
 });
 $('#refreshDiag').addEventListener('click', runDiag);
 /* In-app data deletion (Play requirement + privacy) — wipes all local data */
 function wipeAllData(){
-  if(!confirm('Delete all Chisel data on this device? This removes your scans, photos, streak, routines and settings. This can\'t be undone.')) return;
+  if(!confirm('Delete Chisel data stored on this device, including scans, the selected portrait, saved looks, streaks, routines and settings? This cannot be undone. An optional cloud account and records maintained by a cloud service are separate; manage or delete those in the account controls.')) return;
   try{ Object.keys(localStorage).filter(k=>k.indexOf('chisel:')===0).forEach(k=>localStorage.removeItem(k)); }catch(e){ console.warn('wipe',e); }
   toast('All your local data was cleared');
   setTimeout(()=>location.reload(), 900);

@@ -1,5 +1,16 @@
 # Release Status
 
+## Recovery branch privacy checkpoint, 2026-10-28
+
+Branch `recovery/chisel-cloud-build-20261004-efebe81` contains the bounded
+privacy/CX improvements described in [the native data contract](NATIVE_VAULT_CONTRACT.md).
+317/317 Node tests and web source validation pass. An Android debug build could
+not complete because the Gradle 8.11.1 wrapper download was refused by the
+environment network; browser acceptance lacks `puppeteer-core`. This does not
+produce a new APK or change prior release evidence. Live stores are not
+encrypted; signed release, physical-device acceptance, lifecycle deployment,
+billing/provider gates and full native vault remain open.
+
 ## Current local artifact, 2026-10-04
 
 **Debug build delivered; public release remains BLOCKED.** Branch `work`, application source bf826193988e91c2edc457b3ab405352594857e2. Actual APK `/workspace/chisel-build/chisel-debug.apk`; SHA-256 `8ed470ae883a70b10681aa1be3d83eb8d4222a6b80329958ead8c8ce5f43461d`. 312 tests, 17 completion browser checks, 6 real-model fixture checks and native compilation pass; 58 packaged assets match canonical source.

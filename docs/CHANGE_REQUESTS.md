@@ -1,5 +1,36 @@
 # Change Requests
 
+## CR: Clarify private data lifecycle and style recovery, 2026-10-28
+
+**Goal:** let free-core users understand what is local, encrypted, exportable,
+deletable or cloud processed and finish an early style/camera task without
+misleading fit claims or dead-end errors. The intended paying user is an adult
+who chooses an optional image edit for a practical style reference. Paid value
+is a falsifiable hypothesis, not validated demand; conversion, willingness to
+pay and cost baselines remain unknown. No revenue claim is made.
+
+Implemented in source: accurate Settings data/backup disclosure; local clear
+confirmation that separates optional cloud account deletion; larger,
+keyboard-visible and aria-pressed legacy style controls with labelled colour
+swatches and “Suggested” language; classified camera permission/device startup
+guidance without claiming a successful test-camera start. Added the
+[native private-data contract](NATIVE_VAULT_CONTRACT.md) to pin storage scope,
+product gates and future native-encryption requirements. No account, billing,
+provider, manifest security, backup flag or key settings changed.
+
+Verification: focused lifecycle tests 8/8, full Node suite 317/317 and web build
+46-module/runtime validation passed. Android assets were synced. Android build
+was blocked by the unavailable Gradle wrapper download; browser QA was not run
+because `puppeteer-core` is absent. No real face or provider test data used.
+
+## Next gates
+
+Instrument-free user study or privacy-reviewed success measurement; camera,
+export/restore, deletion and large-text/TalkBack acceptance on real devices;
+native per-store encryption/key lifecycle and interrupted-operation recovery;
+test whether optional image-edit value is useful and cost-sustainable before
+any store configuration. Keep full vault and monetization assertions separate.
+
 ## CR: Complete approved missing-feature build, 2026-10-04
 
 Implemented the approved five-task plan in real source: reproducible build/runtime fitting, adaptive local programs and conservative progress, encrypted exported backups/discussion sheets, authenticated lifecycle/scheduler source, and whole-branch acceptance/handoff. Explicit beard selections also repaired. User approved continuous execution without further questions; work remains locally committed and no external deployment/publication/push occurred.

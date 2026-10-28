@@ -1,5 +1,20 @@
 # Chisel Feature Matrix
 
+## Privacy and style recovery, 2026-10-28
+
+Settings now disclose unencrypted live WebView records, the limited encrypted
+export scope, optional cloud/account paths, local-clear scope, and Android
+backup/device-transfer caveat. Legacy style controls now expose selected state,
+descriptive colour names, visible keyboard focus and 44px targets; “Suggested”
+replaces universal-sounding “Best matches.” Camera startup failures now explain
+permission, absent-camera, busy-device and unsupported-size recovery. This does
+not implement a native encrypted vault, expand archive contents, or activate a
+cloud provider. See [native private-data contract](NATIVE_VAULT_CONTRACT.md).
+
+317/317 Node tests and the web source/runtime validation pass. Android package
+assets are generated from the canonical web source. Physical-device and
+browser screenshots are not freshly accepted in this environment.
+
 ## Current build additions, 2026-10-04
 
 [Completion report](COMPLETION_REPORT.md) is the current feature/evidence matrix. Added and wired: dependency-isolated runtime; one confidence-gated eyewear renderer; explicit beard selections across families; 30/60/90-day adaptive local plans; method-aware progress/baselines/JSON; encrypted supported-record backup with validated restore; four discussion sheets; billing-independent existing-account controls. Owner-bound account deletion and bounded cleanup/scheduler are implemented **in source only**. Reproducible clean tests and an actual debug APK are verified. Missing fitting modules are no longer a current source blocker.

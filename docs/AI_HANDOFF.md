@@ -1,5 +1,13 @@
 # AI Development Handoff
 
+## Current recovery checkpoint, 2026-10-28
+
+Continue branch `recovery/chisel-cloud-build-20261004-efebe81`. The continuation began at the exact verified remote source `efebe81813f6cfa9ef68472f3f5edf7c0b7b21f0`; no competing branch work was present. This bounded privacy/CX slice clarifies live-storage and export/deletion boundaries in Settings, improves touch/keyboard/screen-reader semantics in the legacy style controls, and gives camera permission/device failures concrete recovery steps. Source, Android mirror and current contract are covered by 317/317 Node tests; web build validation passes. See [native private-data contract](NATIVE_VAULT_CONTRACT.md).
+
+The existing encrypted export is **not** a live-store vault: WebView records remain unencrypted while installed, selected portrait and saved AI gallery are excluded from export, local clear is separate from cloud-account deletion, and native PIN/biometric encryption is not delivered. The manifest already disables Android backup; this code does not change that security setting. Android debug build was attempted but the Gradle wrapper could not download Gradle 8.11.1 because network access was refused. Browser-runner acceptance was not run because `puppeteer-core` is absent. No real face, provider credential, paid edit, billing, device, or cloud lifecycle test was used.
+
+Portfolio goal remains unvalidated: free local grooming exploration must deliver a private, understandable and reversible first session; optional paid value is only a clearly previewed, consented image edit. Usage, conversion, willing-to-pay, cost and contribution baselines are unknown. Do not claim revenue or launch readiness. Continue only against this recovery branch and its explicit gates.
+
 ## Current: completed local build checkpoint, 2026-10-04
 
 Continue branch `work`, not the historical draft PR referenced below. Application source **bf826193988e91c2edc457b3ab405352594857e2** has 312/312 Node tests, 17/17 completion browser checks, 6/6 real-MediaPipe fixture checks, embedded PostgreSQL lifecycle acceptance and a successful Android debug APK. Clean tracked checkout passes. The missing eyewear modules and cascading loader are repaired. Adaptive programs, conservative progress, encrypted exported backups and discussion reports are wired; account deletion/scheduled recovery source is implemented but not deployed. Seven final review findings were fixed with regressions.

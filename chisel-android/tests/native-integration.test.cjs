@@ -39,7 +39,9 @@ test('customer-facing Connect screen has no developer installation instructions'
   const connect = html.match(/<section class="screen" data-screen="connect">([\s\S]*?)<\/section>/);
   assert.ok(connect, 'Connect screen is missing');
   assert.doesNotMatch(connect[1], /USB debugging|Android Studio|Sideload the APK|deploy\.bat|npx serve/i);
-  assert.match(connect[1], /Your data stays on this device/i);
+  assert.match(connect[1], /Where your data lives/i);
+  assert.match(connect[1], /live records are not encrypted by Chisel/i);
+  assert.match(connect[1], /device-to-device transfer behavior can vary/i);
 });
 
 test('synced Android enhancement assets exactly match the canonical www copies', () => {

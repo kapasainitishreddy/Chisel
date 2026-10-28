@@ -1,5 +1,23 @@
 # Test Status
 
+## Privacy, recovery and style controls, 2026-10-28
+
+- Focused lifecycle/UI suite: 8/8 PASS, covering disclosure, local/cloud
+  deletion distinction, manifest boundary, style target/pressed states and
+  camera recovery text.
+- Full Node suite: 317/317 PASS after `npm test`; its pretest `cap sync android`
+  completed and copied the canonical `index.html` into Android assets.
+- Web runtime validation: `npm run build` PASS (46 modules, inline app scripts
+  and runtime assets).
+- Android debug build: NOT RUN to completion. `bash gradlew assembleDebug`
+  could not fetch Gradle 8.11.1: network connection refused. Executing the
+  wrapper directly also lacked executable permission; the prescribed `bash`
+  invocation was then used.
+- Browser completion runner: NOT RUN; this checkout does not have
+  `puppeteer-core`. No screenshot/device acceptance is claimed.
+- No live providers, real face images, paid billing, credentials or cloud
+  lifecycle operations were used.
+
 ## Current application acceptance, 2026-10-04
 
 Application source: **bf826193988e91c2edc457b3ab405352594857e2**. Subsequent handoff edits are documentation only.
